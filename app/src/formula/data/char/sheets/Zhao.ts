@@ -12,7 +12,6 @@ import { allStats, mappedStats } from '../../../../stats'
 import {
   allBoolConditionals,
   allNumConditionals,
-  customHeal,
   notOwnBuff,
   own,
   ownBuff,
@@ -192,17 +191,6 @@ const sheet = register(
       undefined,
       ...assistFollowUp_flat_dmg
     )
-  ),
-
-  customHeal(
-    'special_heal',
-    prod(own.final.hp, sum(percent(0.01), prod(char.special, percent(0.0006)))),
-    { team: true }
-  ),
-  customHeal(
-    'exSpecial_heal',
-    prod(own.final.hp, sum(percent(0.01), prod(char.special, percent(0.0006)))),
-    { team: true }
   ),
 
   // Buffs

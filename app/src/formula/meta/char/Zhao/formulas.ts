@@ -832,26 +832,4 @@ export const formulas = {
       name: 'AssistFollowUpFrostlightReflection_0_anomBuildup',
     },
   },
-  special_heal: {
-    sheet: 'Zhao',
-    name: 'special_heal',
-    tag: {
-      et: 'own',
-      qt: 'formula',
-      q: 'heal',
-      sheet: 'Zhao',
-      name: 'special_heal',
-    },
-  },
-  exSpecial_heal: {
-    sheet: 'Zhao',
-    name: 'exSpecial_heal',
-    tag: {
-      et: 'own',
-      qt: 'formula',
-      q: 'heal',
-      sheet: 'Zhao',
-      name: 'exSpecial_heal',
-    },
-  },
 } as const

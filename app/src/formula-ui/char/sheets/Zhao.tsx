@@ -4,7 +4,7 @@ import type { CharacterKey } from '../../../consts'
 import { Zhao } from '../../../formula'
 import { GameDesc } from '../../../i18n'
 import { mappedStats } from '../../../stats'
-import { st, trans } from '../../util'
+import { trans } from '../../util'
 import {
   CoreGameDesc,
   createBaseSheet,
@@ -16,7 +16,6 @@ const key: CharacterKey = 'Zhao'
 const [, ch] = trans('char', key)
 const cond = Zhao.conditionals
 const buff = Zhao.buffs
-const formula = Zhao.formulas
 const dm = mappedStats.char[key]
 
 const sheet = createBaseSheet(key, {
@@ -44,20 +43,7 @@ const sheet = createBaseSheet(key, {
         },
       ],
     },
-    special: {
-      SpecialAttackShatterfrostSurge: [
-        {
-          type: 'fields',
-          fields: [{ title: st('heal'), fieldRef: formula.special_heal.tag }],
-        },
-      ],
-      EXSpecialAttackFrostflowTundra: [
-        {
-          type: 'fields',
-          fields: [{ title: st('heal'), fieldRef: formula.exSpecial_heal.tag }],
-        },
-      ],
-    },
+    special: {},
   },
   core: [
     {

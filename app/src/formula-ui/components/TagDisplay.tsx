@@ -122,8 +122,11 @@ function TagStrDisplay({
       labelMap[label as keyof typeof labelMap] ??
       statKeyTextMap[label as StatKey] ??
       label
+    const attrName = tag.name?.includes('_frost')
+      ? 'Frost'
+      : elementalData[tag.attribute as keyof typeof elementalData]
     const strs = [
-      ...(tag.attribute ? [elementalData[tag.attribute]] : []),
+      ...(tag.attribute ? [attrName] : []),
       ...(specificDmgType1 ? [damageTypeKeysMap[specificDmgType1]] : []),
       ...(specificDmgType2 ? [damageTypeKeysMap[specificDmgType2]] : []),
       ...(name ? [name] : []),
