@@ -52,14 +52,17 @@ export default defineConfig(() => {
         resolve('../packages/common/localization/assets/locales')
       ),
       dest: 'assets',
+      rename: { stripBase: 4 },
     },
     {
       src: normalizePath(resolve('./src/localization/assets/locales')),
       dest: 'assets',
+      rename: { stripBase: 3 },
     },
     {
       src: normalizePath(resolve('./src/dm-localization/assets/locales')),
       dest: 'assets',
+      rename: { stripBase: 3 },
     },
   ]
 
