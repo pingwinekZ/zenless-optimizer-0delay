@@ -1,10 +1,10 @@
 import { levenshteinDistance } from '@zenless-optimizer/common/util'
 import type { DiscRarityKey, DiscSlotKey } from '../../consts'
 import {
-  type DiscSetKey,
   allDiscMainStatKeys,
   allDiscSetKeys,
   allDiscSubStatKeys,
+  type DiscSetKey,
   discMaxLevel,
   discSlotToMainStatKeys,
 } from '../../consts'

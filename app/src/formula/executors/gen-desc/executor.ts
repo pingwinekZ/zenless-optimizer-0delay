@@ -1,4 +1,3 @@
-import * as path from 'path'
 import { workspaceRoot } from '@nx/devkit'
 import { formatText } from '@zenless-optimizer/common/pipeline'
 import {
@@ -6,13 +5,14 @@ import {
   extractFormulaMetadata,
 } from '@zenless-optimizer/game-opt/formula'
 import { writeFile } from 'fs/promises'
+import * as path from 'path'
 import {
   allCharacterKeys,
   allDiscSetKeys,
   allWengineKeys,
 } from '../../../consts'
 import { data } from '../../data'
-import { type Tag, commonSheets } from '../../data/util'
+import { commonSheets, type Tag } from '../../data/util'
 import type { GenDescExecutorSchema } from './schema'
 
 export default async function runExecutor(

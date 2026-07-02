@@ -4,9 +4,9 @@ import { clamp } from '@zenless-optimizer/common/util'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
-  type MilestoneKey,
   ambiguousLevel,
   ambiguousLevelLow,
+  type MilestoneKey,
   maxLevel,
   maxLevelLow,
   milestoneLevels,

@@ -1,5 +1,5 @@
-import { Card } from '@mantine/core'
 import type { CardProps } from '@mantine/core'
+import { Card } from '@mantine/core'
 
 export type CardBackgroundColor = 'light' | 'dark' | 'normal'
 

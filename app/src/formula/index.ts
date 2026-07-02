@@ -4,9 +4,9 @@ import type {
   TagMapEntries,
 } from '@zenless-optimizer/pando/engine'
 import {
-  TagMapSubset,
   compileTagMapValues,
   constant,
+  TagMapSubset,
 } from '@zenless-optimizer/pando/engine'
 import { Calculator } from './calculator'
 import { keys, values } from './data'
@@ -19,16 +19,16 @@ import {
 import { formulas as _aggFormulas } from './meta/agg'
 
 export { Calculator } from './calculator'
-export { data as formulaData } from './data'
 export * from './conditionalUtil'
+export { data as formulaData } from './data'
 export * from './data/util'
-export * from './util'
-export { _metaConditionals as conditionals, _metaBuffs as buffs }
 export * from './meta/char'
-export * from './meta/disc'
-export * from './meta/wengine'
 export * as enemyMeta from './meta/common'
 export * as anomalyMeta from './meta/common/anomaly'
+export * from './meta/disc'
+export * from './meta/wengine'
+export * from './util'
+export { _metaBuffs as buffs, _metaConditionals as conditionals }
 export const formulas = { ..._metaFormulas, agg: _aggFormulas } as const
 // meta exports — not using `export * from './meta'` so we can merge agg formulas into `formulas`
 // Re-export character, wengine, disc namespaces (e.g., Velina, DrillRigRedAxis) that formula-ui uses

@@ -1,4 +1,5 @@
 import type { SVGProps } from 'react'
+
 export * from './icons/AnvilIcon'
 export * from './icons/DiscordIcon'
 export * from './icons/FriendshipIcon'

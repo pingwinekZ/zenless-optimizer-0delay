@@ -1,7 +1,7 @@
+import { workspaceRoot } from '@nx/devkit'
 import { spawn } from 'child_process'
 import { mkdirSync, writeFileSync } from 'fs'
 import { dirname, join } from 'path'
-import { workspaceRoot } from '@nx/devkit'
 
 /**
  * Formats text, returns formatted text. This function does not write directly to the provided file path.
@@ -27,7 +27,7 @@ export async function formatText(path: string, text: string): Promise<string> {
       `--stdin-file-path=${path}`,
       `--config-path=${biomeConfigPath}`,
       '--formatter-enabled=true',
-      '--organize-imports-enabled=true',
+      '--assist-enabled=true',
       '--linter-enabled=false',
       '--fix',
     ])

@@ -4,6 +4,7 @@ import {
 } from '@zenless-optimizer/common/pipeline'
 import { objKeyValMap, objMap } from '@zenless-optimizer/common/util'
 import { PROJROOT_PATH } from '../../consts'
+
 const URL_BASE = 'https://static.nanoka.cc/zzz/'
 const VERSION = '3.0'
 

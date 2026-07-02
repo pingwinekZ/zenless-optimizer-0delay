@@ -14,17 +14,17 @@ import {
 import { getUnitStr } from '@zenless-optimizer/common/util'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  allCharacterKeys,
-  allDiscSubStatKeys,
-  discSlotToMainStatKeys,
-  statKeyTextMap,
-} from '../../consts'
 import type {
   CharacterKey,
   DiscMainStatKey,
   DiscSlotKey,
   DiscSubStatKey,
+} from '../../consts'
+import {
+  allCharacterKeys,
+  allDiscSubStatKeys,
+  discSlotToMainStatKeys,
+  statKeyTextMap,
 } from '../../consts'
 import { useDatabaseContext } from '../../db-ui'
 import { StatIcon } from '../../svgicons'

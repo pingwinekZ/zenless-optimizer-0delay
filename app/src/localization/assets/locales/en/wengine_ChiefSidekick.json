@@ -1,4 +1,4 @@
 {
-  "cond": "Dealing Fire DMG with an EX Special Attack",
-  "cond_offField": "Off-field Energy Regen"
+  "cond": "Team DMG buff",
+  "cond_offField": "Off-field ER"
 }

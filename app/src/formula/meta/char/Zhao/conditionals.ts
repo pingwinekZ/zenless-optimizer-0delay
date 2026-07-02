@@ -14,6 +14,16 @@ export const conditionals = {
     type: 'bool',
   },
   inEtherVeil: { sheet: 'Zhao', name: 'inEtherVeil', type: 'bool' },
-  offField: { sheet: 'Zhao', name: 'offField', type: 'bool' },
-  recoversHp: { sheet: 'Zhao', name: 'recoversHp', type: 'bool' },
+  offField: {
+    sheet: 'Zhao',
+    name: 'offField',
+    type: 'bool',
+    mindscapeRequirement: 1,
+  },
+  recoversHp: {
+    sheet: 'Zhao',
+    name: 'recoversHp',
+    type: 'bool',
+    mindscapeRequirement: 2,
+  },
 } as const

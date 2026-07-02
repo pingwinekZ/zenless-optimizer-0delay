@@ -56,13 +56,7 @@ export function GameText({ text }: { text: string }) {
  * @example
  * <GameDesc ns="char_Miyabi_gen" key18="mindscapes.1.desc" />
  */
-export function GameDesc({
-  ns,
-  key18,
-}: {
-  ns: string
-  key18: string
-}) {
+export function GameDesc({ ns, key18 }: { ns: string; key18: string }) {
   const { t } = useTranslation(ns)
   const textKey = `${ns}:${key18}`
   const obj = t(textKey, { returnObjects: true })

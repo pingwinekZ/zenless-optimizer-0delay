@@ -25,18 +25,18 @@ export const buffs = {
     },
     team: true,
   },
-  ability_iceAnomBuildup: {
+  ability_presumptionDefIgn: {
     sheet: 'Promeia',
-    name: 'ability_iceAnomBuildup',
+    name: 'ability_presumptionDefIgn',
     tag: {
       et: 'display',
       qt: 'combat',
-      q: 'anomBuildup_',
+      q: 'defIgn_',
       sheet: 'Promeia',
-      attribute: 'ice',
-      name: 'ability_iceAnomBuildup',
+      damageType1: 'abloom',
+      name: 'ability_presumptionDefIgn',
     },
-    team: false,
+    team: true,
   },
   m2_anomProf: {
     sheet: 'Promeia',
@@ -50,16 +50,29 @@ export const buffs = {
     },
     team: false,
   },
-  m6_resIgn_: {
+  m6_resIgn_anomaly: {
     sheet: 'Promeia',
-    name: 'm6_resIgn_',
+    name: 'm6_resIgn_anomaly',
     tag: {
       et: 'display',
       qt: 'combat',
       q: 'resIgn_',
       sheet: 'Promeia',
       damageType1: 'anomaly',
-      name: 'm6_resIgn_',
+      name: 'm6_resIgn_anomaly',
+    },
+    team: false,
+  },
+  m6_resIgn_disorder: {
+    sheet: 'Promeia',
+    name: 'm6_resIgn_disorder',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'resIgn_',
+      sheet: 'Promeia',
+      damageType1: 'disorder',
+      name: 'm6_resIgn_disorder',
     },
     team: false,
   },

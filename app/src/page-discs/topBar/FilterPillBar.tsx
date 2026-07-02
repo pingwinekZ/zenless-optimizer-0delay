@@ -22,8 +22,8 @@ import {
 import { MultiSelectPills } from '../../page-optimize'
 import { CharIconCircle } from '../../ui'
 import {
-  type ValueColumnField,
   useDiscTabStore,
+  type ValueColumnField,
 } from '../discGrid/useDiscTabStore'
 import { type FilterOption, FilterPill } from './FilterPill'
 import classes from './topBar.module.css'

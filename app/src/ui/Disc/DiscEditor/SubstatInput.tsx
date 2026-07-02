@@ -1,6 +1,4 @@
-import { Menu } from '@mantine/core'
-import { Slider } from '@mantine/core'
-import { Group, Text } from '@mantine/core'
+import { Group, Menu, Slider, Text } from '@mantine/core'
 import {
   CardThemed,
   ColorText,

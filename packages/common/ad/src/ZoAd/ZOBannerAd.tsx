@@ -1,7 +1,7 @@
 import { Anchor, Box } from '@mantine/core'
 import type { ReactNode } from 'react'
 import type { AdDims } from '../type'
-import { ZO_LINK, isZOURL } from '../urlUtil'
+import { isZOURL, ZO_LINK } from '../urlUtil'
 import zo_banner_chat from './zo_banner_chat.png'
 
 function ZOBannerAd({ children }: { children: ReactNode }) {

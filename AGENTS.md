@@ -43,7 +43,7 @@ npx nx run-many --target=test           # Test all (Jest + Vitest)
 npx nx run-many -t gen-file             # Regenerate generated files
 bun biome ci                            # Format check only (read-only)
 bun biome format --write                # Auto-format (Biome)
-bun biome check --write --formatter-enabled=true --linter-enabled=false --organize-imports-enabled=true  # Format + organize imports
+bun biome check --write --formatter-enabled=true --linter-enabled=false --assist-enabled=true  # Format + organize imports
 ```
 
 ### Single package

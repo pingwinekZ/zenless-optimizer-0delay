@@ -1,7 +1,7 @@
 import { Button, Flex, Group, Slider, Text } from '@mantine/core'
 import { Fragment, useState } from 'react'
-import { allDiscSubStatKeys } from '../../consts'
 import type { DiscSubStatKey } from '../../consts'
+import { allDiscSubStatKeys } from '../../consts'
 import { StatDisplay } from '../../ui'
 import { HeaderText } from '../layout'
 

@@ -25,6 +25,7 @@ import Header from './Header'
 import { LayoutSider } from './LayoutSider'
 import { NavigateContextProvider, useNavigateContext } from './NavigateContext'
 import { type TabKey, useTabStore } from './useTabStore'
+
 // Enable debug mode for Pando calcs
 setDebugMode(isDev)
 

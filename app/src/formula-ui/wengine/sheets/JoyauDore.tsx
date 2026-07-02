@@ -43,20 +43,15 @@ const sheet: UISheetElement = {
           tagToTagField(buff.vortexDmg_.tag),
           tagToTagField(buff.windsweptDmg_.tag),
           {
+            title: 'Squad AP',
+            fieldRef: buff.squadAnomProf.tag,
+          },
+          {
             title: 'Duration',
             fieldValue: dm.duration,
           },
         ],
       },
-    },
-    {
-      type: 'fields',
-      fields: [
-        {
-          title: 'Squad AP buff',
-          fieldRef: buff.squadAnomProf.tag,
-        },
-      ],
     },
   ],
 }

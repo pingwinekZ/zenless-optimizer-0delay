@@ -3,7 +3,7 @@ import type { GeneralAutocompleteOption } from '@zenless-optimizer/common/ui'
 import { GeneralAutocompleteMulti } from '@zenless-optimizer/common/ui'
 import { Suspense, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { type LocationKey, allLocationKeys } from '../../consts'
+import { allLocationKeys, type LocationKey } from '../../consts'
 import { useDatabaseContext } from '../../db-ui'
 import { CharIconCircle } from './CharIconCircleElement'
 

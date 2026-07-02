@@ -26,9 +26,9 @@ const sheet: UISheetElement = {
     {
       type: 'fields',
       fields: [
-        tagToTagField(buff.passive_enerRegen.tag),
-        tagToTagField(buff.passive_atk_.tag),
-        tagToTagField(buff.passive_hp_.tag),
+        { title: 'ER buff', fieldRef: buff.passive_enerRegen.tag },
+        { title: 'Squad ATK%', fieldRef: buff.passive_atk_.tag },
+        { title: 'Squad HP%', fieldRef: buff.passive_hp_.tag },
       ],
     },
     {

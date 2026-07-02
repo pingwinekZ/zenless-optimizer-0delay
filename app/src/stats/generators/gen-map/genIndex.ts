@@ -1,6 +1,6 @@
-import { writeFileSync } from 'fs'
 import type { Tree } from '@nx/devkit'
 import { formatText } from '@zenless-optimizer/common/pipeline'
+import { writeFileSync } from 'fs'
 import {
   allCharacterKeys,
   allDiscSetKeys,

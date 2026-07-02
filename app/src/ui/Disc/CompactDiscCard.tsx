@@ -24,7 +24,7 @@ import type { ICachedDisc } from '../../db'
 import { SlotIcon, StatIcon } from '../../svgicons'
 import type { ISubstat } from '../../zood'
 import { ZCard } from '../Components'
-import { StatHighlightContext, getHighlightRGBA, isHighlight } from '../context'
+import { getHighlightRGBA, isHighlight, StatHighlightContext } from '../context'
 import { COMPACT_CARD_HEIGHT_PX, EmptyCompactCard } from '../util'
 import { useSpinner } from './util'
 

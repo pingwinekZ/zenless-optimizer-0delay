@@ -1,11 +1,12 @@
 import type { AdDims, AdProps } from '@zenless-optimizer/common/ad'
-import { getGOAd } from '@zenless-optimizer/common/ad'
-import { getGODrakeAd } from '@zenless-optimizer/common/ad'
+import { getGOAd, getGODrakeAd } from '@zenless-optimizer/common/ad'
 import { CardThemed } from '@zenless-optimizer/common/ui'
-import { getRandomElementFromArray } from '@zenless-optimizer/common/util'
-import { notEmpty } from '@zenless-optimizer/common/util'
-import { useMemo } from 'react'
+import {
+  getRandomElementFromArray,
+  notEmpty,
+} from '@zenless-optimizer/common/util'
 import type { FunctionComponent, ReactNode } from 'react'
+import { useMemo } from 'react'
 /**
  * A component that aggregates all ads shown on ZO
  */

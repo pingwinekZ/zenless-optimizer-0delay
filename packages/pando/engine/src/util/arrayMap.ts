@@ -18,7 +18,7 @@ export class ArrayMap<Key, Value> {
 
 class Internal<Key, Value> {
   map = new Map<Key, Internal<Key, Value>>()
-  value?: Value
+  declare value?: Value
 
   get(key: Key): Internal<Key, Value> {
     const old = this.map.get(key)

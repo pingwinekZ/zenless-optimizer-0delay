@@ -8,6 +8,14 @@
   "targets": {
     "build": {
       "cache": false
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/coverage/app"],
+      "options": {
+        "command": "bun test --jsdom --timeout=60000",
+        "cwd": "app"
+      }
     }
   },
   "implicitDependencies": ["common-localization"]

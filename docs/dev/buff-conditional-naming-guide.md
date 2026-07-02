@@ -184,9 +184,9 @@ Initial [Stat] [kind]
 | Daze (buildup meter) | `Daze` | `Daze buff`, `Daze dealt`, `Daze buildup` |
 | Stun (enemy state) | `Stun` | `Stun DMG bonus`, `Stunned enemy` |
 | Energy / Energy Regen | `ER` | `ER buff`, `ER to DMG%`, `Initial ER` |
-| PEN (flat DEF ignore) | `PEN` | `PEN buff`, `Squad PEN` |
-| PEN Ratio (% DEF ignore) | `PEN Ratio` | `PEN Ratio buff`, `Squad PEN Ratio` |
-| DEF Ignore | `PEN` | `PEN`, `PEN stacks` |
+| PEN (flat) | `PEN` | `PEN buff`, `Squad PEN` |
+| PEN Ratio | `PEN Ratio` | `PEN Ratio buff`, `Squad PEN Ratio` |
+| DEF Ignore (% DEF ignore) | `DEF Ignore` | `DEF Ignore buff`, `AA Abloom DEF Ignore` |
 | RES Ignore | `RES Ignore` | `RES Ignore`, `M1 RES Ignore` |
 | Vulnerability | `Vulnerability` | `Vulnerability`, `M1 vulnerability` |
 | Stun / Daze break | `Stun` / `Daze` | `Stun DMG bonus`, `Daze dealt buff` |
@@ -216,7 +216,7 @@ Use consistent suffixes to indicate the *type* of effect:
 | `buffs` | Multiple buffs combined into one toggle | `M2 buffs`, `M6 buffs`, `M6 Ult buffs` |
 | `conversion` | One stat is converted to another | `ER to DMG% and AM`, `HP to CR conversion` |
 | `shred` | Enemy defensive stat reduction (debuff) | `DEF shred`, `RES shred` |
-| `Ignore` | Enemy defense/resistance penetration | `RES Ignore`, `PEN`, `M1 RES Ignore` |
+| `Ignore` | Enemy defense/resistance penetration | `RES Ignore`, `DEF Ignore`, `M1 RES Ignore` |
 | `hits` | Extra attack hits | `EX Special extra hits`, `Ult extra hits` |
 | `debuff` | A negative status on enemies | `Enemy debuffed`, `DEF shred debuff`, `Windbite debuff` |
 
@@ -287,9 +287,13 @@ Post [Ability] [stat] [kind]           → Post EX Special ATK buff
 [Condition] [stat] [kind]              → Shielded ATK buff
 [Stat] buff                            → CR buff
 [Stat] Ignore                          → RES Ignore
-[Stat] PEN                             → PEN
+[Stat] [kind]                         → DEF Ignore buff
 [Mechanic] hits                        → Additional Attack hits
 Squad [Stat] buff                      → Squad AP buff
+Team [Stat] buff                       → Team DMG buff
+[Mechanics] and [Mechanics] DMG buffs  → Windswept and Vortex DMG buffs
+[Attribute] DMG and [Type] DMG buffs   → Ice DMG and Abloom DMG buffs
+[Context] [Stat]                       → Off-field ER
 ```
 
 ---
@@ -319,6 +323,20 @@ Squad [Stat] buff                      → Squad AP buff
 | `Final Verdict CRIT DMG` | Named mechanic + stat | Named ability stat |
 | `M6 CR and DMG buff` | `M<N>` + stats + `buffs` | Consolidated M6 effects |
 
+### Agent: Promeia
+| Conditional `text` | Pattern | Notes |
+|---|---|---|
+| `CP AM to AP and Abloom DMG%` | `CP` + conversion + mechanic | Core Passive converts AM to AP and Abloom DMG (section header) |
+| &nbsp;&nbsp;`Anomaly Proficiency` | Auto-generated from tag | Field title from `fieldRef` tag — auto-spelled stat name |
+| &nbsp;&nbsp;`Squad Abloom DMG` | Squad + mechanic + stat | Squad-wide Abloom DMG (from locale key) |
+| `AA Presumption of Guilt state` | `AA` + mechanic + `state` | AA toggle for the debuff inflicted by EX Special |
+| &nbsp;&nbsp;`Abloom DEF Ignore` | Mechanic + stat | Field title (no AA prefix — within conditional section) |
+| `M2 AP buff` (section header) | `M<N>` + buff type (header) | Section header — field titles below drop the `M2` prefix |
+| &nbsp;&nbsp;`Anomaly Proficiency` | Auto-generated from tag | Field title from `fieldForBuff` — value is flat +40 AP |
+| &nbsp;&nbsp;`Trial by Cold Abloom DMG%` | Named mechanic + `DMG%` | Flat 120% multiplier scoped to Trial by Cold formula |
+| `M6 RES Ignore` (section header) | `M<N>` + stat + `Ignore` | Section header for M6 |
+| &nbsp;&nbsp;`Anomaly & Disorder DMG All-Attribute RES Ignore` | Damage types + stat | Full game-effect name from locale |
+
 ### Agent: Astra Yao
 | Conditional `text` | Pattern | Notes |
 |---|---|---|
@@ -344,6 +362,18 @@ Squad [Stat] buff                      → Squad AP buff
 |---|---|---|
 | `AP buff` | Stat + `buff` | Anomaly Proficiency buff |
 | `Squad AP buff` | `Squad` + stat + `buff` | Team-wide AP buff |
+| `Windswept and Vortex DMG buffs` | Named mechanics + `DMG buffs` (stack label) | Consolidated stack-based DMG buff label (locale `cond` key) |
+
+### W-Engine: Frostfall Sickle
+| Conditional `text` | Pattern | Notes |
+|---|---|---|
+| `Ice DMG and Abloom DMG buffs` | Attribute/Type + `DMG buffs` (consolidated) | Stack-based conditional boosting Ice and Abloom DMG (locale `cond` key) |
+
+### W-Engine: Chief Sidekick
+| Conditional `text` | Pattern | Notes |
+|---|---|---|
+| `Team DMG buff` | `Team` + stat + `buff` (Template D) | Team-wide DMG buff per stack (locale `cond` key) |
+| `Off-field ER` | Context + stat (Template H-like) | Bool toggle for off-field Energy Regen (locale `cond_offField` key) |
 
 ### W-Engine: Cannon Rotor
 | Conditional `text` | Pattern | Notes |
@@ -376,7 +406,8 @@ Before finalizing a conditional name, verify:
 - [ ] Are `M#` labels without spaces?
 - [ ] Are slashes spaced (`CR / CD` not `CR/CD`)?
 - [ ] If multiple buffs in one toggle, is the name plural (`buffs`)?
-- [ ] Is `PEN` used for DEF-ignoring effects and `RES Ignore` for RES-ignoring effects? (or vice versa, consistent with existing patterns)
+- [ ] Are `PEN` (flat), `PEN Ratio` (%), and `DEF Ignore` (%) each used for their correct stat — never interchangeably?
+- [ ] Is `RES Ignore` used for resistance-ignoring effects (not `PEN` or `DEF Ignore`)?
 - [ ] Is `DMG` for damage boosts and `buff` for visible stat increases?
 - [ ] Are initial/start-of-fight effects prefixed with `Initial`?
 - [ ] Are extra RNG hits labeled `extra hits`?

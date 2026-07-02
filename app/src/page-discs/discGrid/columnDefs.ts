@@ -10,10 +10,10 @@ import type { ScoredDisc } from '../scoring/types'
 import {
   DiscSetCellRenderer,
   EquippedByCellRenderer,
-  MainStatCellRenderer,
-  RarityCellRenderer,
   formatPercent,
   formatSubstat,
+  MainStatCellRenderer,
+  RarityCellRenderer,
 } from './cellRenderers'
 
 const STAT_COLORS = ['#5A1A06', '#343127', '#38821F']

@@ -1,5 +1,5 @@
-import { ActionIcon } from '@mantine/core'
 import type { TooltipProps } from '@mantine/core'
+import { ActionIcon } from '@mantine/core'
 import { BootstrapTooltip } from './BootstrapTooltip'
 
 export function InfoTooltip(props: Omit<TooltipProps, 'children'>) {

@@ -1,4 +1,4 @@
-export * from './types'
-export * from './scoreDiscs'
 export * from './discFilters'
+export * from './scoreDiscs'
 export * from './scoreFormatting'
+export * from './types'

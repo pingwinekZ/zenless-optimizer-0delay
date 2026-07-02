@@ -41,6 +41,7 @@ i18n
     // debug: process.env.NODE_ENV === "development",
     // Use English strings by default, if the current language does not include
     // the specified string.
+    initAsync: true,
     fallbackLng: 'en',
     // fallbackLng: 'dev', // Switch to this to force the fallback value on missing strings.
 

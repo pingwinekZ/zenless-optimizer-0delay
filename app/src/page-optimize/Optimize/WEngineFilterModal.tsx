@@ -15,8 +15,11 @@ import { ModalWrapper, SqBadge } from '@zenless-optimizer/common/ui'
 import { objKeyMap, stableArr } from '@zenless-optimizer/common/util'
 import { Suspense, useContext, useMemo } from 'react'
 import type { WengineKey } from '../../consts'
-import { allSpecialityKeys, allWengineKeys } from '../../consts'
-import { wengineMaxLevel } from '../../consts'
+import {
+  allSpecialityKeys,
+  allWengineKeys,
+  wengineMaxLevel,
+} from '../../consts'
 import type { TeamConditional } from '../../db'
 import {
   OptConfigContext,
@@ -140,11 +143,7 @@ function SpecialitySelectorInline({ disabled }: { disabled?: boolean }) {
   )
 }
 
-function WengineCondSelectorInline({
-  wengines,
-}: {
-  wengines: WengineKey[]
-}) {
+function WengineCondSelectorInline({ wengines }: { wengines: WengineKey[] }) {
   const character = useCharacterContext()
   const team = useTeam(character?.key)
   const conditionals =

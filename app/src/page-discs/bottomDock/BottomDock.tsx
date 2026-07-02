@@ -7,11 +7,7 @@ import { BottomToolbarLeft, BottomToolbarRight } from './BottomToolbar'
 import { DiscPreview } from './DiscPreview'
 import { RelicInsight } from './RelicInsight'
 
-export function BottomDock({
-  onShowDup,
-}: {
-  onShowDup: () => void
-}) {
+export function BottomDock({ onShowDup }: { onShowDup: () => void }) {
   const { database } = useDatabaseContext()
   const allDiscs = useDataManagerValues(database.discs)
   const { selectedDiscId, focusCharacter } = useDiscTabStore(

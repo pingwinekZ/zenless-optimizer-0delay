@@ -7,9 +7,9 @@ import { mappedStats } from '../../../stats'
 import { trans } from '../../util'
 import {
   CoreGameDesc,
-  SkillGameDesc,
   createBaseSheet,
   fieldForBuff,
+  SkillGameDesc,
 } from '../sheetUtil'
 
 const key: CharacterKey = 'AstraYao'

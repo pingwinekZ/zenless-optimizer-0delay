@@ -105,11 +105,7 @@ export function BottomToolbarLeft() {
   )
 }
 
-export function BottomToolbarRight({
-  onShowDup,
-}: {
-  onShowDup: () => void
-}) {
+export function BottomToolbarRight({ onShowDup }: { onShowDup: () => void }) {
   const { t } = useTranslation('discTab')
   return (
     <Group justify="flex-end">

@@ -10,8 +10,11 @@ import { useTranslation } from 'react-i18next'
 import type { CharacterKey, WengineKey } from '../../consts'
 import { allDiscSlotKeys } from '../../consts'
 import type { CharacterBuild } from '../../db'
-import { useCharacter, useDatabaseContext } from '../../db-ui'
-import { useCharacterBuilds } from '../../db-ui'
+import {
+  useCharacter,
+  useCharacterBuilds,
+  useDatabaseContext,
+} from '../../db-ui'
 import classes from './CharacterBuildPanel.module.css'
 
 interface CharacterBuildPanelProps {

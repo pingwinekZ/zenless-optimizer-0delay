@@ -34,8 +34,8 @@ const EPSILON = 1e-7
 type Frames = Array<{ tag: Tag; multiplier: number }>
 
 export {
-  generateTheoreticalDiscs,
   type BuildRecipe,
+  generateTheoreticalDiscs,
 } from './generateTheoreticalDiscs'
 
 export function createSolverConfig(

@@ -10,12 +10,11 @@ import {
   sum,
 } from '@zenless-optimizer/pando/engine'
 import type { CharacterKey } from '../../../consts'
-import { type AttributeKey, type SkillKey, allSkillKeys } from '../../../consts'
-import { type CharacterDatum, type SkillParam, allStats } from '../../../stats'
+import { type AttributeKey, allSkillKeys, type SkillKey } from '../../../consts'
+import { allStats, type CharacterDatum, type SkillParam } from '../../../stats'
 import { anomTimePassed } from '../common/anomaly'
 import type { DamageType, DmgTag, FormulaArg, Stat } from '../util'
 import {
-  type TagMapNodeEntries,
   customAnomalyBuildup,
   customAnomalyDmg,
   customDaze,
@@ -28,6 +27,7 @@ import {
   own,
   ownBuff,
   percent,
+  type TagMapNodeEntries,
 } from '../util'
 
 type AbilityScalingType = SkillKey

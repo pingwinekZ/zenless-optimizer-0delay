@@ -184,7 +184,10 @@ function MainStatSelector({
 function SetFilter({
   discBySlot,
   disabled,
-}: { discBySlot: Record<DiscSlotKey, ICachedDisc[]>; disabled?: boolean }) {
+}: {
+  discBySlot: Record<DiscSlotKey, ICachedDisc[]>
+  disabled?: boolean
+}) {
   const { database } = useDatabaseContext()
   const { optConfigId, optConfig } = useContext(OptConfigContext)
   const { setFilter2 = [], setFilter4 = [] } = optConfig

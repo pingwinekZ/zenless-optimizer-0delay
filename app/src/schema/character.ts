@@ -2,13 +2,13 @@ import { zodBoundedNumber, zodEnum } from '@zenless-optimizer/common/database'
 import { clamp } from '@zenless-optimizer/common/util'
 import { z } from 'zod'
 import {
-  type MilestoneKey,
-  type WengineKey,
   allCharacterKeys,
   allWengineKeys,
   coreByLevel,
+  type MilestoneKey,
   skillByLevel,
   validateLevelMilestone,
+  type WengineKey,
 } from '../consts'
 
 export const characterSchema = z

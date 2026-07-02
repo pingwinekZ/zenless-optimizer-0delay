@@ -1,18 +1,13 @@
 import {
-  useDataEntryBase,
-  useDataManagerKeys,
-} from '@zenless-optimizer/common/database-ui'
-
-import {
+  closestCenter,
   DndContext,
   type DragEndEvent,
   DragOverlay,
   type DragStartEvent,
   type DropAnimation,
+  defaultDropAnimationSideEffects,
   PointerSensor,
   TouchSensor,
-  closestCenter,
-  defaultDropAnimationSideEffects,
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
@@ -28,10 +23,14 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { Box, Flex, SegmentedControl } from '@mantine/core'
 import { useMergedRef } from '@mantine/hooks'
+import {
+  useDataEntryBase,
+  useDataManagerKeys,
+} from '@zenless-optimizer/common/database-ui'
 import { filterFunction, sortFunction } from '@zenless-optimizer/common/util'
 import {
-  Suspense,
   memo,
+  Suspense,
   useCallback,
   useDeferredValue,
   useEffect,
@@ -45,21 +44,22 @@ import {
   CharacterMenu,
   CharacterRow,
   CharacterSingleSelectionModal,
-  DragOverlayRow,
-  StatHighlightContext,
   characterFilterConfigs,
   characterSortConfigs,
   characterSortMap,
+  DragOverlayRow,
   precomputedCssVars,
+  StatHighlightContext,
   useCharacterTabStore,
 } from '../ui'
 import { CharacterEditModal } from './CharacterEditModal'
 import { CharacterPreview } from './CharacterPreview'
-import { FilterBar } from './FilterBar'
 import { getCharacterShowcaseColor } from './color/characterShowcaseColors'
 import { DEFAULT_CONFIG } from './color/colorPipelineConfig'
 import { oklchCharacterListColor } from './color/colorUtilsOklch'
 import { cardTotalW, defaultGap } from './constantsUi'
+import { FilterBar } from './FilterBar'
+
 const dropAnimationDuration = 200
 
 const dropAnimationConfig: DropAnimation = {
@@ -548,4 +548,5 @@ const SortableCharacterRow = memo(function SortableCharacterRow({
     </Box>
   )
 })
-export { ShowcaseDiscPanel, ShowcaseDiscCard } from './card/ShowcaseDiscPanel'
+
+export { ShowcaseDiscCard, ShowcaseDiscPanel } from './card/ShowcaseDiscPanel'

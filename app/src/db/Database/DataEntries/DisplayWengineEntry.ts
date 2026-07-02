@@ -6,8 +6,8 @@ import {
 } from '@zenless-optimizer/common/database'
 import { z } from 'zod'
 import { allSpecialityKeys, allWengineRarityKeys } from '../../../consts'
-import { DataEntry } from '../DataEntry'
 import type { ZzzDatabase } from '../Database'
+import { DataEntry } from '../DataEntry'
 
 export const wengineSortKeys = ['level', 'rarity', 'name'] as const
 export type WengineSortKey = (typeof wengineSortKeys)[number]

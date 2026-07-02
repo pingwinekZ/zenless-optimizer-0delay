@@ -93,7 +93,14 @@
 .ag-theme-balham .ag-header-group-cell {
   padding-left: 2px;
   padding-right: 2px;
-  font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif;
+  font-family:
+    Calibri,
+    Candara,
+    Segoe,
+    Segoe UI,
+    Optima,
+    Arial,
+    sans-serif;
   font-size: 14px;
   font-weight: 600;
   text-align: center;
@@ -212,10 +219,9 @@
 
 /* Hover — subtle white lift composited over gradient cells */
 .ag-row-hover .ag-cell {
-  background: linear-gradient(
-      rgba(255, 255, 255, 0.06),
-      rgba(255, 255, 255, 0.06)
-    ), var(--cell-bg, transparent);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)),
+    var(--cell-bg, transparent);
 }
 
 /* Selection — left accent + blue tint */
@@ -231,26 +237,24 @@
 }
 
 .ag-row-selected .ag-cell {
-  background: linear-gradient(
-      rgba(255, 255, 255, 0.1),
-      rgba(255, 255, 255, 0.1)
-    ),
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1)),
     linear-gradient(
       color-mix(in srgb, var(--primary-hover) 10%, transparent),
       color-mix(in srgb, var(--primary-hover) 10%, transparent)
-    ), var(--cell-bg, transparent);
+    ),
+    var(--cell-bg, transparent);
 }
 
 /* Selected + hovered — both tints stack */
 .ag-row-selected.ag-row-hover .ag-cell {
-  background: linear-gradient(
-      rgba(255, 255, 255, 0.06),
-      rgba(255, 255, 255, 0.06)
-    ),
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)),
     linear-gradient(
       color-mix(in srgb, var(--primary-hover) 30%, transparent),
       color-mix(in srgb, var(--primary-hover) 30%, transparent)
-    ), var(--cell-bg, transparent);
+    ),
+    var(--cell-bg, transparent);
 }
 
 /* ═══════════════════════════════════════════
@@ -437,41 +441,37 @@
 
 /* Hover on regular rows */
 #optimizerGridContainer .ag-row.ag-row-hover .ag-cell {
-  background: linear-gradient(
-      rgba(255, 255, 255, 0.06),
-      rgba(255, 255, 255, 0.06)
-    ), var(--cell-bg, transparent);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)),
+    var(--cell-bg, transparent);
 }
 
 /* Hover on floating top (equipped build) */
 #optimizerGridContainer .ag-floating-top.ag-row-hover .ag-cell,
 #optimizerGridContainer .ag-floating-top:hover .ag-cell {
-  background: linear-gradient(
-      rgba(255, 255, 255, 0.06),
-      rgba(255, 255, 255, 0.06)
-    ), var(--cell-bg, var(--layer-2));
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)),
+    var(--cell-bg, var(--layer-2));
 }
 
 /* Selected row */
 #optimizerGridContainer .ag-row.ag-row-selected .ag-cell {
-  background: linear-gradient(
-      rgba(255, 255, 255, 0.1),
-      rgba(255, 255, 255, 0.1)
-    ),
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1)),
     linear-gradient(
       color-mix(in srgb, var(--primary-hover) 10%, transparent),
       color-mix(in srgb, var(--primary-hover) 10%, transparent)
-    ), var(--cell-bg, transparent);
+    ),
+    var(--cell-bg, transparent);
 }
 
 /* Selected + hovered */
 #optimizerGridContainer .ag-row.ag-row-selected.ag-row-hover .ag-cell {
-  background: linear-gradient(
-      rgba(255, 255, 255, 0.06),
-      rgba(255, 255, 255, 0.06)
-    ),
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)),
     linear-gradient(
       color-mix(in srgb, var(--primary-hover) 30%, transparent),
       color-mix(in srgb, var(--primary-hover) 30%, transparent)
-    ), var(--cell-bg, transparent);
+    ),
+    var(--cell-bg, transparent);
 }

@@ -12,8 +12,8 @@ import type { CharacterKey } from '../../consts'
 import { DEFAULT_CONFIG } from '../color/colorPipelineConfig'
 import { withAlpha } from '../color/colorUtils'
 import {
-  ShowcaseColorMode,
   resolveShowcaseTheme,
+  ShowcaseColorMode,
 } from '../color/showcaseColorService'
 import { cardTotalW, defaultGap, defaultPadding } from '../constantsUi'
 import { CharacterBuildPanel } from './CharacterBuildPanel'

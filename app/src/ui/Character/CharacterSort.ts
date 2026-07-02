@@ -1,12 +1,12 @@
 import type { FilterConfigs, SortConfigs } from '@zenless-optimizer/common/util'
 import {
   type AttributeKey,
-  type CharacterKey,
-  type CharacterRarityKey,
-  type SpecialityKey,
   allAttributeKeys,
   allCharacterRarityKeys,
   allSpecialityKeys,
+  type CharacterKey,
+  type CharacterRarityKey,
+  type SpecialityKey,
 } from '../../consts'
 import type { ZzzDatabase } from '../../db'
 import { i18n } from '../../i18n'

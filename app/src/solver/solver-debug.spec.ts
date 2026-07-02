@@ -22,8 +22,9 @@ import {
   enemyDebuff,
   own,
   ownTag,
+  Read,
+  type Tag,
 } from '../formula/data/util'
-import { Read, type Tag } from '../formula/data/util'
 import { allStats } from '../stats/allStats'
 import { getCharStat } from '../stats/char'
 

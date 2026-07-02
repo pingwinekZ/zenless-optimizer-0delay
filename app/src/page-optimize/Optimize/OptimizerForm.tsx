@@ -12,9 +12,8 @@ import {
 import { IconBolt, IconSettings, IconTarget } from '@tabler/icons-react'
 import { CardThemed } from '@zenless-optimizer/common/ui'
 import type { Field } from '@zenless-optimizer/game-opt/sheet-ui'
-import type { MutableRefObject } from 'react'
+import type { MutableRefObject, ReactNode } from 'react'
 import { useCallback, useContext, useMemo, useState } from 'react'
-import type { ReactNode } from 'react'
 import type { CharacterKey, DiscSlotKey, WengineKey } from '../../consts'
 import type { ICachedCharacter, ICachedDisc, StatFilters, Team } from '../../db'
 import { getTeamFrame0 } from '../../db'
@@ -27,6 +26,14 @@ import { CharacterPreviewPanel } from '../CharacterPreviewPanel'
 import { CharacterSelectorDisplay } from '../CharacterSelectorDisplay'
 import { DeadlyAssaultBuffs } from '../DeadlyAssaultBuffs'
 import { EnemyStatsSection } from '../EnemyStats'
+import {
+  FilterContainer,
+  FormCard,
+  FormRow,
+  HeaderText,
+  TeammateFormRow,
+} from '../layout'
+import { OptimizerMenuIds } from '../layout/optimizerMenuIds'
 import { CritModeSelector } from '../OptTargetRow/CritModeSelector'
 import { SpecificDmgTypeSelector } from '../OptTargetRow/SpecificDmgTypeSelector'
 import { OptTargetSelector } from '../OptTargetSelector'
@@ -36,14 +43,6 @@ import {
   SimulationManager,
   StatSimulationDisplay,
 } from '../Simulation'
-import {
-  FilterContainer,
-  FormCard,
-  FormRow,
-  HeaderText,
-  TeammateFormRow,
-} from '../layout'
-import { OptimizerMenuIds } from '../layout/optimizerMenuIds'
 import { CharacterConditionalsDisplay } from './CharacterConditionalsDisplay'
 import { DiscMainSetFilters } from './DiscMainSetFilters'
 import { MinMaxStatFilters } from './MinMaxStatFilters'

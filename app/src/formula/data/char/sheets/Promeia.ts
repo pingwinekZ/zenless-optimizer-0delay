@@ -1,3 +1,4 @@
+import type { NumNode } from '@zenless-optimizer/pando/engine'
 import {
   cmpGE,
   max,
@@ -5,10 +6,10 @@ import {
   subscript,
   sum,
 } from '@zenless-optimizer/pando/engine'
-import type { NumNode } from '@zenless-optimizer/pando/engine'
 import { type CharacterKey } from '../../../../consts'
 import { allStats, mappedStats } from '../../../../stats'
 import {
+  allBoolConditionals,
   customAnomalyDmg,
   own,
   ownBuff,
@@ -82,6 +83,8 @@ const excessAnomMas = max(
   sum(promeiaFinalAnomMas, -dm.core.anomMasThresh[0])
 )
 
+const { presumptionOfGuilt } = allBoolConditionals(key)
+
 const ability_check_no_self = (node: NumNode | number) =>
   cmpGE(
     sum(
@@ -109,7 +112,7 @@ const sheet = register(
     prod(
       percent(subscript(own.char.core, dm.core.trialConsumeToTrigger)),
       own.final.atk,
-      sum(percent(1), own.final.anom_mv_mult_)
+      sum(percent(1), own.final.anom_mv_mult_, cmpGE(char.mindscape, 2, 1.2))
     )
   ),
 
@@ -132,12 +135,18 @@ const sheet = register(
     true
   ),
 
-  // Ability: Ice Anomaly Buildup (+30% when ANOTHER teammate is Anomaly or Support)
+  // Ability: Presumption of Guilt - 40% DEF ignore for Abloom (+20% at M1 = 60% total)
+  // Applied as team buff since any squad member's Abloom benefits
   registerBuff(
-    'ability_iceAnomBuildup',
-    ownBuff.combat.anomBuildup_.ice.add(
-      ability_check_no_self(percent(dm.ability.selfIceAnomBuildup_))
-    )
+    'ability_presumptionDefIgn',
+    teamBuff.combat.defIgn_.addWithDmgType(
+      'abloom',
+      ability_check_no_self(
+        presumptionOfGuilt.ifOn(sum(0.4, cmpGE(char.mindscape, 1, 0.2)))
+      )
+    ),
+    undefined,
+    true
   ),
 
   // M2: Anomaly Prof
@@ -148,13 +157,18 @@ const sheet = register(
 
   // M4: Corrosive Chill restore (handled in formula via conditional)
 
-  // M6: All-Attribute RES ignore for Anomaly/Disorder DMG
-  // Note: No 'disorder' damage type exists, so applying to anomaly covers ice anomaly
-  // Disorder is ice+other so it won't get the RES reduction - this is a limitation
+  // M6: All-Attribute RES ignore for Anomaly and Disorder DMG
   registerBuff(
-    'm6_resIgn_',
+    'm6_resIgn_anomaly',
     ownBuff.combat.resIgn_.addWithDmgType(
       'anomaly',
+      cmpGE(char.mindscape, 6, percent(dm.m6.resIgnore_))
+    )
+  ),
+  registerBuff(
+    'm6_resIgn_disorder',
+    ownBuff.combat.resIgn_.addWithDmgType(
+      'disorder',
       cmpGE(char.mindscape, 6, percent(dm.m6.resIgnore_))
     )
   )

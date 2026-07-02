@@ -1,9 +1,8 @@
+import { Box, Button, SimpleGrid, Stack } from '@mantine/core'
 import { CardThemed, ImgIcon } from '@zenless-optimizer/common/ui'
 import { range } from '@zenless-optimizer/common/util'
-import { characterAsset, factionDefIcon, specialityDefIcon } from '../assets'
-
-import { Box, Button, SimpleGrid, Stack } from '@mantine/core'
 import { Suspense, useCallback, useState } from 'react'
+import { characterAsset, factionDefIcon, specialityDefIcon } from '../assets'
 import type { CharacterKey } from '../consts'
 import { useCharacterContext, useDatabaseContext, useTeam } from '../db-ui'
 import { allStats, getCharStat } from '../stats'

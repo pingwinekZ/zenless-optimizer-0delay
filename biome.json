@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.1/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -9,19 +9,20 @@
   "files": {
     "maxSize": 20971520,
     "ignoreUnknown": false,
-    "ignore": [
-      "./dist",
-      "./coverage",
-      "./.yarn",
-      "./.fribbels-hsr-optimizer",
-      "./app/src/dm/ZenlessData",
-      "./app/src/dm/HakushinData",
-      "**/*_gen.json",
-      "./.nx/cache",
-      "./.nx/workspace-data",
-      "./app/src/localization/assets/locales/*/*.json",
-      "./app/src/dm-localization/assets/locales/*/*.json",
-      "./packages/*/localization/assets/locales/*/*.json"
+    "includes": [
+      "**",
+      "!dist",
+      "!coverage",
+      "!.yarn",
+      "!.fribbels-hsr-optimizer",
+      "!app/src/dm/ZenlessData",
+      "!app/src/dm/HakushinData",
+      "!**/*_gen.json",
+      "!.nx/cache",
+      "!.nx/workspace-data",
+      "!app/src/localization/assets/locales/**/*/*.json",
+      "!app/src/dm-localization/assets/locales/**/*/*.json",
+      "!packages/**/*/localization/assets/locales/**/*/*.json"
     ]
   },
   "formatter": {
@@ -35,9 +36,7 @@
     "attributePosition": "auto",
     "bracketSpacing": true
   },
-  "organizeImports": {
-    "enabled": true
-  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "linter": {
     "enabled": false
   },

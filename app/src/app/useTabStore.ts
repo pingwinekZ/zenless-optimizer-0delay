@@ -18,6 +18,7 @@ const ALL_TABS: TabKey[] = [
 ]
 
 function getInitialTab(): TabKey {
+  if (typeof window === 'undefined') return 'home'
   const hash = window.location.hash.replace('#/', '')
   const tab = hash.split('?')[0] || 'home'
   if ((ALL_TABS as string[]).includes(tab)) return tab as TabKey
@@ -33,7 +34,7 @@ export const useTabStore = create<TabState>((set) => ({
   activeTab: getInitialTab(),
   setActiveTab: (tab: TabKey, syncUrl = true) => {
     set({ activeTab: tab })
-    if (syncUrl) {
+    if (syncUrl && typeof window !== 'undefined') {
       window.history.pushState({}, '', `#/${tab}`)
     }
   },

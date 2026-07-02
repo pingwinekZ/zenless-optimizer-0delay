@@ -1,5 +1,4 @@
-import { Text } from '@mantine/core'
-import { Box } from '@mantine/core'
+import { Box, Text } from '@mantine/core'
 import {
   getUnitStr,
   statKeyToFixed,

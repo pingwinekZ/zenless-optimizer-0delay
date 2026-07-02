@@ -1,4 +1,5 @@
 import { compileTagMapValues, read } from '@zenless-optimizer/pando/engine'
+import type { CharacterKey } from '../consts'
 import {
   charTagMapNodeEntries,
   formulas,
@@ -8,7 +9,6 @@ import {
   wengineTagMapNodeEntries,
   withMember,
 } from '.'
-import type { CharacterKey } from '../consts'
 import { Calculator } from './calculator'
 import { keys, values } from './data'
 import type { TagMapNodeEntries } from './data/util'

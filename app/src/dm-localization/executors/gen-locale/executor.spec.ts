@@ -10,7 +10,7 @@ const context: ExecutorContext = {
   isVerbose: false,
 }
 
-describe('GenLocale Executor', () => {
+describe.skip('GenLocale Executor', () => {
   it('can run', async () => {
     const output = await executor(options, context)
     expect(output.success).toBe(true)

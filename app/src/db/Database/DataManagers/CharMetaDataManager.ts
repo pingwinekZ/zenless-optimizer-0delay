@@ -3,8 +3,8 @@ import { deepFreeze } from '@zenless-optimizer/common/util'
 import { z } from 'zod'
 import type { CharacterKey } from '../../../consts'
 import type { ICharMeta } from '../../Interfaces'
-import { DataManager } from '../DataManager'
 import type { ZzzDatabase } from '../Database'
+import { DataManager } from '../DataManager'
 
 const initCharMeta: ICharMeta = deepFreeze({
   description: '',

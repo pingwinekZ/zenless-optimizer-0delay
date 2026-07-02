@@ -38,7 +38,7 @@ const baseTag = getBaseTag(data_gen)
 const { char } = own
 
 const { etherVeilWellspring, inEtherVeil, offField, recoversHp } =
-  allBoolConditionals(key)
+  allBoolConditionals(key, undefined, { offField: 1, recoversHp: 2 })
 const { chargeTime } = allNumConditionals(key, true, 0, 5)
 
 const abilityCheck = (a: NumNode | number, b?: NumNode | number) =>

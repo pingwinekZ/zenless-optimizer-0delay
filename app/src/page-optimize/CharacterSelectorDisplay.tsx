@@ -21,8 +21,8 @@ import {
   WengineName,
   WengineSelectionModal,
 } from '../ui'
-import { CharacterBuildSelector } from './Optimize/CharacterBuildSelector'
 import { HeaderText } from './layout/HeaderText'
+import { CharacterBuildSelector } from './Optimize/CharacterBuildSelector'
 
 const defaultGap = 5
 

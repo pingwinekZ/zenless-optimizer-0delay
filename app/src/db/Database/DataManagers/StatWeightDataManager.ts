@@ -1,8 +1,8 @@
 import { deepFreeze } from '@zenless-optimizer/common/util'
 import { z } from 'zod'
 import type { CharacterKey } from '../../../consts'
-import { DataManager } from '../DataManager'
 import type { ZzzDatabase } from '../Database'
+import { DataManager } from '../DataManager'
 
 export type StatWeightOverride = {
   substatWeights: Partial<Record<string, number | null>>

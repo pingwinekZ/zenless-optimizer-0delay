@@ -14,8 +14,8 @@ import {
   allDiscSubStatKeys,
   allLocationKeys,
 } from '../../../consts'
-import { DataEntry } from '../DataEntry'
 import type { ZzzDatabase } from '../Database'
+import { DataEntry } from '../DataEntry'
 
 export const discSortKeys = [
   'rarity',

@@ -10,8 +10,8 @@ import type { CharacterKey } from '../../consts'
 import type { ICharacter } from '../../zood'
 import type {
   ICharMeta,
-  IZZZDatabase,
   IZenlessObjectDescription,
+  IZZZDatabase,
 } from '../Interfaces'
 
 export const currentDBVersion = 3

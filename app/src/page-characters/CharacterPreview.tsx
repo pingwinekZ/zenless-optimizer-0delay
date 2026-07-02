@@ -10,8 +10,11 @@ import type { Tag } from '../formula'
 import { own } from '../formula'
 import { CharCalcProvider, useZzzCalcContext } from '../formula-ui'
 import { getCharStat } from '../stats'
-import { DiscEditorModal, useDiscEditorModalStore } from '../ui'
-import { useCharacterTabStore } from '../ui'
+import {
+  DiscEditorModal,
+  useCharacterTabStore,
+  useDiscEditorModalStore,
+} from '../ui'
 import {
   calculateCharacterScore,
   getCharacterEffectiveMainStats,
@@ -33,9 +36,9 @@ import { ShowcaseWengine } from './card/ShowcaseWengine'
 import { extractPaletteInWorker } from './color/colorExtractionService'
 import { pickBestSeed, withAlpha } from './color/colorUtils'
 import {
-  ShowcaseColorMode,
   resolveShowcaseColor,
   resolveShowcaseTheme,
+  ShowcaseColorMode,
 } from './color/showcaseColorService'
 import { useShowcaseColorStore } from './color/showcaseColorStore'
 import {
@@ -45,8 +48,8 @@ import {
   parentH,
   parentW,
 } from './constantsUi'
-import { ShowcaseCustomizationSidebar } from './customization/ShowcaseCustomizationSidebar'
 import type { ShowcasePreset } from './customization/ShowcaseCustomizationSidebar'
+import { ShowcaseCustomizationSidebar } from './customization/ShowcaseCustomizationSidebar'
 
 type ComputedStats = {
   hp: number

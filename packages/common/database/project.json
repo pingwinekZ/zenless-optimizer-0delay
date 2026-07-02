@@ -5,11 +5,11 @@
   "projectType": "library",
   "targets": {
     "test": {
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/coverage/libs/common/database"],
+      "options": {
+        "command": "bun test",
+        "cwd": "packages/common/database"
       }
     }
   },

@@ -1,5 +1,5 @@
-import { existsSync, readFileSync, readdirSync } from 'fs'
 import { dumpFile } from '@zenless-optimizer/common/pipeline'
+import { existsSync, readdirSync, readFileSync } from 'fs'
 import type { GenLocaleExecutorSchema } from './schema'
 
 type ProjNames = 'common' | 'zzz'

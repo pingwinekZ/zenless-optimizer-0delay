@@ -28,11 +28,11 @@ import { LocationAutocomplete } from '../../Character/LocationAutocomplete'
 import modalClasses from './DiscEditorModal.module.css'
 import { DiscEditorSubstatInput } from './DiscEditorSubstatInput'
 import {
-  RARITY_OPTIONS,
   calculateUpgradeValues,
   computeInitialFormValues,
   computeMainStatOptions,
   computeMainStatValue,
+  RARITY_OPTIONS,
   validateDiscEditor,
 } from './discEditorModalController'
 import { useDiscEditorModalStore } from './discEditorModalStore'

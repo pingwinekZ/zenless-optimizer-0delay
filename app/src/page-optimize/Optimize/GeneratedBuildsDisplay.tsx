@@ -20,9 +20,9 @@ import {
   OptConfigContext,
   useCharacterContext,
   useDatabaseContext,
+  useDiscs,
   useTeam,
 } from '../../db-ui'
-import { useDiscs } from '../../db-ui'
 import { CharCalcProvider, CharStatsDisplay } from '../../formula-ui'
 import {
   CompactDiscCard,
@@ -103,7 +103,10 @@ function EquipBtn({
 function PinBuildBtn({
   build,
   index,
-}: { build: GeneratedBuild; index: number }) {
+}: {
+  build: GeneratedBuild
+  index: number
+}) {
   const pinnedBuilds = useOptimizerDisplayStore((s) => s.pinnedBuilds)
   const addPinnedBuild = useOptimizerDisplayStore((s) => s.addPinnedBuild)
   const removePinnedBuild = useOptimizerDisplayStore((s) => s.removePinnedBuild)

@@ -10,13 +10,13 @@ import {
 } from '@mantine/core'
 import type { IConditionalData } from '@zenless-optimizer/game-opt/engine'
 import { TagContext } from '@zenless-optimizer/game-opt/formula-ui'
+import type { Field } from '@zenless-optimizer/game-opt/sheet-ui'
 import {
   TagFieldDisplay,
   TextFieldDisplay,
 } from '@zenless-optimizer/game-opt/sheet-ui'
-import type { Field } from '@zenless-optimizer/game-opt/sheet-ui'
-import { memo, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
+import { memo, useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { CharacterKey } from '../../consts'
 import {
@@ -129,9 +129,7 @@ export function CharacterConditionalsDisplay({
     const bReq = (b as IConditionalData).mindscapeRequirement ?? 0
     return aReq - bReq
   })
-  const visiblePassives =
-    passiveFields?.filter((entry) => effectiveMindscape >= entry.mindscape) ??
-    []
+  const visiblePassives = passiveFields ?? []
   const hasPassives = visiblePassives.length > 0
   if (condEntries.length === 0 && !hasPassives) {
     return (
@@ -154,6 +152,7 @@ export function CharacterConditionalsDisplay({
               sectionKey={entry.sectionKey}
               paragraph={entry.paragraph}
               groupTitle={entry.groupTitle}
+              disabled={effectiveMindscape < entry.mindscape}
             />
           ))}
         </Flex>
@@ -228,30 +227,7 @@ const CharacterConditionalRow = memo(function CharacterConditionalRow({
   const isMindscapeDisabled =
     mindscapeRequirement !== null && mindscape < mindscapeRequirement
 
-  // When mindscape requirement isn't met, force value to 0 for display
-  const displayValue = isMindscapeDisabled ? 0 : currentValue
-
-  // When mindscape drops below the requirement, auto-reset the conditional
-  useEffect(() => {
-    if (isMindscapeDisabled && currentValue > 0) {
-      database.teams.setFrameConditional(
-        mainCharKey,
-        0,
-        characterKey as any,
-        condName,
-        characterKey as any,
-        null,
-        0
-      )
-    }
-  }, [
-    isMindscapeDisabled,
-    currentValue,
-    database.teams,
-    mainCharKey,
-    characterKey,
-    condName,
-  ])
+  const displayValue = currentValue
 
   const setValue = (condValue: number) => {
     if (isMindscapeDisabled) return
@@ -283,7 +259,6 @@ const CharacterConditionalRow = memo(function CharacterConditionalRow({
             style={isMindscapeDisabled ? { opacity: 0.5 } : undefined}
           >
             {label}
-            {isMindscapeDisabled && ` (Requires M${mindscapeRequirement})`}
           </ConditionalText>
         </Flex>
       )}
@@ -296,7 +271,6 @@ const CharacterConditionalRow = memo(function CharacterConditionalRow({
           step={condData.int_only ? 1 : 0.1}
           onChange={setValue}
           disabled={isMindscapeDisabled}
-          mindscapeRequirement={mindscapeRequirement}
         />
       )}
       {condData.type === 'list' && (
@@ -318,7 +292,6 @@ const CharacterConditionalRow = memo(function CharacterConditionalRow({
             style={isMindscapeDisabled ? { opacity: 0.5 } : undefined}
           >
             {label}
-            {isMindscapeDisabled && ` (Requires M${mindscapeRequirement})`}
           </ConditionalText>
         </Flex>
       )}
@@ -362,30 +335,32 @@ const CharacterConditionalRow = memo(function CharacterConditionalRow({
             {renderDescription(description)}
           </Text>
         )}
-        {displayValue > 0 && fields && fields.length > 0 && (
-          <>
-            <hr />
-            <Box mt={4}>
-              <TagContext.Provider value={tagForFields as any}>
-                {fields.map(
-                  (field, i) =>
-                    'fieldRef' in field && (
-                      <TagFieldDisplay
-                        key={i}
-                        field={field}
-                        showZero={showZeroFields}
-                        rowSx={{
-                          paddingTop: 1,
-                          paddingBottom: 1,
-                          gap: 6,
-                        }}
-                      />
-                    )
-                )}
-              </TagContext.Provider>
+        {(displayValue > 0 || isMindscapeDisabled) &&
+          fields &&
+          fields.length > 0 && (
+            <Box opacity={isMindscapeDisabled ? 0.5 : undefined}>
+              <hr />
+              <Box mt={4}>
+                <TagContext.Provider value={tagForFields as any}>
+                  {fields.map(
+                    (field, i) =>
+                      'fieldRef' in field && (
+                        <TagFieldDisplay
+                          key={i}
+                          field={field}
+                          showZero={isMindscapeDisabled ? true : showZeroFields}
+                          rowSx={{
+                            paddingTop: 1,
+                            paddingBottom: 1,
+                            gap: 6,
+                          }}
+                        />
+                      )
+                  )}
+                </TagContext.Provider>
+              </Box>
             </Box>
-          </>
-        )}
+          )}
       </HoverCard.Dropdown>
     </HoverCard>
   )
@@ -399,7 +374,6 @@ const NumConditionalRow = memo(function NumConditionalRow({
   step,
   onChange,
   disabled,
-  mindscapeRequirement,
 }: {
   label: ReactNode
   value: number
@@ -408,7 +382,6 @@ const NumConditionalRow = memo(function NumConditionalRow({
   step: number
   onChange: (val: number) => void
   disabled?: boolean
-  mindscapeRequirement?: number | null
 }) {
   const [dragState, setDragState] = useState<number | undefined>(undefined)
   const displayValue = dragState ?? value
@@ -439,9 +412,6 @@ const NumConditionalRow = memo(function NumConditionalRow({
           }}
         >
           {label}
-          {disabled &&
-            mindscapeRequirement &&
-            ` (Requires M${mindscapeRequirement})`}
         </ConditionalText>
       </Flex>
 
@@ -504,12 +474,14 @@ const PassiveFieldRow = memo(function PassiveFieldRow({
   sectionKey,
   paragraph,
   groupTitle,
+  disabled = false,
 }: {
   characterKey: CharacterKey
   fields: Field[]
   sectionKey: string
   paragraph?: number
   groupTitle?: ReactNode
+  disabled?: boolean
 }) {
   const outerTag = useContext(TagContext)
   const tagForFields = useMemo(
@@ -550,7 +522,9 @@ const PassiveFieldRow = memo(function PassiveFieldRow({
             lineHeight: '16px',
           }}
         >
-          <Text size="sm">{displayTitle}</Text>
+          <Text size="sm" opacity={disabled ? 0.5 : undefined}>
+            {displayTitle}
+          </Text>
         </Box>
       </HoverCard.Target>
       <HoverCard.Dropdown style={{ fontSize: 13 }}>
@@ -571,33 +545,38 @@ const PassiveFieldRow = memo(function PassiveFieldRow({
             )}
           </Text>
         )}
-        <hr />
-        <Box mt={4}>
-          <TagContext.Provider value={tagForFields as any}>
-            {fields.map((field, i) =>
-              'fieldRef' in field ? (
-                <TagFieldDisplay
-                  key={i}
-                  field={{
-                    ...field,
-                    // Use TagDisplay from fieldRef for the first field instead of the
-                    // custom group title (e.g., "ATK%" instead of "M4 ATK%").
-                    // This way the clickable header shows the custom name, but the
-                    // stat line inside shows the auto-derived stat name.
-                    title:
-                      i === 0 && !groupTitle ? (
-                        <TagDisplay tag={field.fieldRef} preventRecursion />
-                      ) : (
-                        field.title
-                      ),
-                  }}
-                  showZero={true}
-                />
-              ) : (
-                <TextFieldDisplay key={i} field={field} />
-              )
-            )}
-          </TagContext.Provider>
+        <Box opacity={disabled ? 0.5 : undefined}>
+          <hr />
+          <Box mt={4}>
+            <TagContext.Provider value={tagForFields as any}>
+              {fields.map((field, i) =>
+                'fieldRef' in field ? (
+                  <TagFieldDisplay
+                    key={i}
+                    field={{
+                      ...field,
+                      title:
+                        i === 0 && !groupTitle ? (
+                          <TagDisplay tag={field.fieldRef} preventRecursion />
+                        ) : (
+                          field.title
+                        ),
+                    }}
+                    showZero={true}
+                  />
+                ) : (
+                  <TextFieldDisplay
+                    key={i}
+                    field={
+                      disabled && 'fieldValue' in field
+                        ? { ...field, fieldValue: 0 }
+                        : field
+                    }
+                  />
+                )
+              )}
+            </TagContext.Provider>
+          </Box>
         </Box>
       </HoverCard.Dropdown>
     </HoverCard>

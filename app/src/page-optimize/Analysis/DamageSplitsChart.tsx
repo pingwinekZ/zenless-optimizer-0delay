@@ -28,11 +28,7 @@ export interface DamageSplitEntry {
  * TODO: Integrate with real calc data from the solver.
  * Currently renders with placeholder/mock data.
  */
-export function DamageSplitsChart({
-  data,
-}: {
-  data?: DamageSplitEntry[]
-}) {
+export function DamageSplitsChart({ data }: { data?: DamageSplitEntry[] }) {
   // Placeholder mock data
   const chartData = useMemo(() => {
     const items = data ?? [

@@ -7,8 +7,7 @@ import type {
   DiscRarityKey,
   DiscSubStatKey,
 } from '../../../consts'
-import { allDiscSubStatKeys } from '../../../consts'
-import { getDiscSubStatBaseVal } from '../../../consts'
+import { allDiscSubStatKeys, getDiscSubStatBaseVal } from '../../../consts'
 import { StatIcon } from '../../../svgicons'
 import { StatDisplay } from '../../Character'
 import modalClasses from './DiscEditorModal.module.css'

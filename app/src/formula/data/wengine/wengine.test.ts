@@ -3,7 +3,8 @@ import {
   compileTagMapValues,
   setDebugMode,
 } from '@zenless-optimizer/pando/engine'
-import { data, keys, values } from '..'
+import type { CharacterKey, SpecialityKey, WengineKey } from '../../../consts'
+import { getWengineStat } from '../../../stats'
 import {
   charTagMapNodeEntries,
   conditionals,
@@ -11,18 +12,17 @@ import {
   wengineTagMapNodeEntries,
   withMember,
 } from '../..'
-import type { CharacterKey, SpecialityKey, WengineKey } from '../../../consts'
-import { getWengineStat } from '../../../stats'
 import { Calculator } from '../../calculator'
+import { data, keys, values } from '..'
 import type { Read } from '../util'
 import {
-  type TagMapNodeEntries,
   conditionalEntries,
   convert,
   enemy,
   enemyDebuff,
   own,
   ownTag,
+  type TagMapNodeEntries,
 } from '../util'
 
 setDebugMode(true)

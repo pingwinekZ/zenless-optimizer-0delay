@@ -6,7 +6,7 @@ import {
   transposeArray,
   verifyObjKeys,
 } from '@zenless-optimizer/common/util'
-import { type CharacterKey, allSkillKeys } from '../../../../consts'
+import { allSkillKeys, type CharacterKey } from '../../../../consts'
 import type { CharacterData } from '../../../../dm'
 import {
   charactersDetailedJSONData,

@@ -28,7 +28,9 @@
   border-radius: var(--cr-radius);
   overflow: hidden;
   contain: content;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
   box-shadow: inset 0 0 0 1px transparent;
 }
 
@@ -43,8 +45,9 @@
 }
 
 .root[data-dragging="true"] .frame {
-  box-shadow: inset 0 0 0 1px var(--border-default), 0 4px 16px
-    rgba(0, 0, 0, 0.5);
+  box-shadow:
+    inset 0 0 0 1px var(--border-default),
+    0 4px 16px rgba(0, 0, 0, 0.5);
 }
 
 .root[data-selected="true"] .frame {
@@ -242,7 +245,9 @@
 }
 
 .info[data-name-shadow="true"] .name {
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 6px rgba(0, 0, 0, 0.5);
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.8),
+    0 0 6px rgba(0, 0, 0, 0.5);
 }
 
 .name {
@@ -266,7 +271,9 @@
   gap: 6px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
 
 .root:hover .actions {

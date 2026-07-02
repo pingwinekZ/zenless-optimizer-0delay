@@ -1,7 +1,7 @@
-import { mkdirSync, writeFileSync } from 'fs'
-import { dirname } from 'path'
 import type { Tree } from '@nx/devkit'
 import { formatText } from '@zenless-optimizer/common/pipeline'
+import { mkdirSync, writeFileSync } from 'fs'
+import { dirname } from 'path'
 import {
   allCharacterKeys,
   allDiscSetKeys,

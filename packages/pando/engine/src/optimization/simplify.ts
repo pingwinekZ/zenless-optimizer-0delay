@@ -1,6 +1,7 @@
 import type { AnyNode, Const, NumNode, StrNode, OP as TaggedOP } from '../node'
 import { calculation, constant, mapBottomUp } from '../node'
 import { ArrayMap, assertUnreachable } from '../util'
+
 type OP = Exclude<TaggedOP, 'tag' | 'dtag' | 'vtag'>
 const { arithmetic } = calculation
 
@@ -103,7 +104,7 @@ export function deduplicate<I extends OP>(n: AnyNode<I>[]): AnyNode<I>[] {
     }
 
     const ref = nodeByKey.ref(key)
-    if ('value' in ref) return ref.value!
+    if (ref.value !== undefined) return ref.value!
     ref.value = n
     nodeIds.set(n, nodeIds.size)
     return n

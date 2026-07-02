@@ -35,5 +35,9 @@ export async function textsFromImage(
         await scheduler
       ).addJob('recognize', canvas, options)) as RecognizeResult
   )
-  return rec.data.lines.map((line) => line.text)
+  return (rec.data.blocks ?? []).flatMap((block) =>
+    block.paragraphs.flatMap((paragraph) =>
+      paragraph.lines.map((line) => line.text)
+    )
+  )
 }

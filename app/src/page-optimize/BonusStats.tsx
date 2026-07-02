@@ -17,12 +17,13 @@ import type { BonusStatKey, BonusStatTag, TeamBonusStat } from '../db'
 import {
   bonusStatDamageTypes,
   bonusStatDmgTypeIncStats,
+  bonusStatKeys,
   bonusStatQtKeys,
+  newBonusStatTag,
 } from '../db'
-import { bonusStatKeys, newBonusStatTag } from '../db'
 import { useCharacterContext, useDatabaseContext, useTeam } from '../db-ui'
 import type { Attribute, Tag } from '../formula'
-import { TagDisplay, qtMap } from '../formula-ui'
+import { qtMap, TagDisplay } from '../formula-ui'
 import { AttributeName, StatDisplay } from '../ui'
 import { AfterShockToggleButton } from './AfterShockToggleButton'
 import { DmgTypeDropdown } from './DmgTypeDropdown'

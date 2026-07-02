@@ -1,8 +1,8 @@
 import {
-  type DiscRarityKey,
-  type DiscSetKey,
   allDiscRarityKeys,
   allDiscSetKeys,
+  type DiscRarityKey,
+  type DiscSetKey,
 } from '../../consts'
 
 export const setKeysByRarities = Object.fromEntries(

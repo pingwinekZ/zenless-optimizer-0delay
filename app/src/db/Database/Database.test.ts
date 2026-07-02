@@ -1,6 +1,7 @@
 import { createTestDBStorage } from '@zenless-optimizer/common/database'
-import { currentDBVersion, zzzSource } from '../Interfaces'
+import { zzzSource } from '../Interfaces'
 import { ZzzDatabase } from './Database'
+import { currentDBVersion } from './migrate'
 
 const testDatabaseJson = {
   format: 'ZOD',

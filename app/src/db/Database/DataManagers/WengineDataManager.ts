@@ -1,8 +1,8 @@
 import type { WengineKey } from '../../../consts'
 import { allWengineKeys } from '../../../consts'
 import type { ICachedWengine } from '../../Interfaces/IDbWengine'
-import { DataManager } from '../DataManager'
 import type { ZzzDatabase } from '../Database'
+import { DataManager } from '../DataManager'
 
 /**
  * WengineDataManager is a catalog of all wengine keys, auto-populated at

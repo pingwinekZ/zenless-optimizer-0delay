@@ -2,10 +2,10 @@ import { SimpleGrid, Stack } from '@mantine/core'
 import { useMemo } from 'react'
 import { allDiscSlotKeys } from '../../consts'
 import { type DiscIds } from '../../db'
-import { useDiscs } from '../../db-ui'
-import { useWengine } from '../../db-ui'
+import { useDiscs, useWengine } from '../../db-ui'
 import { CompactDiscCard, DiscSetCardCompact } from '../Disc'
 import { CompactWengineCard } from '../Wengine'
+
 const emptyDiscs = Object.fromEntries(
   allDiscSlotKeys.map((k) => [k, undefined])
 ) as Record<string, undefined>

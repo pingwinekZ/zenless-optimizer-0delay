@@ -10,7 +10,7 @@ import type {
   Candidate,
   Progress as SolverProgress,
 } from '@zenless-optimizer/game-opt/solver'
-import { Solver, buildCount } from '@zenless-optimizer/game-opt/solver'
+import { buildCount, Solver } from '@zenless-optimizer/game-opt/solver'
 import type { MouseEvent } from 'react'
 import {
   useCallback,
@@ -33,10 +33,10 @@ import { allDiscSlotKeys, getDiscSubStatBaseVal } from '../../consts'
 import {
   type DiscIds,
   type GeneratedBuild,
-  type ICachedDisc,
-  type StatFilters,
   getTeamFrame0,
+  type ICachedDisc,
   type maxBuildsToShowList,
+  type StatFilters,
   targetTag,
 } from '../../db'
 import {
@@ -58,21 +58,21 @@ import { getCharStat, getWengineStat } from '../../stats'
 import { DiscEditorModal, useDiscEditorModalStore } from '../../ui'
 import { DiscSet2p, DiscSetName } from '../../ui/Disc/DiscTrans'
 import { getCharacterEffectiveStats, hasHigherPriority } from '../../util'
-import { buildAnalysisData } from '../Analysis/ExpandedDataPanelController'
 import type { AnalysisData } from '../Analysis/ExpandedDataPanelController'
+import { buildAnalysisData } from '../Analysis/ExpandedDataPanelController'
 import { BuildsSection } from '../BuildManagement'
+import { useResponsive } from '../hooks'
+import { ResponsiveBottomBar } from '../layout'
+import type { StatDisplay } from '../Sidebar'
 import {
   OptimizerControlsSection,
   PermutationsSection,
   PinnedBuildsSection,
   ResultsSection,
 } from '../Sidebar'
-import type { StatDisplay } from '../Sidebar'
-import { batchComputeBuildStats, buildRowId } from '../Util/buildStatsUtils'
-import type { EnrichedBuild } from '../Util/buildStatsUtils'
-import { useResponsive } from '../hooks'
-import { ResponsiveBottomBar } from '../layout'
 import { useOptimizerDisplayStore } from '../stores/useOptimizerDisplayStore'
+import type { EnrichedBuild } from '../Util/buildStatsUtils'
+import { batchComputeBuildStats, buildRowId } from '../Util/buildStatsUtils'
 import { ExpandedDataPanel } from './ExpandedDataPanel'
 import { OptimizerForm } from './OptimizerForm'
 import { OptimizerGrid } from './OptimizerGrid'

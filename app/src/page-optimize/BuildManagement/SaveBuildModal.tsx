@@ -4,16 +4,20 @@ import {
   Modal,
   Stack,
   Text,
-  TextInput,
   Textarea,
+  TextInput,
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { memo, useCallback, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { CharacterKey } from '../../consts'
 import type { GeneratedBuild } from '../../db'
-import { useDatabaseContext, useTeam } from '../../db-ui'
-import { OptConfigContext, useCharacterContext } from '../../db-ui'
+import {
+  OptConfigContext,
+  useCharacterContext,
+  useDatabaseContext,
+  useTeam,
+} from '../../db-ui'
 
 export const SaveBuildModal = memo(function SaveBuildModal({
   opened,

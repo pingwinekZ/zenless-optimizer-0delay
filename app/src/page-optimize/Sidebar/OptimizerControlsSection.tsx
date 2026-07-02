@@ -5,8 +5,8 @@ import type { MouseEvent } from 'react'
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ProgressDisplay } from './ProgressDisplay'
-import { StatsViewSelect } from './StatsViewSelect'
 import type { StatDisplay } from './StatsViewSelect'
+import { StatsViewSelect } from './StatsViewSelect'
 
 const defaultGap = 5
 const buttonStyle = { flex: 1 }

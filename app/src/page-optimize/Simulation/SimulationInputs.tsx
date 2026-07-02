@@ -18,17 +18,17 @@ import { CardThemed } from '@zenless-optimizer/common/ui'
 import { getUnitStr } from '@zenless-optimizer/common/util'
 import { memo, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  allDiscSetKeys,
-  allDiscSubStatKeys,
-  discSlotToMainStatKeys,
-  statKeyTextMap,
-} from '../../consts'
 import type {
   DiscMainStatKey,
   DiscSetKey,
   DiscSlotKey,
   DiscSubStatKey,
+} from '../../consts'
+import {
+  allDiscSetKeys,
+  allDiscSubStatKeys,
+  discSlotToMainStatKeys,
+  statKeyTextMap,
 } from '../../consts'
 import { StatDisplay } from '../../ui'
 

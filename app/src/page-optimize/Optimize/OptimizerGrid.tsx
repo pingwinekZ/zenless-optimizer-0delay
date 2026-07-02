@@ -1,12 +1,12 @@
 import { ActionIcon, Flex } from '@mantine/core'
 import { IconClipboard, IconPin, IconPinned } from '@tabler/icons-react'
-import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import type {
   CellClassParams,
   CellClickedEvent,
   ColDef,
   ValueFormatterParams,
 } from 'ag-grid-community'
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-balham.css'
@@ -16,13 +16,13 @@ import { useTranslation } from 'react-i18next'
 import type { SpecialityKey } from '../../consts'
 import type { GeneratedBuild } from '../../db'
 import type { StatDisplay } from '../Sidebar/StatsViewSelect'
+import { useOptimizerDisplayStore } from '../stores/useOptimizerDisplayStore'
 import {
   type BuildCombatStats,
+  buildRowId,
   type EnrichedBuild,
   STAT_LABELS,
-  buildRowId,
 } from '../Util/buildStatsUtils'
-import { useOptimizerDisplayStore } from '../stores/useOptimizerDisplayStore'
 import { DiscSetCellRenderer } from './gridCellRenderers'
 
 // AG Grid v35+ requires explicit module registration

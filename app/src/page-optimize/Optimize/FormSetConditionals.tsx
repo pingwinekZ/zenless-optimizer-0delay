@@ -13,7 +13,7 @@ import { discDefIcon } from '../../assets'
 import { allDiscSetKeys, discSetNames } from '../../consts'
 import { useCharacterContext, useDatabaseContext, useTeam } from '../../db-ui'
 import { conditionals } from '../../formula'
-import { Translate, i18n } from '../../i18n'
+import { i18n, Translate } from '../../i18n'
 
 const conditionalIconWidth = 32
 const conditionalNameWidth = 255

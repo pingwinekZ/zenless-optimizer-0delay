@@ -1,9 +1,9 @@
 import type { Database } from '@zenless-optimizer/common/database'
 import { z } from 'zod'
-import { type CharacterKey, allCharacterKeys } from '../../../consts'
-import type { IZZZDatabase, IZenlessObjectDescription } from '../../Interfaces'
-import { DataEntry } from '../DataEntry'
+import { allCharacterKeys, type CharacterKey } from '../../../consts'
+import type { IZenlessObjectDescription, IZZZDatabase } from '../../Interfaces'
 import type { ZzzDatabase } from '../Database'
+import { DataEntry } from '../DataEntry'
 import type { ImportResult } from '../exim'
 
 // Schema with defaults - single source of truth

@@ -11,7 +11,7 @@ import {
   Yidhari,
   Yixuan,
 } from '../formula'
-import { TagDisplay, charSheets } from '../formula-ui'
+import { charSheets, TagDisplay } from '../formula-ui'
 
 export function CharSheetSection() {
   const { key: characterKey } = useCharacterContext()!

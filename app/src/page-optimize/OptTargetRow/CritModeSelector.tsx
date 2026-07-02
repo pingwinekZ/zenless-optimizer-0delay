@@ -1,8 +1,7 @@
 import { Box, MenuItem } from '@mantine/core'
 import { DropdownButton } from '@zenless-optimizer/common/ui'
 import type { critModeKey } from '../../db'
-import { critModeKeys } from '../../db'
-import { getTeamFrame0 } from '../../db'
+import { critModeKeys, getTeamFrame0 } from '../../db'
 import { useCharacterContext, useDatabaseContext, useTeam } from '../../db-ui'
 
 // TODO: translation

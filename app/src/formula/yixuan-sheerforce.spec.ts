@@ -10,7 +10,7 @@ import {
 } from '.'
 import { Calculator } from './calculator'
 import { data, keys, values } from './data'
-import { type TagMapNodeEntries, convert, enemy, ownTag } from './data/util'
+import { convert, enemy, ownTag, type TagMapNodeEntries } from './data/util'
 
 setDebugMode(true)
 Object.assign(values, compileTagMapValues(keys, data))

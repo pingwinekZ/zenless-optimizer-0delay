@@ -1,6 +1,5 @@
-import type { WengineKey } from '../../../../consts'
-
 import { subscript } from '@zenless-optimizer/pando/engine'
+import type { WengineKey } from '../../../../consts'
 import { mappedStats } from '../../../../stats'
 import { own, ownBuff, registerBuff } from '../../util'
 import {

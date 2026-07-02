@@ -8,19 +8,19 @@ import {
   validateValue,
 } from '@zenless-optimizer/common/util'
 import { z } from 'zod'
-import type { ZzzDatabase } from '../..'
 import type { AttributeKey, SpecialityKey } from '../../../consts'
 import {
-  type DiscMainStatKey,
-  type DiscSetKey,
   allAttributeKeys,
   allDiscSetKeys,
   allSpecialityKeys,
+  type DiscMainStatKey,
+  type DiscSetKey,
   discMaxLevel,
   discSlotToMainStatKeys,
   wengineMaxLevel,
 } from '../../../consts'
 import type { Tag } from '../../../formula'
+import type { ZzzDatabase } from '../..'
 import { DataManager } from '../DataManager'
 import type { GeneratedBuildList } from './GeneratedBuildListDataManager'
 

@@ -1,6 +1,6 @@
 import type {
-  DataManagerBase,
   Database,
+  DataManagerBase,
 } from '@zenless-optimizer/common/database'
 import { useCallback, useSyncExternalStore } from 'react'
 

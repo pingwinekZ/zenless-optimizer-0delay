@@ -9,25 +9,24 @@ import {
   validateValue,
 } from '@zenless-optimizer/common/util'
 import {
-  type IConditionalData,
   correctConditionalValue,
+  type IConditionalData,
 } from '@zenless-optimizer/game-opt/engine'
 import { z } from 'zod'
-import type { ZzzDatabase } from '../..'
 import {
   type AttributeKey,
-  type CharacterKey,
   allAttributeKeys,
   allCharacterKeys,
+  type CharacterKey,
 } from '../../../consts'
 import type {
   DamageType,
   Dst,
+  enemy,
+  own,
   Sheet,
   Src,
   Tag,
-  enemy,
-  own,
 } from '../../../formula'
 import {
   conditionals as allConditionals,
@@ -35,6 +34,7 @@ import {
   getConditional,
   isMember,
 } from '../../../formula'
+import type { ZzzDatabase } from '../..'
 import { DataManager } from '../DataManager'
 
 export type critModeKey = 'avg' | 'crit' | 'nonCrit'

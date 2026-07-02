@@ -1,6 +1,5 @@
 // WARNING: Generated file, do not modify
 export const conditionals = {
-  offField: { sheet: 'ChiefSidekick', name: 'offField', type: 'bool' },
   ex_fire_stacks: {
     sheet: 'ChiefSidekick',
     name: 'ex_fire_stacks',
@@ -9,4 +8,5 @@ export const conditionals = {
     min: 0,
     max: 2,
   },
+  offField: { sheet: 'ChiefSidekick', name: 'offField', type: 'bool' },
 } as const

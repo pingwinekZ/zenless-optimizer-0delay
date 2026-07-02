@@ -7,7 +7,7 @@ import {
   useCombobox,
 } from '@mantine/core'
 import { IconFilter } from '@tabler/icons-react'
-import { type ReactNode, memo, useMemo, useState } from 'react'
+import { memo, type ReactNode, useMemo, useState } from 'react'
 
 export type FilterOption<T> = {
   value: T

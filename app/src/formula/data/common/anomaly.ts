@@ -6,6 +6,7 @@ import {
   sum,
 } from '@zenless-optimizer/pando/engine'
 import type { AttributeKey } from '../../../consts'
+import type { TagMapNodeEntries } from '../util'
 import {
   allBoolConditionals,
   allNumConditionals,
@@ -17,7 +18,6 @@ import {
   team,
   teamBuff,
 } from '../util'
-import type { TagMapNodeEntries } from '../util'
 
 const { frostbite } = allBoolConditionals('anomaly')
 export const { anomTimePassed } = allNumConditionals('anomaly', true, 0, 20)

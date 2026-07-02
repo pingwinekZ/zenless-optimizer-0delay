@@ -15,25 +15,25 @@ import {
 } from '@zenless-optimizer/common/ui'
 import { isIn } from '@zenless-optimizer/common/util'
 import { useCallback } from 'react'
-import { type StatKey, allAttributeKeys } from '../consts'
+import { allAttributeKeys, type StatKey } from '../consts'
 import {
   type BonusStatKey,
   type BonusStatTag,
-  type EnemyStatKey,
-  type EnemyStatsTag,
-  type TeamBonusStat,
   bonusStatDamageTypes,
   bonusStatDmgTypeIncStats,
   bonusStatKeys,
   bonusStatQtKeys,
+  type EnemyStatKey,
+  type EnemyStatsTag,
   enemyStatKeys,
   getTeamFrame0,
   newBonusStatTag,
   newEnemyStatTag,
+  type TeamBonusStat,
 } from '../db'
 import { useCharacterContext, useDatabaseContext, useTeam } from '../db-ui'
 import type { Attribute, Tag } from '../formula'
-import { TagDisplay, qtMap } from '../formula-ui'
+import { qtMap, TagDisplay } from '../formula-ui'
 import { AttributeName, StatDisplay } from '../ui'
 import { AfterShockToggleButton } from './AfterShockToggleButton'
 import { DmgTypeDropdown } from './DmgTypeDropdown'

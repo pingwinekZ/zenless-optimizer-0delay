@@ -27,6 +27,7 @@ import { discFilterConfigs, initialDiscFilterOption } from '../../util'
 import type { IDisc } from '../../zood'
 import { DiscCardObj } from './DiscCard'
 import { DiscFilterDisplay } from './DiscFilterDisplay'
+
 const numToShowMap = { xs: 2 * 3, sm: 2 * 3, md: 3 * 3, lg: 4 * 3, xl: 4 * 3 }
 
 export function DiscSwapModal({

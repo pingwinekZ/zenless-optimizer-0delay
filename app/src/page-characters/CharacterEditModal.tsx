@@ -1,17 +1,3 @@
-import { DropdownButton, ImgIcon } from '@zenless-optimizer/common/ui'
-import { range } from '@zenless-optimizer/common/util'
-import { commonDefIcon, wengineAsset } from '../assets'
-import {
-  type CharacterKey,
-  type PhaseKey,
-  type SkillKey,
-  type WengineKey,
-  allPhaseKeys,
-  allSkillKeys,
-  coreByLevel,
-  skillByLevel,
-} from '../consts'
-
 import {
   ActionIcon,
   Box,
@@ -26,15 +12,28 @@ import {
   Text,
 } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
+import { DropdownButton, ImgIcon } from '@zenless-optimizer/common/ui'
+import { range } from '@zenless-optimizer/common/util'
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { commonDefIcon, wengineAsset } from '../assets'
+import {
+  allPhaseKeys,
+  allSkillKeys,
+  type CharacterKey,
+  coreByLevel,
+  type PhaseKey,
+  type SkillKey,
+  skillByLevel,
+  type WengineKey,
+} from '../consts'
 import { useDatabaseContext } from '../db-ui'
 import { getCharStat } from '../stats'
 import {
   CharacterName,
+  useCharacterTabStore,
   WengineName,
   WengineSelectionModal,
-  useCharacterTabStore,
 } from '../ui'
 
 type CharacterEditForm = {

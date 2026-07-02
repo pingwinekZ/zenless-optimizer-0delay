@@ -2,6 +2,7 @@ import { dumpPrettyFile } from '@zenless-optimizer/common/pipeline'
 import { nameToKey, objFilter, objMap } from '@zenless-optimizer/common/util'
 import { PROJROOT_PATH } from '../../consts'
 import { readHakushinJSON } from '../../util'
+
 type discTrans = {
   name: string
   desc2: string

@@ -19,16 +19,16 @@ import { useCallback, useContext } from 'react'
 import type { AttributeKey } from '../../consts'
 import { allAttributeKeys } from '../../consts'
 import type { StatFilterTag } from '../../db'
-import { statFilterStatQtKeys } from '../../db'
 import {
+  newStatFilterTag,
   type StatFilterStatKey,
   type StatFilters,
-  newStatFilterTag,
   statFilterStatKeys,
+  statFilterStatQtKeys,
 } from '../../db'
 import { OptConfigContext, useDatabaseContext } from '../../db-ui'
 import type { Tag } from '../../formula'
-import { TagDisplay, qtMap } from '../../formula-ui'
+import { qtMap, TagDisplay } from '../../formula-ui'
 import { AttributeName, StatDisplay } from '../../ui'
 
 export function StatFilterCard({ disabled = false }: { disabled?: boolean }) {

@@ -3,7 +3,11 @@ import {
   compileTagMapValues,
   setDebugMode,
 } from '@zenless-optimizer/pando/engine'
-import { data, keys, values } from '..'
+import type {
+  DiscMainStatKey,
+  DiscSetKey,
+  DiscSubStatKey,
+} from '../../../consts'
 import {
   charTagMapNodeEntries,
   conditionals,
@@ -11,15 +15,10 @@ import {
   teamData,
   withMember,
 } from '../..'
-import type {
-  DiscMainStatKey,
-  DiscSetKey,
-  DiscSubStatKey,
-} from '../../../consts'
 import { Calculator } from '../../calculator'
+import { data, keys, values } from '..'
 import type { Read } from '../util'
 import {
-  type TagMapNodeEntries,
   conditionalEntries,
   convert,
   enemy,
@@ -27,6 +26,7 @@ import {
   own,
   ownBuff,
   ownTag,
+  type TagMapNodeEntries,
 } from '../util'
 
 setDebugMode(true)

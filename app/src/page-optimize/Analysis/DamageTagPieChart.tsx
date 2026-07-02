@@ -116,8 +116,8 @@ export function DamageTagPieChart({
               ))}
             </Pie>
             <Tooltip
-              formatter={(value: number, name: string) => [
-                `${value.toFixed(1)}%`,
+              formatter={(value, name) => [
+                `${Number(value ?? 0).toFixed(1)}%`,
                 name,
               ]}
               contentStyle={{

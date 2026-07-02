@@ -7,9 +7,9 @@ import { mappedStats } from '../../../stats'
 import { st, trans } from '../../util'
 import {
   CoreGameDesc,
-  SkillGameDesc,
   createBaseSheet,
   fieldForBuff,
+  SkillGameDesc,
 } from '../sheetUtil'
 
 const key: CharacterKey = 'Zhao'
@@ -76,6 +76,7 @@ const sheet = createBaseSheet(key, {
         description: (
           <>
             <CoreGameDesc characterKey={key} paragraph={5} />
+            <div style={{ marginBottom: 8 }} />
             <CoreGameDesc characterKey={key} paragraph={6} />
           </>
         ),
@@ -99,7 +100,7 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
-        label: st('offField'),
+        label: ch('m1Cond'),
         description: <GameDesc ns="char_Zhao_gen" key18="mindscapes.1.desc" />,
         metadata: cond.offField,
         fields: [fieldForBuff(buff.m1_resIgn_)],

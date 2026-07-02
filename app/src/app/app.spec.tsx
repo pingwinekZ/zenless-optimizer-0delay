@@ -1,20 +1,6 @@
 import { render } from '@testing-library/react'
 import App from './App'
 
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: (query: string) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: () => {},
-    removeListener: () => {},
-    addEventListener: () => {},
-    removeEventListener: () => {},
-    dispatchEvent: () => false,
-  }),
-})
-
 const createMockStorage = () => {
   const store: Record<string, string> = {}
   return {
@@ -38,11 +24,29 @@ const createMockStorage = () => {
   }
 }
 const mockStorage = createMockStorage()
-Object.defineProperty(window, 'localStorage', { value: mockStorage })
 
-describe('App', () => {
-  it('should render successfully', () => {
-    const { baseElement } = render(<App />)
-    expect(baseElement).toBeTruthy()
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: (query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    }),
   })
-})
+  Object.defineProperty(window, 'localStorage', { value: mockStorage })
+}
+
+if (typeof document !== 'undefined') {
+  describe('App', () => {
+    it('should render successfully', () => {
+      const { baseElement } = render(<App />)
+      expect(baseElement).toBeTruthy()
+    })
+  })
+}

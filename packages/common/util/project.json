@@ -5,5 +5,14 @@
   "projectType": "library",
   "tags": [],
   "// targets": "to see all targets run: nx show project common-util --web",
-  "targets": {}
+  "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/coverage/libs/common/util"],
+      "options": {
+        "command": "bun test",
+        "cwd": "packages/common/util"
+      }
+    }
+  }
 }

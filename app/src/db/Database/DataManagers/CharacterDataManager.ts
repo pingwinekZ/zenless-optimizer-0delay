@@ -5,8 +5,8 @@ import { allDiscSlotKeys } from '../../../consts'
 import type { ICharacter } from '../../../zood'
 import { parseCharacter } from '../../../zood'
 import type { ICachedCharacter } from '../../Interfaces'
-import { DataManager } from '../DataManager'
 import type { ZzzDatabase } from '../Database'
+import { DataManager } from '../DataManager'
 
 export class CharacterDataManager extends DataManager<
   CharacterKey,

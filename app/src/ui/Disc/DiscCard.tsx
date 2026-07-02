@@ -17,7 +17,7 @@ import {
 } from '@zenless-optimizer/common/util'
 import type React from 'react'
 import type { ReactNode } from 'react'
-import { Suspense, memo, useCallback } from 'react'
+import { memo, Suspense, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { discDefIcon } from '../../assets'
 import type { DiscRarityKey, LocationKey } from '../../consts'

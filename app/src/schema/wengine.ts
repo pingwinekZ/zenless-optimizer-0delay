@@ -1,9 +1,9 @@
 import { zodBoundedNumber, zodEnum } from '@zenless-optimizer/common/database'
 import { z } from 'zod'
 import {
+  allWengineKeys,
   type MilestoneKey,
   type PhaseKey,
-  allWengineKeys,
   validateLevelMilestone,
   wengineMaxLevel,
 } from '../consts'

@@ -15,13 +15,13 @@ import { ModalWrapper } from '@zenless-optimizer/common/ui'
 import { toggleInArr } from '@zenless-optimizer/common/util'
 import { memo, useCallback, useContext, useMemo, useState } from 'react'
 import { discDefIcon } from '../../assets'
+import type { DiscSetKey, DiscSlotKey } from '../../consts'
 import {
   allDiscSetKeys,
   disc2pEffect,
   discSetNames,
   statKeyTextMap,
 } from '../../consts'
-import type { DiscSetKey, DiscSlotKey } from '../../consts'
 import type { ICachedDisc } from '../../db'
 import { OptConfigContext, useDatabaseContext } from '../../db-ui'
 import classes from './DiscSetFilterModal.module.css'

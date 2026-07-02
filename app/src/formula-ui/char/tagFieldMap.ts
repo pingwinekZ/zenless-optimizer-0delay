@@ -1,7 +1,7 @@
 import {
   type ConditionalDocument,
-  type TagField,
   isTagField,
+  type TagField,
 } from '@zenless-optimizer/game-opt/sheet-ui'
 import type { Tag } from '../../formula'
 import { createTagMap } from '../../formula'
@@ -9,6 +9,7 @@ import { discUiSheets } from '../disc'
 import { wengineUiSheets } from '../wengine'
 import { charBaseUiSheet } from './CharBase'
 import { charSheets } from './sheets'
+
 // import { uiSheets } from './sheets'
 
 const tagValue: Array<{ tag: Tag; value: TagField }> = []

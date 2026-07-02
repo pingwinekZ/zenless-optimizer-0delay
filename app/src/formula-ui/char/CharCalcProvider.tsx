@@ -6,8 +6,8 @@ import type {
 } from '@zenless-optimizer/game-opt/engine'
 import { presets } from '@zenless-optimizer/game-opt/engine'
 import { CalcContext } from '@zenless-optimizer/game-opt/formula-ui'
-import type { FormulaText } from '@zenless-optimizer/game-opt/sheet-ui'
 import type {
+  FormulaText,
   FormulaTextFunc,
   FullTagDisplayComponent,
   TagDisplayComponent,
@@ -29,11 +29,11 @@ import { getTeamFrame0, teamCharacterKeys } from '../../db'
 import { useCharacter, useDiscs } from '../../db-ui'
 import type { TagMapNodeEntries } from '../../formula'
 import {
-  DEFAULT_TEAMMATE_CHAR,
   charTagMapNodeEntries,
   conditionalEntries,
-  discTagMapNodeEntries,
+  DEFAULT_TEAMMATE_CHAR,
   discsToTagMapNodeEntries,
+  discTagMapNodeEntries,
   enemy,
   own,
   ownBuff,
@@ -295,9 +295,7 @@ export function CharCalcMockCountProvider({
           ),
           // mock wengine
           // Opt-in for wengine buffs, instead of enabling it by default to reduce `read` traffic
-          reader
-            .sheet('agg')
-            .reread(reader.sheet('wengine')),
+          reader.sheet('agg').reread(reader.sheet('wengine')),
           own.wengine.lvl.add(60),
           own.wengine.modification.add(5),
           own.wengine.phase.add(1),

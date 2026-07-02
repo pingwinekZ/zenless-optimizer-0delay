@@ -11,10 +11,10 @@ import {
 
 import type { IConditionalData } from '@zenless-optimizer/game-opt/engine'
 import { TagContext } from '@zenless-optimizer/game-opt/formula-ui'
-import { TagFieldDisplay } from '@zenless-optimizer/game-opt/sheet-ui'
 import type { Field, TagField } from '@zenless-optimizer/game-opt/sheet-ui'
-import { memo, useContext, useMemo, useState } from 'react'
+import { TagFieldDisplay } from '@zenless-optimizer/game-opt/sheet-ui'
 import type { ReactNode } from 'react'
+import { memo, useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { CharacterKey, WengineKey } from '../../consts'
 import { useCharacterContext, useDatabaseContext, useTeam } from '../../db-ui'
@@ -29,6 +29,35 @@ import { getCharStat } from '../../stats'
 import { HeaderText } from '../layout'
 
 const inputWidth = 61
+
+/** Energy Regen portion of HalfSugarBunny's phase description (first sentence). */
+function HalfSugarBunnyERDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_HalfSugarBunny_gen')
+  const fullDesc = t(`wengine_HalfSugarBunny_gen:phaseDescs.${phase - 1}`)
+  const idx = fullDesc.indexOf('. ')
+  if (idx === -1) return <GameText text={fullDesc} />
+  return <GameText text={fullDesc.slice(0, idx + 1)} />
+}
+
+/** Squad ATK/HP portion of HalfSugarBunny's phase description (second and third sentences). */
+function HalfSugarBunnySquadDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_HalfSugarBunny_gen')
+  const fullDesc = t(`wengine_HalfSugarBunny_gen:phaseDescs.${phase - 1}`)
+  const whenIdx = fullDesc.indexOf('When ')
+  if (whenIdx === -1) return <GameText text={fullDesc} />
+  // Skip the first sentence
+  const afterFirstDot = fullDesc.indexOf('. ') + 2
+  return <GameText text={fullDesc.slice(afterFirstDot, whenIdx)} />
+}
+
+/** Conditional portion of HalfSugarBunny's phase description (from "When" onward). */
+function HalfSugarBunnyCondDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_HalfSugarBunny_gen')
+  const fullDesc = t(`wengine_HalfSugarBunny_gen:phaseDescs.${phase - 1}`)
+  const idx = fullDesc.indexOf('When ')
+  if (idx === -1) return <GameText text={fullDesc} />
+  return <GameText text={fullDesc.slice(idx)} />
+}
 
 /**
  * Loads the full SolExuvia phase description and renders only the Eclipse
@@ -49,12 +78,13 @@ function JoyauDoreSelfAnomDesc({ phase }: { phase: number }) {
   return <GameText text={selfDesc} />
 }
 
-/** Conditional portion of JoyauDore's phase description (from "When" to before "At 2 stacks"). */
+/** Conditional portion of JoyauDore's phase description (from "When" to end). */
 function JoyauDoreCondDesc({ phase }: { phase: number }) {
   const { t } = useTranslation('wengine_JoyauDore_gen')
   const fullDesc = t(`wengine_JoyauDore_gen:phaseDescs.${phase - 1}`)
-  const match = fullDesc.match(/When[^]*?(?=At 2 stacks|$)/)
-  return <GameText text={match?.[0] ?? fullDesc} />
+  const idx = fullDesc.indexOf('When ')
+  if (idx === -1) return <GameText text={fullDesc} />
+  return <GameText text={fullDesc.slice(idx)} />
 }
 
 /** Squad Anomaly Proficiency portion of JoyauDore's phase description ("At 2 stacks…" to end). */
@@ -444,6 +474,13 @@ export function WEngineConditionalsDisplay({
                         (field.fieldRef?.name === 'impact' ||
                           field.fieldRef?.name === 'fireResIgn_') ? (
                         <ChiefSidekickImpactResDesc phase={phase} />
+                      ) : wengineKey === 'HalfSugarBunny' &&
+                        field.fieldRef?.name === 'passive_enerRegen' ? (
+                        <HalfSugarBunnyERDesc phase={phase} />
+                      ) : wengineKey === 'HalfSugarBunny' &&
+                        (field.fieldRef?.name === 'passive_atk_' ||
+                          field.fieldRef?.name === 'passive_hp_') ? (
+                        <HalfSugarBunnySquadDesc phase={phase} />
                       ) : undefined
                     }
                   />
@@ -499,6 +536,9 @@ export function WEngineConditionalsDisplay({
                 <ChiefSidekickCondDesc phase={phase} />
               ) : wengineKey === 'ChiefSidekick' && condName === 'offField' ? (
                 <ChiefSidekickEnerRegenDesc phase={phase} />
+              ) : wengineKey === 'HalfSugarBunny' &&
+                condName === 'activateExtendEtherVeil' ? (
+                <HalfSugarBunnyCondDesc phase={phase} />
               ) : undefined
             }
           />

@@ -4,10 +4,10 @@ import {
   Button,
   Divider,
   Group,
+  Menu,
   SimpleGrid,
   Text,
 } from '@mantine/core'
-import { Menu } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
 import { useBoolState } from '@zenless-optimizer/common/react-util'
 import {

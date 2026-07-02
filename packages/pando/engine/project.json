@@ -17,10 +17,11 @@
       }
     },
     "test": {
-      "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/coverage/libs/test"],
       "options": {
-        "reportsDirectory": "../../../coverage/libs/test"
+        "command": "bun test --jsdom",
+        "cwd": "packages/pando/engine"
       }
     }
   },

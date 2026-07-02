@@ -14,7 +14,7 @@ import { useWengine } from '../../db-ui'
 import { getWengineStat, getWengineStats } from '../../stats'
 import { StatIcon } from '../../svgicons'
 import { ZCard } from '../Components'
-import { StatHighlightContext, getHighlightRGBA, isHighlight } from '../context'
+import { getHighlightRGBA, isHighlight, StatHighlightContext } from '../context'
 import { COMPACT_CARD_HEIGHT_PX, EmptyCompactCard } from '../util'
 
 export function CompactWengineCard({

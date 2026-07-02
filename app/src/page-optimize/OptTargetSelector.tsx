@@ -3,14 +3,14 @@ import { DropdownButton } from '@zenless-optimizer/common/ui'
 import { useCallback, useMemo } from 'react'
 import type { TargetTag } from '../db'
 import {
+  getTeamFrame0,
   type ICachedCharacter,
   type Team,
-  getTeamFrame0,
   targetTag,
 } from '../db'
 import { useDatabaseContext } from '../db-ui'
-import { own } from '../formula'
 import type { Tag } from '../formula'
+import { own } from '../formula'
 import { FullTagDisplay, getDmgType, useZzzCalcContext } from '../formula-ui'
 
 const statTargets = [

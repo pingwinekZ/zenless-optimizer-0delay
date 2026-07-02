@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { characterAsset, rarityDefIcon, specialityDefIcon } from '../../assets'
 import {
   type CharacterKey,
-  type MilestoneKey,
   getLevelString,
+  type MilestoneKey,
 } from '../../consts'
 import type { ICachedCharacter } from '../../db'
 import { getCharStat } from '../../stats'

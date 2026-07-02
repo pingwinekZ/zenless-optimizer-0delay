@@ -1,4 +1,4 @@
-import { type ReactNode, createContext, useCallback, useContext } from 'react'
+import { createContext, type ReactNode, useCallback, useContext } from 'react'
 import type { CharacterKey } from '../consts'
 import { useDatabaseContext } from '../db-ui'
 import { useTabStore } from './useTabStore'
@@ -19,11 +19,7 @@ export function useNavigateContext() {
   return useContext(NavigateContext)
 }
 
-export function NavigateContextProvider({
-  children,
-}: {
-  children: ReactNode
-}) {
+export function NavigateContextProvider({ children }: { children: ReactNode }) {
   const { database } = useDatabaseContext()
 
   const navigateToOptimize = useCallback(

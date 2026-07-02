@@ -2,8 +2,8 @@ import { zodTypedRecord } from '@zenless-optimizer/common/database'
 import { z } from 'zod'
 import { allDiscSlotKeys } from '../../../consts'
 import type { DiscIds } from '../../Interfaces/IDbDisc'
-import { DataManager } from '../DataManager'
 import type { ZzzDatabase } from '../Database'
+import { DataManager } from '../DataManager'
 
 const discIdValueSchema = z.union([z.string(), z.undefined()])
 const discIdsSchema = zodTypedRecord(

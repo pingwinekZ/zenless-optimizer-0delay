@@ -14,9 +14,8 @@ import {
   ConditionalWrapper,
   ImgIcon,
 } from '@zenless-optimizer/common/ui'
-import React from 'react'
 import type { ReactNode } from 'react'
-import { Suspense, memo, useCallback } from 'react'
+import React, { memo, Suspense, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { WenginePhaseKey } from '../../assets'
 import { specialityDefIcon, wengineAsset, wenginePhaseIcon } from '../../assets'

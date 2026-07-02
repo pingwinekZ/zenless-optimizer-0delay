@@ -26,7 +26,7 @@ import {
   useDatabaseContext,
   useTeam,
 } from '../db-ui'
-import { type Tag, getConditional, isMember, isSheet } from '../formula'
+import { getConditional, isMember, isSheet, type Tag } from '../formula'
 import { CharCalcProvider } from '../formula-ui'
 import { CharacterName } from '../ui'
 import { CharacterOptDisplay } from './CharacterOptDisplay'
@@ -150,7 +150,7 @@ export default function PageOptimize() {
   )
 }
 
-export { MultiSelectPills } from './layout/MultiSelectPills'
-export { HeaderText } from './layout/HeaderText'
 export { FilterContainer } from './layout/FilterContainer'
 export { FilterRow } from './layout/FilterRow'
+export { HeaderText } from './layout/HeaderText'
+export { MultiSelectPills } from './layout/MultiSelectPills'

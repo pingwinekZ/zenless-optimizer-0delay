@@ -1,19 +1,19 @@
-export { StatsDiffCard } from './StatsDiffCard'
-export { StatContributionChart } from './StatContributionChart'
 export { ActionBreakdown } from './ActionBreakdown'
-export { SubstatUpgrades } from './SubstatUpgrades'
-export { TeammateUpgrades } from './TeammateUpgrades'
 export type {
   AnalysisData,
-  StatComparisonEntry,
-  SubstatRollInfo,
-  TeammateInfo,
-  StatContribution,
-  TargetFormulaInfo,
   PerActionDamage,
+  StatComparisonEntry,
+  StatContribution,
+  SubstatRollInfo,
+  TargetFormulaInfo,
+  TeammateInfo,
 } from './ExpandedDataPanelController'
 export {
   buildAnalysisData,
   buildStatComparisons,
   buildStatContributions,
 } from './ExpandedDataPanelController'
+export { StatContributionChart } from './StatContributionChart'
+export { StatsDiffCard } from './StatsDiffCard'
+export { SubstatUpgrades } from './SubstatUpgrades'
+export { TeammateUpgrades } from './TeammateUpgrades'

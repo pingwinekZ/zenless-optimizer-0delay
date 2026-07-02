@@ -1,6 +1,9 @@
-import type { TagField } from '@zenless-optimizer/game-opt/sheet-ui'
-import type { Document, Field } from '@zenless-optimizer/game-opt/sheet-ui'
-import { type Tag, formulaData } from '../../formula'
+import type {
+  Document,
+  Field,
+  TagField,
+} from '@zenless-optimizer/game-opt/sheet-ui'
+import { formulaData, type Tag } from '../../formula'
 
 const MAIN_UNIT_EFFECT_TYPES = new Set([
   'teamBuff',

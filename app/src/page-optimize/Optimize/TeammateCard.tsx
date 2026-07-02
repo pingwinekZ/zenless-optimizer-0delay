@@ -11,8 +11,8 @@ import {
 import { useBoolState } from '@zenless-optimizer/common/react-util'
 import { ImgIcon } from '@zenless-optimizer/common/ui'
 import type { Field } from '@zenless-optimizer/game-opt/sheet-ui'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
 import type { ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { characterAsset, discDefIcon, wengineAsset } from '../../assets'
 import type {
   CharacterKey,

@@ -6,7 +6,7 @@ import {
   rarityDefIcon,
   specialityDefIcon,
 } from '../../../assets'
-import { type CharacterKey, allSkillKeys } from '../../../consts'
+import { allSkillKeys, type CharacterKey } from '../../../consts'
 import { useCharacter } from '../../../db-ui'
 import { getCharStat } from '../../../stats'
 import { ElementIcon } from '../../../svgicons'

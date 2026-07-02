@@ -3,6 +3,7 @@ import { Yanagi } from '../../../formula'
 import { GameDesc } from '../../../i18n'
 import { st, trans } from '../../util'
 import { CoreGameDesc, createBaseSheet, fieldForBuff } from '../sheetUtil'
+
 const key: CharacterKey = 'Yanagi'
 const [, ch] = trans('char', key)
 const cond = Yanagi.conditionals

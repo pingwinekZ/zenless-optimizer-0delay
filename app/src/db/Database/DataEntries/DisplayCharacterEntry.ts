@@ -5,14 +5,14 @@ import {
 } from '@zenless-optimizer/common/database'
 import { z } from 'zod'
 import {
-  type CharacterKey,
   allAttributeKeys,
   allCharacterKeys,
   allCharacterRarityKeys,
   allSpecialityKeys,
+  type CharacterKey,
 } from '../../../consts'
-import { DataEntry } from '../DataEntry'
 import type { ZzzDatabase } from '../Database'
+import { DataEntry } from '../DataEntry'
 
 export const characterSortKeys = [
   'new',
