@@ -1,11 +1,9 @@
-// viteStaticCopy contains some `require`, so we need to have our config as .mts instead of .ts.
-// https://vitejs.dev/guide/troubleshooting.html#this-package-is-esm-only
-import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin'
 import react from '@vitejs/plugin-react'
-import { existsSync, readFileSync } from 'fs'
+import { existsSync, readdirSync, readFileSync } from 'fs'
 import { resolve } from 'path'
 import { defineConfig, normalizePath, type Plugin } from 'vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
+import tsconfigPaths from 'vite-tsconfig-paths'
 import pkg from './package.json' with { type: 'json' }
 
 // Source directories for locale files (relative to Vite root = app/)
@@ -48,94 +46,101 @@ function serveLocaleFiles(): Plugin {
   }
 }
 
-export default defineConfig(() => ({
-  base: '/zenless-optimizer-0delay/',
-  root: __dirname,
-  cacheDir: '../node_modules/.vite/app',
-
-  server: {
-    port: 4200,
-    host: 'localhost',
-    fs: {
-      allow: ['../..'],
+export default defineConfig(() => {
+  const copyTargets = [
+    {
+      src: normalizePath(
+        resolve('../packages/common/localization/assets/locales')
+      ),
+      dest: 'assets',
     },
-  },
-
-  preview: {
-    port: 4300,
-    host: 'localhost',
-  },
-
-  plugins: [
-    react(),
-    nxViteTsPaths(),
-    serveLocaleFiles(),
-    // Nx executor for vite does not support `assets` prop for copying files.
-    // So we need to do it with this plugin. This works for both `build` and `serve`.
-    viteStaticCopy({
-      targets: [
-        {
-          src: normalizePath(
-            resolve('../packages/common/localization/assets/locales')
-          ),
-          dest: 'assets',
-        },
-        {
-          src: normalizePath(resolve('./src/localization/assets/locales')),
-          dest: 'assets',
-        },
-        {
-          src: normalizePath(resolve('./src/dm-localization/assets/locales')),
-          dest: 'assets',
-        },
-        {
-          src: normalizePath(resolve('./assets/*')),
-          dest: 'assets',
-        },
-      ],
-      // Force page to reload if we change any of the above files
-      watch: {
-        reloadPageOnChange: true,
-      },
-    }),
-  ],
-
-  define: {
-    'process.env': process.env,
-    __VERSION__: `"${pkg.version}"`,
-  },
-
-  // Uncomment this if you are using workers.
-  worker: {
-    // https://vitejs.dev/guide/migration#worker-plugins-is-now-a-function
-    plugins: () => [nxViteTsPaths()],
-  },
-
-  build: {
-    outDir: '../dist/app',
-    reportCompressedSize: true,
-    commonjsOptions: {
-      transformMixedEsModules: true,
+    {
+      src: normalizePath(resolve('./src/localization/assets/locales')),
+      dest: 'assets',
     },
-    rollupOptions: {
-      output: {
-        manualChunks(id: string) {
-          if (
-            id.includes('node_modules/react-dom') ||
-            id.includes('node_modules/react/')
-          )
-            return 'react-vendor'
-          if (id.includes('node_modules/@mantine/')) return 'mantine'
-          if (id.includes('node_modules/ag-grid')) return 'ag-grid'
-          if (id.includes('node_modules/@tabler/icons-react'))
-            return 'tabler-icons'
-          if (
-            id.includes('node_modules/i18next') ||
-            id.includes('node_modules/react-i18next')
-          )
-            return 'i18n'
-        },
+    {
+      src: normalizePath(resolve('./src/dm-localization/assets/locales')),
+      dest: 'assets',
+    },
+  ]
+
+  const assetsDir = resolve('./assets')
+  if (existsSync(assetsDir) && readdirSync(assetsDir).length > 0) {
+    copyTargets.push({
+      src: normalizePath(resolve('./assets/*')),
+      dest: 'assets',
+    })
+  }
+
+  return {
+    base: '/zenless-optimizer-0delay/',
+    root: __dirname,
+    cacheDir: '../node_modules/.vite/app',
+
+    server: {
+      port: 4200,
+      host: 'localhost',
+      fs: {
+        allow: ['../..'],
       },
     },
-  },
-}))
+
+    preview: {
+      port: 4300,
+      host: 'localhost',
+    },
+
+    plugins: [
+      react(),
+      tsconfigPaths({ loose: true }),
+      serveLocaleFiles(),
+      // Nx executor for vite does not support `assets` prop for copying files.
+      // So we need to do it with this plugin. This works for both `build` and `serve`.
+      viteStaticCopy({
+        targets: copyTargets,
+        // Force page to reload if we change any of the above files
+        watch: {
+          reloadPageOnChange: true,
+        },
+      }),
+    ],
+
+    define: {
+      __VERSION__: `"${pkg.version}"`,
+    },
+
+    // Uncomment this if you are using workers.
+    worker: {
+      // https://vitejs.dev/guide/migration#worker-plugins-is-now-a-function
+      plugins: () => [tsconfigPaths({ loose: true })],
+    },
+
+    build: {
+      outDir: '../dist/app',
+      reportCompressedSize: true,
+      commonjsOptions: {
+        transformMixedEsModules: true,
+      },
+      rollupOptions: {
+        output: {
+          manualChunks(id: string) {
+            if (
+              id.includes('node_modules/react-dom') ||
+              id.includes('node_modules/react/')
+            )
+              return 'react-vendor'
+            if (id.includes('node_modules/@mantine/')) return 'mantine'
+            if (id.includes('node_modules/ag-grid')) return 'ag-grid'
+            if (id.includes('node_modules/@tabler/icons-react'))
+              return 'tabler-icons'
+            if (
+              id.includes('node_modules/i18next') ||
+              id.includes('node_modules/react-i18next')
+            )
+              return 'i18n'
+          },
+        },
+      },
+    },
+  }
+})
