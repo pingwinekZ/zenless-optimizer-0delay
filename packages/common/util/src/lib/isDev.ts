@@ -1,7 +1,2 @@
-export const isDev = process.env['NODE_ENV'] === 'development'
-
-/**
- * Boolean indicating if dev components should be shown
- */
-export const shouldShowDevComponents =
-  isDev || process.env['VITE_NX_SHOW_DEV_COMPONENTS'] === 'true'
+export const isDev = false
+export const shouldShowDevComponents = false

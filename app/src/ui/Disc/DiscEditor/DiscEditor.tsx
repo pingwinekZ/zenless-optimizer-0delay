@@ -10,7 +10,6 @@ import {
   LoadingOverlay,
   Progress,
   Skeleton,
-  Stack,
   Text,
   TextInput,
   useMatches,
@@ -25,12 +24,11 @@ import {
   IconTrash,
   IconX,
 } from '@tabler/icons-react'
-import { useBoolState } from '@zenless-optimizer/common/react-util'
+
 import { CardThemed, ModalWrapper, usePrev } from '@zenless-optimizer/common/ui'
 import {
   getUnitStr,
   range,
-  shouldShowDevComponents,
   statKeyToFixed,
   toPercent,
 } from '@zenless-optimizer/common/util'
@@ -204,9 +202,7 @@ export function DiscEditor({
     window.confirm(t('editor.clearPrompt') as string)
 
   // Scanning stuff
-  const queueRef = useRef(
-    new ScanningQueue(textsFromImage, shouldShowDevComponents)
-  )
+  const queueRef = useRef(new ScanningQueue(textsFromImage, false))
   const queue = queueRef.current
   const [{ processedNum, outstandingNum, scanningNum }, setScanningData] =
     useState({ processedNum: 0, outstandingNum: 0, scanningNum: 0 })
@@ -215,7 +211,7 @@ export function DiscEditor({
     undefined as undefined | Omit<Processed, 'disc'>
   )
 
-  const { fileName, imageURL, debugImgs, texts } = scannedData ?? {}
+  const { fileName, imageURL, texts } = scannedData ?? {}
   const queueTotal = processedNum + outstandingNum + scanningNum
 
   const uploadFiles = useCallback(
@@ -461,11 +457,7 @@ export function DiscEditor({
                               </Button>
                             </label>
                           </Box>
-                          {shouldShowDevComponents && debugImgs && (
-                            <Box>
-                              <DebugModal imgs={debugImgs} />
-                            </Box>
-                          )}
+
                           <Box>
                             <ScanInfoModal />
                           </Box>
@@ -678,30 +670,5 @@ export function DiscEditor({
         </CardThemed>
       </ModalWrapper>
     </Suspense>
-  )
-}
-
-function DebugModal({ imgs }: { imgs: Record<string, string> }) {
-  const [show, onOpen, onClose] = useBoolState()
-  return (
-    <>
-      <Button color="yellow" onClick={onOpen} variant="default">
-        DEBUG
-      </Button>
-      <ModalWrapper opened={show} onClose={onClose}>
-        <CardThemed>
-          <Card.Section style={{ padding: 16 }}>
-            <Stack gap={8}>
-              {Object.entries(imgs).map(([key, url]) => (
-                <Box key={key}>
-                  <Text>{key}</Text>
-                  <Image src={url} />
-                </Box>
-              ))}
-            </Stack>
-          </Card.Section>
-        </CardThemed>
-      </ModalWrapper>
-    </>
   )
 }

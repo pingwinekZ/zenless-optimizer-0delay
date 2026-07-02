@@ -1,12 +1,8 @@
-import { shouldShowDevComponents } from '@zenless-optimizer/common/util'
-import type {
-  CalcMeta as CalcMetaBase,
-  Read as ReadBase,
-} from '@zenless-optimizer/game-opt/engine'
+import type { CalcMeta as CalcMetaBase } from '@zenless-optimizer/game-opt/engine'
 import { Calculator as Base } from '@zenless-optimizer/game-opt/engine'
 import { createFilterDebug } from '@zenless-optimizer/game-opt/formula'
 import { DebugCalculator } from '@zenless-optimizer/pando/engine'
-import { allAttributeKeys, allDiscSetKeys, allWengineKeys } from '../consts'
+import { allDiscSetKeys, allWengineKeys } from '../consts'
 import type { Read, Tag } from './data/util'
 import { enemyTag, ownTag, tagStr } from './data/util'
 
@@ -35,32 +31,5 @@ export class Calculator extends Base<Tag, never> {
         throw new Error('non-explicit team value accumulator')
     }
     return
-  }
-  // TODO: Remove me once we figure out what to do with character sheet listing explosion
-  override listFormulas(read: ReadBase<Tag>): ReadBase<Tag>[] {
-    return super
-      .listFormulas(read)
-      .filter(
-        (r) =>
-          shouldShowDevComponents ||
-          r.tag.qt !== 'formula' ||
-          [
-            'standardDmgInst',
-            'sheerDmgInst',
-            'anomalyDmgInst',
-            'abloomDmgInst',
-            'trialByColdAbloomDmgInst',
-            'anomalyBuildupInst',
-            'dazeInst',
-            ...allAttributeKeys.map((k) => `disorderDmgInst_${k}`),
-            'disorderDmgInst_frost',
-            'vortexDmgInst_fire',
-            'vortexDmgInst_electric',
-            'vortexDmgInst_ether',
-            'vortexDmgInst_ice',
-            'vortexDmgInst_physical',
-            'vortexDmgInst_frost',
-          ].includes(r.tag.name ?? '')
-      )
   }
 }

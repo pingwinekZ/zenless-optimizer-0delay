@@ -1,7 +1,6 @@
 import { Box } from '@mantine/core'
-import { shouldShowDevComponents } from '@zenless-optimizer/common/util'
 import type { Read } from '@zenless-optimizer/game-opt/engine'
-import { DebugReadContext } from '@zenless-optimizer/game-opt/formula-ui'
+
 import { TagFieldDisplay } from '@zenless-optimizer/game-opt/sheet-ui'
 import { useContext, useMemo } from 'react'
 import type { StatKey } from '../../consts'
@@ -32,7 +31,6 @@ export function CharStatsDisplay() {
 }
 
 function CharStatRow({ read }: { read: Read<Tag> }) {
-  const { setRead } = useContext(DebugReadContext)
   const character = useCharacterContext()
   const team = useTeam(character?.key)
   const optTarget = team ? getTeamFrame0(team).tag : undefined
@@ -94,9 +92,6 @@ function CharStatRow({ read }: { read: Read<Tag> }) {
           pointerEvents: 'none',
         },
       }}
-      onClickFormula={
-        shouldShowDevComponents ? () => setRead(calcRead) : () => {}
-      }
     />
   )
 }

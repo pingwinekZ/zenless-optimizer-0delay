@@ -1,5 +1,4 @@
 import { Box } from '@mantine/core'
-import { shouldShowDevComponents } from '@zenless-optimizer/common/util'
 import type { Document } from '@zenless-optimizer/game-opt/sheet-ui'
 import { DocumentDisplay } from '@zenless-optimizer/game-opt/sheet-ui'
 import { useCharacterContext } from '../db-ui'
@@ -23,16 +22,15 @@ export function CharSheetSection() {
       {characterKey === 'Yidhari' && <MinimalYidhariSheet />}
       {characterKey === 'Banyue' && <MinimalBanyueSheet />}
       {characterKey === 'StarlightBilly' && <MinimalStarlightBillySheet />}
-      {shouldShowDevComponents &&
-        Object.values(charSheets[characterKey]).flatMap((sheet, index1) =>
-          sheet.documents.map((doc, index2) => (
-            <DocumentDisplay
-              key={`${index1}_${index2}`}
-              document={doc}
-              collapse
-            />
-          ))
-        )}
+      {Object.values(charSheets[characterKey]).flatMap((sheet, index1) =>
+        sheet.documents.map((doc, index2) => (
+          <DocumentDisplay
+            key={`${index1}_${index2}`}
+            document={doc}
+            collapse
+          />
+        ))
+      )}
     </Box>
   )
 }

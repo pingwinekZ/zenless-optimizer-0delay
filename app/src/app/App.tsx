@@ -1,7 +1,5 @@
 import { Box, Flex, MantineProvider } from '@mantine/core'
 import { ScrollTop } from '@zenless-optimizer/common/ui'
-import { isDev } from '@zenless-optimizer/common/util'
-import { setDebugMode } from '@zenless-optimizer/pando/engine'
 import { DatabaseProvider } from '../db-ui'
 import '../i18n' // import to load translations
 import {
@@ -25,9 +23,6 @@ import Header from './Header'
 import { LayoutSider } from './LayoutSider'
 import { NavigateContextProvider, useNavigateContext } from './NavigateContext'
 import { type TabKey, useTabStore } from './useTabStore'
-
-// Enable debug mode for Pando calcs
-setDebugMode(isDev)
 
 // Priority order for staggered mounting of inactive tabs
 const TAB_MOUNT_PRIORITY: TabKey[] = [

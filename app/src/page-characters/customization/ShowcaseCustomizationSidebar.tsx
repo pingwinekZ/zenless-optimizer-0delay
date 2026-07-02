@@ -1,8 +1,6 @@
-import { Button, ColorInput, Flex, SegmentedControl, Text } from '@mantine/core'
+import { ColorInput, Flex, SegmentedControl, Text } from '@mantine/core'
 import {
-  IconCamera,
   IconCircleHalf2,
-  IconDownload,
   IconMoon,
   IconPalette,
   IconSun,
@@ -50,8 +48,6 @@ export function ShowcaseCustomizationSidebar({
   onDarkModeChange,
   onPresetChange,
 }: ShowcaseCustomizationSidebarProps) {
-  const isDev = import.meta.env.DEV
-
   return (
     <Flex
       direction="column"
@@ -59,7 +55,6 @@ export function ShowcaseCustomizationSidebar({
       className={classes.sidebarContainer}
       style={{ marginLeft: cardTotalW + 8 }}
     >
-      {isDev && <ScreenshotPanel id={id} />}
       <CustomizationPanel
         id={id}
         seedColor={seedColor}
@@ -77,40 +72,6 @@ export function ShowcaseCustomizationSidebar({
     </Flex>
   )
 }
-
-// =============================================================================
-
-const ScreenshotPanel = ({ id }: { id: string }) => {
-  const onScreenshot = useCallback(
-    (format: 'clipboard' | 'download') => {
-      console.warn(`Screenshot (${format}) not implemented yet`, id)
-    },
-    [id]
-  )
-
-  return (
-    <Flex direction="column" gap={6} style={cardStyle}>
-      <Flex gap={6}>
-        <Button
-          onClick={() => onScreenshot('clipboard')}
-          className={classes.actionButton}
-          style={{ height: 'auto' }}
-        >
-          <IconCamera size={18} />
-        </Button>
-        <Button
-          onClick={() => onScreenshot('download')}
-          className={classes.actionButton}
-          style={{ height: 'auto' }}
-        >
-          <IconDownload size={18} />
-        </Button>
-      </Flex>
-    </Flex>
-  )
-}
-
-// =============================================================================
 
 const CustomizationPanel = ({
   id,
