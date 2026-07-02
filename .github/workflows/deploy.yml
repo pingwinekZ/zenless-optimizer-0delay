@@ -31,7 +31,7 @@ jobs:
 
       - name: Build frontend
         run: |
-          NX_SHOW_DEV_COMPONENTS=true npx nx build zzz-frontend
+          VITE_NX_SHOW_DEV_COMPONENTS=true npx nx build zzz-frontend
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

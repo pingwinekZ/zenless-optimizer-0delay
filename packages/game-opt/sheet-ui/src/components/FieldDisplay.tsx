@@ -113,7 +113,7 @@ export function TextFieldDisplay({
 export function TagFieldDisplay({
   field,
   emphasize,
-  showZero = process.env['NODE_ENV'] === 'development',
+  showZero = import.meta.env.DEV,
   calcRead: calcReadOverride,
   rowSx,
   onClickFormula,

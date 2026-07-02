@@ -1,16 +1,14 @@
-import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin'
 import { defineConfig } from 'vite'
 
 export default defineConfig(() => ({
   root: __dirname,
   cacheDir: '../../../node_modules/.vite/libs/common/util',
 
-  plugins: [nxViteTsPaths()],
+  resolve: {
+    tsconfigPaths: true,
+  },
 
-  // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [ nxViteTsPaths() ],
-  // },
+  plugins: [],
 
   test: {
     watch: false,

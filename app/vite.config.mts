@@ -3,7 +3,6 @@ import { existsSync, readdirSync, readFileSync } from 'fs'
 import { resolve } from 'path'
 import { defineConfig, normalizePath, type Plugin } from 'vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
-import tsconfigPaths from 'vite-tsconfig-paths'
 import pkg from './package.json' with { type: 'json' }
 
 // Source directories for locale files (relative to Vite root = app/)
@@ -90,9 +89,12 @@ export default defineConfig(() => {
       host: 'localhost',
     },
 
+    resolve: {
+      tsconfigPaths: true,
+    },
+
     plugins: [
       react(),
-      tsconfigPaths({ loose: true }),
       serveLocaleFiles(),
       // Nx executor for vite does not support `assets` prop for copying files.
       // So we need to do it with this plugin. This works for both `build` and `serve`.
@@ -107,12 +109,37 @@ export default defineConfig(() => {
 
     define: {
       __VERSION__: `"${pkg.version}"`,
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+      'process.env.NX_GA_TRACKINGID': JSON.stringify(
+        process.env.NX_GA_TRACKINGID
+      ),
+      'process.env.NX_URL_GITHUB_FRZYC': JSON.stringify(
+        process.env.NX_URL_GITHUB_FRZYC
+      ),
+      'process.env.NX_URL_GITHUB_VAN': JSON.stringify(
+        process.env.NX_URL_GITHUB_VAN
+      ),
+      'process.env.NX_URL_GITHUB_LANTUA': JSON.stringify(
+        process.env.NX_URL_GITHUB_LANTUA
+      ),
+      'process.env.NX_URL_DISCORD_GO': JSON.stringify(
+        process.env.NX_URL_DISCORD_GO
+      ),
+      'process.env.NX_URL_GITHUB_GO': JSON.stringify(
+        process.env.NX_URL_GITHUB_GO
+      ),
+      'process.env.NX_URL_GITHUB_API_GO_RELEASES': JSON.stringify(
+        process.env.NX_URL_GITHUB_API_GO_RELEASES
+      ),
+      'process.env.NX_URL_GITHUB_GO_CURRENT_VERSION': JSON.stringify(
+        process.env.NX_URL_GITHUB_GO_CURRENT_VERSION
+      ),
     },
 
     // Uncomment this if you are using workers.
     worker: {
       // https://vitejs.dev/guide/migration#worker-plugins-is-now-a-function
-      plugins: () => [tsconfigPaths({ loose: true })],
+      plugins: () => [],
     },
 
     build: {
