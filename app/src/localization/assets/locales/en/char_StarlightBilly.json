@@ -1,5 +1,3 @@
 {
-  "ability_dmg_": "Chain Attack, Ultimate, EX Special Attack & Basic Attack: Full-Throttle Starlight DMG",
-  "m2_dmg_": "Basic Attack: Full-Throttle Starlight, EX Special Attack: Cool Wheelie, and Ultimate: Starlight Knight Flying Kick DMG",
-  "m6_sheer_": "Ultimate & Basic Attack: Full-Throttle Starlight Sheer DMG"
+  "abilityCond": "AA Starlight Stacks DMG buff"
 }

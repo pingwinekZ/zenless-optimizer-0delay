@@ -2,11 +2,13 @@ import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
 import { wengineAsset } from '../../../assets'
 import type { WengineKey } from '../../../consts'
 import { StarlightRiderFaceplate } from '../../../formula'
-import { st, tagToTagField, trans } from '../../util'
+import { mappedStats } from '../../../stats'
+import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'StarlightRiderFaceplate'
-const [chg, _ch] = trans('wengine', key)
+const [chg, ch] = trans('wengine', key)
+const dm = mappedStats.wengine[key]
 const icon = wengineAsset(key)
 const cond = StarlightRiderFaceplate.conditionals
 const buff = StarlightRiderFaceplate.buffs
@@ -25,14 +27,17 @@ const sheet: UISheetElement = {
     },
     {
       type: 'fields',
-      fields: [tagToTagField(buff.passive_crit_.tag)],
+      fields: [{ title: 'CR buff', fieldRef: buff.passive_crit_.tag }],
     },
     {
       type: 'conditional',
       conditional: {
-        label: st('uponLaunch.1', { val1: '$t(skills.exSpecial)' }),
+        label: ch('cond'),
         metadata: cond.specialUsed,
-        fields: [tagToTagField(buff.cond_physical_sheer_dmg_.tag)],
+        fields: [
+          tagToTagField(buff.cond_physical_sheer_dmg_.tag),
+          { title: 'Duration', fieldValue: dm.duration },
+        ],
       },
     },
   ],

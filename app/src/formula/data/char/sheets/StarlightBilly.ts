@@ -7,7 +7,16 @@ import {
 } from '@zenless-optimizer/pando/engine'
 import { type CharacterKey } from '../../../../consts'
 import { allStats, mappedStats } from '../../../../stats'
-import { own, ownBuff, percent, register, registerBuff, team } from '../../util'
+import {
+  allBoolConditionals,
+  allNumConditionals,
+  own,
+  ownBuff,
+  percent,
+  register,
+  registerBuff,
+  team,
+} from '../../util'
 import {
   dmgDazeAndAnomOverride,
   entriesForChar,
@@ -22,6 +31,24 @@ const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
+const { cpCritDmg, m1PhysResIgn } = allBoolConditionals(key, undefined, {
+  m1PhysResIgn: 1,
+})
+const { starlightStacks } = allNumConditionals(
+  key,
+  true,
+  0,
+  dm.ability.starlightMaxStacks
+)
+const { m4CritDmgStacks } = allNumConditionals(
+  key,
+  true,
+  0,
+  dm.m4.maxStacks,
+  undefined,
+  { m4CritDmgStacks: 4 }
+)
+
 const ability_dmg = cmpGE(
   sum(
     team.common.count.withSpecialty('stun'),
@@ -29,10 +56,40 @@ const ability_dmg = cmpGE(
     team.common.count.withSpecialty('support')
   ),
   1,
-  percent(dm.ability.starlightMaxStacks * dm.ability.starlightDmgPerStack)
+  percent(prod(starlightStacks, constant(dm.ability.starlightDmgPerStack)))
 )
 
-const core_critDmg = subscript(char.core, dm.core.critDmgPerUse)
+const ability_basic_dmg = ownBuff.combat.common_dmg_.addWithDmgType(
+  'basic',
+  ability_dmg
+)
+const ability_chain_dmg = ownBuff.combat.common_dmg_.addWithDmgType(
+  'chain',
+  ability_dmg
+)
+const ability_ult_dmg = ownBuff.combat.common_dmg_.addWithDmgType(
+  'ult',
+  ability_dmg
+)
+const ability_exSpecial_dmg = ownBuff.combat.common_dmg_.addWithDmgType(
+  'exSpecial',
+  ability_dmg
+)
+
+const m2_basic_dmg = ownBuff.combat.common_dmg_.addWithDmgType(
+  'basic',
+  cmpGE(char.mindscape, 2, dm.m2.dmg_)
+)
+const m2_ult_dmg = ownBuff.combat.common_dmg_.addWithDmgType(
+  'ult',
+  cmpGE(char.mindscape, 2, dm.m2.dmg_)
+)
+const m2_exSpecial_dmg = ownBuff.combat.common_dmg_.addWithDmgType(
+  'exSpecial',
+  cmpGE(char.mindscape, 2, dm.m2.dmg_)
+)
+
+const core_critDmg = cpCritDmg.ifOn(subscript(char.core, dm.core.critDmgPerUse))
 const core_hpSheerForce = prod(
   own.final.hp,
   constant(dm.core.sheerForcePerHp[0])
@@ -45,13 +102,19 @@ const m2_ability_m6 = ownBuff.combat.common_dmg_.add(
 const m6_sheer = ownBuff.combat.sheer_dmg_.add(
   cmpGE(char.mindscape, 6, dm.m6.sheerDmg_)
 )
+const m6_basic_sheer = ownBuff.combat.sheer_dmg_.addWithDmgType(
+  'basic',
+  cmpGE(char.mindscape, 6, dm.m6.sheerDmg_)
+)
+const m6_ult_sheer = ownBuff.combat.sheer_dmg_.addWithDmgType(
+  'ult',
+  cmpGE(char.mindscape, 6, dm.m6.sheerDmg_)
+)
 
 // M2 + Ability for EX Special Cool Wheelie
 const m2_plus_ability = ownBuff.combat.common_dmg_.add(
   sum(ability_dmg, cmpGE(char.mindscape, 2, dm.m2.dmg_))
 )
-
-const ability_dmg_node = ownBuff.combat.common_dmg_.physical.add(ability_dmg)
 
 const sheet = register(
   key,
@@ -76,7 +139,7 @@ const sheet = register(
       'chain',
       'UltimateStarlightKnightFlyingKick',
       0,
-      { ...baseTag, damageType1: 'chain' },
+      { ...baseTag, damageType1: 'ult' },
       'sheerForce',
       undefined,
       m2_ability_m6,
@@ -88,7 +151,7 @@ const sheet = register(
       'special',
       'EXSpecialAttackCoolWheelie',
       0,
-      { ...baseTag, damageType1: 'special' },
+      { ...baseTag, damageType1: 'exSpecial' },
       'sheerForce',
       undefined,
       m2_plus_ability
@@ -99,20 +162,20 @@ const sheet = register(
       'special',
       'EXSpecialAttackHighTractionWheels',
       0,
-      { ...baseTag, damageType1: 'special' },
+      { ...baseTag, damageType1: 'exSpecial' },
       'sheerForce',
       undefined,
-      ability_dmg_node
+      ownBuff.combat.common_dmg_.add(ability_dmg)
     ),
     dmgDazeAndAnomOverride(
       dm,
       'special',
       'EXSpecialAttackRockingFootwork',
       0,
-      { ...baseTag, damageType1: 'special' },
+      { ...baseTag, damageType1: 'exSpecial' },
       'sheerForce',
       undefined,
-      ability_dmg_node
+      ownBuff.combat.common_dmg_.add(ability_dmg)
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -122,45 +185,69 @@ const sheet = register(
       { ...baseTag, damageType1: 'chain' },
       'sheerForce',
       undefined,
-      ability_dmg_node
+      ownBuff.combat.common_dmg_.add(ability_dmg)
     )
   ),
 
+  registerBuff(
+    'ability_basic_dmg_',
+    ability_basic_dmg,
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff(
+    'ability_chain_dmg_',
+    ability_chain_dmg,
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff(
+    'ability_ult_dmg_',
+    ability_ult_dmg,
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff(
+    'ability_exSpecial_dmg_',
+    ability_exSpecial_dmg,
+    undefined,
+    undefined,
+    false
+  ),
   registerBuff('core_critDmg', ownBuff.combat.crit_dmg_.add(core_critDmg)),
   registerBuff(
     'core_hpSheerForce',
     ownBuff.initial.sheerForce.add(core_hpSheerForce)
   ),
-  registerBuff('ability_dmg_', ability_dmg_node, undefined, undefined, false),
   registerBuff(
     'm1_physResIgn',
     ownBuff.combat.resIgn_.physical.add(
-      cmpGE(char.mindscape, 1, percent(dm.m1.physResIgn))
+      cmpGE(char.mindscape, 1, m1PhysResIgn.ifOn(percent(dm.m1.physResIgn)))
     )
   ),
   registerBuff(
     'm4_critDmg',
     ownBuff.combat.crit_dmg_.add(
-      cmpGE(char.mindscape, 4, percent(dm.m4.maxStacks * dm.m4.critDmgPerUse))
+      cmpGE(
+        char.mindscape,
+        4,
+        percent(prod(m4CritDmgStacks, constant(dm.m4.critDmgPerUse)))
+      )
     )
   ),
+  registerBuff('m2_basic_dmg_', m2_basic_dmg, undefined, undefined, false),
+  registerBuff('m2_ult_dmg_', m2_ult_dmg, undefined, undefined, false),
   registerBuff(
-    'm2_dmg_',
-    ownBuff.combat.common_dmg_.physical.add(
-      cmpGE(char.mindscape, 2, dm.m2.dmg_)
-    ),
+    'm2_exSpecial_dmg_',
+    m2_exSpecial_dmg,
     undefined,
     undefined,
     false
   ),
-  registerBuff(
-    'm6_sheer_',
-    ownBuff.combat.sheer_dmg_.physical.add(
-      cmpGE(char.mindscape, 6, dm.m6.sheerDmg_)
-    ),
-    undefined,
-    undefined,
-    false
-  )
+  registerBuff('m6_basic_sheer_', m6_basic_sheer, undefined, undefined, false),
+  registerBuff('m6_ult_sheer_', m6_ult_sheer, undefined, undefined, false)
 )
 export default sheet

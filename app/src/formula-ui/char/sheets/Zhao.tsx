@@ -35,7 +35,10 @@ const sheet = createBaseSheet(key, {
             ),
             metadata: cond.chargeTime,
             fields: [
-              fieldForBuff(buff.basic_flat_dmg),
+              {
+                title: 'Final Verdict Flat DMG Bonus',
+                fieldRef: buff.basic_flat_dmg.tag,
+              },
               fieldForBuff(buff.chain_flat_dmg),
               fieldForBuff(buff.assistFollowUp_flat_dmg),
             ],

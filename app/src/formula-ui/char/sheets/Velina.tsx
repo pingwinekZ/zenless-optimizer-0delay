@@ -14,7 +14,7 @@ const sheet = createBaseSheet(key, {
       type: 'fields',
       fields: [
         {
-          title: 'CP ER to DMG% and AM',
+          title: 'CP ER to DMG and AM',
           fieldRef: buff.core_common_dmg_.tag,
         },
         fieldForBuff(buff.core_anomMas),
@@ -35,7 +35,7 @@ const sheet = createBaseSheet(key, {
       type: 'fields',
       fields: [
         {
-          title: 'AA Windswept and Vortex DMG%',
+          title: 'AA Windswept and Vortex DMG',
           fieldRef: buff.ability_wind_dmg_.tag,
         },
         fieldForBuff(buff.ability_vortex_dmg_),
@@ -59,7 +59,7 @@ const sheet = createBaseSheet(key, {
       type: 'fields',
       fields: [
         {
-          title: 'M2 Windswept and Vortex DMG%',
+          title: 'M2 Windswept and Vortex DMG',
           fieldRef: buff.m2_wind_dmg_.tag,
         },
         fieldForBuff(buff.m2_vortex_dmg_),
@@ -71,7 +71,7 @@ const sheet = createBaseSheet(key, {
       type: 'fields',
       fields: [
         {
-          title: 'M4 ATK%',
+          title: 'M4 ATK',
           fieldRef: buff.m4_atk_.tag,
         },
       ],

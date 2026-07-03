@@ -130,6 +130,37 @@ function ChiefSidekickCondDesc({ phase }: { phase: number }) {
   return <GameText text={fullDesc.slice(start)} />
 }
 
+/** CRIT Rate portion of StarlightRiderFaceplate's phase description (first sentence). */
+function StarlightRiderFaceplateCRDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_StarlightRiderFaceplate_gen')
+  const fullDesc = t(
+    `wengine_StarlightRiderFaceplate_gen:phaseDescs.${phase - 1}`
+  )
+  const idx = fullDesc.indexOf('. ')
+  if (idx === -1) return <GameText text={fullDesc} />
+  return <GameText text={fullDesc.slice(0, idx + 1)} />
+}
+
+/** Conditional portion of StarlightRiderFaceplate's phase description (from "When" to end). */
+function StarlightRiderFaceplateCondDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_StarlightRiderFaceplate_gen')
+  const fullDesc = t(
+    `wengine_StarlightRiderFaceplate_gen:phaseDescs.${phase - 1}`
+  )
+  const idx = fullDesc.indexOf('When ')
+  if (idx === -1) return <GameText text={fullDesc} />
+  return <GameText text={fullDesc.slice(idx)} />
+}
+
+/** Conditional portion of BoisterousEchoes' phase description (from "When attacking" to end). */
+function BoisterousEchoesCondDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_BoisterousEchoes_gen')
+  const fullDesc = t(`wengine_BoisterousEchoes_gen:phaseDescs.${phase - 1}`)
+  const idx = fullDesc.indexOf('When attacking')
+  if (idx === -1) return <GameText text={fullDesc} />
+  return <GameText text={fullDesc.slice(idx)} />
+}
+
 const WenginePassiveFieldRow = memo(function WenginePassiveFieldRow({
   wengineKey,
   field,
@@ -481,6 +512,9 @@ export function WEngineConditionalsDisplay({
                         (field.fieldRef?.name === 'passive_atk_' ||
                           field.fieldRef?.name === 'passive_hp_') ? (
                         <HalfSugarBunnySquadDesc phase={phase} />
+                      ) : wengineKey === 'StarlightRiderFaceplate' &&
+                        field.fieldRef?.name === 'passive_crit_' ? (
+                        <StarlightRiderFaceplateCRDesc phase={phase} />
                       ) : undefined
                     }
                   />
@@ -539,6 +573,12 @@ export function WEngineConditionalsDisplay({
               ) : wengineKey === 'HalfSugarBunny' &&
                 condName === 'activateExtendEtherVeil' ? (
                 <HalfSugarBunnyCondDesc phase={phase} />
+              ) : wengineKey === 'StarlightRiderFaceplate' &&
+                condName === 'specialUsed' ? (
+                <StarlightRiderFaceplateCondDesc phase={phase} />
+              ) : wengineKey === 'BoisterousEchoes' &&
+                condName === 'enemy_with_anomaly' ? (
+                <BoisterousEchoesCondDesc phase={phase} />
               ) : undefined
             }
           />

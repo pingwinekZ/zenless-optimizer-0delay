@@ -131,17 +131,27 @@ export function OptimizerForm({
         ) {
           const condName = doc.conditional.metadata.name
           if (!result[condName]) result[condName] = []
-          // Deduplicate fields by stat key (q) so same stat from multiple
-          // sources (e.g. exSpecial_atk + core_atk both → q: 'atk') shows once
-          const seenQs = new Set(
+          // Deduplicate fields by stat key (q) + damage type so per-damage-type
+          // buffs (e.g. common_dmg_ with different damageType1) each show as
+          // separate fields instead of being collapsed into one.
+          const seenKeys = new Set(
             result[condName]
-              .map((f) => ('fieldRef' in f ? f.fieldRef?.q : undefined))
+              .map((f) =>
+                'fieldRef' in f
+                  ? `${f.fieldRef?.q ?? ''}|${f.fieldRef?.damageType1 ?? ''}|${f.fieldRef?.damageType2 ?? ''}`
+                  : undefined
+              )
               .filter(Boolean)
           )
           for (const field of doc.conditional.fields) {
-            const q = 'fieldRef' in field ? field.fieldRef?.q : undefined
-            if (!q || !seenQs.has(q)) {
-              if (q) seenQs.add(q)
+            if ('fieldRef' in field) {
+              const key = `${field.fieldRef?.q ?? ''}|${field.fieldRef?.damageType1 ?? ''}|${field.fieldRef?.damageType2 ?? ''}`
+              if (!key || !seenKeys.has(key)) {
+                seenKeys.add(key)
+                result[condName].push(field)
+              }
+            } else {
+              // Non-tag fields (e.g. text values) are always included
               result[condName].push(field)
             }
           }
