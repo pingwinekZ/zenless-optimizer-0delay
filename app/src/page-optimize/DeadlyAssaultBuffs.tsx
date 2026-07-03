@@ -12,13 +12,18 @@ const BOSS_CDN = 'https://static.nanoka.cc/assets/zzz'
 
 function getActiveSeason() {
   const now = Date.now()
+  let best: (typeof seasons)[number] | null = null
+  let bestBegin = 0
   for (const season of seasons) {
     if (!season.beginTime || !season.endTime) continue
     const begin = new Date(season.beginTime).getTime()
     const end = new Date(season.endTime).getTime()
-    if (begin <= now && now < end) return season
+    if (begin <= now && now < end && begin > bestBegin) {
+      best = season
+      bestBegin = begin
+    }
   }
-  return null
+  return best
 }
 
 type SeasonZone = (typeof seasons)[number]['zones'][number]

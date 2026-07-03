@@ -200,7 +200,7 @@ function extractTypedIgnore(
   // or "...<text> ignore[sd]? N% of [the] [enemy's] [attribute] RES [...]"
   // Captures: (1) value, (2) RES or DEF, optional (3) attribute name before RES
   const ignoreRe =
-    /(\s(?:,?\s*and\s+|,\s*|as\s+well\s+as\s+|or\s+))?ignor(?:e[sd]?|ing)\s+(\d+)%\s+of\s+(?:the\s+)?(?:enemy'?s?\s+)?(?:(\w+)\s+)?(?:all[- ]?(?:DMG|attribute)\s+)?(RES|DEF)\b/i
+    /(\s(?:,?\s*and\s+|,\s*|as\s+well\s+as\s+|or\s+))?ignor(?:e[sd]?|ing)\s+(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)'?s?\s+)?(?:(\w+)\s+)?(?:all[- ]?(?:DMG|attribute)\s+)?(RES|DEF)\b/i
 
   const match = sentence.match(ignoreRe)
   if (!match) return sentence
@@ -344,39 +344,60 @@ function extractTypedDmgIncrease(
   }
 
   // Match "DMG is/are increased by N%" or "DMG increases by N%"
-  // Then look at the text before "DMG" for damage type keywords
+  // Also handles "DMG dealt by <types> increases by N%" where types appear
+  // between "DMG" and "increases" rather than before "DMG".
   const dmgIncMatch = sentence.match(
-    /DMG\s+(?:<[^>]+>)?(?:is\s+|are\s+)?increas\w*\s+by\s+(\d+)%/i
+    /DMG\s+(?:<[^>]+>)?(?:is\s+|are\s+)?.*?increas\w*\s+by\s+(\d+)%/i
   )
   if (dmgIncMatch) {
-    const dmgIdx = sentence.indexOf(dmgIncMatch[0])
+    const fullMatch = dmgIncMatch[0]
+    const dmgIdx = sentence.indexOf(fullMatch)
     const beforeDmg = sentence.substring(0, dmgIdx).trim()
     const value = Number(dmgIncMatch[1])
+
+    // Extract text between "DMG" and "increases" for damage type lookup
+    const afterDmg = fullMatch.substring(3)
+    const incrIdx = afterDmg.search(/increas\w*/i)
+    const betweenText = afterDmg.substring(0, incrIdx).trim()
 
     // Check if the word immediately before "DMG" is a damage type keyword
     // (to avoid false matches on stat keywords like "CRIT DMG")
     const lastWord = beforeDmg.split(/[\s,]+/).pop() ?? ''
-    if (matchDamageType(lastWord)) {
-      const dmgTypes = extractDamageTypes(beforeDmg)
+    const dmgTypes = matchDamageType(lastWord)
+      ? extractDamageTypes(beforeDmg)
+      : extractDamageTypes(betweenText)
 
-      if (dmgTypes.length > 0) {
-        for (const dmgType of dmgTypes) {
-          bonusStats.push({
-            tag: {
-              q: 'dmg_',
-              qt: 'combat',
-              damageType1: dmgType as BonusStatTag['damageType1'],
-            },
-            value,
-            ...(conditional && { conditional: true }),
-            ...(specialty && { specialty }),
-          })
-        }
-        return (
-          sentence.substring(0, dmgIdx) +
-          sentence.substring(dmgIdx + dmgIncMatch[0].length)
-        ).trim()
+    if (dmgTypes.length > 0) {
+      for (const dmgType of dmgTypes) {
+        bonusStats.push({
+          tag: {
+            q: 'dmg_',
+            qt: 'combat',
+            damageType1: dmgType as BonusStatTag['damageType1'],
+          },
+          value,
+          ...(conditional && { conditional: true }),
+          ...(specialty && { specialty }),
+        })
       }
+      return (
+        sentence.substring(0, dmgIdx) +
+        sentence.substring(dmgIdx + fullMatch.length)
+      ).trim()
+    }
+
+    // Generic "DMG … increases by N%" with no specific damage type
+    if (beforeDmg === '') {
+      bonusStats.push({
+        tag: { q: 'dmg_', qt: 'combat' },
+        value,
+        ...(conditional && { conditional: true }),
+        ...(specialty && { specialty }),
+      })
+      return (
+        sentence.substring(0, dmgIdx) +
+        sentence.substring(dmgIdx + fullMatch.length)
+      ).trim()
     }
   }
 
@@ -496,7 +517,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
 
         // --- Defense/RES ignore (must check before generic stat patterns) ---
         const defIgnMatch = seg.match(
-          /ignor(?:e|ing)\s+(\d+)%\s+of\s+(?:the\s+)?(?:enemy'?s?\s+)?(?:all[- ]?(?:DMG|attribute)\s+)?DEF/i
+          /ignor(?:e|ing)\s+(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)'?s?\s+)?(?:all[- ]?(?:DMG|attribute)\s+)?DEF/i
         )
         if (defIgnMatch) {
           bonusStats.push({
@@ -509,7 +530,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
         }
 
         const resIgnMatch = seg.match(
-          /ignor(?:e|ing)\s+(\d+)%\s+of\s+(?:the\s+)?(?:enemy'?s?\s+)?(?:all[- ]?(?:DMG|attribute)\s+)?RES/i
+          /ignor(?:e|ing)\s+(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)'?s?\s+)?(?:all[- ]?(?:DMG|attribute)\s+)?RES/i
         )
         if (resIgnMatch) {
           const attr = matchAttribute(seg)
@@ -542,7 +563,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
 
         // --- Check for "ignore N% of enemy [Attribute] RES" ---
         const attrResIgnMatch = seg.match(
-          /ignor(?:e[sd]?|ing)\s+(\d+)%\s+of\s+(?:the\s+)?(?:enemy'?s?\s+)?(\w+)\s+RES/i
+          /ignor(?:e[sd]?|ing)\s+(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)'?s?\s+)?(\w+)\s+RES/i
         )
         if (attrResIgnMatch) {
           const attr = matchAttribute(attrResIgnMatch[2])
@@ -559,7 +580,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
 
         // --- "decreases by N%" (enemy stat reductions) ---
         const decMatch = seg.match(
-          /(?:enemy'?s?|their|the)\s+(.+?)\s+decreases?\s+by\s+(\d+)%/i
+          /(?:enem(?:y|ies)'?s?|their|the)\s+(.+?)\s+decreases?\s+by\s+(\d+)%/i
         )
         if (decMatch) {
           const enemyStatName = decMatch[1]
@@ -609,7 +630,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
 
         // --- "drops by N%" (enemy RES reduction) ---
         const dropMatch = seg.match(
-          /(?:enemy'?s?|their)\s+(\w+)\s+RES\s+drops?\s+by\s+(\d+)%/i
+          /(?:enem(?:y|ies)'?s?|their)\s+(\w+)\s+RES\s+drops?\s+by\s+(\d+)%/i
         )
         if (dropMatch) {
           const attr = matchAttribute(dropMatch[1])
@@ -626,7 +647,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
 
         // --- "drops by N%" for DEF (e.g. "enemy DEF drops by 10%") ---
         const defDropMatch = seg.match(
-          /(?:enemy'?s?|their)\s+DEF\s+drops?\s+by\s+(\d+)%/i
+          /(?:enem(?:y|ies)'?s?|their)\s+DEF\s+drops?\s+by\s+(\d+)%/i
         )
         if (defDropMatch) {
           enemyStats.push({
@@ -640,7 +661,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
 
         // --- "is reduced by N%" (enemy stat reduction) ---
         const reducedMatch = seg.match(
-          /(?:enemy'?s?|their)\s+(.+?)\s+is\s+reduced\s+by\s+(\d+)%/i
+          /(?:enem(?:y|ies)'?s?|their)\s+(.+?)\s+is\s+reduced\s+by\s+(\d+)%/i
         )
         if (reducedMatch) {
           const enemyStatName = reducedMatch[1]
