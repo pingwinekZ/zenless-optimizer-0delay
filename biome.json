@@ -15,7 +15,6 @@
       "!coverage",
       "!.yarn",
       "!.fribbels-hsr-optimizer",
-      "!app/src/dm/ZenlessData",
       "!app/src/dm/HakushinData",
       "!**/*_gen.json",
       "!.nx/cache",

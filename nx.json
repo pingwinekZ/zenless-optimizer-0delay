@@ -1,13 +1,8 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "targetDefaults": {
-    "load-dm": {
-      "executor": "@zenless-optimizer/common/plugin:sync-repo",
-      "outputs": ["{projectRoot}/{options.outputPath}.hash"],
-      "cache": true
-    },
     "gen-file": {
-      "dependsOn": ["load-dm", "^gen-file"],
+      "dependsOn": ["^gen-file"],
       "inputs": ["production", "^production"],
       "cache": true
     },

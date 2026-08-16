@@ -14,7 +14,7 @@ Zenless Zone Zero (ZZZ) optimizer web app — fork/frankenstein of [hsr-optimize
 
 - `app/` — frontend app, Nx project `zzz-frontend` (Vite + React + Mantine)
 - `app/src/<module>/` — ZZZ-specific code: `db`, `formula`, `solver`, `stats`, `pages/*`, `dm`, `schema`, `util`, `disc-scanner`, etc.
-- `app/src/dm/ZenlessData`, `app/src/dm/HakushinData` — **git submodules** (datamine data)
+- `app/src/dm/HakushinData` — **git submodule** (datamine data)
 - `packages/common/` — shared utilities (database, UI, pipeline, localization, Nx plugin)
 - `packages/game-opt/` — optimizer logic (engine, formula, solver, sheet-ui)
 - `packages/pando/engine/` — Pando calculation engine
@@ -49,7 +49,7 @@ Single package: `npx nx test <project>`, `npx nx typecheck <project>`, `npx nx e
 
 ## Gotchas
 
-- `gen-file` depends on `load-dm` (submodule data). Run `bun run reload-dm` first if submodules are empty/not initialized.
+- `gen-file` depends on the HakushinData submodule. Run `bun run reload-dm` first if submodules are empty/not initialized.
 - `zzz-frontend` build implicitly depends on `common-localization` and `zzz-localization` (`project.json`).
 - `mini-ci` uses `nx affected` (only checks what changed since `master`); CI (`.github/workflows/ci.yml`) uses `nx run-many` over everything. For a full local check use `run-many`.
 - Biome format check and ESLint lint are separate and both must pass. Biome ignores: data submodule dirs, `*_gen.json`, coverage, dist, `.nx/cache`, locale JSON files.

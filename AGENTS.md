@@ -11,7 +11,7 @@ Zenless Zone Zero optimizer app. Built with React, TypeScript, Nx, Mantine UI, a
   - `pando/engine/` — Pando calculation engine
 
 - `app/src/<module>/` — ZZZ-specific source (db, formula, solver, pages, dm, stats, etc.)
-- `app/src/dm/ZenlessData`, `app/src/dm/HakushinData` — git submodules (datamine data)
+- `app/src/dm/HakushinData` — git submodule (datamine data)
 
 Path aliases: `@zenless-optimizer/<scope>/<name>` → `packages/<scope>/<name>/src/index.ts` (defined in `tsconfig.base.json`).
 
@@ -135,7 +135,7 @@ Key docs scattered across libs (READMEs in each lib directory give quick intros)
 
 ## Gotchas
 
-- `gen-file` targets depend on `load-dm` (submodule data). Run `bun run reload-dm` before generating if submodules are empty.
+- `gen-file` targets depend on the HakushinData submodule. Run `bun run reload-dm` before generating if submodules are empty.
 - `zzz-frontend` build depends on `common-localization` and `zzz-localization` (implicit deps in `project.json`).
 - `mini-ci` uses `nx affected` — only checks packages changed since master. For full checks, use `nx run-many`.
 - CI uses `nx run-many` (all packages). Local `mini-ci` uses `nx affected`.
