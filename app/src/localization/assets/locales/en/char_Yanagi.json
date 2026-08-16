@@ -1,0 +1,19 @@
+{
+  "jougenCond": "In Jougen stance",
+  "kagenCond": "In Kagen stance",
+  "polarityDisorderCond": "Polarity Disorder active",
+  "basic_electric_dmg_": "Electric DMG",
+  "core_electric_dmg_": "Electric DMG",
+  "core_header": "Additional Disorder & Electric DMG",
+  "ability_header": "Ability",
+  "m1Cond": "One or more stacks of Clarity",
+  "m1_header": "Anomaly Proficiency",
+  "m2Cond": "Thrusts used",
+  "perSkillThrustsCond": "Thrusts",
+  "m2_header": "Thrusts",
+  "m4Cond": "Enemy suffers from Exposed effect",
+  "m4_header": "PEN Ratio",
+  "m6Cond": "In Shinrabanshou state",
+  "m6_header": "EX Special DMG",
+  "m6_exSpecial_dmg_": "EX Special DMG"
+}

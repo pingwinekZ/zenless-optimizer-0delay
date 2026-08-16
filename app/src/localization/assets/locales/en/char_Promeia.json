@@ -1,0 +1,10 @@
+{
+  "core_header": "AM to AP & DMG",
+  "abilityCond": "Presumption of Guilt · DEF Ignore",
+  "m1_header": "Presumption of Guilt · DEF Ignore",
+  "m2_header": "AP & DMG",
+  "m2_trialAbloomMult": "Trial by Cold Abloom DMG Multiplier",
+  "m6_header": "RES Ignore",
+  "m6_resIgn_anomaly": "Anomaly RES Ignore",
+  "m6_resIgn_disorder": "Disorder RES Ignore"
+}

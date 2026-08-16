@@ -1,0 +1,14 @@
+{
+  "name": "Gilded Blossom",
+  "desc": "A W-Engine that represents the brilliance and magnificence of flowers, seemingly crafted from the most luxurious materials. However, after finally dismantling the Ether-powered premium anti-theft device, an experienced thief will discover with terror that this W-Engine... is only gold plated.",
+  "desc2": "Equip to increase Attack Agents' combat capabilities",
+  "desc3": "A W-Engine with a grandiose and luxurious appearance equipped with a premium Ether-powered anti-theft device. It's actually used to provide the equipper with energy.",
+  "phase": "Extraordinary Anti-Theft Measures",
+  "phaseDescs": [
+    "ATK increases by <ct color=#2BAD00>6</ct>%, and DMG dealt by <ct color=#FFFFFF>EX Special Attacks</ct> increases by <ct color=#2BAD00>15%</ct>.",
+    "ATK increases by <ct color=#2BAD00>6.9</ct>%, and DMG dealt by <ct color=#FFFFFF>EX Special Attacks</ct> increases by <ct color=#2BAD00>17.2%</ct>.",
+    "ATK increases by <ct color=#2BAD00>7.8</ct>%, and DMG dealt by <ct color=#FFFFFF>EX Special Attacks</ct> increases by <ct color=#2BAD00>19.5%</ct>.",
+    "ATK increases by <ct color=#2BAD00>8.7</ct>%, and DMG dealt by <ct color=#FFFFFF>EX Special Attacks</ct> increases by <ct color=#2BAD00>21.8%</ct>.",
+    "ATK increases by <ct color=#2BAD00>9.6</ct>%, and DMG dealt by <ct color=#FFFFFF>EX Special Attacks</ct> increases by <ct color=#2BAD00>24%</ct>."
+  ]
+}

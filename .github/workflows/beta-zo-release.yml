@@ -1,0 +1,18 @@
+name: New Beta ZO Release
+
+on:
+  push:
+    branches:
+      - master
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  call-build-frontend:
+    uses: ./.github/workflows/build-frontend.yml
+    with:
+      deployment_name: 'beta'
+      repo_var_name: 'PR_REPO'
+      repo_deploy_secret_name: 'PR_REPO_SSH_KEY'

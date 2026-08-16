@@ -1,0 +1,19 @@
+.card {
+  border-radius: 6px;
+  border: 1px solid var(--border-default);
+  background: var(--layer-2);
+  overflow: hidden;
+  box-shadow: var(--shadow-card-flat);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.cardBody {
+  padding: 10px 12px;
+}

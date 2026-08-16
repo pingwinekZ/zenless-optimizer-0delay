@@ -1,0 +1,14 @@
+{
+  "coreAbloom": "DMG",
+  "core_header": "Vivian's Prophecy · DMG",
+  "core_prophecy_dmg": "Vivian's Prophecy DMG",
+  "ability_header": "DMG",
+  "prophecyCond": "Vivian's Prophecy · DMG",
+  "m2_header": "RES Ign",
+  "m4_header": "CR",
+  "m4_suspension_crit_": "Fluttering Frock - Suspension CRIT Rate",
+  "m4_featherbloom_crit_": "Featherbloom CRIT Rate",
+  "m4Cond": "Fluttering Frock - Suspension / Featherbloom Hit · ATK",
+  "m6_header": "DMG",
+  "m6_ether_dmg_": "Ether DMG"
+}

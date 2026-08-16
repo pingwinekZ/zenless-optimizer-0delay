@@ -1,0 +1,15 @@
+{
+  "idyllic_cadenzaCond": "Idyllic Cadenza",
+  "ult_heal": "Healing",
+  "m1Cond": "RES shred",
+  "m2_atkBuffInc_": "ATK%",
+  "m2_maxIncrease": "ATK Cap",
+  "m6_mv_mult_": "Tremolo and Tone Clusters DMG",
+  "m6_crit_": "CRIT Rate",
+  "m6Cond": "CR",
+  "m6_capriccio_crit_": "Capriccio CRIT Rate",
+  "coreCond": "ATK",
+  "m2_header": "ATK",
+  "m4_dmg": "DMG",
+  "m6_header": "CR & DMG"
+}

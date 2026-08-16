@@ -1,0 +1,12 @@
+{
+  "core_header": "Dash Attack CRIT Rate",
+  "coreCond": "When Harumasa's Dash Attack critical hits",
+  "ability_header": "Additional DMG",
+  "abilityCond": "Enemy under Attribute Anomaly",
+  "m2_header": "Dash Attack DMG",
+  "m2Cond": "While possessing Electro Blitz",
+  "m6_header": "Ha-Oto no Ya",
+  "m6Cond": "After Ha-Oto no Ya hits enemies",
+  "m6_electric_resIgn_": "Electric RES Ignore",
+  "m6_dmg": "Additional DMG"
+}

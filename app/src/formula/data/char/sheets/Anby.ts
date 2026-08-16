@@ -1,0 +1,138 @@
+import { cmpGE, subscript } from '@zenless-optimizer/pando/engine'
+import { type CharacterKey } from '../../../../consts'
+import { allStats, mappedStats } from '../../../../stats'
+import { isStunned } from '../../common/enemy'
+import {
+  allBoolConditionals,
+  own,
+  ownBuff,
+  register,
+  registerBuff,
+} from '../../util'
+import {
+  dmgDazeAndAnomOverride,
+  entriesForChar,
+  getBaseTag,
+  registerAllDmgDazeAndAnom,
+} from '../util'
+
+const key: CharacterKey = 'Anby'
+const data_gen = allStats.char[key]
+const dm = mappedStats.char[key]
+const baseTag = getBaseTag(data_gen)
+
+const { char } = own
+
+const { core_after3rdBasic, m1After4thBasicHit, m6ChargeConsumed } =
+  allBoolConditionals(key, undefined, {
+    m1After4thBasicHit: 1,
+    m6ChargeConsumed: 6,
+  })
+
+const core_after3rdBasic_dazeInc_ = ownBuff.combat.dazeInc_.add(
+  core_after3rdBasic.ifOn(
+    subscript(own.char.core, dm.core.basic_ex_3rdHit_daze_)
+  )
+)
+
+const m2_stunned_basic_dmg_ = ownBuff.combat.dmg_.addWithDmgType(
+  'basic',
+  cmpGE(char.mindscape, 2, isStunned.ifOn(dm.m2.dmg_))
+)
+const m2_unstunned_ex_dazeInc_ = ownBuff.combat.dazeInc_.addWithDmgType(
+  'exSpecial',
+  cmpGE(char.mindscape, 2, isStunned.ifOff(dm.m2.daze_))
+)
+
+const sheet = register(
+  key,
+  // Handles base stats, core stats and Mindscapes 3 + 5
+  entriesForChar(data_gen),
+
+  // Formulas
+  ...registerAllDmgDazeAndAnom(
+    key,
+    dm,
+    // Basic 1-3 is physical
+    dmgDazeAndAnomOverride(
+      dm,
+      'basic',
+      'BasicAttackTurboVolt',
+      0,
+      { damageType1: 'basic' },
+      'atk'
+    ),
+    dmgDazeAndAnomOverride(
+      dm,
+      'basic',
+      'BasicAttackTurboVolt',
+      1,
+      { damageType1: 'basic' },
+      'atk'
+    ),
+    dmgDazeAndAnomOverride(
+      dm,
+      'basic',
+      'BasicAttackTurboVolt',
+      2,
+      { damageType1: 'basic' },
+      'atk'
+    ),
+    // Per-hit buffs
+    dmgDazeAndAnomOverride(
+      dm,
+      'basic',
+      'BasicAttackThunderbolt',
+      0,
+      { ...baseTag, damageType1: 'basic' },
+      'atk',
+      undefined,
+      core_after3rdBasic_dazeInc_,
+      ...m2_stunned_basic_dmg_
+    )
+  ),
+
+  // Buffs
+  registerBuff(
+    'core_after3rdBasic_dazeInc_',
+    core_after3rdBasic_dazeInc_,
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff(
+    'm1_after4thHit_energyRegen_',
+    ownBuff.combat.enerRegen_.add(
+      cmpGE(char.mindscape, 1, m1After4thBasicHit.ifOn(dm.m1.ener_))
+    )
+  ),
+  registerBuff(
+    'm2_stunned_basic_dmg_',
+    m2_stunned_basic_dmg_,
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff(
+    'm2_unstunned_ex_dazeInc_',
+    m2_unstunned_ex_dazeInc_,
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff(
+    'm6_charge_basic_dmg_',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'basic',
+      cmpGE(char.mindscape, 6, m6ChargeConsumed.ifOn(dm.m6.dmg_))
+    )
+  ),
+  registerBuff(
+    'm6_charge_exSpecial_dmg_',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'exSpecial',
+      cmpGE(char.mindscape, 6, m6ChargeConsumed.ifOn(dm.m6.dmg_))
+    )
+  )
+)
+export default sheet

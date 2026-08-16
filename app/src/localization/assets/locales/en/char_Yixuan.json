@@ -1,0 +1,22 @@
+{
+  "core_sheerForce_header": "HP to SF",
+  "core_dmg_header": "DMG",
+  "core_auricArray_dmg_": "Auric Array DMG",
+  "core_qingmingEruption_dmg_": "Qingming Eruption DMG",
+  "ability_dmg": "Additional Sheer DMG",
+  "ability_cloudShaper_dmg_": "Cloud-Shaper DMG",
+  "ability_ashenInk_dmg_": "Ashen Ink Becomes Shadows DMG",
+  "ability_header": "DMG",
+  "meditationCond": "Meditation · CD",
+  "m1_header": "CR & DMG",
+  "m1_crit_": "CR",
+  "m1_dmg": "Additional Sheer DMG",
+  "m2_header": "RES Ignore & DMG",
+  "m2_dmg": "EX Special: Endless Talisman Suppression - Break DMG",
+  "m4_header": "EX Special DMG",
+  "m4Cond": "Tranquility · DMG",
+  "m4_cloudShaper_dmg_": "Cloud-Shaper DMG",
+  "m4_ashenInk_dmg_": "Ashen Ink Becomes Shadows DMG",
+  "m6_header": "Meditation · DMG",
+  "m6_sheer_dmg_": "Sheer DMG"
+}

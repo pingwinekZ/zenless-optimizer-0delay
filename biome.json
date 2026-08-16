@@ -1,0 +1,64 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.7/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "defaultBranch": "origin/master"
+  },
+  "files": {
+    "maxSize": 20971520,
+    "ignoreUnknown": false,
+    "includes": [
+      "**",
+      "!dist",
+      "!coverage",
+      "!.yarn",
+      "!.fribbels-hsr-optimizer",
+      "!app/src/dm/ZenlessData",
+      "!app/src/dm/HakushinData",
+      "!**/*_gen.json",
+      "!.nx/cache",
+      "!.nx/workspace-data",
+      "!app/src/localization/assets/locales/**/*/*.json",
+      "!app/src/dm-localization/assets/locales/**/*/*.json",
+      "!packages/**/*/localization/assets/locales/**/*/*.json"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "useEditorconfig": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 80,
+    "attributePosition": "auto",
+    "bracketSpacing": true
+  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+  "linter": {
+    "enabled": false
+  },
+  "css": {
+    "parser": {
+      "cssModules": true
+    },
+    "formatter": {
+      "enabled": true
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "trailingCommas": "es5",
+      "semicolons": "asNeeded",
+      "arrowParentheses": "always",
+      "bracketSameLine": false,
+      "quoteStyle": "single",
+      "attributePosition": "auto",
+      "bracketSpacing": true
+    }
+  }
+}

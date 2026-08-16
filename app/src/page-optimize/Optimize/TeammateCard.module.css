@@ -1,0 +1,39 @@
+.card {
+  border-radius: 6px;
+  border: 1px solid var(--mantine-color-default-border);
+  background: light-dark(
+    var(--mantine-color-gray-0),
+    var(--mantine-color-dark-6)
+  );
+  overflow: hidden;
+  box-shadow: var(--mantine-shadow-xs);
+  width: calc(50% - 5px);
+  flex-shrink: 0;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Avatar ---- */
+
+.avatar {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+  cursor: pointer;
+  align-self: center;
+}
+
+.avatar:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* ---- Segmented control ---- */
+
+.segmented :global(.mantine-SegmentedControl-label) {
+  padding-inline: 0;
+  min-width: 0;
+}

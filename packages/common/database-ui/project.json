@@ -1,0 +1,8 @@
+{
+  "name": "common-database-ui",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/common/database-ui/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {}
+}

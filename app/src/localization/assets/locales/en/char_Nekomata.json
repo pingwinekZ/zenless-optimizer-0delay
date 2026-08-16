@@ -1,0 +1,5 @@
+{
+  "coreCond": "When Nekomata's Dodge Counter or Quick Assist hits an enemy",
+  "abilityCond": "After any character inflicts Assault",
+  "m1Cond": "When Nekomata hits an enemy from behind"
+}

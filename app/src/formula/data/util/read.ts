@@ -1,0 +1,348 @@
+import {
+  Read as BaseRead,
+  type Tag as BaseTag,
+  reader as baseReader,
+  entryTypes,
+  presets,
+  setReader,
+} from '@zenless-optimizer/game-opt/engine'
+import type { AnyNode } from '@zenless-optimizer/pando/engine'
+import type {
+  Attribute,
+  DamageType,
+  Dst,
+  Faction,
+  SkillType,
+  Specialty,
+  Src,
+  TagMapNodeEntry,
+} from '.'
+import {
+  attributes,
+  damageTypes,
+  factions,
+  members,
+  type Sheet,
+  sheets,
+  skillTypes,
+  specialties,
+} from './listing'
+
+export const fixedTags = {
+  preset: presets,
+  src: members,
+  dst: members,
+  et: entryTypes,
+  sheet: sheets,
+
+  attribute: attributes,
+  skillType1: skillTypes,
+  skillType2: skillTypes,
+  damageType1: damageTypes,
+  damageType2: damageTypes,
+
+  // For `count`
+  specialty: specialties,
+  faction: factions,
+}
+export interface Tag extends BaseTag<Sheet, Src, Dst> {
+  attribute?: Attribute | null
+  skillType1?: SkillType | null
+  skillType2?: SkillType | null
+  damageType1?: DamageType | null
+  damageType2?: DamageType | null
+
+  specialty?: Specialty | null
+  faction?: Faction | null
+}
+
+export class Read extends BaseRead<Tag> {
+  override add(
+    value: number | string | AnyNode,
+    force = false
+  ): TagMapNodeEntry {
+    if (
+      !force &&
+      this.tag.q === 'dmg_' &&
+      !this.tag.attribute &&
+      !this.tag.skillType1 &&
+      !this.tag.skillType2 &&
+      !this.tag.damageType1 &&
+      !this.tag.damageType2
+    ) {
+      throw new Error(
+        'Tried to add to `dmg_` without optional modifier, use `common_dmg_` instead'
+      )
+    }
+    return super.add(value)
+  }
+
+  addWithDmgType(
+    dmgType: DamageType,
+    val: number | string | AnyNode
+  ): TagMapNodeEntry[] {
+    return this[dmgType].map((r) => r.add(val))
+  }
+
+  addWithSkillType(
+    skillType: SkillType,
+    val: number | string | AnyNode
+  ): TagMapNodeEntry[] {
+    return this[skillType].map((r) => r.add(val))
+  }
+
+  override toString(): string {
+    return tagStr(this.tag, this.ex)
+  }
+
+  // Optional Modifiers
+
+  // Attribute
+  get fire() {
+    return super.with('attribute', 'fire')
+  }
+  get electric(): Read {
+    return super.with('attribute', 'electric')
+  }
+  get ice(): Read {
+    return super.with('attribute', 'ice')
+  }
+  get physical(): Read {
+    return super.with('attribute', 'physical')
+  }
+  get ether(): Read {
+    return super.with('attribute', 'ether')
+  }
+  get wind(): Read {
+    return super.with('attribute', 'wind')
+  }
+  get lumiflux(): Read {
+    return super.with('attribute', 'lumiflux')
+  }
+
+  // Skill type
+  get basicSkill(): Read[] {
+    return [
+      super.with('skillType1', 'basicSkill'),
+      super.with('skillType2', 'basicSkill'),
+    ]
+  }
+  get dodgeSkill(): Read[] {
+    return [
+      super.with('skillType1', 'dodgeSkill'),
+      super.with('skillType2', 'dodgeSkill'),
+    ]
+  }
+  get specialSkill(): Read[] {
+    return [
+      super.with('skillType1', 'specialSkill'),
+      super.with('skillType2', 'specialSkill'),
+    ]
+  }
+  get chainSkill(): Read[] {
+    return [
+      super.with('skillType1', 'chainSkill'),
+      super.with('skillType2', 'chainSkill'),
+    ]
+  }
+  get assistSkill(): Read[] {
+    return [
+      super.with('skillType1', 'assistSkill'),
+      super.with('skillType2', 'assistSkill'),
+    ]
+  }
+
+  // Damage type
+  get basic(): Read[] {
+    return [
+      super.with('damageType1', 'basic'),
+      super.with('damageType2', 'basic'),
+    ]
+  }
+  get dash(): Read[] {
+    return [
+      super.with('damageType1', 'dash'),
+      super.with('damageType2', 'dash'),
+    ]
+  }
+  get dodgeCounter(): Read[] {
+    return [
+      super.with('damageType1', 'dodgeCounter'),
+      super.with('damageType2', 'dodgeCounter'),
+    ]
+  }
+  get special(): Read[] {
+    return [
+      super.with('damageType1', 'special'),
+      super.with('damageType2', 'special'),
+    ]
+  }
+  get exSpecial(): Read[] {
+    return [
+      super.with('damageType1', 'exSpecial'),
+      super.with('damageType2', 'exSpecial'),
+    ]
+  }
+  get chain(): Read[] {
+    return [
+      super.with('damageType1', 'chain'),
+      super.with('damageType2', 'chain'),
+    ]
+  }
+  get ult(): Read[] {
+    return [super.with('damageType1', 'ult'), super.with('damageType2', 'ult')]
+  }
+  get entrySkill(): Read[] {
+    return [
+      super.with('damageType1', 'entrySkill'),
+      super.with('damageType2', 'entrySkill'),
+    ]
+  }
+  get quickAssist(): Read[] {
+    return [
+      super.with('damageType1', 'quickAssist'),
+      super.with('damageType2', 'quickAssist'),
+    ]
+  }
+  get defensiveAssist(): Read[] {
+    return [
+      super.with('damageType1', 'defensiveAssist'),
+      super.with('damageType2', 'defensiveAssist'),
+    ]
+  }
+  get evasiveAssist(): Read[] {
+    return [
+      super.with('damageType1', 'evasiveAssist'),
+      super.with('damageType2', 'evasiveAssist'),
+    ]
+  }
+  get assistFollowUp(): Read[] {
+    return [
+      super.with('damageType1', 'assistFollowUp'),
+      super.with('damageType2', 'assistFollowUp'),
+    ]
+  }
+  get anomaly(): Read[] {
+    return [
+      super.with('damageType1', 'anomaly'),
+      super.with('damageType2', 'anomaly'),
+    ]
+  }
+  get disorder(): Read[] {
+    return [
+      super.with('damageType1', 'disorder'),
+      super.with('damageType2', 'disorder'),
+    ]
+  }
+  get aftershock(): Read[] {
+    return [
+      super.with('damageType1', 'aftershock'),
+      super.with('damageType2', 'aftershock'),
+    ]
+  }
+  get elemental(): Read[] {
+    return [
+      super.with('damageType1', 'elemental'),
+      super.with('damageType2', 'elemental'),
+    ]
+  }
+  get sheer(): Read[] {
+    return [
+      super.with('damageType1', 'sheer'),
+      super.with('damageType2', 'sheer'),
+    ]
+  }
+  get abloom(): Read[] {
+    return [
+      super.with('damageType1', 'abloom'),
+      super.with('damageType2', 'abloom'),
+    ]
+  }
+  get luminize(): Read[] {
+    return [
+      super.with('damageType1', 'luminize'),
+      super.with('damageType2', 'luminize'),
+    ]
+  }
+  get vortex(): Read[] {
+    return [
+      super.with('damageType1', 'vortex'),
+      super.with('damageType2', 'vortex'),
+    ]
+  }
+  get windswept(): Read[] {
+    return [
+      super.with('damageType1', 'windswept'),
+      super.with('damageType2', 'windswept'),
+    ]
+  }
+
+  // For `count` usage, use lighter footprint so it doesn't pollute autocomplete
+  // Specialty
+  withSpecialty(specialty: Specialty): Read {
+    return super.with('specialty', specialty)
+  }
+
+  // Faction
+  withFaction(faction: Faction): Read {
+    return super.with('faction', faction)
+  }
+}
+
+// Need to instantiate with zzz-specific reader
+setReader<Tag>(new Read({}, undefined))
+export const reader = baseReader as Read
+
+export function tagStr(tag: Tag, ex?: any): string {
+  const {
+    name,
+    preset,
+    src,
+    dst,
+    et,
+    sheet,
+    q,
+    qt,
+    attribute,
+    damageType1,
+    damageType2,
+    faction,
+    specialty,
+    ...remaining
+  } = tag
+
+  let result = '{ ',
+    includedRequired = false,
+    includedBar = false
+  function required(str: string | undefined | null, name: string) {
+    if (!str && str !== null) return
+    result += str === null ? `!${name} ` : str + ' '
+    includedRequired = true
+  }
+  function optional(str: string | undefined | null, name: string) {
+    if (!str && str !== null) return
+    if (includedRequired && !includedBar) {
+      includedBar = true
+      result += '| '
+    }
+    result += str === null ? `!${name} ` : str + ' '
+  }
+  required(name && `#${name}`, 'name')
+  required(preset, 'preset')
+  required(src && `[${src}]`, 'src')
+  required(dst && `(${dst})`, 'dst')
+  required(sheet, 'sheet')
+  required(et, 'et')
+  if (qt && q) required(`${qt}.${q}`, '')
+  else if (qt) required(`${qt}.`, '')
+  else if (q) required(`.${q}`, '')
+
+  optional(attribute, 'attr')
+  optional(damageType1 && `1:${damageType1}`, 'dmg1')
+  optional(damageType2 && `2:${damageType2}`, 'dmg2')
+  optional(specialty, 'spec')
+  optional(faction, 'fac')
+  if (ex) result += `[${ex}] `
+  if (Object.keys(remaining).length) result += `${JSON.stringify(remaining)} `
+  return result + '}'
+}

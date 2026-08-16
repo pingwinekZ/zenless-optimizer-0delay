@@ -1,0 +1,61 @@
+name: Build Frontend
+run-name: Build frontend for ${{ inputs.deployment_name }} - ${{ github.event.pull_request.merge_commit_sha }}
+
+on:
+  workflow_call:
+    inputs:
+      deployment_name:
+        description: 'Name for the deployment. This will determine the URL.'
+        type: string
+        default: 'master'
+      repo_var_name:
+        description: 'Name of the variable on the repo that contains the repo to deploy to.'
+        type: string
+        required: true
+      repo_deploy_secret_name:
+        description: 'Name of the secret on the repo that contains the deploy key for the deploy repo'
+        type: string
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    name: 'build'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - uses: oven-sh/setup-bun@v2
+      - name: Install dependencies
+        run: |
+          bun install --frozen-lockfile
+      - name: Setup .env
+        run: |
+          printf '%s' "$ZO_ENVFILE" > app/.env.local
+        env:
+          ZO_ENVFILE: ${{ vars.ZO_ENVFILE }}
+      - name: Build frontend
+        run: |
+          npx nx run zzz-frontend:build:production
+      - name: echos
+        run: |
+          echo app > frontend_name
+          echo ${{inputs.deployment_name}} > deployment_name
+          echo true > nested_deployments
+          echo ${{inputs.repo_var_name}} > repo_var_name
+          echo ${{inputs.repo_deploy_secret_name}} > repo_deploy_secret_name
+          echo $(git rev-parse HEAD) > ref
+      - name: Archive build
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend_build
+          path: |
+            dist/app
+            frontend_name
+            deployment_name
+            nested_deployments
+            repo_var_name
+            repo_deploy_secret_name
+            ref

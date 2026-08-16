@@ -1,0 +1,14 @@
+{
+  "name": "[Lunar] Pleniluna",
+  "desc": "A W-Engine that prioritizes damage output over noise reduction. It can indiscriminately deal considerable damage to all units nearby. Its designer compares it to the full moon. Bright moonlight can interrupt people's sleep, and nothing can be done about it. But the moonlight does not bother anyone on purpose — you just have to get used to it.",
+  "desc2": "Equip to increase Attack Agents' combat capabilities",
+  "desc3": "A W-Engine that prioritizes damage output over noise reduction. It can indiscriminately deal considerable damage to all units nearby.",
+  "phase": "Full Moon",
+  "phaseDescs": [
+    "<ct color=#FFFFFF>Basic Attack</ct>, <ct color=#FFFFFF>Dash Attack</ct>, and <ct color=#FFFFFF>Dodge Counter</ct> DMG increases by <ct color=#2BAD00>12%</ct>.",
+    "<ct color=#FFFFFF>Basic Attack</ct>, <ct color=#FFFFFF>Dash Attack</ct>, and <ct color=#FFFFFF>Dodge Counter</ct> DMG increases by <ct color=#2BAD00>14%</ct>.",
+    "<ct color=#FFFFFF>Basic Attack</ct>, <ct color=#FFFFFF>Dash Attack</ct>, and <ct color=#FFFFFF>Dodge Counter</ct> DMG increases by <ct color=#2BAD00>16%</ct>.",
+    "<ct color=#FFFFFF>Basic Attack</ct>, <ct color=#FFFFFF>Dash Attack</ct>, and <ct color=#FFFFFF>Dodge Counter</ct> DMG increases by <ct color=#2BAD00>18%</ct>.",
+    "<ct color=#FFFFFF>Basic Attack</ct>, <ct color=#FFFFFF>Dash Attack</ct>, and <ct color=#FFFFFF>Dodge Counter</ct> DMG increases by <ct color=#2BAD00>20%</ct>."
+  ]
+}

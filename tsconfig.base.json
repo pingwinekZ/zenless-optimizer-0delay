@@ -1,0 +1,88 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": true,
+    "moduleResolution": "bundler",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2021", "dom"],
+    "ignoreDeprecations": "6.0",
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "strict": true,
+    "resolveJsonModule": true,
+    "allowJs": false,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": true,
+    "strictNullChecks": true,
+    "typeRoots": ["./node_modules/@types", "./node_modules", "./types"],
+    "paths": {
+      "@zenless-optimizer/common/ad": ["packages/common/ad/src/index.ts"],
+      "@zenless-optimizer/common/database": [
+        "packages/common/database/src/index.ts"
+      ],
+      "@zenless-optimizer/common/database-ui": [
+        "packages/common/database-ui/src/index.ts"
+      ],
+      "@zenless-optimizer/common/img-util": [
+        "packages/common/img-util/src/index.ts"
+      ],
+      "@zenless-optimizer/common/localization": [
+        "packages/common/localization/src/index.ts"
+      ],
+      "@zenless-optimizer/common/pipeline": [
+        "packages/common/pipeline/src/index.ts"
+      ],
+      "@zenless-optimizer/common/plugin": [
+        "packages/common/plugin/src/index.ts"
+      ],
+      "@zenless-optimizer/common/react-util": [
+        "packages/common/react-util/src/index.ts"
+      ],
+      "@zenless-optimizer/common/svgicons": [
+        "packages/common/svgicons/src/index.ts"
+      ],
+      "@zenless-optimizer/common/ui": ["packages/common/ui/src/index.ts"],
+      "@zenless-optimizer/common/util": ["packages/common/util/src/index.ts"],
+      "@zenless-optimizer/game-opt/engine": [
+        "packages/game-opt/engine/src/index.ts"
+      ],
+      "@zenless-optimizer/game-opt/formula": [
+        "packages/game-opt/formula/src/index.ts"
+      ],
+      "@zenless-optimizer/game-opt/formula-ui": [
+        "packages/game-opt/formula-ui/src/index.ts"
+      ],
+      "@zenless-optimizer/game-opt/sheet-ui": [
+        "packages/game-opt/sheet-ui/src/index.ts"
+      ],
+      "@zenless-optimizer/game-opt/solver": [
+        "packages/game-opt/solver/src/index.ts"
+      ],
+      "@zenless-optimizer/game-opt/solver-webgpu": [
+        "packages/game-opt/solver-webgpu/src/index.ts"
+      ],
+      "@zenless-optimizer/pando/engine": ["packages/pando/engine/src/index.ts"],
+      "@zenless-optimizer/zzz/dm": ["app/src/dm/index.ts"],
+      "@zenless-optimizer/zzz/dm-localization": [
+        "app/src/dm-localization/index.ts"
+      ],
+      "@zenless-optimizer/zzz/stats": ["app/src/stats/index.ts"],
+      "@zenless-optimizer/zzz/assets": ["app/src/assets/index.ts"],
+      "@zenless-optimizer/zzz/assets-data": ["app/src/assets-data/index.ts"],
+      "@zenless-optimizer/zzz/localization": ["app/src/localization/index.ts"],
+      "@zenless-optimizer/zzz/formula": ["app/src/formula/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

@@ -1,0 +1,6 @@
+.portraitContainer {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  border: var(--showcase-outline);
+}

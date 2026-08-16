@@ -1,0 +1,14 @@
+{
+  "name": "zzz-assets-data",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "app/src/assets-data",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "gen-file": {
+      "executor": "@zenless-optimizer/zzz/assets-data:gen-assets-data",
+      "outputs": ["{projectRoot}/AssetsData_gen.json"],
+      "inputs": ["default"]
+    }
+  }
+}

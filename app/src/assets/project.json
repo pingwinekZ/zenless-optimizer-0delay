@@ -1,0 +1,13 @@
+{
+  "name": "zzz-assets",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "app/src/assets",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "gen-file-remote": {
+      "executor": "@zenless-optimizer/zzz/assets:gen-assets-remote",
+      "outputs": ["{projectRoot}/gen/**/*"]
+    }
+  }
+}

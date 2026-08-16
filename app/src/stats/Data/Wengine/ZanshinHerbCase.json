@@ -1,0 +1,14 @@
+{
+  "rarity": "S",
+  "type": "attack",
+  "atk_base": 48,
+  "second_statkey": "crit_dmg_",
+  "second_statvalue": 0.192,
+  "phase": [
+    { "params": [0.1, 0.4, 0.1, 15] },
+    { "params": [0.115, 0.46, 0.115, 15] },
+    { "params": [0.13, 0.52, 0.13, 15] },
+    { "params": [0.145, 0.58, 0.145, 15] },
+    { "params": [0.16, 0.64, 0.16, 15] }
+  ]
+}

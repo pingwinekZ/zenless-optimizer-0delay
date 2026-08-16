@@ -1,0 +1,17 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "git": {
+      "type": "local",
+      "command": ["npx", "-y", "@cyanheads/git-mcp-server"]
+    }
+  },
+  "compaction": {
+    "auto": true,
+    "prune": true
+  }
+}

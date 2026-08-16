@@ -1,0 +1,19 @@
+{
+  "name": "Heartstring Nocturne",
+  "desc": {
+    "0": "The soft hum of hidden strings and faint light blooming in the deep night, where sharpness and calm intertwine, transforming into a silent melody. Thread by thread, it captures everything held dear within.",
+    "1": "",
+    "2": "<ct color=#959595>\"This? It's just a device for storing instrument strings.\"",
+    "3": "—Evelyn, gently strumming the strings. A low hum fills the air, and as the final note echoes, the enemy falls silent.</ct>"
+  },
+  "desc2": "Equip to increase Attack Agents' combat capabilities",
+  "desc3": "The sound of the strings, sharp as blades, cut through the night, protecting the one.",
+  "phase": "String & Melody",
+  "phaseDescs": [
+    "CRIT DMG increases by <ct color=#2BAD00>50%</ct>. When the equipper enters combat, or activates a <ct color=#FFFFFF>Chain Attack</ct> or <ct color=#FFFFFF>Ultimate</ct>, they gain 1 stack of <ct color=#FFFFFF>Heartstring</ct>. Each stack of <ct color=#FFFFFF>Heartstring</ct> allows the equipper's <ct color=#FFFFFF>Chain Attack</ct> and <ct color=#FFFFFF>Ultimate</ct> to ignore <ct color=#2BAD00>12.5%</ct> of the target's <ct color=#FF5521>Fire RES</ct>, stacking up to 2 times and lasting 30s. Repeated triggers reset the duration.",
+    "CRIT DMG increases by <ct color=#2BAD00>57.5%</ct>. When the equipper enters combat, or activates a <ct color=#FFFFFF>Chain Attack</ct> or <ct color=#FFFFFF>Ultimate</ct>, they gain 1 stack of <ct color=#FFFFFF>Heartstring</ct>. Each stack of <ct color=#FFFFFF>Heartstring</ct> allows the equipper's <ct color=#FFFFFF>Chain Attack</ct> and <ct color=#FFFFFF>Ultimate</ct> to ignore <ct color=#2BAD00>14.5%</ct> of the target's <ct color=#FF5521>Fire RES</ct>, stacking up to 2 times and lasting 30s. Repeated triggers reset the duration.",
+    "CRIT DMG increases by <ct color=#2BAD00>65%</ct>. When the equipper enters combat, or activates a <ct color=#FFFFFF>Chain Attack</ct> or <ct color=#FFFFFF>Ultimate</ct>, they gain 1 stack of <ct color=#FFFFFF>Heartstring</ct>. Each stack of <ct color=#FFFFFF>Heartstring</ct> allows the equipper's <ct color=#FFFFFF>Chain Attack</ct> and <ct color=#FFFFFF>Ultimate</ct> to ignore <ct color=#2BAD00>16.5%</ct> of the target's <ct color=#FF5521>Fire RES</ct>, stacking up to 2 times and lasting 30s. Repeated triggers reset the duration.",
+    "CRIT DMG increases by <ct color=#2BAD00>72.5%</ct>. When the equipper enters combat, or activates a <ct color=#FFFFFF>Chain Attack</ct> or <ct color=#FFFFFF>Ultimate</ct>, they gain 1 stack of <ct color=#FFFFFF>Heartstring</ct>. Each stack of <ct color=#FFFFFF>Heartstring</ct> allows the equipper's <ct color=#FFFFFF>Chain Attack</ct> and <ct color=#FFFFFF>Ultimate</ct> to ignore <ct color=#2BAD00>18.5%</ct> of the target's <ct color=#FF5521>Fire RES</ct>, stacking up to 2 times and lasting 30s. Repeated triggers reset the duration.",
+    "CRIT DMG increases by <ct color=#2BAD00>80%</ct>. When the equipper enters combat, or activates a <ct color=#FFFFFF>Chain Attack</ct> or <ct color=#FFFFFF>Ultimate</ct>, they gain 1 stack of <ct color=#FFFFFF>Heartstring</ct>. Each stack of <ct color=#FFFFFF>Heartstring</ct> allows the equipper's <ct color=#FFFFFF>Chain Attack</ct> and <ct color=#FFFFFF>Ultimate</ct> to ignore <ct color=#2BAD00>20%</ct> of the target's <ct color=#FF5521>Fire RES</ct>, stacking up to 2 times and lasting 30s. Repeated triggers reset the duration."
+  ]
+}

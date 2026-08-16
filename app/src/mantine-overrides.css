@@ -1,0 +1,99 @@
+.mantine-Button-root .mantine-Button-section,
+.mantine-Button-root .mantine-Button-label,
+.mantine-Button-root .mantine-Button-loader {
+  transition: none !important;
+}
+
+.mantine-Button-root:disabled,
+.mantine-Button-root[data-disabled] {
+  border: 1px solid var(--border-default) !important;
+  opacity: 0.4;
+}
+
+.mantine-Switch-thumb[data-with-thumb-indicator]::before {
+  display: none;
+}
+
+.mantine-Switch-track {
+  cursor: pointer;
+}
+
+.mantine-Switch-input:not(:checked) + .mantine-Switch-track {
+  background-color: #ffffff40;
+}
+
+.mantine-Switch-input:disabled + .mantine-Switch-track {
+  opacity: 0.15;
+}
+
+.mantine-Switch-input:checked:disabled + .mantine-Switch-track {
+  background-color: var(--mantine-color-primary-4) !important;
+}
+
+.mantine-Timeline-itemBullet[data-active] {
+  background-color: var(--mantine-primary-color-filled);
+  border-color: var(--mantine-primary-color-filled);
+}
+
+.mantine-Combobox-dropdown,
+.mantine-Select-dropdown,
+.mantine-MultiSelect-dropdown,
+[data-menu-dropdown] {
+  background-color: var(--mantine-color-dark-5) !important;
+}
+
+.mantine-Combobox-dropdown,
+.mantine-Combobox-options,
+.mantine-Select-dropdown,
+.mantine-Select-options,
+.mantine-MultiSelect-dropdown,
+.mantine-MultiSelect-options {
+  --combobox-option-fz: 13px !important;
+}
+
+.mantine-Select-input,
+.mantine-MultiSelect-input,
+.mantine-Combobox-input,
+.mantine-Combobox-target .mantine-InputBase-input {
+  font-size: 13px !important;
+}
+
+.mantine-Modal-header,
+.mantine-Drawer-header {
+  background-color: inherit !important;
+}
+
+.mantine-Pill-root {
+  --pill-fz-xs: 12px;
+}
+
+.mantine-Slider-root {
+  --slider-track-bg: #ffffff15 !important;
+  --slider-track-disabled-bg: #ffffff08 !important;
+}
+
+.mantine-Slider-bar[data-disabled]:not([data-inverted]) {
+  background-color: #ffffff08 !important;
+}
+
+.mantine-SegmentedControl-label {
+  font-weight: normal;
+}
+
+.mantine-PillGroup-group:has(.mantine-Pill-root)
+  .mantine-PillsInputField-field::placeholder {
+  color: transparent;
+}
+
+.hide-scrollbar {
+  overflow-y: scroll;
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  -webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

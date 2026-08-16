@@ -1,0 +1,62 @@
+name: Clean PR Deployment
+run-name: Clean deployment ${{ github.event.number }}${{ github.event.inputs.deployment_name }} - ${{ github.event.pull_request.title }}
+
+on:
+  pull_request_target:
+    types: [closed]
+  workflow_dispatch:
+    inputs:
+      deployment_name:
+        description: 'Name for the deployment'
+        type: string
+        default: 'master'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Determine build information
+        id: build-info
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]
+          then
+            echo "deploy_path=${{ github.event.inputs.deployment_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "deploy_path=${{ github.event.number }}" >> $GITHUB_OUTPUT
+          fi
+      - name: Checkout external gh-pages
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ vars.PR_REPO }}
+          ssh-key: ${{ secrets.PR_REPO_SSH_KEY }}
+          ref: gh-pages
+          path: gh-pages
+      - name: Make commit to deploy
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config pull.rebase false
+          git rm -r ./${{ steps.build-info.outputs.deploy_path }}
+          git commit -m "clean ${{ steps.build-info.outputs.deploy_path }}"
+        working-directory: gh-pages
+      - name: Push commit
+        uses: nick-fields/retry@v2
+        with:
+          max_attempts: 4
+          timeout_minutes: 4
+          command: |
+            cd gh-pages
+            git pull origin gh-pages
+            git push origin gh-pages
+      - name: Output date
+        id: output-date
+        run: echo "date=$(date -u)" >> $GITHUB_OUTPUT
+      - name: Maintain comment
+        uses: actions-cool/maintain-one-comment@v3
+        if: github.event_name != 'workflow_dispatch'
+        with:
+          body: |
+            [${{ steps.output-date.outputs.date }}] - Deleted deployment
+          body-include: '<!-- Created by actions-cool/maintain-one-comment -->'
+          update-mode: 'append'

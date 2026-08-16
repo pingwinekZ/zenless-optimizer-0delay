@@ -1,0 +1,14 @@
+{
+  "rarity": "A",
+  "type": "defense",
+  "atk_base": 42,
+  "second_statkey": "atk_",
+  "second_statvalue": 0.1,
+  "phase": [
+    { "params": [0.4, 0.36] },
+    { "params": [0.46, 0.4] },
+    { "params": [0.52, 0.45] },
+    { "params": [0.58, 0.5] },
+    { "params": [0.64, 0.55] }
+  ]
+}

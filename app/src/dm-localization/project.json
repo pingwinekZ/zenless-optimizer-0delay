@@ -1,0 +1,14 @@
+{
+  "name": "zzz-dm-localization",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "app/src/dm-localization",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "gen-file": {
+      "executor": "@zenless-optimizer/zzz/dm-localization:gen-locale",
+      "outputs": ["{projectRoot}/assets/locales"],
+      "inputs": ["default"]
+    }
+  }
+}

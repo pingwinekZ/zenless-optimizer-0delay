@@ -1,0 +1,49 @@
+import { cmpGE, prod, subscript } from '@zenless-optimizer/pando/engine'
+import type { WengineKey } from '../../../../consts'
+import { mappedStats } from '../../../../stats'
+import { allNumConditionals, own, ownBuff, registerBuff } from '../../util'
+import {
+  cmpSpecialtyAndEquipped,
+  entriesForWengine,
+  registerWengine,
+  showSpecialtyAndEquipped,
+} from '../util'
+
+const key: WengineKey = 'SharpenedStinger'
+const dm = mappedStats.wengine[key]
+const { phase } = own.wengine
+
+const { predatoryInstinct } = allNumConditionals(key, true, 0, dm.stacks)
+
+const sheet = registerWengine(
+  key,
+  // Handles base stats and passive buffs
+  entriesForWengine(key),
+
+  // Conditional buffs
+  registerBuff(
+    'physical_dmg_',
+    ownBuff.combat.dmg_.physical.add(
+      cmpSpecialtyAndEquipped(
+        key,
+        prod(predatoryInstinct, subscript(phase, dm.physical_dmg_))
+      )
+    ),
+    showSpecialtyAndEquipped(key)
+  ),
+  registerBuff(
+    'anomBuildup_',
+    ownBuff.combat.anomBuildup_.add(
+      cmpSpecialtyAndEquipped(
+        key,
+        cmpGE(
+          predatoryInstinct,
+          dm.stackThreshold,
+          subscript(phase, dm.anomBuildup_)
+        )
+      )
+    ),
+    showSpecialtyAndEquipped(key)
+  )
+)
+export default sheet

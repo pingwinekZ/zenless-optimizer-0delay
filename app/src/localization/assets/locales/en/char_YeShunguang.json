@@ -1,0 +1,9 @@
+{
+  "core_header": "CR & DMG",
+  "m1_header": "DMG & DEF Ignore",
+  "m2_header": "DEF Ignore",
+  "m2_exSpecial_defIgn_": "Enlightened Mind - Soaring Light DEF Ignore",
+  "m2_ult_defIgn_": "Cleaving Heavens DEF Ignore",
+  "m6_header": "Additional DMG",
+  "m6_dmg": "Lantern Wish DMG"
+}

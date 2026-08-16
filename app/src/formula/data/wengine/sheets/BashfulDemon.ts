@@ -1,0 +1,52 @@
+import { prod, subscript } from '@zenless-optimizer/pando/engine'
+import type { WengineKey } from '../../../../consts'
+import { mappedStats } from '../../../../stats'
+import {
+  allNumConditionals,
+  own,
+  ownBuff,
+  percent,
+  registerBuff,
+  teamBuff,
+} from '../../util'
+import {
+  cmpSpecialtyAndEquipped,
+  entriesForWengine,
+  registerWengine,
+  showSpecialtyAndEquipped,
+} from '../util'
+
+const key: WengineKey = 'BashfulDemon'
+const dm = mappedStats.wengine[key]
+const { phase } = own.wengine
+
+const { launch_ex_attack } = allNumConditionals(key, true, 0, 4)
+
+const sheet = registerWengine(
+  key,
+  // Handles base stats and passive buffs
+  entriesForWengine(key),
+
+  // passive buffs
+  registerBuff(
+    'passive_ice_dmg_',
+    ownBuff.combat.dmg_.ice.add(
+      cmpSpecialtyAndEquipped(key, subscript(phase, dm.ice_))
+    ),
+    showSpecialtyAndEquipped(key)
+  ),
+
+  // Conditional buffs
+  registerBuff(
+    'team_atk_',
+    teamBuff.combat.atk_.add(
+      cmpSpecialtyAndEquipped(
+        key,
+        prod(launch_ex_attack, percent(subscript(phase, dm.atk_)))
+      )
+    ),
+    showSpecialtyAndEquipped(key),
+    true
+  )
+)
+export default sheet

@@ -1,0 +1,14 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 100px;
+}
+
+.accordionWrapper {
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--layer-1);
+  box-shadow: var(--shadow-card-flat);
+  border: 1px solid var(--border-subtle);
+}

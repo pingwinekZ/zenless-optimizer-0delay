@@ -1,0 +1,14 @@
+{
+  "rarity": "A",
+  "type": "stun",
+  "atk_base": 40,
+  "second_statkey": "enerRegen_",
+  "second_statvalue": 0.2,
+  "phase": [
+    { "params": [10, 0.02, 8, 8] },
+    { "params": [10, 0.023, 8, 8] },
+    { "params": [10, 0.026, 8, 8] },
+    { "params": [10, 0.029, 8, 8] },
+    { "params": [10, 0.032, 8, 8] }
+  ]
+}

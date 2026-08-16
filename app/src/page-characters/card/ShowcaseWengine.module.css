@@ -1,0 +1,39 @@
+.wengineCard {
+  position: relative;
+  border-radius: var(--radius-md);
+  border: var(--showcase-outline);
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: var(--showcase-shadow, none);
+  background: var(--showcase-card-bg);
+  min-height: 240px;
+}
+
+.wengineOverlay {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 14px;
+  width: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.75),
+    rgba(0, 0, 0, 0.3)
+  );
+}
+
+.wengineName {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.wenginePhase {
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 2px 8px;
+  border-radius: 4px;
+}

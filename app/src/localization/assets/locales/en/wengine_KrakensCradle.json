@@ -1,0 +1,4 @@
+{
+  "hpDecreasedCond": "HP Decreased · DMG",
+  "hpBelow50Cond": "HP ≤ 50% · CR"
+}

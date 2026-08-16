@@ -1,0 +1,17 @@
+{
+  "name": "Original Transmorpher",
+  "desc": {
+    "0": "A dream W-Engine adored by Starlight Knights fans. Its copyright owner claims that counterfeit transformers can transform you into a bad guy NPC. Watch out for a flying kick that'll scare the bejesus out of the bad guys — that's the power of genuine copyrighted merch!",
+    "1": "\"Starlight Knights, transform— Transform! Transform! Why can't I transform? Unless... the stars haven't chosen me?!\" — from an unboxing vlog recorded by an anonymous member of the Cunning Hares."
+  },
+  "desc2": "Equip to increase Defense Agents' combat capabilities",
+  "desc3": "An epic W-Engine favored by Starlight Knight fans. Its high popularity and scarcity marketing strategy have caused an influx of knock-offs.",
+  "phase": "Starlight Knight Flying Kick",
+  "phaseDescs": [
+    "Increases Max HP by <ct color=#2BAD00>8%</ct>. When attacked, the equipper's Impact is increased by <ct color=#2BAD00>10%</ct> for 12s.",
+    "Increases Max HP by <ct color=#2BAD00>9%</ct>. When attacked, the equipper's Impact is increased by <ct color=#2BAD00>11.5%</ct> for 12s.",
+    "Increases Max HP by <ct color=#2BAD00>10%</ct>. When attacked, the equipper's Impact is increased by <ct color=#2BAD00>13%</ct> for 12s.",
+    "Increases Max HP by <ct color=#2BAD00>11%</ct>. When attacked, the equipper's Impact is increased by <ct color=#2BAD00>14.5%</ct> for 12s.",
+    "Increases Max HP by <ct color=#2BAD00>12.5%</ct>. When attacked, the equipper's Impact is increased by <ct color=#2BAD00>16%</ct> for 12s."
+  ]
+}

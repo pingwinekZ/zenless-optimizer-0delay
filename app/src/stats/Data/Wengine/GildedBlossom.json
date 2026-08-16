@@ -1,0 +1,14 @@
+{
+  "rarity": "A",
+  "type": "attack",
+  "atk_base": 40,
+  "second_statkey": "atk_",
+  "second_statvalue": 0.1,
+  "phase": [
+    { "params": [6, 0.15] },
+    { "params": [6.9, 0.172] },
+    { "params": [7.8, 0.195] },
+    { "params": [8.7, 0.218] },
+    { "params": [9.6, 0.24] }
+  ]
+}

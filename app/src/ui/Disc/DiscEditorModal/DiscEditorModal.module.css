@@ -1,0 +1,46 @@
+.editorGrid {
+  display: grid;
+  grid-template-columns: 300px 12px 1fr;
+  column-gap: 10px;
+  align-items: start;
+}
+
+.valueCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 4px;
+  background-color: var(--mantine-color-dark-5);
+  border: 1px solid var(--mantine-color-dark-4);
+}
+
+.navArrowLeft {
+  position: fixed;
+  top: 50%;
+  right: calc(50% + 280px + 16px);
+  transform: translateY(-50%) rotate(90deg);
+  cursor: pointer;
+  z-index: 201;
+  animation: fadeIn 150ms ease-in;
+}
+
+.navArrowRight {
+  position: fixed;
+  top: 50%;
+  left: calc(50% + 280px + 16px);
+  transform: translateY(-50%) rotate(-90deg);
+  cursor: pointer;
+  z-index: 201;
+  animation: fadeIn 150ms ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

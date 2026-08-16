@@ -1,0 +1,348 @@
+.root {
+  --cr-primary: var(--mantine-primary-color-filled);
+  --cr-primary-tint: color-mix(in srgb, var(--cr-primary) 10%, transparent);
+  --cr-primary-border: color-mix(in srgb, var(--cr-primary) 15%, transparent);
+  --cr-radius: 0;
+  --cr-hover-lift: -2px;
+  --cr-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --cr-hover-brightness: 1.05;
+  --cr-hover-saturate: 1.05;
+  --cr-hover-rest-brightness: 1;
+  --cr-hover-rest-saturate: 1;
+  --cr-action-bg: rgba(80, 80, 90, 0.45);
+  --cr-action-color: #fff;
+  --cr-action-border: 1px solid rgba(255, 255, 255, 0.08);
+
+  position: relative;
+  height: var(--cr-row-height, 68px);
+  flex-shrink: 0;
+  cursor: grab;
+  user-select: none;
+  content-visibility: auto;
+  contain-intrinsic-size: var(--cr-row-height, 68px);
+}
+
+.frame {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--cr-radius);
+  overflow: hidden;
+  contain: content;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+  box-shadow: inset 0 0 0 1px transparent;
+}
+
+.root:hover .frame {
+  transform: translateY(var(--cr-hover-lift));
+  box-shadow: var(--cr-hover-shadow);
+}
+
+.root[data-dragging="true"] {
+  z-index: 10;
+  cursor: grabbing;
+}
+
+.root[data-dragging="true"] .frame {
+  box-shadow:
+    inset 0 0 0 1px var(--border-default),
+    0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.root[data-selected="true"] .frame {
+  box-shadow: inset 0 0 0 1px var(--cr-primary-border);
+}
+
+.portraitBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  filter: brightness(var(--cr-hover-rest-brightness, 1))
+    saturate(var(--cr-hover-rest-saturate, 1));
+  transition: filter 0.2s ease;
+}
+
+.portraitBg img {
+  position: absolute;
+  width: var(--cr-portrait-scale, 66%);
+  height: auto;
+  left: calc(50% + 5px);
+  top: 50%;
+  transform: translate(
+    calc(-1 * var(--cr-portrait-x, 40%)),
+    calc(-1 * var(--cr-portrait-y, 30%))
+  );
+  display: block;
+  opacity: 0;
+}
+
+.root:hover .portraitBg {
+  filter: brightness(var(--cr-hover-brightness, 1.05))
+    saturate(var(--cr-hover-saturate, 1.05));
+}
+
+.scrim {
+  position: absolute;
+  inset: -1px;
+  z-index: 1;
+  transition: background 0.15s;
+}
+
+.scrim[data-scrim-mode="frosted"] {
+  right: auto;
+  width: calc(var(--cr-frost-fade-end, 35%) + 2px);
+  backdrop-filter: blur(var(--cr-frost-blur, 16px))
+    brightness(var(--cr-frost-brightness, 0.8))
+    saturate(var(--cr-frost-saturate, 1.2));
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, var(--cr-frost-tint, 0.2)) 0%,
+    rgba(0, 0, 0, calc(var(--cr-frost-tint, 0.2) * 0.5)) 50%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    black 0%,
+    black var(--cr-frost-mask-solid, 77%),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    black 0%,
+    black var(--cr-frost-mask-solid, 77%),
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.root[data-selected="true"] .scrim[data-scrim-mode="frosted"] {
+  backdrop-filter: blur(var(--cr-frost-blur, 16px))
+    brightness(calc(var(--cr-frost-brightness, 0.8) * 0.85))
+    saturate(calc(var(--cr-frost-saturate, 1.2) * 1.1));
+  background: linear-gradient(
+    90deg,
+    var(--cr-primary-tint) 0%,
+    rgba(0, 0, 0, var(--cr-frost-tint, 0.2)) 30%,
+    rgba(0, 0, 0, calc(var(--cr-frost-tint, 0.2) * 0.4)) 60%,
+    transparent 100%
+  );
+}
+
+.lcStrip {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--cr-lc-strip-width, 52px);
+  z-index: 1;
+  backdrop-filter: blur(6px) brightness(0.7) saturate(1.2);
+  pointer-events: none;
+}
+
+.inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 0 0 var(--cr-padding, 8px);
+  gap: var(--cr-gap, 10px);
+}
+
+.rankGripSlot {
+  position: relative;
+  width: 14px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rankGripSlot .rank {
+  transition: opacity 0.12s;
+}
+
+.rankGripSlot .dragGrip {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5px;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.12s;
+  cursor: grab;
+}
+
+.root:hover .rankGripSlot .rank {
+  opacity: 0;
+}
+
+.root:hover .rankGripSlot .dragGrip {
+  opacity: 0.4;
+}
+
+.gripLine {
+  display: block;
+  width: 8px;
+  height: 1.5px;
+  background: var(--text-secondary);
+}
+
+.subtitle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: var(--cr-subtitle-gap, 1px);
+}
+
+.subtitleBadge {
+  font-size: var(--cr-subtitle-font-size, 12px);
+  line-height: var(--cr-subtitle-line-height, 1.4);
+  font-weight: 500;
+  font-family: var(
+    --cr-subtitle-font-family,
+    var(--mantine-font-family-monospace, monospace)
+  );
+  color: var(--text-secondary);
+}
+
+.lcWrap {
+  position: relative;
+  width: var(--cr-lc-size, 48px);
+  height: var(--cr-lc-size, 48px);
+  flex-shrink: 0;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  margin-right: var(--cr-lc-right-pad, 1px);
+}
+
+.lcWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0;
+}
+
+.lcWrap[data-lc-style="shadow"] {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45))
+    drop-shadow(0 0 3px rgba(0, 0, 0, 0.3));
+}
+
+.rank {
+  font-family: var(--mantine-font-family-monospace, monospace);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.info[data-name-shadow="true"] .name {
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.8),
+    0 0 6px rgba(0, 0, 0, 0.5);
+}
+
+.name {
+  font-size: var(--cr-font-size, calc(var(--mantine-font-size-sm) - 0.5px));
+  line-height: var(--cr-line-height, 1.4);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #e7e7e7;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.actions {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%) scale(0.92);
+  z-index: 5;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.root:hover .actions {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+  pointer-events: auto;
+}
+
+.actionBtn {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  border-radius: var(--cr-radius);
+  background: var(--cr-action-bg) !important;
+  color: var(--cr-action-color) !important;
+  backdrop-filter: none !important;
+  border: var(--cr-action-border) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: none;
+}
+
+.equipDot {
+  display: inline-block;
+  border-radius: 50%;
+  flex-shrink: 0;
+  vertical-align: middle;
+  margin-left: 3px;
+}
+
+/* Drag suppression — triggered by data attributes on the grid container parent */
+[data-suppress-transition] .frame {
+  transition: none !important;
+}
+
+[data-dragging-active] .frame {
+  transition: none;
+  will-change: transform;
+}
+
+[data-dragging-active] .root:hover .frame {
+  transform: none;
+  box-shadow: inset 0 0 0 1px transparent;
+}
+
+[data-dragging-active] .portraitBg {
+  transition: none;
+}
+
+[data-dragging-active] .root:hover .portraitBg {
+  filter: brightness(var(--cr-hover-rest-brightness, 1))
+    saturate(var(--cr-hover-rest-saturate, 1));
+}
+
+[data-dragging-active] .scrim {
+  transition: none;
+}
+
+[data-dragging-active] .actions {
+  transition: none;
+  opacity: 0;
+}
+
+[data-dragging-active] .rankGripSlot .rank,
+[data-dragging-active] .rankGripSlot .dragGrip {
+  transition: none;
+}

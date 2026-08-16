@@ -1,0 +1,102 @@
+// WARNING: Generated file, do not modify
+export const buffs = {
+  m6_dmg: {
+    sheet: 'Dialyn',
+    name: 'm6_dmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Dialyn',
+      attribute: 'physical',
+      name: 'm6_dmg',
+    },
+    team: false,
+  },
+  core_impact: {
+    sheet: 'Dialyn',
+    name: 'core_impact',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'impact',
+      sheet: 'Dialyn',
+      name: 'core_impact',
+    },
+    team: false,
+  },
+  ability_exSpecial_crit_dmg_: {
+    sheet: 'Dialyn',
+    name: 'ability_exSpecial_crit_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'crit_dmg_',
+      sheet: 'Dialyn',
+      damageType1: 'exSpecial',
+      name: 'ability_exSpecial_crit_dmg_',
+    },
+    team: false,
+  },
+  ability_common_dmg_: {
+    sheet: 'Dialyn',
+    name: 'ability_common_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'common_dmg_',
+      sheet: 'Dialyn',
+      name: 'ability_common_dmg_',
+    },
+    team: true,
+  },
+  ability_flat_dmg: {
+    sheet: 'Dialyn',
+    name: 'ability_flat_dmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'flat_dmg',
+      sheet: 'Dialyn',
+      damageType1: 'exSpecial',
+      name: 'ability_flat_dmg',
+    },
+    team: false,
+  },
+  m1_resIgn_: {
+    sheet: 'Dialyn',
+    name: 'm1_resIgn_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'resIgn_',
+      sheet: 'Dialyn',
+      name: 'm1_resIgn_',
+    },
+    team: true,
+  },
+  m2_common_dmg_: {
+    sheet: 'Dialyn',
+    name: 'm2_common_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'common_dmg_',
+      sheet: 'Dialyn',
+      name: 'm2_common_dmg_',
+    },
+    team: true,
+  },
+  m4_atk: {
+    sheet: 'Dialyn',
+    name: 'm4_atk',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'atk',
+      sheet: 'Dialyn',
+      name: 'm4_atk',
+    },
+    team: false,
+  },
+} as const

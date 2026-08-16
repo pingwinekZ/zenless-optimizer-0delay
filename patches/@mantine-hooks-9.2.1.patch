@@ -1,0 +1,35 @@
+diff --git a/esm/use-merged-ref/use-merged-ref.mjs b/esm/use-merged-ref/use-merged-ref.mjs
+@@ -1,5 +1,5 @@
+ "use client";
+-import { useCallback } from "react";
++import { useCallback, useRef } from "react";
+ //#region packages/@mantine/hooks/src/use-merged-ref/use-merged-ref.ts
+ function assignRef(ref, value) {
+ 	if (typeof ref === "function") return ref(value);
+@@ -23,7 +23,11 @@
+ 	};
+ }
+ function useMergedRef(...refs) {
+-	return useCallback(mergeRefs(...refs), refs);
++	const refsRef = useRef(refs);
++	refsRef.current = refs;
++	return useCallback((node) => {
++		refsRef.current.forEach((ref) => assignRef(ref, node));
++	}, []);
+ }
+ //#endregion
+ export { assignRef, mergeRefs, useMergedRef };
+diff --git a/cjs/use-merged-ref/use-merged-ref.cjs b/cjs/use-merged-ref/use-merged-ref.cjs
+@@ -23,7 +23,11 @@
+ 	};
+ }
+ function useMergedRef(...refs) {
+-	return (0, react.useCallback)(mergeRefs(...refs), refs);
++	const refsRef = (0, react.useRef)(refs);
++	refsRef.current = refs;
++	return (0, react.useCallback)((node) => {
++		refsRef.current.forEach((ref) => assignRef(ref, node));
++	}, []);
+ }
+ //#endregion
+ exports.assignRef = assignRef;

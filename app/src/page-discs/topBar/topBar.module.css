@@ -1,0 +1,69 @@
+.topBar {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.avatarBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  min-width: 72px;
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid var(--border-default);
+  background: var(--layer-1);
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.avatarEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px dashed rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.selectColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+  width: 200px;
+  min-width: 200px;
+}
+
+.pillColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  justify-content: center;
+}
+
+.pillGrid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr) auto;
+  gap: 5px;
+  align-items: center;
+}
+
+.pillDouble {
+  grid-column: span 2;
+}
+
+.clearColumn {
+  display: flex;
+  align-items: center;
+  min-width: fit-content;
+}

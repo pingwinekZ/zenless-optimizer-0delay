@@ -1,0 +1,9 @@
+[submodule "app/src/dm/ZenlessData"]
+	path = app/src/dm/ZenlessData
+	url = https://git.mero.moe/dimbreath/ZenlessData.git
+	shallow = true
+[submodule "app/src/dm/HakushinData"]
+	path = app/src/dm/HakushinData
+	url = https://github.com/pingwinekZ/zzz-hakushin-data-0delay.git
+	shallow = true
+	branch = master

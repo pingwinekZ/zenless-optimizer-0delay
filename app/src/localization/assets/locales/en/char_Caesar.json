@@ -1,0 +1,15 @@
+{
+  "stanceSwitchCond": "Stance Switch · Impact",
+  "ultCond": "Ult vs Shielded · Daze Inc",
+  "coreCond": "Radiant Aegis · ATK",
+  "m1RadiantAegisCond": "Radiant Aegis · RES Red",
+  "m2RadiantAegisCond": "Radiant Aegis · Energy Regen & ATK Boost Increase",
+  "abilityTeamCond": "Defensive Assist Activation",
+  "abilityCond": "Debuff · DMG Inc",
+  "core_shield_header": "Radiant Aegis Shield",
+  "m2_atkInc_": "ATK Boost Increase",
+  "m6_header": "EX Special & Assist Follow-Up",
+  "m6_exSpecial_assistFollowup_crit_": "EX Special Attack: Overpowered Shield Bash and Assist Follow-Up: Aiding Blade CRIT Rate",
+  "m6_dmg_": "EX Special Attack: Overpowered Shield Bash and Assist Follow-Up: Aiding Blade DMG",
+  "m6Cond": "EX Special / Assist Follow-Up Used · CRIT Rate & CRIT DMG"
+}

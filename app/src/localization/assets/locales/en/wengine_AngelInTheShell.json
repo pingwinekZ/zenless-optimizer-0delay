@@ -1,0 +1,6 @@
+{
+  "passive_header": "AP",
+  "etherBuffActiveCond": "On-Field / Special / EX Special Used · DMG",
+  "cond_anomaly_dmg_": "Anomaly DMG",
+  "cond_disorder_dmg_": "Disorder DMG"
+}

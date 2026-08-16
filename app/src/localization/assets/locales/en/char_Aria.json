@@ -1,0 +1,12 @@
+{
+  "core_header": "AP",
+  "m1_header": "AM to Abloom CR",
+  "etherVeilCond": "Ether Veil: Delusion Reprise · ATK",
+  "m1_abloom": "Abloom CRIT Rate",
+  "m1_abloom_crit_dmg": "Abloom CRIT DMG",
+  "m2Cond": "Moment of Delusion · DEF Ignore",
+  "m6Cond": "Moment of Delusion · DMG",
+  "m6_perfectPitch_dmg_": "Perfect Pitch #5 DMG",
+  "m6_ult_dmg_": "Ultimate DMG",
+  "ultimate_atk": "Ether Veil · ATK"
+}

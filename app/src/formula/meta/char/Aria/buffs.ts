@@ -1,0 +1,101 @@
+// WARNING: Generated file, do not modify
+export const buffs = {
+  core_anomProf: {
+    sheet: 'Aria',
+    name: 'core_anomProf',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anomProf',
+      sheet: 'Aria',
+      name: 'core_anomProf',
+    },
+    team: false,
+  },
+  m1_abloom: {
+    sheet: 'Aria',
+    name: 'm1_abloom',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anom_crit_',
+      sheet: 'Aria',
+      name: 'm1_abloom',
+    },
+    team: false,
+  },
+  m1_abloom_crit_dmg: {
+    sheet: 'Aria',
+    name: 'm1_abloom_crit_dmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anom_crit_dmg_',
+      sheet: 'Aria',
+      name: 'm1_abloom_crit_dmg',
+    },
+    team: false,
+  },
+  m2_defIgn_base: {
+    sheet: 'Aria',
+    name: 'm2_defIgn_base',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'defIgn_',
+      sheet: 'Aria',
+      name: 'm2_defIgn_base',
+    },
+    team: false,
+  },
+  m2_defIgn_delusion: {
+    sheet: 'Aria',
+    name: 'm2_defIgn_delusion',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'defIgn_',
+      sheet: 'Aria',
+      name: 'm2_defIgn_delusion',
+    },
+    team: false,
+  },
+  m6_perfectPitch_dmg_: {
+    sheet: 'Aria',
+    name: 'm6_perfectPitch_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Aria',
+      attribute: 'ether',
+      name: 'm6_perfectPitch_dmg_',
+    },
+    team: false,
+  },
+  m6_ult_dmg_: {
+    sheet: 'Aria',
+    name: 'm6_ult_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Aria',
+      attribute: 'ether',
+      name: 'm6_ult_dmg_',
+    },
+    team: false,
+  },
+  ultimate_atk: {
+    sheet: 'Aria',
+    name: 'ultimate_atk',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'atk',
+      sheet: 'Aria',
+      name: 'ultimate_atk',
+    },
+    team: true,
+  },
+} as const

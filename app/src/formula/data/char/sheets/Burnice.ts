@@ -1,0 +1,315 @@
+import {
+  cmpGE,
+  constant,
+  max,
+  min,
+  prod,
+  subscript,
+  sum,
+} from '@zenless-optimizer/pando/engine'
+import { type CharacterKey } from '../../../../consts'
+import { allStats, mappedStats } from '../../../../stats'
+import {
+  allBoolConditionals,
+  allNumConditionals,
+  customAnomalyBuildup,
+  customDmg,
+  own,
+  ownBuff,
+  percent,
+  register,
+  registerBuff,
+  teamBuff,
+} from '../../util'
+import {
+  dmgDazeAndAnomOverride,
+  entriesForChar,
+  getBaseTag,
+  registerAllDmgDazeAndAnom,
+} from '../util'
+
+const key: CharacterKey = 'Burnice'
+const data_gen = allStats.char[key]
+const dm = mappedStats.char[key]
+const baseTag = getBaseTag(data_gen)
+
+const { char } = own
+
+const { exSpecial_active, additional_burn, abloom } = allBoolConditionals(
+  key,
+  undefined,
+  { exSpecial_active: 6, additional_burn: 6 }
+)
+const { thermal_penetration } = allNumConditionals(
+  key,
+  true,
+  0,
+  dm.m2.stacks,
+  undefined,
+  { thermal_penetration: 2 }
+)
+
+const core_afterburn_dmg_ = ownBuff.combat.common_dmg_.add(
+  min(
+    percent(dm.core.max_afterburn_dmg_),
+    prod(
+      percent(1 / dm.core.anomProf_step),
+      percent(dm.core.afterburn_dmg_),
+      own.final.anomProf
+    )
+  )
+)
+const m6_fire_resIgn_ = ownBuff.combat.resIgn_.fire.add(
+  cmpGE(
+    char.mindscape,
+    6,
+    exSpecial_active.ifOn(dm.m6.exSpecial_specialAfterburn_burn_fire_resIgn_)
+  )
+)
+
+const sheet = register(
+  key,
+  // Handles base stats, core stats and Mindscapes 3 + 5
+  entriesForChar(data_gen),
+
+  // Formulas
+  ...registerAllDmgDazeAndAnom(
+    key,
+    dm,
+    // Basic Direct Flame Blend hit 2 is physical, hit 1 partially physical
+    dmgDazeAndAnomOverride(
+      dm,
+      'basic',
+      'BasicAttackDirectFlameBlend',
+      1,
+      { damageType1: 'basic' },
+      'atk'
+    ),
+    // Dodge Fluttering Steps is partially physical
+    // Per-hit buffs
+    dmgDazeAndAnomOverride(
+      dm,
+      'basic',
+      'BasicAttackMixedFlameBlend',
+      0,
+      {
+        ...baseTag,
+        damageType1: 'basic',
+        skillType1: 'basicSkill',
+        skillType2: 'assistSkill',
+      },
+      'atk'
+    ),
+    dmgDazeAndAnomOverride(
+      dm,
+      'basic',
+      'BasicAttackMixedFlameBlend',
+      1,
+      {
+        ...baseTag,
+        damageType1: 'basic',
+        skillType1: 'basicSkill',
+        skillType2: 'assistSkill',
+      },
+      'atk'
+    ),
+    dmgDazeAndAnomOverride(
+      dm,
+      'special',
+      'EXSpecialAttackIntenseHeatStirringMethod',
+      0,
+      { ...baseTag, damageType1: 'exSpecial' },
+      'atk'
+    ),
+    dmgDazeAndAnomOverride(
+      dm,
+      'special',
+      'EXSpecialAttackIntenseHeatStirringMethod',
+      1,
+      { ...baseTag, damageType1: 'exSpecial' },
+      'atk'
+    ),
+    dmgDazeAndAnomOverride(
+      dm,
+      'special',
+      'EXSpecialAttackIntenseHeatStirringMethodDoubleShot',
+      0,
+      { ...baseTag, damageType1: 'exSpecial' },
+      'atk',
+      undefined,
+      m6_fire_resIgn_
+    ),
+    dmgDazeAndAnomOverride(
+      dm,
+      'special',
+      'EXSpecialAttackIntenseHeatStirringMethodDoubleShot',
+      1,
+      { ...baseTag, damageType1: 'exSpecial' },
+      'atk',
+      undefined,
+      m6_fire_resIgn_
+    )
+  ),
+
+  ...customDmg(
+    'core_afterburn_dmg',
+    { ...baseTag, skillType1: 'assistSkill' },
+    prod(
+      own.final.atk,
+      sum(
+        percent(subscript(char.core, dm.core.afterburn_dmg)),
+        cmpGE(char.mindscape, 1, percent(dm.m1.afterburn_dmg))
+      )
+    ),
+    undefined,
+    core_afterburn_dmg_
+  ),
+  ...customAnomalyBuildup(
+    'core_afterburn_anomBuildup',
+    {
+      ...baseTag,
+      skillType1: 'assistSkill',
+    },
+    constant(60),
+    undefined,
+    core_afterburn_dmg_
+  ),
+  ...customDmg(
+    'm6_additional_afterburn_dmg',
+    { ...baseTag, skillType1: 'assistSkill' },
+    cmpGE(
+      char.mindscape,
+      6,
+      prod(own.final.atk, percent(dm.m6.special_afterburn_dmg))
+    ),
+    undefined,
+    m6_fire_resIgn_
+  ),
+
+  // Buffs
+  registerBuff(
+    'exSpecial_ether_anom_mv_mult_',
+    teamBuff.combat.anom_mv_mult_.ether.addWithDmgType(
+      'abloom',
+      abloom.ifOn(percent(4.8))
+    ),
+    undefined,
+    true
+  ),
+  registerBuff(
+    'exSpecial_electric_anom_mv_mult_',
+    teamBuff.combat.anom_mv_mult_.electric.addWithDmgType(
+      'abloom',
+      abloom.ifOn(percent(2.4))
+    ),
+    undefined,
+    true
+  ),
+  registerBuff(
+    'exSpecial_fire_anom_mv_mult_',
+    teamBuff.combat.anom_mv_mult_.fire.addWithDmgType(
+      'abloom',
+      abloom.ifOn(percent(6))
+    ),
+    undefined,
+    true
+  ),
+  registerBuff(
+    'exSpecial_physical_anom_mv_mult_',
+    teamBuff.combat.anom_mv_mult_.physical.addWithDmgType(
+      'abloom',
+      abloom.ifOn(percent(0.4))
+    ),
+    undefined,
+    true
+  ),
+  registerBuff(
+    'exSpecial_ice_anom_mv_mult_',
+    teamBuff.combat.anom_mv_mult_.ice.addWithDmgType(
+      'abloom',
+      abloom.ifOn(percent(0.6))
+    ),
+    undefined,
+    true
+  ),
+  registerBuff(
+    'core_afterburn_dmg_',
+    core_afterburn_dmg_,
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff(
+    'potential_anomMas',
+    ownBuff.combat.anomMas.add(
+      min(
+        dm.potential.max_anomMas,
+        prod(
+          max(0, sum(own.initial.enerRegen, -dm.potential.initial_enerRegen)),
+          subscript(char.potential, dm.potential.anomMas),
+          percent(1 / dm.potential.enerRegenStep)
+        )
+      )
+    )
+  ),
+  registerBuff(
+    'potential_common_dmg_',
+    ownBuff.combat.common_dmg_.add(
+      min(
+        percent(dm.potential.max_common_dmg_),
+        prod(
+          max(0, sum(own.initial.enerRegen, -dm.potential.initial_enerRegen)),
+          subscript(char.potential, dm.potential.common_dmg_),
+          percent(1 / dm.potential.enerRegenStep)
+        )
+      )
+    )
+  ),
+  registerBuff(
+    'm2_pen_',
+    teamBuff.combat.pen_.add(
+      cmpGE(char.mindscape, 2, prod(thermal_penetration, percent(dm.m2.pen_)))
+    ),
+    undefined,
+    true
+  ),
+  registerBuff(
+    'm4_exSpecial_crit_',
+    ownBuff.combat.crit_.addWithDmgType(
+      'exSpecial',
+      cmpGE(char.mindscape, 4, dm.m4.exSpecial_assist_crit_)
+    )
+  ),
+  registerBuff(
+    'm4_assistSkill_crit_',
+    ownBuff.combat.crit_.addWithSkillType(
+      'assistSkill',
+      cmpGE(char.mindscape, 4, dm.m4.exSpecial_assist_crit_)
+    )
+  ),
+  registerBuff(
+    'm6_burn_fire_resIgn_',
+    ownBuff.combat.resIgn_.fire.addWithDmgType(
+      'anomaly',
+      cmpGE(
+        char.mindscape,
+        6,
+        exSpecial_active.ifOn(
+          dm.m6.exSpecial_specialAfterburn_burn_fire_resIgn_
+        )
+      )
+    )
+  ),
+  registerBuff('m6_fire_resIgn_', m6_fire_resIgn_, undefined, undefined, false),
+  registerBuff(
+    'm6_fire_anom_mv_mult_',
+    ownBuff.combat.anom_mv_mult_.fire.add(
+      cmpGE(
+        char.mindscape,
+        6,
+        additional_burn.ifOn(percent(dm.m6.additional_burn_dmg))
+      )
+    )
+  )
+)
+export default sheet

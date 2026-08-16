@@ -1,0 +1,15 @@
+{
+  "etherVeilCond": "Ether Veil: Cold-Blooded · CD",
+  "corrodeBoneCritStacksCond": "Corrode Bone Stacks · CR",
+  "venomDefIgnCond": "Venom State · DEF Ignore",
+  "venomCritDmgCond": "Venom State · CD",
+  "core_dmg_header": "Additional DMG",
+  "core_daze_header": "Daze",
+  "m2_header": "DMG",
+  "core_corrodeBone_dmg_": "Corrode Bone Additional DMG",
+  "core_corrodeBone_daze_": "Corrode Bone Daze",
+  "core_defIgn_": "DEF Ignore",
+  "m1_electric_resIgn_": "RES Ignore",
+  "m1_corrodeBone_resIgn_": "Corrode Bone RES Ignore",
+  "m2_serpentsKiss_dmg_": "Serpent's Kiss DMG"
+}

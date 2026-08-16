@@ -1,0 +1,28 @@
+import { usedNames, usedQ } from '@zenless-optimizer/game-opt/engine'
+import {
+  compileTagMapKeys,
+  compileTagMapValues,
+} from '@zenless-optimizer/pando/engine'
+import charData from './char'
+import common from './common'
+import disc from './disc'
+import { fixedTags, queryTypes, type TagMapNodeEntries } from './util'
+import wengine from './wengine'
+
+export const data: TagMapNodeEntries = [
+  ...charData,
+  ...disc,
+  ...wengine,
+  ...common,
+]
+export const keys = compileTagMapKeys([
+  { category: 'qt', values: queryTypes },
+  { category: 'q', values: usedQ },
+  undefined,
+  ...Object.entries(fixedTags).map(([k, v]) => ({
+    category: k,
+    values: new Set(v),
+  })),
+  { category: 'name', values: usedNames },
+])
+export const values = compileTagMapValues(keys, data)

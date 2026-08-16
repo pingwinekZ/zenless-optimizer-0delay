@@ -1,0 +1,59 @@
+diff --git a/esm/components/SegmentedControl/SegmentedControl.mjs b/esm/components/SegmentedControl/SegmentedControl.mjs
+@@ -11,7 +11,7 @@
+ import { Box } from "../../core/Box/Box.mjs";
+ import { FloatingIndicator } from "../FloatingIndicator/FloatingIndicator.mjs";
+ import SegmentedControl_module_default from "./SegmentedControl.module.mjs";
+-import { createElement, useState } from "react";
++import { createElement, useRef, useState } from "react";
+ import { randomId, useId as useId$1, useMergedRef, useMounted, useShallowEffect, useUncontrolled } from "@mantine/hooks";
+ import { jsx, jsxs } from "react/jsx-runtime";
+ //#region packages/@mantine/core/src/components/SegmentedControl/SegmentedControl.tsx
+@@ -50,9 +50,12 @@
+ 	const [key, setKey] = useState(randomId());
+ 	const [parent, setParent] = useState(null);
+ 	const [refs, setRefs] = useState({});
++	const _refCbs = useRef({});
+ 	const setElementRef = (element, val) => {
+-		refs[val] = element;
+-		setRefs(refs);
++		setRefs((prev) => {
++			if (prev[val] === element) return prev;
++			return { ...prev, [val]: element };
++		});
+ 	};
+ 	const [_value, handleValueChange] = useUncontrolled({
+ 		value,
+@@ -88,7 +91,7 @@
+ 			"read-only": readOnly
+ 		},
+ 		htmlFor: `${uuid}-${item.value}`,
+-		ref: (node) => setElementRef(node, `${item.value}`),
++		ref: _refCbs.current[item.value] || (_refCbs.current[item.value] = (node) => setElementRef(node, `${item.value}`)),
+ 		__vars: { "--sc-label-color": color !== void 0 ? getContrastColor({
+ 			color,
+ 			theme,
+diff --git a/cjs/components/SegmentedControl/SegmentedControl.cjs b/cjs/components/SegmentedControl/SegmentedControl.cjs
+@@ -50,9 +50,12 @@
+ 	const [key, setKey] = (0, react.useState)((0, _mantine_hooks.randomId)());
+ 	const [parent, setParent] = (0, react.useState)(null);
+ 	const [refs, setRefs] = (0, react.useState)({});
++	const _refCbs = (0, react.useRef)({});
+ 	const setElementRef = (element, val) => {
+-		refs[val] = element;
+-		setRefs(refs);
++		setRefs((prev) => {
++			if (prev[val] === element) return prev;
++			return { ...prev, [val]: element };
++		});
+ 	};
+ 	const [_value, handleValueChange] = (0, _mantine_hooks.useUncontrolled)({
+ 		value,
+@@ -88,7 +91,7 @@
+ 			"read-only": readOnly
+ 		},
+ 		htmlFor: `${uuid}-${item.value}`,
+-		ref: (node) => setElementRef(node, `${item.value}`),
++		ref: _refCbs.current[item.value] || (_refCbs.current[item.value] = (node) => setElementRef(node, `${item.value}`)),
+ 		__vars: { "--sc-label-color": color !== void 0 ? require_get_contrast_color.getContrastColor({
+ 			color,
+ 			theme,

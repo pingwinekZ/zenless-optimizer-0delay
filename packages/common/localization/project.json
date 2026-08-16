@@ -1,0 +1,18 @@
+{
+  "name": "common-localization",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/common/localization/src",
+  "projectType": "library",
+  "targets": {
+    "gen-file": {
+      "executor": "@zenless-optimizer/common/localization:gen-locale",
+      "outputs": [
+        "{projectRoot}/Translated",
+        "{projectRoot}/assets/locales",
+        "{projectRoot}/main_gen.json"
+      ],
+      "inputs": ["default"]
+    }
+  },
+  "tags": []
+}

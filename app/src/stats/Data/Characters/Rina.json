@@ -1,0 +1,301 @@
+{
+  "id": "1211",
+  "rarity": "S",
+  "attribute": "electric",
+  "specialty": "support",
+  "faction": "VictoriaHousekeepingCo",
+  "stats": {
+    "atk_base": 103,
+    "atk_growth": 6.0201,
+    "def_base": 48,
+    "def_growth": 6.5524,
+    "hp_base": 692,
+    "hp_growth": 93.9358,
+    "anomMas": 93,
+    "anomProf": 92,
+    "impact": 83,
+    "enerRegen": 1.2
+  },
+  "promotionStats": [
+    { "hp": 0, "atk": 0, "def": 0 },
+    { "hp": 475, "atk": 37, "def": 33 },
+    { "hp": 950, "atk": 74, "def": 66 },
+    { "hp": 1425, "atk": 111, "def": 99 },
+    { "hp": 1900, "atk": 147, "def": 133 },
+    { "hp": 2375, "atk": 184, "def": 166 }
+  ],
+  "coreStats": [
+    { "atk": 0, "pen_": 0.048 },
+    { "atk": 25, "pen_": 0.048 },
+    { "atk": 25, "pen_": 0.096 },
+    { "atk": 50, "pen_": 0.096 },
+    { "atk": 50, "pen_": 0.144 },
+    { "atk": 75, "pen_": 0.144 }
+  ],
+  "skillParams": {
+    "basic": {
+      "BasicAttackWhackTheDimwit": [
+        {
+          "DamagePercentage": 0.44,
+          "DamagePercentageGrowth": 0.04,
+          "StunRatio": 0.245,
+          "StunRatioGrowth": 0.012,
+          "SpRecovery": 83.8,
+          "SpRecoveryGrowth": 0,
+          "FeverRecovery": 640.75,
+          "FeverRecoveryGrowth": 0,
+          "AttributeInfliction": 0
+        },
+        {
+          "DamagePercentage": 1.114,
+          "DamagePercentageGrowth": 0.102,
+          "StunRatio": 0.884,
+          "StunRatioGrowth": 0.041,
+          "SpRecovery": 302.9,
+          "SpRecoveryGrowth": 0,
+          "FeverRecovery": 1652.75,
+          "FeverRecoveryGrowth": 0,
+          "AttributeInfliction": 0
+        },
+        {
+          "DamagePercentage": 1.171,
+          "DamagePercentageGrowth": 0.107,
+          "StunRatio": 0.966,
+          "StunRatioGrowth": 0.044,
+          "SpRecovery": 331,
+          "SpRecoveryGrowth": 0,
+          "FeverRecovery": 3861,
+          "FeverRecoveryGrowth": 0,
+          "AttributeInfliction": 83.63
+        },
+        {
+          "DamagePercentage": 1.839,
+          "DamagePercentageGrowth": 0.168,
+          "StunRatio": 1.468,
+          "StunRatioGrowth": 0.067,
+          "SpRecovery": 559,
+          "SpRecoveryGrowth": 0,
+          "FeverRecovery": 3418.25,
+          "FeverRecoveryGrowth": 0,
+          "AttributeInfliction": 104.74
+        }
+      ],
+      "BasicAttackShooTheFool": [
+        {
+          "DamagePercentage": 3.151,
+          "DamagePercentageGrowth": 0.287,
+          "StunRatio": 3.151,
+          "StunRatioGrowth": 0.144,
+          "SpRecovery": 1080.2,
+          "SpRecoveryGrowth": 0,
+          "FeverRecovery": 8252.75,
+          "FeverRecoveryGrowth": 0,
+          "AttributeInfliction": 300.03
+        }
+      ],
+      "BasicAttackMorningCleanup": [
+        {
+          "DamagePercentage": 0.525,
+          "DamagePercentageGrowth": 0.048,
+          "StunRatio": 0,
+          "StunRatioGrowth": 0,
+          "SpRecovery": 0,
+          "SpRecoveryGrowth": 0,
+          "FeverRecovery": 0,
+          "FeverRecoveryGrowth": 0,
+          "AttributeInfliction": 0
+        },
+        {
+          "DamagePercentage": 0.525,
+          "DamagePercentageGrowth": 0.048,
+          "StunRatio": 0,
+          "StunRatioGrowth": 0,
+          "SpRecovery": 0,
+          "SpRecoveryGrowth": 0,
+          "FeverRecovery": 0,
+          "FeverRecoveryGrowth": 0,
+          "AttributeInfliction": 0
+        },
+        {
+          "DamagePercentage": 0.525,
+          "DamagePercentageGrowth": 0.048,
+          "StunRatio": 0,
+          "StunRatioGrowth": 0,
+          "SpRecovery": 0,
+          "SpRecoveryGrowth": 0,
+          "FeverRecovery": 0,
+          "FeverRecoveryGrowth": 0,
+          "AttributeInfliction": 0
+        }
+      ],
+      "BasicAttackMidnightCleanup": [
+        {
+          "DamagePercentage": 2.1,
+          "DamagePercentageGrowth": 0.191,
+          "StunRatio": 0,
+          "StunRatioGrowth": 0,
+          "SpRecovery": 0,
+          "SpRecoveryGrowth": 0,
+          "FeverRecovery": 0,
+          "FeverRecoveryGrowth": 0,
+          "AttributeInfliction": 0
+        }
+      ]
+    },
+    "dodge": {
+      "DodgeDressAdjustment": [],
+      "DashAttackSuddenSurprise": [
+        {
+          "DamagePercentage": 1.05,
+          "DamagePercentageGrowth": 0.096,
+          "StunRatio": 0.525,
+          "StunRatioGrowth": 0.024,
+          "SpRecovery": 180,
+          "SpRecoveryGrowth": 0,
+          "FeverRecovery": 1375,
+          "FeverRecoveryGrowth": 0,
+          "AttributeInfliction": 0
+        }
+      ],
+      "DodgeCounterBangbooCallback": [
+        {
+          "DamagePercentage": 2.276,
+          "DamagePercentageGrowth": 0.207,
+          "StunRatio": 2.276,
+          "StunRatioGrowth": 0.104,
+          "SpRecovery": 420.2,
+          "SpRecoveryGrowth": 0,
+          "FeverRecovery": 3212,
+          "FeverRecoveryGrowth": 0,
+          "AttributeInfliction": 116.7
+        }
+      ]
+    },
+    "special": {
+      "SpecialAttackBeatTheBlockhead": [
+        {
+          "DamagePercentage": 0.613,
+          "DamagePercentageGrowth": 0.056,
+          "StunRatio": 0.613,
+          "StunRatioGrowth": 0.028,
+          "SpRecovery": 0,
+          "SpRecoveryGrowth": 0,
+          "FeverRecovery": 1606,
+          "FeverRecoveryGrowth": 0,
+          "AttributeInfliction": 58.35
+        }
+      ],
+      "EXSpecialAttackDimwitDisappearingTrick": [
+        {
+          "DamagePercentage": 5.46,
+          "DamagePercentageGrowth": 0.497,
+          "StunRatio": 4.445,
+          "StunRatioGrowth": 0.203,
+          "SpRecovery": 0,
+          "SpRecoveryGrowth": 0,
+          "FeverRecovery": 11459.25,
+          "FeverRecoveryGrowth": 0,
+          "AttributeInfliction": 471.62
+        }
+      ]
+    },
+    "chain": {
+      "ChainAttackCodeOfConduct": [
+        {
+          "DamagePercentage": 10.13,
+          "DamagePercentageGrowth": 0.921,
+          "StunRatio": 1.751,
+          "StunRatioGrowth": 0.08,
+          "SpRecovery": 0,
+          "SpRecoveryGrowth": 0,
+          "FeverRecovery": 22874.5,
+          "FeverRecoveryGrowth": 0,
+          "AttributeInfliction": 366.2
+        }
+      ],
+      "UltimateTheQueensAttendants": [
+        {
+          "DamagePercentage": 21.167,
+          "DamagePercentageGrowth": 1.925,
+          "StunRatio": 1.138,
+          "StunRatioGrowth": 0.052,
+          "SpRecovery": 0,
+          "SpRecoveryGrowth": 0,
+          "FeverRecovery": 0,
+          "FeverRecoveryGrowth": 0,
+          "AttributeInfliction": 108.37
+        }
+      ]
+    },
+    "assist": {
+      "QuickAssistDupleMeterAllemande": [
+        {
+          "DamagePercentage": 1.226,
+          "DamagePercentageGrowth": 0.112,
+          "StunRatio": 1.226,
+          "StunRatioGrowth": 0.056,
+          "SpRecovery": 420.2,
+          "SpRecoveryGrowth": 0,
+          "FeverRecovery": 3212,
+          "FeverRecoveryGrowth": 0,
+          "AttributeInfliction": 116.7
+        }
+      ],
+      "EvasiveAssistTripleMeterCourante": [],
+      "AssistFollowUpQuadrupleMeterGavotte": [
+        {
+          "DamagePercentage": 3.494,
+          "DamagePercentageGrowth": 0.318,
+          "StunRatio": 3.036,
+          "StunRatioGrowth": 0.138,
+          "SpRecovery": 0,
+          "SpRecoveryGrowth": 0,
+          "FeverRecovery": 10351,
+          "FeverRecoveryGrowth": 0,
+          "AttributeInfliction": 310.92
+        }
+      ]
+    }
+  },
+  "calcedParams": {
+    "basic": {
+      "BasicAttackWhackTheDimwit": [],
+      "BasicAttackShooTheFool": [],
+      "BasicAttackMorningCleanup": [],
+      "BasicAttackMidnightCleanup": []
+    },
+    "dodge": {
+      "DodgeDressAdjustment": [],
+      "DashAttackSuddenSurprise": [],
+      "DodgeCounterBangbooCallback": []
+    },
+    "special": {
+      "SpecialAttackBeatTheBlockhead": [],
+      "EXSpecialAttackDimwitDisappearingTrick": []
+    },
+    "chain": {
+      "ChainAttackCodeOfConduct": [],
+      "UltimateTheQueensAttendants": []
+    },
+    "assist": {
+      "QuickAssistDupleMeterAllemande": [],
+      "EvasiveAssistTripleMeterCourante": [],
+      "AssistFollowUpQuadrupleMeterGavotte": []
+    }
+  },
+  "coreParams": [
+    [0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25],
+    [0.06, 0.075, 0.09, 0.102, 0.108, 0.114, 0.12],
+    [0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3]
+  ],
+  "abilityParams": [3, 0.1],
+  "mindscapeParams": [[5.5, 1.3], [0.15, 12, 18], [2], [0.5], [2], [0.15, 8]],
+  "potentialParams": [
+    [0, 0.016, 0.016, 0.016, 0.016, 0.016],
+    [0, 0.01, 0.01, 0.01, 0.01, 0.01],
+    [0, 3, 4.2, 5.5, 6.7, 8],
+    [0, 2.5, 3.5, 4.5, 5.5, 6.5],
+    [0, 576, 576, 576, 576, 576],
+    [0, 468, 468, 468, 468, 468]
+  ]
+}

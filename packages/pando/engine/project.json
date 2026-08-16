@@ -1,0 +1,29 @@
+{
+  "name": "pando_engine",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/pando/engine/src",
+  "projectType": "library",
+  "targets": {
+    "build": {},
+    "build-ts": {
+      "options": {
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node tools/scripts/publish.mjs pando {args.ver} {args.tag}"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/coverage/libs/test"],
+      "options": {
+        "command": "bun test --jsdom",
+        "cwd": "packages/pando/engine"
+      }
+    }
+  },
+  "tags": []
+}

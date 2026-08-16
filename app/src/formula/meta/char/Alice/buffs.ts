@@ -1,0 +1,92 @@
+// WARNING: Generated file, do not modify
+export const buffs = {
+  ability_anomProf: {
+    sheet: 'Alice',
+    name: 'ability_anomProf',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anomProf',
+      sheet: 'Alice',
+      name: 'ability_anomProf',
+    },
+    team: false,
+  },
+  m1_defRed_: {
+    sheet: 'Alice',
+    name: 'm1_defRed_',
+    tag: {
+      et: 'display',
+      qt: 'common',
+      q: 'defRed_',
+      sheet: 'Alice',
+      name: 'm1_defRed_',
+    },
+    team: true,
+  },
+  m2_assault_dmg_: {
+    sheet: 'Alice',
+    name: 'm2_assault_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Alice',
+      attribute: 'physical',
+      damageType1: 'anomaly',
+      name: 'm2_assault_dmg_',
+    },
+    team: true,
+  },
+  m2_disorder_dmg_: {
+    sheet: 'Alice',
+    name: 'm2_disorder_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Alice',
+      damageType1: 'disorder',
+      name: 'm2_disorder_dmg_',
+    },
+    team: true,
+  },
+  m4_phys_resIgn_: {
+    sheet: 'Alice',
+    name: 'm4_phys_resIgn_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'resIgn_',
+      sheet: 'Alice',
+      attribute: 'physical',
+      name: 'm4_phys_resIgn_',
+    },
+    team: false,
+  },
+  m6_crit_: {
+    sheet: 'Alice',
+    name: 'm6_crit_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'crit_',
+      sheet: 'Alice',
+      name: 'm6_crit_',
+    },
+    team: false,
+  },
+  m6_dmg: {
+    sheet: 'Alice',
+    name: 'm6_dmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Alice',
+      attribute: 'physical',
+      name: 'm6_dmg',
+    },
+    team: false,
+  },
+} as const

@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "GenAssetsRemote executor",
+  "description": "Downloads character, w-engine and disc assets from the remote asset server.",
+  "type": "object",
+  "properties": {},
+  "required": []
+}

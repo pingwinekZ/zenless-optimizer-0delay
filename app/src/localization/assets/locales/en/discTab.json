@@ -1,0 +1,66 @@
+{
+  "RelicFilterBar": {
+    "Part": "Slot",
+    "Set": "Set",
+    "Rarity": "Rarity",
+    "Level": "Level",
+    "Equipped": "Equipped",
+    "Unequipped": "Unequipped",
+    "Mainstat": "Main Stat",
+    "Substat": "Substat",
+    "ScoringButton": "Scoring algorithm",
+    "Clear": "Clear",
+    "SelectCharacter": "Select character",
+    "ExcludedCharacters": "Exclude characters",
+    "ValueColumns": "Value columns"
+  },
+  "RelicGrid": {
+    "Headers": {
+      "EquippedBy": "Owner",
+      "Set": "Set",
+      "Rarity": "★",
+      "Level": "Lv",
+      "Slot": "Slot",
+      "MainStat": "Main",
+      "hp": "HP",
+      "atk": "ATK",
+      "def": "DEF",
+      "hp_": "HP",
+      "atk_": "ATK",
+      "def_": "DEF",
+      "pen": "PEN",
+      "crit_": "CR",
+      "crit_dmg_": "CD",
+      "anomProf": "AP"
+    },
+    "ValueColumns": {
+      "GroupLabel": "Score columns",
+      "CurrentScore": "Current Score",
+      "MaxPotential": "Max Potential"
+    }
+  },
+  "RecentlyUpdatedRelics": {
+    "Header": "Recently updated discs"
+  },
+  "Toolbar": {
+    "AddDisc": "Add Disc",
+    "DeleteDisc": {
+      "ButtonText": "Delete Disc",
+      "Warning_one": "Delete the selected disc?",
+      "Warning_other": "Delete the {{count}} selected discs?"
+    },
+    "EditDisc": "Edit Disc",
+    "ShowDupes": "Show Duplicates"
+  },
+  "RelicLocator": {
+    "NoneSelected": "Select a disc to locate",
+    "Location": "R{{rowIndex}} / C{{columnIndex}}",
+    "Width": "Inventory width",
+    "Filter": "Auto filter rows"
+  },
+  "BottomDock": {
+    "RelicInsight": "Relic Insight",
+    "NoDiscSelected": "Select a disc to preview.",
+    "SelectCharacterHint": "Pick a focus character above to see scoring."
+  }
+}

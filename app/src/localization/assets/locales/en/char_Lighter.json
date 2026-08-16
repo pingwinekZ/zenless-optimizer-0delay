@@ -1,0 +1,17 @@
+{
+  "core_header": "Core Passive: Accelerant",
+  "morale_consumedCond": "Morale Points Consumed",
+  "morale_burst_hitCond": "Morale Burst Hits Enemy",
+  "ability_header": "Additional Ability: Fighting Spirit",
+  "elationCond": "Elation Stacks",
+  "m1_header": "Mindscape 1: The Champion",
+  "collapseCond": "Collapse · Ice & Fire RES Red",
+  "m1CollapseCond": "Collapse · Ice & Fire RES Red",
+  "m2CollapseCond": "Collapse · Stun",
+  "m1_finishing_move_dmg_": "5th-Hit Powerful Finisher (Morale Burst) DMG Bonus",
+  "m2_header": "Mindscape 2: Red Scarf",
+  "m2_elation_inc_": "Elation Buff Increase",
+  "m4_header": "Mindscape 4: Sunglasses",
+  "m6_header": "Mindscape 6: Survivor",
+  "m6_blazing_impact_dmg": "Blazing Impact"
+}

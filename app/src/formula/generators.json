@@ -1,0 +1,24 @@
+{
+  "generators": {
+    "gen-sheet": {
+      "factory": "./generators/gen-sheet/single-generator",
+      "schema": "./generators/gen-sheet/single-schema.json",
+      "description": "Generate a single formula sheet template for a character, wengine, or disc"
+    },
+    "gen-all-sheets": {
+      "factory": "./generators/gen-sheet/all-generator",
+      "schema": "./generators/gen-sheet/all-schema.json",
+      "description": "Generate all missing formula sheet templates"
+    },
+    "gen-ui-sheet": {
+      "factory": "../formula-ui/generators/gen-sheet/single-generator",
+      "schema": "../formula-ui/generators/gen-sheet/single-schema.json",
+      "description": "Generate a single formula-ui sheet template for a character, wengine, or disc"
+    },
+    "gen-all-ui-sheets": {
+      "factory": "../formula-ui/generators/gen-sheet/all-generator",
+      "schema": "../formula-ui/generators/gen-sheet/all-schema.json",
+      "description": "Generate all missing formula-ui sheet templates"
+    }
+  }
+}

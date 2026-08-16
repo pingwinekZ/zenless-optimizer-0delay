@@ -1,0 +1,14 @@
+{
+  "finalVerdictCond": "Final Verdict Charge · DMG",
+  "etherVeilWellspringCond": "Ether Veil: Wellspring · HP & ATK",
+  "abilityCond": "In Ether Veil · DMG",
+  "m1Cond": "Off-Field · RES Ignore",
+  "m2Cond": "HP Recovered · ATK",
+  "basic_flat_dmg": "Final Verdict Flat DMG Bonus",
+  "core_crit_": "HP to CR",
+  "m4_ult_crit_dmg_": "CD",
+  "m4_basic_crit_dmg_": "Final Verdict CRIT DMG",
+  "m6_header": "HP to CR | Final Verdict Charge · DMG",
+  "m6_critIncrease_": "CRIT Rate Multiplier",
+  "m6_finalVerdictChargeIncrease_": "Final Verdict Charge DMG Multiplier"
+}

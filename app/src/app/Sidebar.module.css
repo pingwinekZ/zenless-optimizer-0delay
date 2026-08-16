@@ -1,0 +1,99 @@
+.siderBackground {
+  background: var(--layer-1);
+  border-right: 1px solid var(--layer-1);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(12px);
+  transition: width 0.2s;
+}
+
+.siderPanel {
+  height: 100vh;
+  height: 100dvh;
+  position: sticky;
+  top: 0;
+  overflow: hidden;
+}
+
+.scrollContainer {
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.root {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.groupLabel {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  padding: 8px 12px 4px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.item:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.item[data-active="true"] {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.itemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.itemCollapsed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 4px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.itemCollapsed:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.itemCollapsed[data-active="true"] {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.1);
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Marcato Desire",
+  "desc": {
+    "0": "Art can save those drowning in life. Mortals gather together, music of different emotions collide, and the drying graffiti on the wall speaks of a thousand unique forms of agency.",
+    "1": "Now, turn up the music until the soundwaves crash the Hollow. Even if Ethereals don't have ears, let's make them feel the power of humanity!"
+  },
+  "desc2": "Equip to increase Attack Agents' combat capabilities",
+  "desc3": "Gather 'round, mortals! Turn up the music!",
+  "phase": "Get Everyone Fired Up",
+  "phaseDescs": [
+    "When an <ct color=#FFFFFF>EX Special Attack</ct> or <ct color=#FFFFFF>Chain Attack</ct> hits an enemy, the equipper's ATK increases by <ct color=#2BAD00>6%</ct> for 8s. While the target is under an Attribute Anomaly, this effect is increased by an additional <ct color=#2BAD00>6%</ct>.",
+    "When an <ct color=#FFFFFF>EX Special Attack</ct> or <ct color=#FFFFFF>Chain Attack</ct> hits an enemy, the equipper's ATK increases by <ct color=#2BAD00>6.9%</ct> for 8s. While the target is under an Attribute Anomaly, this effect is increased by an additional <ct color=#2BAD00>6.9%</ct>.",
+    "When an <ct color=#FFFFFF>EX Special Attack</ct> or <ct color=#FFFFFF>Chain Attack</ct> hits an enemy, the equipper's ATK increases by <ct color=#2BAD00>7.8%</ct> for 8s. While the target is under an Attribute Anomaly, this effect is increased by an additional <ct color=#2BAD00>7.8%</ct>.",
+    "When an <ct color=#FFFFFF>EX Special Attack</ct> or <ct color=#FFFFFF>Chain Attack</ct> hits an enemy, the equipper's ATK increases by <ct color=#2BAD00>8.7%</ct> for 8s. While the target is under an Attribute Anomaly, this effect is increased by an additional <ct color=#2BAD00>8.7%</ct>.",
+    "When an <ct color=#FFFFFF>EX Special Attack</ct> or <ct color=#FFFFFF>Chain Attack</ct> hits an enemy, the equipper's ATK increases by <ct color=#2BAD00>9.6%</ct> for 8s. While the target is under an Attribute Anomaly, this effect is increased by an additional <ct color=#2BAD00>9.6%</ct>."
+  ]
+}

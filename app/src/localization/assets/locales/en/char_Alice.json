@@ -1,0 +1,15 @@
+{
+  "m1AssaultCond": "Assault · DEF Red",
+  "ability_header": "AP",
+  "m6_header": "CR & Additional DMG",
+  "ability_anomProf": "AP",
+  "m1_defRed_": "DEF Reduction",
+  "m2_header": "DMG",
+  "m2PhysicalAnomalyCond": "Enemy suffering from Physical Anomaly · DMG",
+  "m2_assault_dmg_": "Assault DMG",
+  "m2_disorder_dmg_": "Disorder DMG",
+  "m4_header": "RES Ignore",
+  "m4_phys_resIgn_": "Physical RES Ignore",
+  "m6_crit_": "Victory State Additional DMG CRIT Rate",
+  "m6_dmg": "Victory State Additional DMG"
+}

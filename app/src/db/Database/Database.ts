@@ -1,0 +1,215 @@
+import type { DBStorage } from '@zenless-optimizer/common/database'
+import { Database, SandboxStorage } from '@zenless-optimizer/common/database'
+import type { IZenlessObjectDescription, IZZZDatabase } from '../Interfaces'
+import { zzzSource } from '../Interfaces'
+import { DBMetaEntry, DisplayDiscEntry } from './DataEntries/'
+import { DisplayCharacterEntry } from './DataEntries/DisplayCharacterEntry'
+import { DisplayWengineEntry } from './DataEntries/DisplayWengineEntry'
+import {
+  CharMetaDataManager,
+  DiscDataManager,
+  StatWeightDataManager,
+} from './DataManagers/'
+import { CharacterBuildDataManager } from './DataManagers/CharacterBuildDataManager'
+import { CharacterDataManager } from './DataManagers/CharacterDataManager'
+import { GeneratedBuildListDataManager } from './DataManagers/GeneratedBuildListDataManager'
+import { OptConfigDataManager } from './DataManagers/OptConfigDataManager'
+import { SavedBuildDataManager } from './DataManagers/SavedBuildDataManager'
+import { TeamDataManager } from './DataManagers/TeamDataManager'
+import { WengineDataManager } from './DataManagers/WengineDataManager'
+import type { ImportResult } from './exim'
+import { newImportResult } from './exim'
+import { currentDBVersion, migrateStorage, migrateZOOD } from './migrate'
+export class ZzzDatabase extends Database {
+  discs: DiscDataManager
+  chars: CharacterDataManager
+  teams: TeamDataManager
+  wengines: WengineDataManager
+  optConfigs: OptConfigDataManager
+  charMeta: CharMetaDataManager
+  statWeights: StatWeightDataManager
+  dbMeta: DBMetaEntry
+  displayDisc: DisplayDiscEntry
+  displayCharacter: DisplayCharacterEntry
+  displayWengine: DisplayWengineEntry
+  generatedBuildList: GeneratedBuildListDataManager
+  characterBuilds: CharacterBuildDataManager
+  savedBuilds: SavedBuildDataManager
+  dbIndex: 1 | 2 | 3 | 4
+  dbVer: number
+
+  keyPrefix = 'zzz'
+
+  constructor(dbIndex: 1 | 2 | 3 | 4, storage: DBStorage) {
+    super(storage)
+    migrateStorage(storage)
+    // Transfer non DataManager/DataEntry data from storage
+    this.dbIndex = dbIndex
+    this.dbVer = storage.getDBVersion()
+    this.storage.setDBVersion(this.dbVer)
+    this.storage.setDBIndex(this.dbIndex)
+
+    // Handle Datamanagers
+    this.chars = new CharacterDataManager(this)
+
+    // discs needs to be instantiated after character to check for relations
+    this.discs = new DiscDataManager(this)
+
+    // Wengines (catalog, auto-populates all keys at lvl60/mod5/phase1)
+    this.wengines = new WengineDataManager(this)
+
+    this.generatedBuildList = new GeneratedBuildListDataManager(this)
+
+    // Depends on discs and characters
+    this.optConfigs = new OptConfigDataManager(this)
+
+    // Character build loadouts manager
+    this.characterBuilds = new CharacterBuildDataManager(this)
+
+    // Depends on discs and wengines (references existing database items)
+    this.savedBuilds = new SavedBuildDataManager(this)
+
+    // Depends on optConfigs
+    this.teams = new TeamDataManager(this)
+    this.charMeta = new CharMetaDataManager(this)
+    this.statWeights = new StatWeightDataManager(this)
+
+    // Handle DataEntries
+    this.dbMeta = new DBMetaEntry(this)
+    this.displayDisc = new DisplayDiscEntry(this)
+    this.displayCharacter = new DisplayCharacterEntry(this)
+    this.displayWengine = new DisplayWengineEntry(this)
+
+    this.discs.followAny(() => {
+      this.dbMeta.set({ lastEdit: Date.now() })
+    })
+    this.wengines.followAny(() => {
+      this.dbMeta.set({ lastEdit: Date.now() })
+    })
+    this.charMeta.followAny(() => {
+      this.dbMeta.set({ lastEdit: Date.now() })
+    })
+    this.displayDisc.follow(() => {
+      this.dbMeta.set({ lastEdit: Date.now() })
+    })
+    this.displayCharacter.follow(() => {
+      this.dbMeta.set({ lastEdit: Date.now() })
+    })
+    this.displayWengine.follow(() => {
+      this.dbMeta.set({ lastEdit: Date.now() })
+    })
+  }
+  get dataManagers() {
+    // IMPORTANT: it must be chars, wengines, discs in order, to respect import order
+    return [
+      this.chars,
+      this.discs,
+      this.wengines,
+      this.characterBuilds,
+      this.charMeta,
+      this.statWeights,
+      this.generatedBuildList,
+      this.optConfigs,
+      this.savedBuilds,
+      this.teams,
+    ] as const
+  }
+  get dataEntries() {
+    return [
+      this.dbMeta,
+      this.displayDisc,
+      this.displayCharacter,
+      this.displayWengine,
+    ] as const
+  }
+
+  clear() {
+    this.dataManagers.map((dm) => dm.clear())
+    this.dataEntries.map((de) => de.clear())
+  }
+  exportZOOD() {
+    const zood: Partial<IZZZDatabase & IZenlessObjectDescription> = {
+      format: 'ZOD',
+      dbVersion: currentDBVersion,
+      source: zzzSource,
+      version: 1,
+    }
+    this.dataManagers.map((dm) => dm.exportZOOD(zood))
+    this.dataEntries.map((de) => de.exportZOOD(zood))
+    return zood as IZZZDatabase & IZenlessObjectDescription
+  }
+  importZOOD(
+    zood: IZenlessObjectDescription & IZZZDatabase,
+    keepNotInImport: boolean,
+    ignoreDups: boolean
+  ): ImportResult {
+    zood = migrateZOOD(zood)
+    const source = zood.source ?? 'Unknown'
+    // Some Scanners might carry their own id field, which would conflict with GO dup resolution.
+    if (source !== zzzSource) {
+      zood.discs?.forEach((a) => delete (a as unknown as { id?: string }).id)
+    }
+    const result: ImportResult = newImportResult(
+      source,
+      keepNotInImport,
+      ignoreDups
+    )
+
+    // Follow updates from char/disc/wengine to gather import results
+    const unfollows = [
+      // TODO:
+      // this.chars.followAny((key, reason, value) => {
+      //   const arr = result.characters[reason]
+      //   const ind = arr.findIndex((c) => c?.key === key)
+      //   if (ind < 0) arr.push(value)
+      //   else arr[ind] = value
+      // }),
+      this.chars.followAny((_key, reason, value) =>
+        result.characters[reason].push(value)
+      ),
+      this.discs.followAny((_key, reason, value) =>
+        result.discs[reason].push(value)
+      ),
+      // TODO:
+      /* this.wengines.followAny((_key, reason, value) =>
+        result.wengines[reason].push(value)
+      ), */
+    ]
+
+    this.dataManagers.map((dm) => dm.importZOOD(zood, result))
+    this.dataEntries.map((de) => de.importZOOD(zood, result))
+    unfollows.forEach((f) => f())
+
+    return result
+  }
+  clearStorage() {
+    this.dataManagers.map((dm) => dm.clearStorage())
+    this.dataEntries.map((de) => de.clearStorage())
+  }
+  saveStorage() {
+    this.dataManagers.map((dm) => dm.saveStorage())
+    this.dataEntries.map((de) => de.saveStorage())
+    this.storage.setDBVersion(this.dbVer)
+    this.storage.setDBIndex(this.dbIndex)
+  }
+  swapStorage(other: ZzzDatabase) {
+    this.clearStorage()
+    other.clearStorage()
+
+    const thisStorage = this.storage
+    this.storage = other.storage
+    other.storage = thisStorage
+
+    this.saveStorage()
+    other.saveStorage()
+  }
+  toExtraLocalDB() {
+    const key = `zzz_extraDatabase_${this.storage.getDBIndex()}`
+    const other = new SandboxStorage(undefined, 'zzz')
+    const oldstorage = this.storage
+    this.storage = other
+    this.saveStorage()
+    this.storage = oldstorage
+    localStorage.setItem(key, JSON.stringify(Object.fromEntries(other.entries)))
+  }
+}

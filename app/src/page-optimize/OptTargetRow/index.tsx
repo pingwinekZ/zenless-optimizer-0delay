@@ -1,0 +1,95 @@
+import { Box, MenuItem } from '@mantine/core'
+import { DropdownButton } from '@zenless-optimizer/common/ui'
+import { useCallback } from 'react'
+import type { ICachedCharacter, Team } from '../../db'
+import { getTeamFrame0 } from '../../db'
+import { useCharacterContext, useDatabaseContext, useTeam } from '../../db-ui'
+import { qtMap } from '../../formula-ui'
+import { AfterShockToggleButton } from '../AfterShockToggleButton'
+import { CritModeSelector } from './CritModeSelector'
+import { OptSelector } from './OptSelector'
+import { SpecificDmgTypeSelector } from './SpecificDmgTypeSelector'
+export function OptTargetRow({
+  character,
+  team,
+}: {
+  character: ICachedCharacter
+  team: Team
+}) {
+  return (
+    <Box
+      style={{
+        display: 'flex',
+        gap: 1,
+        position: 'sticky',
+        top: 36,
+        zIndex: 100,
+        background: '#0C1020',
+      }}
+    >
+      <OptSelector character={character} team={team} />
+      <StatQtDropDown />
+      <SpecificDmgTypeSelector />
+      <AfterShockToggle />
+      <CritModeSelector />
+    </Box>
+  )
+}
+
+function AfterShockToggle() {
+  const { database } = useDatabaseContext()
+  const character = useCharacterContext()!
+  const team = useTeam(character.key)!
+  const { tag: target } = getTeamFrame0(team)
+  const setAfterShock = useCallback(
+    (aftershock: boolean) =>
+      database.teams.setFrame0(character.key, (frame) => {
+        const { tag: oldTarget = {} } = frame
+        const { damageType2, ...oTarget } = oldTarget
+        if (!aftershock) return { tag: oTarget }
+        return {
+          tag: {
+            ...oTarget,
+            damageType2: 'aftershock',
+          },
+        }
+      }),
+    [database, character.key]
+  )
+  if (target?.name !== 'standardDmgInst' && target?.name !== 'sheerDmgInst')
+    return null
+  return (
+    <AfterShockToggleButton
+      isAftershock={target?.damageType2 === 'aftershock'}
+      setAftershock={setAfterShock}
+    />
+  )
+}
+function StatQtDropDown() {
+  const { database } = useDatabaseContext()
+  const character = useCharacterContext()!
+  const team = useTeam(character.key)!
+  const { tag: target } = getTeamFrame0(team)
+  const { q, qt } = target ?? {}
+  if (!q || !qt) return null
+  return (
+    <DropdownButton title={qtMap[qt as 'final' | 'initial']}>
+      {(['final', 'initial'] as const).map((mqt) => (
+        <MenuItem
+          key={mqt}
+          style={
+            mqt === qt
+              ? { backgroundColor: 'var(--mantine-color-blue-light)' }
+              : undefined
+          }
+          disabled={mqt === qt}
+          onClick={() =>
+            database.teams.setFrame0(character.key, { tag: { q, qt: mqt } })
+          }
+        >
+          {qtMap[mqt]}
+        </MenuItem>
+      ))}
+    </DropdownButton>
+  )
+}

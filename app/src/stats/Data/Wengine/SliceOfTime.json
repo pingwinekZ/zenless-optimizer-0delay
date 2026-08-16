@@ -1,0 +1,14 @@
+{
+  "rarity": "A",
+  "type": "support",
+  "atk_base": 40,
+  "second_statkey": "pen_",
+  "second_statvalue": 0.08,
+  "phase": [
+    { "params": [20, 25, 30, 35, 0.7, 12] },
+    { "params": [23, 28.5, 34.5, 40, 0.8, 12] },
+    { "params": [26, 32, 39, 45, 0.9, 12] },
+    { "params": [29, 35.5, 43.5, 50, 1, 12] },
+    { "params": [32, 40, 48, 55, 1.1, 12] }
+  ]
+}

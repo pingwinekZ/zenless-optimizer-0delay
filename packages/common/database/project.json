@@ -1,0 +1,17 @@
+{
+  "name": "common-database",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/common/database/src",
+  "projectType": "library",
+  "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/coverage/libs/common/database"],
+      "options": {
+        "command": "bun test",
+        "cwd": "packages/common/database"
+      }
+    }
+  },
+  "tags": []
+}

@@ -1,0 +1,14 @@
+{
+  "rarity": "S",
+  "type": "support",
+  "atk_base": 48,
+  "second_statkey": "atk_",
+  "second_statvalue": 0.12,
+  "phase": [
+    { "params": [5, 5, 25, 0.1, 2, 20] },
+    { "params": [5.5, 5, 25, 0.115, 2, 20] },
+    { "params": [6, 5, 25, 0.13, 2, 20] },
+    { "params": [6.5, 5, 25, 0.145, 2, 20] },
+    { "params": [7, 5, 25, 0.16, 2, 20] }
+  ]
+}

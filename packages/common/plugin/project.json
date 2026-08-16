@@ -1,0 +1,49 @@
+{
+  "name": "common-plugin",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/common/plugin/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/common/plugin",
+        "main": "packages/common/plugin/src/index.ts",
+        "tsConfig": "packages/common/plugin/tsconfig.lib.json",
+        "assets": [
+          "packages/common/plugin/*.md",
+          {
+            "input": "./packages/common/plugin/src",
+            "glob": "**/!(*.ts)",
+            "output": "./src"
+          },
+          {
+            "input": "./packages/common/plugin/src",
+            "glob": "**/*.d.ts",
+            "output": "./src"
+          },
+          {
+            "input": "./packages/common/plugin",
+            "glob": "generators.json",
+            "output": "."
+          },
+          {
+            "input": "./packages/common/plugin",
+            "glob": "executors.json",
+            "output": "."
+          }
+        ]
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/coverage/libs/common/plugin"],
+      "options": {
+        "command": "bun test",
+        "cwd": "packages/common/plugin"
+      }
+    }
+  }
+}

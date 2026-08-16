@@ -1,0 +1,12 @@
+{
+  "core_header": "Core Passive Bonuses",
+  "core_dmg_": "Enhanced Shotshells DMG Increase",
+  "exChainUltUsedCond": "After EX Special, Chain, or Ultimate",
+  "suppresiveModeCond": "In Suppressive Mode",
+  "shotshellsHitCond": "Enemy hit with Enhanced Shotshells",
+  "m2_basic_dash_ether_dmg_": "Enhanced Shotshells Ether DMG Increase",
+  "m4_header": "Mindscape 4 Bonuses",
+  "m4_basic_dash_ether_res_ign_": "Enhanced Shotshells Ether RES Ignore",
+  "m6_header": "Mindscape 6 Bonuses",
+  "m6_ether_afterglow": "Ether Buckshot DMG"
+}

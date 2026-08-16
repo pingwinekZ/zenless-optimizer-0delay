@@ -1,0 +1,16 @@
+{
+  "coreCond": "Tanuki Wish · ATK & DMG",
+  "abilityCond": "Tanuki Wish · DMG",
+  "m1Cond": "Sweet Scare · RES Red",
+  "m1_header": "Tanuki Wish · DMG",
+  "ability_anomaly_buff_": "Anomaly DMG",
+  "ability_disorder_buff_": "Disorder DMG",
+  "m1_buffInc_": "Ability Attribute Anomaly DMG and Disorder DMG Buff Increase",
+  "m2Cond": "EX Special / Ultimate Hit · DMG",
+  "m4_header": "DMG",
+  "m4_weHaveCookies_dmg_": "We Have Cookies DMG",
+  "m4_stuffedHardCandyShot_dmg_": "Stuffed Hard Candy Shot DMG",
+  "m6AdditionalDmg": "Additional DMG",
+  "m6ChargedShellDmg": "Stuffed Hard Candy Shot Additional DMG",
+  "m6Cond": "Stuffed Hard Candy Shot Hit · DMG"
+}

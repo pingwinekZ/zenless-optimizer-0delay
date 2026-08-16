@@ -1,0 +1,14 @@
+{
+  "generators": {
+    "gen-all-maps": {
+      "factory": "./generators/gen-map/all-generator",
+      "schema": "./generators/gen-map/all-schema.json",
+      "description": "Generate all stat map TypeScript files for characters and wengines"
+    },
+    "gen-map": {
+      "factory": "./generators/gen-map/single-generator",
+      "schema": "./generators/gen-map/single-schema.json",
+      "description": "Generate a single stat map TypeScript file for a character or wengine"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "passionCond": "Passion · ATK",
+  "coreGnawedCond": "Gnawed · Assault CRIT Rate & CRIT DMG",
+  "m1PassionCond": "Passion · DMG",
+  "m2GnawedCond": "Gnawed · DEF Ignore & Assault CRIT DMG",
+  "m6PassionCond": "Passion · CRIT Rate & CRIT DMG",
+  "m4Cond": "When any squad member triggers the Assault or Disorder effects",
+  "core_header": "Assault CRIT Rate & CRIT DMG",
+  "m1_header": "All DMG",
+  "m2_header": "DEF Ignore & Assault CRIT DMG",
+  "m4_header": "Anomaly DMG",
+  "m6_header": "CRIT & Additional Attack",
+  "m6_additional_dmg": "Additional Attack DMG"
+}

@@ -1,0 +1,20 @@
+{
+  "overwhelminglyPositiveCommonCond": "Overwhelmingly Positive · DMG",
+  "overwhelminglyPositiveResIgnCond": "Overwhelmingly Positive · RES Ignore",
+  "overwhelminglyPositiveAtkCond": "Overwhelmingly Positive · ATK",
+  "maliciousComplaintCond": "Malicious Complaint · DMG",
+  "teammateSlotCond": "Previous Teammate Slot · DMG",
+  "teammateSelect_": {
+    "0": "Attack",
+    "1": "Rupture"
+  },
+  "teammateSlot_": {
+    "1": "Slot 1",
+    "2": "Slot 2"
+  },
+  "teammateSelect": "Teammate Specialty",
+  "core_header": "CR to Impact",
+  "ability_header": "CD",
+  "m6_dmg": "Additional DMG",
+  "m6AdditionalDmg": "Aftertone DMG"
+}

@@ -1,0 +1,24 @@
+{
+  "name": "zzz-formula",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "app/src/formula",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit -p app/tsconfig.app.json",
+        "cwd": "."
+      }
+    },
+    "gen-file": {
+      "executor": "@zenless-optimizer/zzz/formula:gen-desc",
+      "options": {
+        "outputPath": "app/src/formula/meta"
+      },
+      "outputs": ["{projectRoot}/meta/**/*"],
+      "inputs": ["default"]
+    }
+  }
+}

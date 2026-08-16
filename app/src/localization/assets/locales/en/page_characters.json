@@ -1,0 +1,67 @@
+{
+  "addNew": "Add Character",
+  "unequip": "None",
+  "charLevel": "Lv. {{level}}",
+  "characterCard": {
+    "coreStat": "Core Stat",
+    "notUnlocked": "Not Unlocked"
+  },
+  "characterEditor": {
+    "delete": "Delete Character",
+    "new": "NEW",
+    "none": "None"
+  },
+  "basic": "Basic Lv. {{level}}",
+  "dodge": "Dodge Lv. {{level}}",
+  "assist": "Assist Lv. {{level}}",
+  "special": "Special Lv. {{level}}",
+  "chain": "Chain Lv. {{level}}",
+  "core": "Core Lv. {{level}}",
+  "tabEquip": {
+    "swapDisc": "Swap Disc",
+    "swapWengine": "Swap Wengine"
+  },
+  "mindscapeTitle": "Mindscape",
+  "mindscape": "M{{level}}",
+  "characterName": "Character Name",
+  "potential": "Potential Lv. {{level}}",
+  "searchPlaceholder": "Search",
+  "gridDensity": {
+    "default": "Default",
+    "compact": "Compact"
+  },
+  "editCharacter": {
+    "change": "Change",
+    "selectWengine": "Select W-Engine",
+    "phase": "Phase",
+    "cancel": "Cancel",
+    "save": "Save",
+    "wengine": "W-Engine",
+    "skillLevels": "Skill Levels"
+  },
+  "customizationSidebar": {
+    "label": "Customization",
+    "colorMode": {
+      "auto": "Auto",
+      "custom": "Custom",
+      "standard": "Standard"
+    },
+    "preset": {
+      "shine": "Shine",
+      "natural": "Natural"
+    }
+  },
+  "characterBuilds": {
+    "title": "Builds",
+    "saveCurrent": "Save Current",
+    "load": "Load",
+    "delete": "Delete",
+    "buildName": "Build Name",
+    "saveAs": "Save as Build",
+    "noBuilds": "No saved builds",
+    "confirmDelete": "Delete this build?",
+    "buildSaved": "Build saved",
+    "buildLoaded": "Build loaded",
+    "defaultName": "My Build"
+  }
+}

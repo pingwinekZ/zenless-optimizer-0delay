@@ -1,0 +1,11 @@
+{
+  "core_dmg_": "ER to DMG & AM",
+  "ability_wind_dmg_": "DMG",
+  "m2_wind_dmg_": "DMG",
+  "ability_header": "Daze",
+  "ability_sweepingCyclone_dazeInc_": "Daze",
+  "m1VortexCond": "Vortex Hit · RES Ignore",
+  "m1WindsweptCond": "Windswept · RES Ignore",
+  "m1_sweepingCyclone_dazeInc_": "Daze",
+  "m4Cond": "EX Special Used · ATK"
+}

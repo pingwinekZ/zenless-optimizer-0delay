@@ -1,0 +1,17 @@
+{
+  "name": "game-opt-solver-webgpu",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/game-opt/solver-webgpu/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/coverage/libs/test"],
+      "options": {
+        "command": "bun test --jsdom",
+        "cwd": "packages/game-opt/solver-webgpu"
+      }
+    }
+  }
+}

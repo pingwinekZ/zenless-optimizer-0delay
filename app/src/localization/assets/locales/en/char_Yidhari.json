@@ -1,0 +1,18 @@
+{
+  "etherVeilCond": "Ether Veil: Wellspring · HP%",
+  "m4EtherVeilCond": "Ether Veil: Wellspring · HP%",
+  "coreCommonDmgCond": "Missing HP · DMG",
+  "abilityCritDmgCond": "HP ≤ 50% · CD",
+  "eruditionCond": "Erudition · DMG",
+  "m1_header": "RES Ignore",
+  "m2_header": "CD",
+  "core_hpSheerForce": "HP to SF",
+  "core_common_dmg_": "Common DMG",
+  "ability_crit_dmg_": "CRIT DMG",
+  "m1_basic_ice_resIgn_": "Basic RES Ignore",
+  "m1_exSpecial_ice_resIgn_": "EX Special RES Ignore",
+  "m2_crit_dmg_": "CRIT DMG",
+  "m4_hp_": "HP%",
+  "m6_sheer_dmg_": "Sheer DMG",
+  "m6_heal": "Heal"
+}

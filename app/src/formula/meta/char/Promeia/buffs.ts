@@ -1,0 +1,92 @@
+// WARNING: Generated file, do not modify
+export const buffs = {
+  core_anomProf: {
+    sheet: 'Promeia',
+    name: 'core_anomProf',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anomProf',
+      sheet: 'Promeia',
+      name: 'core_anomProf',
+    },
+    team: false,
+  },
+  core_abloomDmg: {
+    sheet: 'Promeia',
+    name: 'core_abloomDmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anom_mv_mult_',
+      sheet: 'Promeia',
+      damageType1: 'abloom',
+      name: 'core_abloomDmg',
+    },
+    team: true,
+  },
+  ability_presumptionDefIgn: {
+    sheet: 'Promeia',
+    name: 'ability_presumptionDefIgn',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'defIgn_',
+      sheet: 'Promeia',
+      damageType1: 'abloom',
+      name: 'ability_presumptionDefIgn',
+    },
+    team: true,
+  },
+  m1_defIgn_: {
+    sheet: 'Promeia',
+    name: 'm1_defIgn_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'defIgn_',
+      sheet: 'Promeia',
+      damageType1: 'abloom',
+      name: 'm1_defIgn_',
+    },
+    team: true,
+  },
+  m2_anomProf: {
+    sheet: 'Promeia',
+    name: 'm2_anomProf',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anomProf',
+      sheet: 'Promeia',
+      name: 'm2_anomProf',
+    },
+    team: false,
+  },
+  m6_resIgn_anomaly: {
+    sheet: 'Promeia',
+    name: 'm6_resIgn_anomaly',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'resIgn_',
+      sheet: 'Promeia',
+      damageType1: 'anomaly',
+      name: 'm6_resIgn_anomaly',
+    },
+    team: false,
+  },
+  m6_resIgn_disorder: {
+    sheet: 'Promeia',
+    name: 'm6_resIgn_disorder',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'resIgn_',
+      sheet: 'Promeia',
+      damageType1: 'disorder',
+      name: 'm6_resIgn_disorder',
+    },
+    team: false,
+  },
+} as const

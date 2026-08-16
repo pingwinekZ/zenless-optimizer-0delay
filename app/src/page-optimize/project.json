@@ -1,0 +1,30 @@
+{
+  "name": "zzz-page-optimize",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "app/src/page-optimize",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit -p app/tsconfig.app.json",
+        "cwd": "."
+      }
+    },
+    "gen-file": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "node app/src/page-optimize/scripts/gen-da-seasons.mjs",
+          "node app/src/page-optimize/scripts/gen-sd-seasons.mjs"
+        ],
+        "parallel": true
+      },
+      "outputs": [
+        "{projectRoot}/daSeasons_gen.json",
+        "{projectRoot}/shiyuSeasons_gen.json"
+      ]
+    }
+  }
+}

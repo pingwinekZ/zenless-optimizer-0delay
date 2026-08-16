@@ -1,0 +1,3 @@
+.container :global(.mantine-Accordion-control:hover) {
+  background-color: var(--layer-0);
+}

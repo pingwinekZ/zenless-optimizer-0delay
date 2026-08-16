@@ -1,0 +1,49 @@
+import { subscript } from '@zenless-optimizer/pando/engine'
+import type { WengineKey } from '../../../../consts'
+import { mappedStats } from '../../../../stats'
+import { allBoolConditionals, own, ownBuff, registerBuff } from '../../util'
+import {
+  cmpSpecialtyAndEquipped,
+  entriesForWengine,
+  registerWengine,
+  showSpecialtyAndEquipped,
+} from '../util'
+
+const key: WengineKey = 'RoaringRide'
+const dm = mappedStats.wengine[key]
+const { phase } = own.wengine
+
+const { atk_, anomProf, anomBuildup_ } = allBoolConditionals(key)
+
+const sheet = registerWengine(
+  key,
+  // Handles base stats and passive buffs
+  entriesForWengine(key),
+
+  // Conditional buffs
+  registerBuff(
+    'atk_',
+    ownBuff.combat.atk_.add(
+      cmpSpecialtyAndEquipped(key, atk_.ifOn(subscript(phase, dm.atk_)))
+    ),
+    showSpecialtyAndEquipped(key)
+  ),
+  registerBuff(
+    'anomProf',
+    ownBuff.combat.anomProf.add(
+      cmpSpecialtyAndEquipped(key, anomProf.ifOn(subscript(phase, dm.anomProf)))
+    ),
+    showSpecialtyAndEquipped(key)
+  ),
+  registerBuff(
+    'anomBuildup_',
+    ownBuff.combat.anomBuildup_.add(
+      cmpSpecialtyAndEquipped(
+        key,
+        anomBuildup_.ifOn(subscript(phase, dm.anomBuildup_))
+      )
+    ),
+    showSpecialtyAndEquipped(key)
+  )
+)
+export default sheet

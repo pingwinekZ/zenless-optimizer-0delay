@@ -1,0 +1,23 @@
+{
+  "name": "zzz-dm",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "app/src/dm",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "load-dm": {
+      "options": {
+        "outputPath": "ZenlessData"
+      },
+      "inputs": [
+        {
+          "runtime": "git ls-tree --object-only HEAD app/src/dm/ZenlessData"
+        }
+      ]
+    },
+    "get-hakushin": {
+      "executor": "@zenless-optimizer/zzz/dm:gen-hakushin",
+      "outputs": ["{projectRoot}/HakushinData/**/*"]
+    }
+  }
+}

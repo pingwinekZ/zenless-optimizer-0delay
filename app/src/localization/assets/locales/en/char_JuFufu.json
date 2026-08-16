@@ -1,0 +1,11 @@
+{
+  "tigersRoarAtkToCdCond": "Tiger's Roar · ATK to CD",
+  "tigersRoarDmgCond": "Tiger's Roar · DMG",
+  "tigersRoarImpactCond": "Tiger's Roar · Impact",
+  "tigersRoarM2CdCond": "Tiger's Roar · CD",
+  "tigersRoarM4CdCond": "Tiger's Roar · CD",
+  "m1_header": "CR",
+  "m6_header": "DMG",
+  "m6_dmg": "Additional DMG",
+  "m6AdditionalDmg": "Popcorn DMG"
+}

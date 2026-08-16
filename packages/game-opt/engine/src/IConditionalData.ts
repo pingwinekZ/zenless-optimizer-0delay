@@ -1,0 +1,56 @@
+export type IFormulaData<T> = {
+  sheet: string // entity
+  name: string // formula name
+  tag: T // tag used to access value
+  team?: boolean // true if buff applies to whole team (teamBuff), false/undefined if self-only (ownBuff)
+}
+
+export type IBaseConditionalData =
+  | IBaseBoolConditionalData
+  | IBaseListConditionalData
+  | IBaseNumConditionalData
+export type IConditionalData =
+  | IBoolConditionalData
+  | IListConditionalData
+  | INumConditionalData
+
+export type ConditionalMindscapeRequirement = {
+  mindscapeRequirement?: number
+}
+
+export type IBoolConditionalData = IBaseBoolConditionalData &
+  IConditionalIdentifier &
+  ConditionalMindscapeRequirement
+export type IListConditionalData = IBaseListConditionalData &
+  IConditionalIdentifier &
+  ConditionalMindscapeRequirement
+export type INumConditionalData = IBaseNumConditionalData &
+  IConditionalIdentifier &
+  ConditionalMindscapeRequirement
+
+export interface IConditionalIdentifier {
+  sheet: string // entity
+  name: string // conditional name
+}
+/// Conditional whose values are True (1.0) and False (0.0)
+export interface IBaseBoolConditionalData {
+  type: 'bool' // type discriminator
+  mindscapeRequirement?: number
+}
+/// Conditional whose values are those in the list. When inputting the
+/// entry, use the (0-based) position in the list
+export interface IBaseListConditionalData {
+  type: 'list' // type discriminator
+
+  list: readonly string[] // feasible values
+  mindscapeRequirement?: number
+}
+/// Conditional whose values are regular numbers
+export interface IBaseNumConditionalData {
+  type: 'num' // type discriminator
+
+  int_only: boolean // whether the value must be an integer
+  min?: number | undefined // smallest feasible value, if applicable
+  max?: number | undefined // largest feasible value, if applicable
+  mindscapeRequirement?: number
+}

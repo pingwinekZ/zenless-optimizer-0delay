@@ -1,0 +1,8 @@
+{
+  "name": "common-pipeline",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/common/pipeline/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {}
+}
