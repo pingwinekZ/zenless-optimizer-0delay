@@ -124,12 +124,7 @@ export const coreStatMap: Record<string, StatKey> = {
   HP: 'hp',
 } as const
 
-export type NanokaSkillKey =
-  | 'Basic'
-  | 'Dodge'
-  | 'Special'
-  | 'Chain'
-  | 'Assist'
+export type NanokaSkillKey = 'Basic' | 'Dodge' | 'Special' | 'Chain' | 'Assist'
 export const nanokaSkillMap: Record<NanokaSkillKey, SkillKey> = {
   Basic: 'basic',
   Dodge: 'dodge',

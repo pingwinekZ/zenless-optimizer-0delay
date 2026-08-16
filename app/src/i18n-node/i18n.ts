@@ -1,4 +1,4 @@
-import i18n from 'i18next'
+import i18n, { type i18n as I18n } from 'i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 import Backend from 'i18next-fs-backend'
 import { initReactI18next } from 'react-i18next'
@@ -7,7 +7,7 @@ import { initReactI18next } from 'react-i18next'
  * @see: https://www.i18next.com/translation-function/essentials
  * @see: https://react.i18next.com/latest/using-with-hooks
  */
-const i18nInstance = i18n
+const i18nInstance: I18n = i18n
   .createInstance()
   // load translation using http ->
   // see /public/locales (i.e. https://github.com/i18next/react-i18next/tree/master/example/react/public/locales)

@@ -5,13 +5,13 @@
 // db totals, and that null categories leave existing data untouched.
 //   bun run tools/live_import_test.ts
 import { SandboxStorage } from '@zenless-optimizer/common/database'
-import { ZzzDatabase } from '../app/src/db'
 import {
   allDiscMainStatKeys,
   allDiscSetKeys,
   allDiscSlotKeys,
   allDiscSubStatKeys,
 } from '../app/src/consts'
+import { ZzzDatabase } from '../app/src/db'
 
 const setKey = allDiscSetKeys[0]
 const slotKey = allDiscSlotKeys[0]
@@ -40,7 +40,10 @@ const liveZod = (discs: unknown[]) => ({
 })
 
 const index = 0
-const db = new ZzzDatabase((index + 1) as 1 | 2 | 3 | 4, new SandboxStorage(undefined, 'zzz'))
+const db = new ZzzDatabase(
+  (index + 1) as 1 | 2 | 3 | 4,
+  new SandboxStorage(undefined, 'zzz')
+)
 
 // Seed the DB the way the real app would (manual upload of disc1 + disc2).
 const seedResult = db.importZOOD(
@@ -50,7 +53,9 @@ const seedResult = db.importZOOD(
 )
 const seedIds = db.discs.values.map((d) => d.id)
 console.log('seed:')
-console.log(`  discs: ${seedResult.discs.import} imported (${seedIds.length} in db)`)
+console.log(
+  `  discs: ${seedResult.discs.import} imported (${seedIds.length} in db)`
+)
 console.log(`  characters: ${seedResult.characters.import} imported`)
 
 // Simulate a live snapshot: disc2 upgraded (level 11), disc3 new, disc1 gone.
@@ -63,7 +68,9 @@ const result = imported.importZOOD(snapshot as any, false, false)
 
 const r = result.discs
 console.log('live import:')
-console.log(`  total: ${r.import} | new: ${r.new.length} | unchanged: ${r.unchanged.length} | upgraded: ${r.upgraded.length} | removed: ${r.remove.length} | beforeMerge: ${r.beforeMerge}`)
+console.log(
+  `  total: ${r.import} | new: ${r.new.length} | unchanged: ${r.unchanged.length} | upgraded: ${r.upgraded.length} | removed: ${r.remove.length} | beforeMerge: ${r.beforeMerge}`
+)
 
 imported.swapStorage(db)
 
