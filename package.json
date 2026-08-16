@@ -39,6 +39,7 @@
     "cypress": "^15.20.1",
     "esbuild": "0.28.2",
     "eslint": "9.39.5",
+    "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-unused-imports": "^4.4.1",
     "jsonc-eslint-parser": "^3.3.0",
     "knip": "^6.32.2",
