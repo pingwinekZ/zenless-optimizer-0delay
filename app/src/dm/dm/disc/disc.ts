@@ -1,5 +1,5 @@
 import type { DiscSetKey } from '../../../consts'
-import { readHakushinJSON } from '../../util'
+import { readNanokaJSON } from '../../util'
 import { DiscIdMap } from './consts'
 
 type DiscRawData = {
@@ -20,7 +20,7 @@ export type DiscData = {
 export const discsDetailedJSONData = Object.fromEntries(
   Object.entries(DiscIdMap).map(([id, name]) => {
     const raw = JSON.parse(
-      readHakushinJSON(`equipment/${id}.json`)
+      readNanokaJSON(`equipment/${id}.json`)
     ) as DiscRawData
     const data: DiscData = {
       name: raw.Name,

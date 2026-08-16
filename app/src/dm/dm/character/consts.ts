@@ -124,13 +124,13 @@ export const coreStatMap: Record<string, StatKey> = {
   HP: 'hp',
 } as const
 
-export type HakushinSkillKey =
+export type NanokaSkillKey =
   | 'Basic'
   | 'Dodge'
   | 'Special'
   | 'Chain'
   | 'Assist'
-export const hakushinSkillMap: Record<HakushinSkillKey, SkillKey> = {
+export const nanokaSkillMap: Record<NanokaSkillKey, SkillKey> = {
   Basic: 'basic',
   Dodge: 'dodge',
   Special: 'special',

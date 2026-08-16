@@ -5,9 +5,9 @@
   "projectType": "library",
   "tags": [],
   "targets": {
-    "get-hakushin": {
-      "executor": "@zenless-optimizer/zzz/dm:gen-hakushin",
-      "outputs": ["{projectRoot}/HakushinData/**/*"]
+    "get-nanoka": {
+      "executor": "@zenless-optimizer/zzz/dm:gen-nanoka",
+      "outputs": ["{projectRoot}/NanokaData/**/*"]
     }
   }
 }

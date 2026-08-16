@@ -15,7 +15,7 @@
       "!coverage",
       "!.yarn",
       "!.fribbels-hsr-optimizer",
-      "!app/src/dm/HakushinData",
+      "!app/src/dm/NanokaData",
       "!**/*_gen.json",
       "!.nx/cache",
       "!.nx/workspace-data",

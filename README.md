@@ -31,7 +31,7 @@ bun nx build zzz-frontend
 ```
 
 > `gen-file` and full builds depend on the datamine submodule
-> (`app/src/dm/HakushinData`). Run
+> (`app/src/dm/NanokaData`). Run
 > `bun run reload-dm` first if it is not initialized.
 
 ## Project Structure
@@ -40,7 +40,7 @@ bun nx build zzz-frontend
 app/                    # Frontend application (Vite + React + Mantine)
   src/<module>/         # ZZZ-specific code: db, formula, solver, stats,
                         # pages/*, dm, schema, util, disc-scanner, ...
-  src/dm/HakushinData/  # git submodule — datamine data
+  src/dm/NanokaData/   # git submodule — datamine data
 packages/
   common/               # Shared utilities (database, UI, pipeline, localization)
   game-opt/             # Optimizer logic (engine, formula, solver, sheet-ui)

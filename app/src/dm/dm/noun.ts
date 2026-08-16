@@ -1,4 +1,4 @@
-import { readHakushinJSON } from '../util'
+import { readNanokaJSON } from '../util'
 
 export type NounEntry = {
   Name: string
@@ -7,6 +7,6 @@ export type NounEntry = {
 }
 
 export const nounData: Record<string, NounEntry> = (() => {
-  const raw = readHakushinJSON('noun.json')
+  const raw = readNanokaJSON('noun.json')
   return JSON.parse(raw) as Record<string, NounEntry>
 })()

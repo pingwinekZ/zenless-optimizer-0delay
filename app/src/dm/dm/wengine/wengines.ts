@@ -1,9 +1,9 @@
 import { dumpPrettyFile } from '@zenless-optimizer/common/pipeline'
 import { nameToKey, objFilter, objMap } from '@zenless-optimizer/common/util'
 import { PROJROOT_PATH } from '../../consts'
-import { readHakushinJSON } from '../../util'
+import { readNanokaJSON } from '../../util'
 
-const wenginesJsonData = JSON.parse(readHakushinJSON('weapon.json')) as Record<
+const wenginesJsonData = JSON.parse(readNanokaJSON('weapon.json')) as Record<
   string,
   {
     EN: string

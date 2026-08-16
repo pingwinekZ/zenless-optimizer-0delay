@@ -7,8 +7,8 @@ import {
   type CharacterRarityKey,
   type SpecialityKey,
 } from '../../../consts'
-import { readHakushinJSON } from '../../util'
-import type { HakushinSkillKey } from './consts'
+import { readNanokaJSON } from '../../util'
+import type { NanokaSkillKey } from './consts'
 import {
   attributeMap,
   characterIdMap,
@@ -89,7 +89,7 @@ type CharacterRawData = {
     }
   >
   Skill: Record<
-    HakushinSkillKey,
+    NanokaSkillKey,
     {
       Description: Array<{
         Name: string
@@ -201,7 +201,7 @@ export const charactersDetailedJSONData = Object.fromEntries(
     .filter(([_, name]) => allCharacterKeys.includes(name as CharacterKey))
     .map(([id, name]) => {
       const raw = JSON.parse(
-        readHakushinJSON(`character/${id}.json`)
+        readNanokaJSON(`character/${id}.json`)
       ) as CharacterRawData
       // Not all agents have this info, or it is hidden for some reason
       const fullname =

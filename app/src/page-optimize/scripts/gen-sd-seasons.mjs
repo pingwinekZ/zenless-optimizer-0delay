@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..', '..', '..', '..')
-const shiyuDir = join(root, 'app/src/dm/HakushinData/shiyu')
+const shiyuDir = join(root, 'app/src/dm/NanokaData/shiyu')
 const outDir = join(root, 'app/src/page-optimize')
 const outFile = join(outDir, 'shiyuSeasons_gen.json')
 

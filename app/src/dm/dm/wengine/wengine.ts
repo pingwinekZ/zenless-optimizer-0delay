@@ -4,7 +4,7 @@ import type {
   WengineKey,
   WengineRarityKey,
 } from '../../../consts'
-import { readHakushinJSON } from '../../util'
+import { readNanokaJSON } from '../../util'
 import {
   specialityMap,
   subStatMap,
@@ -55,7 +55,7 @@ type PhaseData = {
 export const wengineDetailedJSONData = Object.fromEntries(
   Object.entries(WengineIdMap).map(([id, name]) => {
     const raw = JSON.parse(
-      readHakushinJSON(`weapon/${id}.json`)
+      readNanokaJSON(`weapon/${id}.json`)
     ) as WengineRawData
     const second_statkey = subStatMap[raw.RandProperty.Name2]
     const data: WengineData = {

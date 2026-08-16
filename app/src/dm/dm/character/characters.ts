@@ -1,10 +1,10 @@
 import { dumpPrettyFile } from '@zenless-optimizer/common/pipeline'
 import { nameToKey, objFilter, objMap } from '@zenless-optimizer/common/util'
 import { PROJROOT_PATH } from '../../consts'
-import { readHakushinJSON } from '../../util'
+import { readNanokaJSON } from '../../util'
 
 const charctersJsonData = JSON.parse(
-  readHakushinJSON('character.json')
+  readNanokaJSON('character.json')
 ) as Record<
   string,
   {

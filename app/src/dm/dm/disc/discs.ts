@@ -1,14 +1,14 @@
 import { dumpPrettyFile } from '@zenless-optimizer/common/pipeline'
 import { nameToKey, objFilter, objMap } from '@zenless-optimizer/common/util'
 import { PROJROOT_PATH } from '../../consts'
-import { readHakushinJSON } from '../../util'
+import { readNanokaJSON } from '../../util'
 
 type discTrans = {
   name: string
   desc2: string
   desc4: string
 }
-const discsJsonData = JSON.parse(readHakushinJSON('equipment.json')) as Record<
+const discsJsonData = JSON.parse(readNanokaJSON('equipment.json')) as Record<
   string,
   {
     icon: string

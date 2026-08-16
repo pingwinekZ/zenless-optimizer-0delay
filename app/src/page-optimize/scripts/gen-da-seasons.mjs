@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..', '..', '..', '..')
-const bossDir = join(root, 'app/src/dm/HakushinData/boss')
+const bossDir = join(root, 'app/src/dm/NanokaData/boss')
 const outDir = join(root, 'app/src/page-optimize')
 const outFile = join(outDir, 'daSeasons_gen.json')
 

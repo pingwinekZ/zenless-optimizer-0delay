@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/schema",
   "version": 2,
-  "title": "GenHakushinData executor",
+  "title": "GenNanokaData executor",
   "description": "",
   "type": "object",
   "properties": {},

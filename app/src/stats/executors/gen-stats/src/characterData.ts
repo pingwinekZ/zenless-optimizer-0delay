@@ -11,7 +11,7 @@ import type { CharacterData } from '../../../../dm'
 import {
   charactersDetailedJSONData,
   filterUnbuffedKits,
-  hakushinSkillMap,
+  nanokaSkillMap,
 } from '../../../../dm'
 import { type CharacterDatum } from '../../../char'
 import { extractParamsFromString } from './util'
@@ -68,7 +68,7 @@ function extractSkillParams(skills: CharacterData['skills']) {
   const skillParams = Object.fromEntries(
     Object.entries(skills).map(([key, skill]) => {
       return [
-        hakushinSkillMap[key],
+        nanokaSkillMap[key],
         Object.fromEntries(
           skill.Description.filter(filterUnbuffedKits).map((desc) => {
             // Only record each skill once.
@@ -134,7 +134,7 @@ function extractCalcedParams(skills: CharacterData['skills']) {
   const calcedParams = Object.fromEntries(
     Object.entries(skills).map(([key, skill]) => {
       return [
-        hakushinSkillMap[key],
+        nanokaSkillMap[key],
         Object.fromEntries(
           skill.Description.map((desc) => {
             return [

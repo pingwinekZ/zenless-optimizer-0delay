@@ -1,5 +1,5 @@
-[submodule "app/src/dm/HakushinData"]
-	path = app/src/dm/HakushinData
+[submodule "app/src/dm/NanokaData"]
+	path = app/src/dm/NanokaData
 	url = https://github.com/pingwinekZ/zzz-hakushin-data-0delay.git
 	shallow = true
 	branch = master

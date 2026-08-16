@@ -1,9 +1,9 @@
 {
   "executors": {
-    "gen-hakushin": {
-      "implementation": "./executors/gen-hakushin/executor",
-      "schema": "./executors/gen-hakushin/schema.json",
-      "description": "gen-hakushin executor"
+    "gen-nanoka": {
+      "implementation": "./executors/gen-nanoka/executor",
+      "schema": "./executors/gen-nanoka/schema.json",
+      "description": "gen-nanoka executor"
     }
   }
 }

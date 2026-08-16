@@ -8,11 +8,11 @@ import { PROJROOT_PATH } from '../../consts'
 const URL_BASE = 'https://static.nanoka.cc/zzz/'
 const VERSION = '3.1'
 
-async function dumpHakushinData(filename: string, obj: object) {
+async function dumpNanokaData(filename: string, obj: object) {
   obj = convertSnakeToPascal(obj) as object
-  return await dumpPrettyFile(`${PROJROOT_PATH}/HakushinData/${filename}`, obj)
+  return await dumpPrettyFile(`${PROJROOT_PATH}/NanokaData/${filename}`, obj)
 }
-async function dumpHakushinIndex(filename: string, obj: object) {
+async function dumpNanokaIndex(filename: string, obj: object) {
   // Convert 2-layer nested objects, except language object for equipment
   obj = objMap(obj, (v) =>
     objMap(v as object, (v, k) =>
@@ -27,7 +27,7 @@ async function dumpHakushinIndex(filename: string, obj: object) {
     ])
   )
   // Index only requires nested objects and the language keys
-  return await dumpPrettyFile(`${PROJROOT_PATH}/HakushinData/${filename}`, obj)
+  return await dumpPrettyFile(`${PROJROOT_PATH}/NanokaData/${filename}`, obj)
 }
 // Convert snake_case to PascalCase to avoid converting all the types
 function convertSnakeToPascal(objOrVal: unknown): unknown {
@@ -75,7 +75,7 @@ const categories = [
   'shiyu',
 ] as const
 type Category = (typeof categories)[number]
-export async function getDataFromHakushin() {
+export async function getDataFromNanoka() {
   await Promise.all([
     ...categories.map((category) => getAndDumpCategoryData(category)),
     getNounData(),
@@ -85,18 +85,18 @@ async function getAndDumpCategoryData(category: Category) {
   const indexData = (await fetchJsonFromUrl(
     URL_BASE + VERSION + `/${category}.json`
   )) as Record<string, unknown>
-  await dumpHakushinIndex(`${category}.json`, indexData)
+  await dumpNanokaIndex(`${category}.json`, indexData)
   await Promise.all(
     Object.keys(indexData).map(async (id) => {
       if (!/^[a-zA-Z0-9_-]+$/.test(id)) {
         console.warn(`Skipping invalid ID: ${id} for category ${category}`)
         return
       }
-      // NOTE: hakushin also has data in en, ko, chs, ja
+      // NOTE: nanoka also has data in en, ko, chs, ja
       const itemData = (await fetchJsonFromUrl(
         URL_BASE + VERSION + `/en/${category}/${id}.json`
       )) as object
-      await dumpHakushinData(`${category}/${id}.json`, itemData)
+      await dumpNanokaData(`${category}/${id}.json`, itemData)
     })
   )
 }
@@ -105,5 +105,5 @@ async function getNounData() {
   const nounData = (await fetchJsonFromUrl(
     URL_BASE + VERSION + `/en/noun.json`
   )) as object
-  await dumpHakushinData('noun.json', nounData)
+  await dumpNanokaData('noun.json', nounData)
 }
