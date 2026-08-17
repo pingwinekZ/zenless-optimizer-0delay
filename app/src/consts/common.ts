@@ -238,7 +238,7 @@ export const rarityColor = {
 
 export const allRaritykeys = ['S', 'A', 'B'] as const
 export type Raritykey = (typeof allRaritykeys)[number]
-export const potentialLimits = [0, 1, 2, 3, 4, 5] as const
+export const potentialLimits = [0, 1, 2, 3, 4, 5, 6] as const
 
 // Referred to as "promotions" for characters, and "modifications" for wengines
 export const allMilestoneKeys = [0, 1, 2, 3, 4, 5] as const

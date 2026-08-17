@@ -201,7 +201,12 @@ function extractPotentialParams(potential: CharacterData['potential']) {
     .map(({ Desc }) =>
       extractParamsFromString(Desc.replaceAll('Soldier 0 - Anby', 'Anby'))
     )
-  data.unshift(range(1, data[0].length).map(() => 0))
+  // Potential 0 (none) and tier 1 (AP unlock) have no stat values; keep the
+  // array indexed by tier so `subscript(char.potential, ...)` works directly
+  data.unshift(
+    range(1, data[0].length).map(() => 0),
+    range(1, data[0].length).map(() => 0)
+  )
 
   return transposeArray(data)
 }

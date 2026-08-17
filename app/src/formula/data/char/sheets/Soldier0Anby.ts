@@ -27,28 +27,17 @@ const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
-const { markedWithSilverStar } = allBoolConditionals(key, undefined, {
-  markedWithSilverStar: 2,
-})
+const { markedWithSilverStar } = allBoolConditionals(key, undefined)
 
-const ability_on = cmpGE(
-  sum(
-    team.common.count.withSpecialty('stun'),
-    team.common.count.withSpecialty('support')
-  ),
-  1,
-  'infer',
-  ''
+const stunOrSupport = sum(
+  team.common.count.withSpecialty('stun'),
+  team.common.count.withSpecialty('support')
 )
-const ability_off = cmpGE(
-  sum(
-    team.common.count.withSpecialty('stun'),
-    team.common.count.withSpecialty('support')
-  ),
-  1,
-  '',
-  'infer'
-)
+const potential_on = cmpGE(char.potential, 1, 1, 0)
+// Additional Ability "Voltage Surge (AP)" (tier 1+) grants the aftershock tag
+// to Chain Attack and Ultimate
+const ability_ap_on = cmpGE(sum(stunOrSupport, potential_on), 2, 'infer', '')
+const ability_ap_off = cmpGE(sum(stunOrSupport, potential_on), 2, '', 'infer')
 
 const sheet = register(
   key,
@@ -66,7 +55,7 @@ const sheet = register(
       0,
       { ...baseTag, damageType1: 'chain', skillType1: 'chainSkill' },
       'atk',
-      { cond: ability_off }
+      { cond: ability_ap_off }
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -79,7 +68,7 @@ const sheet = register(
         skillType1: 'chainSkill',
       },
       'atk',
-      { cond: ability_off }
+      { cond: ability_ap_off }
     )
   ),
 
@@ -95,7 +84,7 @@ const sheet = register(
     },
     'atk',
     'chain',
-    { cond: ability_on }
+    { cond: ability_ap_on }
   ),
   ...dmgDazeAndAnom(
     dm.chain.UltimateVoidstrike[0],
@@ -108,13 +97,23 @@ const sheet = register(
     },
     'atk',
     'chain',
-    { cond: ability_on }
+    { cond: ability_ap_on }
   ),
 
   ...customDmg(
     'm6_additional_dmg',
     { ...baseTag, damageType1: 'aftershock' },
     cmpGE(char.mindscape, 6, prod(own.final.atk, percent(dm.m6.dmg)))
+  ),
+  registerBuff(
+    'm6_additional_dmg',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'aftershock',
+      cmpGE(char.mindscape, 6, percent(dm.m6.dmg))
+    ),
+    undefined,
+    undefined,
+    false
   ),
 
   // Buffs
@@ -132,7 +131,11 @@ const sheet = register(
         prod(
           sum(own.initial.crit_dmg_, own.combat.crit_dmg_),
           sum(
-            percent(dm.core.bonus_aftershock_crit_dmg_scaling_),
+            cmpGE(
+              char.potential,
+              1,
+              percent(dm.core.bonus_aftershock_crit_dmg_scaling_)
+            ),
             percent(subscript(char.core, dm.core.aftershock_crit_dmg_scaling_))
           )
         )
@@ -143,31 +146,19 @@ const sheet = register(
   ),
   registerBuff(
     'ability_crit_',
-    ownBuff.combat.crit_.add(
-      cmpGE(
-        sum(
-          team.common.count.withSpecialty('stun'),
-          team.common.count.withSpecialty('support')
-        ),
-        1,
-        dm.ability.crit_
-      )
-    )
+    ownBuff.combat.crit_.add(cmpGE(stunOrSupport, 1, dm.ability.crit_))
   ),
   registerBuff(
     'ability_aftershock_dmg_',
     teamBuff.combat.dmg_.addWithDmgType(
       'aftershock',
       cmpGE(
-        sum(
-          team.common.count.withSpecialty('stun'),
-          team.common.count.withSpecialty('support')
-        ),
+        stunOrSupport,
         1,
         markedWithSilverStar.ifOn(
           cmpGE(
             char.potential,
-            1,
+            2,
             subscript(char.potential, dm.potential.aftershock_dmg_),
             dm.ability.aftershock_dmg_
           )
@@ -179,14 +170,16 @@ const sheet = register(
   ),
   registerBuff(
     'm2_crit_',
-    ownBuff.combat.crit_.add(
-      cmpGE(char.mindscape, 2, markedWithSilverStar.ifOn(dm.m2.crit_))
-    )
+    ownBuff.combat.crit_.add(cmpGE(char.mindscape, 2, dm.m2.crit_))
   ),
   registerBuff(
     'm4_electric_resIgn_',
     ownBuff.combat.resIgn_.electric.add(
-      cmpGE(char.mindscape, 4, dm.m4.electric_resIgn_)
+      cmpGE(
+        char.mindscape,
+        4,
+        markedWithSilverStar.ifOn(dm.m4.electric_resIgn_)
+      )
     )
   )
 )

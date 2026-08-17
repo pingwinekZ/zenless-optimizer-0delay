@@ -336,6 +336,16 @@ function RoaringFurnaceCondDesc({ phase }: { phase: number }) {
   return <GameText text={condDesc} />
 }
 
+/** DEF Reduction portion of SpectralGaze's phase description (first two sentences). */
+function SpectralGazeDefRedDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_SpectralGaze_gen')
+  const fullDesc = t(`wengine_SpectralGaze_gen:phaseDescs.${phase - 1}`)
+  const marker = 'Passive effects of the same name do not stack.'
+  const idx = fullDesc.indexOf(marker)
+  if (idx === -1) return <GameText text={fullDesc} />
+  return <GameText text={fullDesc.slice(0, idx + marker.length)} />
+}
+
 /** CRIT DMG portion of MyriadEclipse's phase description (first sentence). */
 const MyriadEclipseCritDesc = firstSentenceDesc('wengine_MyriadEclipse_gen')
 
@@ -343,6 +353,17 @@ const MyriadEclipseCritDesc = firstSentenceDesc('wengine_MyriadEclipse_gen')
 const MyriadEclipseCondDesc = fromMarkerDesc(
   'wengine_MyriadEclipse_gen',
   'When using'
+)
+
+/** CRIT DMG portion of SeveredInnocence's phase description (first sentence). */
+const SeveredInnocenceCritDesc = firstSentenceDesc(
+  'wengine_SeveredInnocence_gen'
+)
+
+/** Conditional portion of SeveredInnocence's phase description (from "When" to end). */
+const SeveredInnocenceCondDesc = fromMarkerDesc(
+  'wengine_SeveredInnocence_gen',
+  'When '
 )
 
 const WenginePassiveGroup = memo(function WenginePassiveGroup({
@@ -816,6 +837,9 @@ export function WEngineConditionalsDisplay({
                 ) : wengineKey === 'MyriadEclipse' &&
                   firstFieldName === 'crit_dmg_' ? (
                   <MyriadEclipseCritDesc phase={phase} />
+                ) : wengineKey === 'SeveredInnocence' &&
+                  firstFieldName === 'passive_crit_dmg_' ? (
+                  <SeveredInnocenceCritDesc phase={phase} />
                 ) : undefined
 
               return group.header ? (
@@ -885,6 +909,14 @@ export function WEngineConditionalsDisplay({
           if (
             wengineKey === 'Metanukimorphosis' &&
             condName === 'physical_exSpecial_ult' &&
+            teammateKey
+          ) {
+            return false
+          }
+          // SpectralGaze: Spirit Lock stacks are self-only, hide from teammate view
+          if (
+            wengineKey === 'SpectralGaze' &&
+            condName === 'spiritLock' &&
             teammateKey
           ) {
             return false
@@ -985,6 +1017,12 @@ export function WEngineConditionalsDisplay({
               ) : wengineKey === 'MyriadEclipse' &&
                 condName === 'deathSentence' ? (
                 <MyriadEclipseCondDesc phase={phase} />
+              ) : wengineKey === 'SeveredInnocence' &&
+                condName === 'basicSpecialAftershockHit' ? (
+                <SeveredInnocenceCondDesc phase={phase} />
+              ) : wengineKey === 'SpectralGaze' &&
+                condName === 'hit_aftershock_electric' ? (
+                <SpectralGazeDefRedDesc phase={phase} />
               ) : undefined
             }
           />

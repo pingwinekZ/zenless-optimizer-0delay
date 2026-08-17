@@ -1,715 +1,584 @@
 # Formula & UI Refactor Guide
 
-Based on patterns observed across refactored characters (OrphieMagus, Yidhari, Lucia, Banyue, Norma, JoyauDore, Velina, Cissia, NangongYu, Promeia, StarlightBilly, Zhao, AstraYao, Pyrois + 10 w-engines).
+This guide covers refactoring a character's **formula data** (`app/src/formula/data/char/sheets/<Char>.ts`), its **UI sheet** (`app/src/formula-ui/char/sheets/<Char>.tsx`), and its **localization file**.
 
-Each refactor touches 6 layers per character/w-engine:
+The worked example is **Seed** — already fully refactored and exercising every pattern in this guide:
+
+- `app/src/formula/data/char/sheets/Seed.ts`
+- `app/src/formula-ui/char/sheets/Seed.tsx`
+- `app/src/localization/assets/locales/en/char_Seed.json`
+
+Read those three files alongside this guide. All snippets below are taken verbatim from them.
+
+## The 4 layers
 
 | # | Layer | Path | Auto-gen? |
 |---|-------|------|-----------|
-| 1 | Formula data | `app/src/formula/data/char/sheets/<Char>.ts` or `app/src/formula/data/wengine/sheets/<WEngine>.ts` | No |
-| 2 | Meta buffs | `app/src/formula/meta/char/<Char>/buffs.ts` | Yes (via `gen-file`) |
-| 3 | Meta conditionals | `app/src/formula/meta/char/<Char>/conditionals.ts` | Yes (via `gen-file`) |
-| 4 | Meta formulas | `app/src/formula/meta/char/<Char>/formulas.ts` | Yes (via `gen-file`) |
-| 5 | UI sheet | `app/src/formula-ui/char/sheets/<Char>.tsx` or `.../wengine/sheets/<WEngine>.tsx` | No |
-| 6 | Localization | `app/src/localization/assets/locales/en/char_<Char>.json` or `wengine_<WEngine>.json` | No |
+| 1 | Formula data | `app/src/formula/data/char/sheets/<Char>.ts` | No |
+| 2 | Meta (buffs/conditionals/formulas) | `app/src/formula/meta/char/<Char>/*.ts` | Yes (`gen-file`) |
+| 3 | UI sheet | `app/src/formula-ui/char/sheets/<Char>.tsx` | No |
+| 4 | Localization | `app/src/localization/assets/locales/en/char_<Char>.json` | No |
 
 ---
 
-## Part A: Characters
+## Part 1 — Formula data (`Seed.ts`)
 
-### A1. Formula Data — What to Remove
+### 1.1 Conditionals
 
-**Remove `anomBuildup_` buffs.** These are useless because anomaly buildup is already baked into `registerAllDmgDazeAndAnom` per-skill via `customAnomalyBuildup`. Standalone `anomBuildup_` entries have no effect on optimization.
+**Bool conditionals** (toggles) come from `allBoolConditionals`. The 3rd arg maps conditional name → mindscape requirement (the toggle is hidden until that mindscape is reached):
 
 ```ts
-// ❌ REMOVE:
-const core_anomBuildup_ = ownBuff.combat.anomBuildup_.ether.add(percent(...));
-const m4_basicAnomalyBuildup_ = ownBuff.combat.anomBuildup_.ether.add(...);
-
-registerBuff('core_anomBuildup_', core_anomBuildup_, undefined, undefined, false);
-registerBuff('m4_basicAnomalyBuildup_', m4_basicAnomalyBuildup_, undefined, undefined, false);
+const {
+  directStrike,
+  onslaught_atk,
+  besiege,
+  besiege_defIgn,
+  besiege_ult_dmg,
+} = allBoolConditionals(key, undefined, {
+  besiege_defIgn: 2, // only exists at M2
+  besiege_ult_dmg: 4, // only exists at M4
+})
 ```
 
-Also remove them from `allAnomBuffs` / `chargedAnomBuffs` arrays that feed into `dmgDazeAndAnomOverride` extras.
-
-**Remove `customDmg` entries** for formula-based damage instances that are no longer needed:
+**Num conditionals** (sliders) come from `allNumConditionals(key, intOnly, min, max)`:
 
 ```ts
-// ❌ REMOVE (Norma's deprecated M6 barrage damage):
-...customDmg('m6_barrage_dmg', { ...baseTag, damageType1: 'ult' }, cmpGE(char.mindscape, 6, m6Barrage.ifOn(prod(own.final.atk, percent(dm.m6.missleDmg)))))
-```
-
-**Remove unused conditionals** from `allBoolConditionals`:
-
-```ts
-// ❌ BEFORE:
-const { enNahBarrage, warheadHit, m6Barrage } = allBoolConditionals(key, undefined, { warheadHit: 1, m6Barrage: 6 });
-// ✅ AFTER:
-const { enNahBarrage, warheadHit } = allBoolConditionals(key, undefined, { warheadHit: 1 });
-```
-
-**Clean up unused/unnecessary `dazeInc_` buffs.** If a `dazeInc_` buff is a standalone buff that duplicates what `registerAllDmgDazeAndAnom` already provides per-skill, remove it. Keep `dazeInc_` buffs that add **extra** daze to specific skills via `dmgDazeAndAnomOverride` extras (see A2).
-
-**DO NOT remove `anom_mv_mult_` buffs.** These modify anomaly damage formula multipliers and are legitimate buffs. Only remove `anomBuildup_`.
-
-### A2. Formula Data — What to Add/Change
-
-**Wrap conditional buffs in bool conditionals** with `mindscapeRequirement`:
-
-```ts
-const { m1ResIgn } = allBoolConditionals(key, undefined, {
-  m1ResIgn: 1, // mindscapeRequirement
-});
-
-registerBuff('m1_resIgn_',
-  ownBuff.combat.resIgn_.add(
-    m1ResIgn.ifOn(cmpGE(char.mindscape, 1, percent(dm.m1.resDecrease)))
-  ),
-  undefined, true // team: true
-);
-```
-
-**Use `teamBuff` for team-wide buffs** — 4th param to `registerBuff` = `true`:
-
-```ts
-const m1_wind_resIgn_ = teamBuff.combat.resIgn_.wind.add(...)
-registerBuff('m1_wind_resIgn_', m1_wind_resIgn_, undefined, true)
-```
-
-**Use `dmgDazeAndAnomOverride`** to add extra daze/damage buffs to specific skill hits:
-
-```ts
-const ability_sweepingCyclone_dazeInc_ = ownBuff.combat.dazeInc_.add(ability_check(percent(dm.ability.daze_)));
-const m1_sweepingCyclone_dazeInc_ = ownBuff.combat.dazeInc_.add(cmpGE(char.mindscape, 1, percent(dm.m1.sweepingCycloneDaze)));
-
-registerBuff('ability_sweepingCyclone_dazeInc_', ability_sweepingCyclone_dazeInc_);
-registerBuff('m1_sweepingCyclone_dazeInc_', m1_sweepingCyclone_dazeInc_, undefined, undefined, false);
-
-// Pass into registerAllDmgDazeAndAnom as extras:
-...registerAllDmgDazeAndAnom(key, dm,
-  dmgDazeAndAnomOverride(dm, 'special', 'SweepingCyclone', 0,
-    { ...baseTag, damageType1: 'exSpecial', skillType1: 'specialSkill' },
-    'atk',
-    undefined, // arg — no condition here
-    ability_sweepingCyclone_dazeInc_,
-    m1_sweepingCyclone_dazeInc_
-  ),
-);
-```
-
-**Use `customDmg` for new formula-based damage** (like Cissia's Corrode Bone Additional DMG):
-
-```ts
-// In data file:
-...customDmg('core_corrodeBone_dmg_', { ...baseTag, attribute: 'electric' },
-  prod(own.final.atk, corrodeBoneDmg)
+const { energy_consumed } = allNumConditionals(
+  key,
+  true, // int only
+  0,
+  dm.m2.max_energy_consumed - dm.m2.energy_consumed // max = 60
 )
-
-// Reference via Cissia.formulas in the UI:
-const formula = Cissia.formulas;
-// Use: fieldRef: formula.core_corrodeBone_dmg_.tag
 ```
 
-**Also add a matching `registerBuff`** with the same name. `customDmg` only registers a formula (visible as an optimization target), but the sheet display filter looks up `buffs[name]` to decide whether to show the field value:
+### 1.2 Buff registration — `registerBuff`
 
 ```ts
 registerBuff(
-  'core_corrodeBone_dmg_',
-  ownBuff.combat.dmg_.electric.add(corrodeBoneDmg),
-  undefined, undefined, false
+  name,                        // must match the `buff.<name>` key used in the UI sheet
+  entries,                     // TagMapNodeEntry | TagMapNodeEntry[]
+  cond = 'infer',              // reader condition ('infer' is almost always fine)
+  team = false,                // true → listed team-wide (shows in teammate view)
+  includeOriginalEntry = true, // false → buff only applies where explicitly wired in (see 1.3)
 )
 ```
 
-Without it, the formula value is selectable as an opt target but won't render in the character sheet.
+### 1.3 Skill-scoped buffs — "apply to specific attacks only"
 
-**Use `customAnomalyDmg` for Abloom formula-based damage** (like Aria's Perfect Pitch Abloom):
+When a buff affects **only some attacks** (not every hit of its damage type), it must be:
+
+1. created with `addWithDmgType('<dmgType>', ...)` (tags it with `damageType1`/`damageType2`),
+2. wired into **exactly those hits** via `dmgDazeAndAnomOverride` extras,
+3. registered with `includeOriginalEntry: false` so it isn't ALSO applied globally (which would wrongly buff every skill of that damage type).
+
+Seed's ability buffs hit `Falling Petals - Slaughter` and `Falling Petals - Downfall` but NOT the physical first hits of `Chrysanthemum`:
 
 ```ts
-// In data file:
-...customAnomalyDmg('perfectPitchAbloomDmgInst', {
-  attribute: data_gen.attribute,
-  damageType1: 'anomaly',
-  damageType2: 'abloom',
-},
-  prod(
-    percent(subscript(char.core, dm.core.abloomEther)),
-    percent(0.1),
-    own.initial.anomMas,
-    constant(0.625),
-    own.final.atk,
-    sum(percent(1), own.final.anom_mv_mult_)
+const ability_basic_dmg_ = ownBuff.combat.dmg_.addWithDmgType(
+  'basic',
+  abilityCheck(percent(dm.ability.basic_ult_dmg_))
+)
+const ability_basic_electric_resIgn_ =
+  ownBuff.combat.resIgn_.electric.addWithDmgType(
+    'basic',
+    abilityCheck(percent(dm.ability.electric_resIgn_))
+  )
+```
+
+Wired into the affected hits as extras (`...` spread — `addWithDmgType` returns an array):
+
+```ts
+dmgDazeAndAnomOverride(
+  dm,
+  'basic',
+  'BasicAttackFallingPetalsSlaughter',
+  0,
+  { ...baseTag, damageType1: 'basic' },
+  'atk',
+  undefined,
+  ...ability_basic_dmg_,
+  ...ability_basic_electric_resIgn_
+),
+dmgDazeAndAnomOverride(
+  dm,
+  'basic',
+  'BasicAttackFallingPetalsDownfallFirstForm',
+  0,
+  { ...baseTag, damageType1: 'basic' },
+  'atk',
+  undefined,
+  ...ability_basic_dmg_,
+  ...ability_basic_electric_resIgn_,
+  ...m1_basic_crit_dmg_ // M1 only hits Downfall, not Slaughter
+),
+```
+
+Registered with the 5th param `false`:
+
+```ts
+registerBuff('ability_basic_dmg_', ability_basic_dmg_, undefined, undefined, false)
+registerBuff('ability_basic_electric_resIgn_', ability_basic_electric_resIgn_, undefined, undefined, false)
+registerBuff('m1_basic_crit_dmg_', m1_basic_crit_dmg_, undefined, undefined, false)
+```
+
+Contrast with the **ultimate** buff: it applies to ALL ult damage (Seed has one ult), so it's registered normally (default `includeOriginalEntry: true`) and needs no overrides:
+
+```ts
+registerBuff(
+  'ability_ult_dmg_',
+  ownBuff.combat.dmg_.addWithDmgType(
+    'ult',
+    abilityCheck(percent(dm.ability.basic_ult_dmg_))
   )
 )
 ```
 
-Tag always includes `damageType2: 'abloom'`. Available anomaly formula types: `customAnomalyDmg` (damage), `customAnomalyBuildup` (anomaly buildup).
+Rule of thumb: if a buff affects every hit of its damage type → normal `registerBuff`. If it affects only selected hits → extras in `dmgDazeAndAnomOverride` + `includeOriginalEntry: false`.
 
-**Always-on mindscape stats don't need bool conditionals.** If an M effect is a passive stat that is always active when the mindscape is unlocked (not a toggleable state), use `cmpGE` directly:
+### 1.4 Teammate-targeted buffs — `notOwnBuff` + `team: true`
+
+Buffs granted to another agent (Seed's Vanguard) are built on `notOwnBuff` and registered with `team: true` so they show up in the teammate's view:
 
 ```ts
-// ✅ Always-on M stat — no bool conditional needed:
-registerBuff('m1_abloom',
-  ownBuff.combat.anom_crit_.add(
-    cmpGE(char.mindscape, 1, sum(
-      constant(dm.m1.abloomCrit),
-      max(0, prod(max(0, sum(own.initial.anomMas, -dm.m1.anomMasteryThreshold)), percent(dm.m1.critPerExcessMastery)))
-    ))
+registerBuff(
+  'core_vanguard_atk',
+  notOwnBuff.combat.atk.add(
+    directStrike.ifOn(subscript(char.core, dm.core.direct_strike_atk))
   ),
-  undefined, undefined, false
-);
-```
-
-Only use bool conditionals for effects that need a user toggle (delusion state, stance, buff active, etc.).
-
-**Use `anom_crit_`/`anom_crit_dmg_` for Abloom CRIT stats.** Abloom reads anomaly crit tags (`anom_crit_`, `anom_crit_dmg_`) from the anomaly pipeline, not regular `crit_`/`crit_dmg_`. Register Abloom CRIT buffs against these tags:
-
-```ts
-ownBuff.combat.anom_crit_.add(...)      // Abloom CRIT rate
-ownBuff.combat.anom_crit_dmg_.add(...)  // Abloom CRIT damage
-```
-
-**Use `includeOriginalEntry: false` for override buffs** that replace original entries to avoid double-counting. Pass as 5th param to `registerBuff`:
-
-```ts
-const m6_perfectPitch_dmg_ = ownBuff.combat.dmg_.ether.add(
-  cmpGE(char.mindscape, 6, m6Delusion.ifOn(percent(dm.m6.enhancedDmg)))
-)
-// Applied via dmgDazeAndAnomOverride extras — no double-count
-registerBuff('m6_perfectPitch_dmg_', m6_perfectPitch_dmg_, undefined, undefined, false)
-```
-
-The 5th param `false` means `includeOriginalEntry: false` (the override buff replaces rather than adds to the original).
-
-**Split flat Ability+M1 values** into separate conditional-gated buffs:
-
-```ts
-// Ability (always-on basic part):
-registerBuff('ability_presumptionDefIgn',
-  teamBuff.combat.defIgn_.addWithDmgType('abloom',
-    ability_check_no_self(presumptionOfGuilt.ifOn(0.4))
-  ), undefined, true
-);
-
-// M1 (separate, conditional-gated):
-registerBuff('m1_defIgn_',
-  teamBuff.combat.defIgn_.addWithDmgType('abloom',
-    cmpGE(char.mindscape, 1,
-      ability_check_no_self(presumptionOfGuilt.ifOn(percent(dm.m1.additionalDefIgnore)))
-    )
-  ), undefined, true
-);
-```
-
-**Wrap existing buffs in venom/state conditionals** to make them toggleable by the user:
-
-```ts
-// Cissia pattern — ability buffs gated behind a "Venom State" toggle:
-const venomActive = (node: any) =>
-  cmpGE(sum(venomDefIgn.ifOn(1), venomCritDmg.ifOn(1)), 1, node);
-
-registerBuff('ability_squad_crit_dmg_',
-  teamBuff.combat.crit_dmg_.add(
-    venomActive(cmpGE(sum(team.common.count.withSpecialty('stun'), team.common.count.electric), 2, percent(dm.ability.squadCritDmg_)))
-  ), undefined, true
-);
-
-registerBuff('core_defIgn_',
-  ownBuff.combat.defIgn_.electric.add(venomActive(prod(coreDefIgnore, m1_defIgnoreMult))),
-  undefined, true
-);
-```
-
-**Use per-skill granular buff names** instead of generic element/type names. When a mindscape or ability gives the same buff to multiple skills, create separate named buffs per skill so the UI can display them distinctly (OrphieMagus pattern):
-
-```ts
-// ❌ BEFORE — generic:
-const m1_fire_resIgn_ = ownBuff.combat.resIgn_.fire.add(cmpGE(char.mindscape, 1, percent(dm.m1.fire_resIgn_)));
-registerBuff('m1_fire_resIgn_', m1_fire_resIgn_, undefined, false, false);
-
-// ✅ AFTER — per-skill granular:
-const m1_resIgnValue = cmpGE(char.mindscape, 1, percent(dm.m1.fire_resIgn_));
-const m1_corrosiveFlash_resIgn_ = ownBuff.combat.resIgn_.fire.add(m1_resIgnValue);
-const m1_crimsonVortex_resIgn_ = ownBuff.combat.resIgn_.fire.add(m1_resIgnValue);
-const m1_heatCharge_resIgn_ = ownBuff.combat.resIgn_.fire.add(m1_resIgnValue);
-const m1_fieryEruption_resIgn_ = ownBuff.combat.resIgn_.fire.add(m1_resIgnValue);
-
-registerBuff('m1_corrosiveFlash_resIgn_', m1_corrosiveFlash_resIgn_, undefined, false, false);
-registerBuff('m1_crimsonVortex_resIgn_', m1_crimsonVortex_resIgn_, undefined, false, false);
-registerBuff('m1_heatCharge_resIgn_', m1_heatCharge_resIgn_, undefined, false, false);
-registerBuff('m1_fieryEruption_resIgn_', m1_fieryEruption_resIgn_, undefined, false, false);
-```
-
-Then apply the specific buff as an extra in the corresponding `dmgDazeAndAnomOverride`:
-
-```ts
-dmgDazeAndAnomOverride(
-  dm, 'special', 'EXSpecialAttackHeatCharge', 0,
-  { ...baseTag, damageType1: 'exSpecial', damageType2: 'aftershock' }, 'atk',
   undefined,
-  m1_heatCharge_resIgn_,
-  m4_heatCharge_dmg_
+  true // team
+),
+registerBuff(
+  'm2_vanguard_defIgn_',
+  notOwnBuff.combat.defIgn_.add(
+    cmpGE(char.mindscape, 2, besiege_defIgn.ifOn(percent(dm.m2.besiege_defIgn_)))
+  ),
+  undefined,
+  true
+),
+```
+
+Self buffs use `ownBuff` + default `team: false`. Note `core_dmg_` — Besiege buffs BOTH Seed and the Vanguard — is still written with `ownBuff.combat.common_dmg_` but registered `team: true` so it lists team-wide.
+
+### 1.5 Mindscape-gated conditionals — `cmpGE` + `ifOn`
+
+Always-on M stats need no conditional; toggleable M effects combine `cmpGE(char.mindscape, N, ...)` with `cond.ifOn(...)`:
+
+```ts
+registerBuff(
+  'm2_defIgn_',
+  ownBuff.combat.defIgn_.add(
+    cmpGE(char.mindscape, 2, besiege_defIgn.ifOn(percent(dm.m2.besiege_defIgn_)))
+  )
+),
+```
+
+Compare `m6_crit_dmg_`, an always-on M6 stat → plain `cmpGE`, no conditional:
+
+```ts
+registerBuff(
+  'm6_crit_dmg_',
+  ownBuff.combat.crit_dmg_.add(
+    cmpGE(char.mindscape, 6, percent(dm.m6.crit_dmg_))
+  )
 )
 ```
 
-This gives the sheet UI the ability to show which skill gets which buff, and each field can be rendered with its own `ColorText` variant. Use the same pattern for M4/M6 generic damage bonuses that apply to multiple skills.
+### 1.6 Formula damage — `customDmg` + matching `registerBuff`
 
-### A3. Meta (`buffs.ts`, `conditionals.ts`, `formulas.ts`)
+`customDmg` registers an optimization-target formula (M6's Additional Laser DMG). It MUST be paired with a `registerBuff` of the same name, or the sheet display filter (which looks up `buffs[name]`) won't render the field:
 
-These are auto-generated. Run `bun nx run-many -t gen-file` after data changes.
-
-Key manual corrections in `buffs.ts`:
-- Set `team: true` for team-wide buffs that were previously `team: false`
-- Set `team: false` for self-only buffs that were previously `team: true`
-
-### A4. UI Sheet (`<Char>.tsx`)
-
-**Replace hardcoded string titles** with locale-driven `<ColorText>`:
-
-```tsx
-// ❌ BEFORE:
-{ title: 'Corrode Bone Electric DMG', fieldRef: buff.core_corrodeBone_dmg_.tag }
-
-// ✅ AFTER:
-{
-  title: <ColorText color={getVariant(buff.core_corrodeBone_dmg_.tag)}>{ch('core_corrodeBone_dmg_')}</ColorText>,
-  fieldRef: buff.core_corrodeBone_dmg_.tag,
-}
+```ts
+...customDmg(
+  'm6_dmg',
+  { damageType1: 'elemental' },
+  cmpGE(char.mindscape, 6, prod(own.final.atk, percent(dm.m6.dmg)))
+),
+registerBuff(
+  'm6_dmg',
+  ownBuff.combat.dmg_.addWithDmgType(
+    'elemental',
+    cmpGE(char.mindscape, 6, percent(dm.m6.dmg))
+  ),
+  undefined,
+  undefined,
+  false
+),
 ```
 
-**Single-field docs → header + `fieldForBuff`:**
+### 1.7 Per-hit element/damage-type overrides
 
-```tsx
-// ❌ BEFORE:
-{
-  type: 'fields',
-  fields: [{ title: 'CP CR to CD conversion', fieldRef: buff.core_critDmg_.tag }],
-}
+Hits that differ from the default (e.g. physical instead of electric) get their own `dmgDazeAndAnomOverride`:
 
-// ✅ AFTER:
-{
-  type: 'fields',
-  header: { icon: null, text: ch('core_critDmg_') },
-  fields: [fieldForBuff(buff.core_critDmg_)],
-}
+```ts
+// Basic Attack Chrysanthemum 1-2 hits are physical
+dmgDazeAndAnomOverride(
+  dm,
+  'basic',
+  'BasicAttackChrysanthemumWheelDance',
+  0,
+  { damageType1: 'basic' }, // no attribute → defaults to physical
+  'atk'
+),
 ```
 
-**Multi-field docs get group headers:**
+---
+
+## Part 2 — Meta files (generated)
+
+`buffs.ts`, `conditionals.ts`, `formulas.ts` under `app/src/formula/meta/char/<Char>/` are generated. After editing the data file, regenerate:
+
+```bash
+bun nx run-many -t gen-file
+```
+
+The generated `conditionals.ts` picks up `mindscapeRequirement` and num min/max automatically; `buffs.ts` derives `team` from the `registerBuff` 4th param. No manual edits needed.
+
+---
+
+## Part 3 — UI sheet (`Seed.tsx`)
+
+### 3.1 The one rule: group by effect
+
+A **document** in the sheet = one in-game effect (one description paragraph):
+
+- All buffs of the same effect are **fields inside one document**, even if they are different stats. Onslaught gives ATK + CRIT DMG → one conditional with two fields.
+- Two buffs from the same section that come from **different effects get separate documents**. M6 CRIT DMG and M6 Additional DMG are both M6 but live in two separate `fields` docs.
+- Toggleable effects → `conditional` docs. Always-on effects → `fields` docs with a header.
+
+### 3.2 Conditional doc — one effect, two buffs
 
 ```tsx
 {
-  type: 'fields',
-  header: { icon: null, text: 'DMG' },  // or ch('xxx_header')
-  fields: [
-    fieldForBuff(buff.ability_wind_dmg_),
-    fieldForBuff(buff.ability_vortex_dmg_),
-  ],
-}
-```
-
-**Per-skill granular fields** (from OrphieMagus) use individual field objects with `ColorText`:
-
-```tsx
-{
-  type: 'fields',
-  header: { icon: null, text: ch('m1_header') },
-  fields: [
-    {
-      title: <ColorText color={getVariant(buff.m1_corrosiveFlash_resIgn_.tag)}>{ch('m1_corrosiveFlash_resIgn_')}</ColorText>,
-      fieldRef: buff.m1_corrosiveFlash_resIgn_.tag,
-    },
-    {
-      title: <ColorText color={getVariant(buff.m1_crimsonVortex_resIgn_.tag)}>{ch('m1_crimsonVortex_resIgn_')}</ColorText>,
-      fieldRef: buff.m1_crimsonVortex_resIgn_.tag,
-    },
-  ],
-}
-```
-
-**Conditional labels → `ch('keyCond')`:**
-
-```tsx
-// ❌ BEFORE:
-conditional: { label: 'Ether Veil: Cold-Blooded', metadata: cond.etherVeil, ... }
-
-// ✅ AFTER:
-conditional: {
-  label: ch('etherVeilCond'),
-  description: (<SkillGameDesc characterKey={key} ns="char_Cissia_gen" key18="chain.UltimateOphidiophobia.desc" />),
-  metadata: cond.etherVeil,
-  fields: [fieldForBuff(buff.core_etherVeil_crit_dmg_)],
-}
-```
-
-**Skill-specific conditionals go inside `perSkillAbility`.** For conditionals tied to a specific skill (chain attack, ultimate, EX special), place the `conditional` doc inside the skill's array under `perSkillAbility`:
-
-```tsx
-const sheet = createBaseSheet(key, {
-  perSkillAbility: {
-    chain: {
-      Ultimate100Energy: [
-        {
-          type: 'conditional',
-          conditional: {
-            label: ch('etherVeilCond'),
-            description: (
-              <SkillGameDesc
-                characterKey={key}
-                ns="char_Aria_gen"
-                key18="chain.Ultimate100Energy.desc"
-              />
-            ),
-            metadata: cond.etherVeil,
-            fields: [fieldForBuff(buff.ultimate_atk)],
-          },
-        },
-      ],
-    },
+  type: 'conditional',
+  conditional: {
+    label: ch('onslaughtAtkCond'), // "Onslaught · ATK & CD"
+    description: <CoreGameDesc characterKey={key} paragraph={1} />,
+    metadata: cond.onslaught_atk,
+    fields: [
+      fieldForBuff(buff.core_atk),
+      fieldForBuff(buff.core_crit_dmg_),
+    ],
   },
+},
+```
+
+- `label` — localized toggle name (`ch('xxxCond')`).
+- `description` — the effect text (see 3.8 for which desc component to use).
+- `metadata` — the conditional read from `cond` (`Seed.conditionals`).
+- `fields` — every buff this effect grants, in one list.
+
+### 3.3 Linked conditionals — one effect split across sections
+
+When one effect grants buffs in **different sections** (Core, M2, M4), each section gets its own `conditional` doc, but all toggles share state via `linked`. Besiege is one effect split across Core/M2/M4:
+
+```tsx
+// core — Besiege · DMG
+{
+  type: 'conditional',
+  conditional: {
+    label: ch('besiegeCond'),
+    description: <CoreGameDesc characterKey={key} paragraph={2} />,
+    metadata: cond.besiege,
+    fields: [fieldForBuff(buff.core_dmg_)],
+    linked: ['besiege_defIgn', 'besiege_ult_dmg'],
+  },
+},
+// m2 — Besiege · DEF Ign (linked back)
+{
+  type: 'conditional',
+  conditional: {
+    label: ch('besiegeDefIgnCond'),
+    description: <GameDesc ns="char_Seed_gen" key18="mindscapes.2.desc" />,
+    metadata: cond.besiege_defIgn,
+    fields: [/* m2_defIgn_, m2_vanguard_defIgn_ */],
+    linked: ['besiege', 'besiege_ult_dmg'],
+  },
+},
+// m4 — Besiege · DMG (linked back)
+{
+  type: 'conditional',
+  conditional: {
+    label: ch('besiegeUltDmgCond'),
+    description: <GameDesc ns="char_Seed_gen" key18="mindscapes.4.desc" />,
+    metadata: cond.besiege_ult_dmg,
+    fields: [/* m4_ult_dmg_ */],
+    linked: ['besiege', 'besiege_defIgn'],
+  },
+},
+```
+
+Requirements:
+
+- Every linked name exists in the **same `allBoolConditionals` call** in the data file (1.1).
+- The `linked` arrays are **symmetric** — each conditional lists all the others.
+- The link refers to conditional names, not buff names.
+
+### 3.4 Num conditional — slider
+
+A num conditional uses the same `conditional` doc; the display switches to a slider based on the metadata type:
+
+```tsx
+{
+  type: 'conditional',
+  conditional: {
+    label: ch('m2EnergyConsumedCond'), // "Energy Consumed · DMG"
+    description: <GameDesc ns="char_Seed_gen" key18="mindscapes.2.desc" />,
+    metadata: cond.energy_consumed,
+    fields: [
+      {
+        title: (
+          <ColorText color={getVariant(buff.m2_basic_dmg_.tag)}>
+            {ch('ability_basic_dmg_')} // reuses the Slaughter DMG name
+          </ColorText>
+        ),
+        fieldRef: buff.m2_basic_dmg_.tag,
+      },
+    ],
+  },
+},
+```
+
+The slider's min/max/int-only come from the generated `conditionals.ts` metadata — no UI config needed. Reusing an existing locale key is fine when the field is the same buff shown elsewhere (here M2's energy bonus boosts the next Slaughter).
+
+### 3.5 Targeted conditionals — buffs applied to a teammate
+
+When the conditional's buffs land on another agent (the Vanguard), set `targeted: true` so the toggle gets a target selector:
+
+```tsx
+{
+  type: 'conditional',
+  conditional: {
+    label: ch('directStrikeCond'),
+    description: <CoreGameDesc characterKey={key} paragraph={1} />,
+    metadata: cond.directStrike,
+    fields: [
+      fieldForBuff(buff.core_vanguard_atk),
+      fieldForBuff(buff.core_vanguard_crit_dmg_),
+    ],
+    targeted: true,
+  },
+},
+```
+
+The matching data buffs are `notOwnBuff` + `team: true` (see 1.4).
+
+### 3.6 Fields docs & headers — always-on effects
+
+Always-on effects are `fields` docs. The header names the effect/section; the fields list its buffs:
+
+```tsx
+// m6 — one effect per doc:
+{
+  type: 'fields',
+  header: { icon: null, text: ch('m6_header') }, // "CD" — M6 CRIT DMG effect
+  fields: [fieldForBuff(buff.m6_crit_dmg_)],
+},
+{
+  type: 'fields',
+  header: { icon: null, text: ch('m6_additional_dmg') }, // "Additional DMG" — separate effect
+  fields: [
+    {
+      title: (
+        <ColorText color={getVariant(formula.m6_dmg.tag)}>
+          {ch('m6_additional_laser_dmg')}
+        </ColorText>
+      ),
+      fieldRef: formula.m6_dmg.tag, // formula tag, not a buff tag
+    },
+  ],
+},
+```
+
+Two docs, two effects — even though both live in M6.
+
+### 3.7 `fieldForBuff` vs custom `ColorText` fields
+
+Two ways to build a field:
+
+- **`fieldForBuff(buff)`** — title auto-generated from the tag (`TagDisplay`). Use when the generic name is fine ("ATK", "CRIT DMG", "Basic DMG"). Carries `team` over automatically.
+- **Custom field object** — `<ColorText color={getVariant(tag)}>{ch('key')}</ColorText>` title. Use when the buff must display a **per-skill name** ("Falling Petals - Slaughter DMG", "Falling Petals - Downfall Electric RES Ignore", ...).
+
+The same buff tag can be shown under several titles. Seed's ability buff affects Slaughter, Downfall, and the Ultimate, and the sheet renders it once per affected skill, each with its own localized name — all pointing at the same tag:
+
+```tsx
+{
+  type: 'fields',
+  header: { icon: null, text: ch('ability_dmg_header') }, // "DMG"
+  fields: [
+    {
+      title: (
+        <ColorText color={getVariant(buff.ability_basic_dmg_.tag)}>
+          {ch('ability_basic_dmg_')}
+        </ColorText>
+      ),
+      fieldRef: buff.ability_basic_dmg_.tag,
+    },
+    {
+      title: (
+        <ColorText color={getVariant(buff.ability_basic_dmg_.tag)}>
+          {ch('ability_downfall_dmg_')}
+        </ColorText>
+      ),
+      fieldRef: buff.ability_basic_dmg_.tag, // same tag, different name
+    },
+    // ... same pattern for electric RES Ignore (Slaughter + Downfall)
+    // and the Ultimate DMG / Electric RES Ignore fields
+  ],
+},
+```
+
+`getVariant(tag)` returns the tag's attribute (or `undefined`), which drives the `ColorText` color — electric fields render blue.
+
+### 3.8 Descriptions — which component
+
+| Where | Component | Notes |
+|---|---|---|
+| Core effect | `<CoreGameDesc characterKey={key} paragraph={N} />` | Renders `core.desc.<level>.<N>` with the character's actual core level. `paragraph` indexes into the core-level desc (Seed: 1 = Onslaught/Direct Strike, 2 = Besiege) |
+| Mindscape | `<GameDesc ns="char_Seed_gen" key18="mindscapes.N.desc" />` | Static text from the datamine locale |
+| Part of a description | `<GameDescSlice ns key18 from to />` | Slices between stable text markers instead of paragraph indexes (3.10) |
+| Skill ability | `<SkillGameDesc characterKey={key} ns="char_<Key>_gen" key18="<skill>.<ability>.desc" />` | Evaluates `{CAL:...}` tokens with the character's real skill levels |
+| Multi-paragraph | Wrap multiple `<GameDesc>` in a fragment with `<div style={{ marginBottom: 8 }} />` between them | |
+
+### 3.9 Imports
+
+```tsx
+import { ColorText } from '@zenless-optimizer/common/ui'
+import type { CharacterKey } from '../../../consts'
+import { Seed } from '../../../formula'
+import { GameDesc } from '../../../i18n'
+import { trans } from '../../util'
+import { CoreGameDesc, createBaseSheet, fieldForBuff } from '../sheetUtil'
+import { getVariant } from '../util'
+
+const key: CharacterKey = 'Seed'
+const [, ch] = trans('char', key)
+const cond = Seed.conditionals
+const buff = Seed.buffs
+const formula = Seed.formulas
+
+const sheet = createBaseSheet(key, {
   core: [...],
-  m1: [...],
-  m2: [...],
-  m6: [...],
+  ability: [...],
+  m1: [...], m2: [...], m4: [...], m6: [...],
 })
 ```
 
-**Replace hardcoded descriptions:**
+- `ch('...')` reads from `char_<Key>.json` (the file you own); `chg('...')` would read the generated `char_<Key>_gen.json`.
+- `createBaseSheet` already renders every skill's dmg/daze/anom formulas, core/ability/mindscape name+desc docs. You only add documents for conditionals, buff fields, and per-skill extras.
+- Conditionals that belong to a specific skill ability (e.g. an EX Special effect) go under `perSkillAbility: { <skill>: { <ability>: [...] } }` instead of the section arrays.
+
+### 3.10 Descriptions — slicing parts of a description
+
+Datamine descriptions are not consistent enough to rely on paragraph indexes (`core.desc.<level>.N`): some are a single string per level, others are a dict of paragraphs, and paragraph counts change between patches. When a conditional description needs **part** of a description (e.g. the M1 stun line appended to the core passive text), use `GameDescSlice` to extract it between stable text markers instead:
 
 ```tsx
-// Core passive paragraph:
-description: <CoreGameDesc characterKey={key} paragraph={2} />,
-
-// Any skill ability:
-description: <SkillGameDesc characterKey={key} ns="char_<Key>_gen" key18="basic.CorrodeBone.desc" />,
-
-// Mindscape:
-description: <GameDesc ns="char_<Key>_gen" key18="mindscapes.1.desc" />,
-
-// Ability with multiple description paragraphs:
-description: (<>
-  <GameDesc ns="char_Cissia_gen" key18="ability.desc.0" />
-  <div style={{ marginBottom: 8 }} />
-  <GameDesc ns="char_Cissia_gen" key18="ability.desc.1" />
-</>),
+description: (
+  <>
+    <CoreGameDesc characterKey={key} />
+    <div style={{ marginTop: 8 }}>
+      M1: <GameDescSlice
+        ns="char_Trigger_gen"
+        key18="mindscapes.1.desc"
+        from="The Stun DMG Multiplier"
+        to="Soul-Searching Gaze"
+      />
+    </div>
+  </>
+),
 ```
 
-**Add `linked` for paired conditionals** (two toggles that affect each other):
-
-```tsx
-conditional: {
-  label: ch('venomDefIgnCond'),
-  ...
-  linked: 'venomCritDmg',
-}
-```
-
-For **3+ linked conditionals**, use an array — each toggle in the group stays in sync with the others. OrphieMagus uses this for 3-way linked conditionals across core, ability, and M1:
-
-```tsx
-conditional: {
-  label: ch('overwhelminglyPositiveCommonCond'),
-  ...
-  linked: ['overwhelmingly_positive_resIgn', 'overwhelmingly_positive_atk'],
-}
-```
-
-Multiple documents in different sheet sections can link to each other:
-
-```tsx
-// core section — zeroedIn linked to ability and m1
-{ ... label: ch('coreCond'), metadata: cond.zeroedIn, linked: ['zeroedIn_ability', 'zeroedIn_m1_dmg'] }
-
-// ability section — zeroedIn_ability linked back to core and m1
-{ ... label: ch('abilityCond'), metadata: cond.zeroedIn_ability, linked: ['zeroedIn', 'zeroedIn_m1_dmg'] }
-
-// m1 section — zeroedIn_m1_dmg linked back to core and ability
-{ ... label: ch('m1Cond'), metadata: cond.zeroedIn_m1_dmg, linked: ['zeroedIn', 'zeroedIn_ability'] }
-```
-
-**Import map** — always add these when converting:
-
-```tsx
-import { ColorText, ImgIcon } from '@zenless-optimizer/common/ui'
-import { commonDefIcon, mindscapeDefIcon } from '../../../assets'
-import { GameDesc } from '../../../i18n'
-import { CoreGameDesc, createBaseSheet, fieldForBuff, SkillGameDesc } from '../sheetUtil'
-import { getVariant } from '../util'
-```
-
-### A5. Localization (`char_<Char>.json`)
-
-**Conditional keys** end with `Cond`. Format: `"<trigger/state> · <effect>"`:
-
-```json
-{
-  "etherVeilCond": "Ether Veil: Cold-Blooded · CRIT DMG",
-  "dazeSquadBuffCond": "Adorable Explosive Impact Hit · Daze & DMG",
-  "m1ResIgnCond": "Adorable Explosive Impact Hit · RES Red",
-  "m1VortexCond": "Vortex Hit · RES Ignore",
-  "m4Cond": "EX Special Hit · ATK"
-}
-```
-
-**Header keys** end with `_header`:
-
-```json
-{
-  "core_header": "HP to SF",
-  "ability_header": "Daze",
-  "m2_header": "DMG",
-  "m6_header": "CR & DMG"
-}
-```
-
-**Field title keys** use the buff name directly:
-
-```json
-{
-  "core_corrodeBone_dmg_": "Corrode Bone Additional DMG",
-  "core_critDmg_": "CR to CD",
-  "core_atk": "SF to ATK",
-  "m6_daze_": "Armor-Piercing Warhead Daze"
-}
-```
-
-**Per-skill granular fields** follow the same convention — use the buff name as the key, describe which skill it applies to:
-
-```json
-{
-  "m1_corrosiveFlash_resIgn_": "Corrosive Flash RES Ignore",
-  "m1_crimsonVortex_resIgn_": "Crimson Vortex RES Ignore",
-  "m1_heatCharge_resIgn_": "Heat Charge RES Ignore",
-  "m1_fieryEruption_resIgn_": "Fiery Eruption RES Ignore",
-  "m4_heatCharge_dmg_": "Heat Charge DMG",
-  "m4_ultimate_dmg_": "Dance With Fire DMG"
-}
-```
-
-**Short abbreviations** for compact sections:
-
-```json
-{
-  "core_anomProf": "AP",
-  "core_impact": "AM to Impact",
-  "m4_anomProf": "AP",
-  "ability_crit_dmg_": "CD",
-  "m1_crit_": "CR"
-}
-```
-
----
-
-## Part B: W-Engines
-
-### B1. Formula Data
-
-**Use `.addOnce(key, ...)` for non-stacking team buffs** to prevent stacking from multiple copies:
+- The slice starts at the first occurrence of `from` and runs **through the end of the sentence** containing the first occurrence of `to` (next `.`), preserving `<ct>` markup and number highlighting.
+- Markers are stable phrases from the game text; wording changes only break the slice if the markers themselves disappear. If either marker is not found, the component renders nothing and logs a `console.warn` so stale markers are caught.
+- Pair this with **merging the mindscape's value into the parent buff**: instead of a separate M1 field, fold it into the core buff with `sum(coreValue, cmpGE(char.mindscape, 1, m1Value))` and register only the parent buff. The field then shows the base value at M0 and grows once the mindscape is enabled:
 
 ```ts
-// ❌ BEFORE:
-teamBuff.combat.common_dmg_.add(cmpSpecialtyAndEquipped(key, ...))
-
-// ✅ AFTER:
-teamBuff.combat.common_dmg_.addOnce(key, cmpSpecialtyAndEquipped(key, ...))
+registerBuff(
+  'core_stun_',
+  enemyDebuff.common.stun_.add(
+    aftershock_hit.ifOn(
+      sum(
+        subscript(char.core, dm.core.stun_),
+        cmpGE(char.mindscape, 1, dm.m1.stun_)
+      )
+    )
+  )
+),
 ```
 
-Exact signature: `teamBuff.combat.<stat>.addOnce(wengineKey, <value>)`.
-
-### B2. Formula Data — wengine buff registration flags
-
-Apply `showSpecialtyAndEquipped(key)` for passives that check specialty/equipped:
-
-```ts
-registerBuff('passive_atk_',
-  teamBuff.combat.atk_.addOnce(key, cmpSpecialtyAndEquipped(key, percent(subscript(phase, dm.atk_)))),
-  showSpecialtyAndEquipped(key),  // reader condition for UI
-  true  // team
-);
-```
-
-### B3. UI Sheet (`<WEngine>.tsx`)
-
-**Replace `{ title: '...', fieldRef: ... }` with `tagToTagField`:**
-
-```tsx
-// ❌ BEFORE:
-{ title: 'Impact buff', fieldRef: buff.impact.tag }
-
-// ✅ AFTER:
-tagToTagField(buff.impact.tag)
-```
-
-**Add headers to fields sections:**
-
-```tsx
-{
-  type: 'fields',
-  header: { icon: null, text: ch('passive_header') },
-  fields: [
-    tagToTagField(buff.impact.tag),
-    tagToTagField(buff.fireResIgn_.tag),
-  ],
-}
-```
-
-**Rename conditionals** from generic `cond` to descriptive:
-
-```tsx
-// ❌ BEFORE:
-label: ch('cond'),
-
-// ✅ AFTER:
-label: ch('offFieldCond'),
-label: ch('exFireStacksCond'),
-label: ch('eclipseActiveCond'),
-label: ch('energyConsumedCond'),
-label: ch('stacksCond'),
-```
-
-**Group related buff fields** from separate `fields` docs into a single doc with header:
-
-```tsx
-// ❌ BEFORE:
-{ type: 'fields', fields: [tagToTagField(buff.passive_enerRegen.tag)] },
-{ type: 'fields', fields: [tagToTagField(buff.passive_atk_.tag), tagToTagField(buff.passive_hp_.tag)] },
-
-// ✅ AFTER:
-{ type: 'fields', header: { icon: null, text: ch('passive_enerRegen') }, fields: [tagToTagField(buff.passive_enerRegen.tag)] },
-{ type: 'fields', header: { icon: null, text: ch('passive_squad_header') }, fields: [tagToTagField(buff.passive_atk_.tag), tagToTagField(buff.passive_hp_.tag)] },
-```
-
-### B4. Localization (`wengine_<WEngine>.json`)
-
-**Conditional keys** — rename from `cond` to descriptive `xxxCond`:
-
-```json
-{
-  "offFieldCond": "Off-Field · ER",
-  "exFireStacksCond": "EX Special Fire Hit · DMG",
-  "enemyWithAnomalyCond": "Enemy with Anomaly · DMG",
-  "specialUsedCond": "Special / EX Special Used · DMG",
-  "stacksCond": "EX Special / Basic Ether Hit · DMG & AP"
-}
-```
-
-**Header keys** — add for grouped sections:
-
-```json
-{
-  "passive_header": "Impact & RES Ign",
-  "passive_enerRegen": "ER",
-  "passive_squad_header": "ATK & HP",
-  "critRate_": "CR",
-  "crit_": "CR",
-  "anomProf": "AP"
-}
-```
-
-**Field title keys** — for explicit field names (cannot auto-gen):
-
-```json
-{
-  "passive_crit_": "CR"
-}
-```
+This keeps the conditional description self-contained (core text + the relevant M line) and removes a separate mindscape section when the mindscape only augments an existing effect.
 
 ---
 
-## Part C: Display Components (Self-Contained)
+## Part 4 — Localization (`char_Seed.json`)
 
-### C1. CharacterConditionalsDisplay
+**Conditional keys** — suffix `Cond`, format `<state/trigger> · <effects>`:
 
-The `CharacterConditionalsDisplay` component is **self-contained** — it no longer requires `conditionalFields`, `conditionalDescriptions`, `conditionalLabels`, or `passiveFields` as props. It extracts all of these internally from `charSheets` and `buffs`:
-
-```tsx
-// ✅ Current API (OptimizerForm.tsx):
-<CharacterConditionalsDisplay
-  characterKey={characterKey}
-  showPassives={showCharPassives}
-/>
-
-// ✅ Teammate view (TeammateCard.tsx):
-<CharacterConditionalsDisplay
-  characterKey={characterKey}
-  mindscapeOverride={effectiveMindscape}
-  teammateKey={characterKey}
-  showZeroFields={true}
-  showPassives={showCharPassives}
-/>
+```json
+{
+  "onslaughtAtkCond": "Onslaught · ATK & CD",
+  "directStrikeCond": "Direct Strike · ATK & CD",
+  "besiegeCond": "Besiege · DMG",
+  "besiegeDefIgnCond": "Besiege · DEF Ign",
+  "besiegeUltDmgCond": "Besiege · DMG",
+  "m2EnergyConsumedCond": "Energy Consumed · DMG"
+}
 ```
 
-Key props:
-- `characterKey` — the character to display conditionals for
-- `mindscapeOverride` — override mindscape level (used in teammate card)
-- `teammateKey` — when set, filters to only team-wide buffs (used in teammate view)
-- `showZeroFields` — whether to show fields with zero value
-- `showPassives` — whether to show always-active passive field groups
+**Header keys** — referenced by `ch()` in `header.text`; no fixed suffix (Seed uses both `_header` and plain names):
 
-The component groups conditionals and passives by section (Basic Attack, Dodge, Assist, Special, Chain Attack, Core, Additional Ability, Potential, M1–M6) using a `SECTION_ORDER` array. Each section can show:
-- **Passive fields** — always-active stat buffs (shown inside `HoverCard` dropdowns)
-- **Conditionals** — interactive toggles/switches/sliders that the user can set
-
-Linked conditionals are tracked and synchronized — when one toggle changes, all linked toggles change with it.
-
-### C2. WEngineConditionalsDisplay
-
-Similarly self-contained. Extracts conditional fields and passive field groups from `wengineUiSheets`:
-
-```tsx
-// ✅ Current API (OptimizerForm.tsx):
-<WEngineConditionalsDisplay
-  wengineKey={wengineKey}
-  showPassives={showWenginePassives}
-/>
-
-// ✅ Teammate view (TeammateCard.tsx):
-<WEngineConditionalsDisplay
-  wengineKey={wengineKey}
-  teammateKey={characterKey}
-  wenginePhase={effectivePhase}
-  showPassives={showWenginePassives}
-/>
+```json
+{
+  "ability_dmg_header": "DMG",
+  "m1_header": "CD",
+  "m6_header": "CD",
+  "m6_additional_dmg": "Additional DMG"
+}
 ```
 
-For w-engines with complex phase descriptions split across multiple parts (e.g., CRIT Rate vs conditional buff), the component provides per-wengine description helper functions. These are defined internally in `WEngineConditionalsDisplay.tsx` and are only needed when a w-engine's phase description needs to be shown differently for different buff sections.
+**Field title keys** — name the field by the skill it belongs to (key can be the buff name or anything referenced from the sheet):
+
+```json
+{
+  "ability_basic_dmg_": "Falling Petals - Slaughter DMG",
+  "ability_downfall_dmg_": "Falling Petals - Downfall DMG",
+  "ability_basic_electric_resIgn_": "Falling Petals - Slaughter Electric RES Ignore",
+  "ability_downfall_electric_resIgn_": "Falling Petals - Downfall Electric RES Ignore",
+  "ability_ult_dmg_": "Clockwork Garden - Bloom! Ultimate DMG",
+  "ability_ult_electric_resIgn_": "Clockwork Garden - Bloom! Electric RES Ignore",
+  "m1_basic_crit_dmg_": "Falling Petals - Downfall CRIT DMG",
+  "m2_defIgn_": "DEF Ignore",
+  "m4_ult_dmg_": "Ultimate DMG",
+  "m6_additional_laser_dmg": "Additional Laser DMG"
+}
+```
+
+Never edit `char_<Key>_gen.json` — that comes from the datamine.
 
 ---
 
-## Part D: Step-by-Step Checklist
+## Part 5 — Checklist
 
-For each character or w-engine, follow these steps in order:
-
-### Characters
-
-- [ ] **1. Formula data** — delete `anomBuildup_` buffs; delete unused `customDmg` entries; delete unused conditionals; add conditional wrappers for M-gated effects; use `teamBuff` for team buffs; use `dmgDazeAndAnomOverride` for per-skill extra daze; split flat Ability+M1 values into separate buffs; use per-skill granular buff names for multi-skill M effects; set `includeOriginalEntry: false` (5th param) on override buffs that replace original entries.
-- [ ] **2. Run `bun nx run-many -t gen-file`** to regenerate meta files (`buffs.ts`, `conditionals.ts`, `formulas.ts`).
-- [ ] **3. Fix `team: true/false` in `buffs.ts`** — set `team: true` for `teamBuff` entries, `team: false` for self-only buffs.
-- [ ] **4. UI sheet** — remove deleted buff references; add headers; replace hardcoded strings with `ch('key')`; use `fieldForBuff`; use `CoreGameDesc`/`SkillGameDesc`/`GameDesc` for descriptions; add `getVariant` + `ColorText` for element-typed fields; add `linked` arrays for grouped conditionals.
-- [ ] **5. Localization** — add `Cond`, `_header`, and field title keys following conventions.
-- [ ] **6. Format** — `bun biome check --write --formatter-enabled=true --linter-enabled=false --assist-enabled=true`
-- [ ] **7. Typecheck** — `npx nx run-many --target=typecheck`
-- [ ] **8. Lint** — `npx nx run-many --target=eslint:lint --max-warnings=0`
-- [ ] **9. Test** — `npx nx run-many --target=test`
-
-### W-Engines
-
-- [ ] **1. Formula data** — change `add()` to `addOnce(key, ...)` for team non-stacking buffs; ensure `showSpecialtyAndEquipped` is applied.
-- [ ] **2. Run `bun nx run-many -t gen-file`** to regenerate meta files.
-- [ ] **3. UI sheet** — replace `{title, fieldRef}` with `tagToTagField`; add headers; rename `cond` to descriptive names.
-- [ ] **4. Localization** — update conditional keys; add header/field keys.
-- [ ] **5-8.** Same format → typecheck → lint → test flow.
+- [ ] **1. Formula data** — add conditionals (`allBoolConditionals` with mindscape requirements, `allNumConditionals` for sliders); `addWithDmgType` + `dmgDazeAndAnomOverride` extras + `includeOriginalEntry: false` for skill-scoped buffs; `notOwnBuff` + `team: true` for teammate buffs; `customDmg` paired with a matching `registerBuff`; `cmpGE(char.mindscape, N, cond.ifOn(...))` for toggleable M effects; per-hit element/damage-type overrides.
+- [ ] **2. Run `bun nx run-many -t gen-file`** to regenerate `buffs.ts` / `conditionals.ts` / `formulas.ts`.
+- [ ] **3. UI sheet** — group documents by effect (3.1); wire `metadata: cond.<name>`; add `linked` arrays for effects split across sections; `targeted: true` for teammate conditionals; `fieldForBuff` for generic titles, custom `ColorText` fields for per-skill names; headers on all `fields` docs; descriptions via `CoreGameDesc`/`GameDesc`/`SkillGameDesc`/`GameDescSlice` (3.8, 3.10).
+- [ ] **4. Localization** — add `Cond` keys, header keys, and field title keys to `char_<Key>.json`.
+- [ ] **5. Format** — `bun biome check --write --formatter-enabled=true --linter-enabled=false --assist-enabled=true`
+- [ ] **6. Typecheck** — `npx nx run-many --target=typecheck`
+- [ ] **7. Lint** — `npx nx run-many --target=eslint:lint --max-warnings=0`
+- [ ] **8. Test** — `npx nx run-many --target=test`
 
 ---
 
-## Part E: Common Pitfalls
+## Part 6 — Common pitfalls
 
-- **Forgotten `anomBuildup_` in `allAnomBuffs` arrays** — check `dmgDazeAndAnomOverride` extra spreads.
-- **`team: true/false` mismatch** — `registerBuff` 4th param must match `buffs.ts` meta.
-- **Import missing `getVariant` / `ColorText`** — always add them to the import block.
-- **Locale key naming inconsistency** — suffix `Cond` for conditionals, `_header` for headers, bare name for field titles.
-- **`Icon: null` vs `<></>`** — use `icon: null` for header without icon, `<ImgIcon ... />` for section icons.
-- **`customDmg` formula not rendering in sheet** — `customDmg` only registers a formula entry. Without a matching `registerBuff('same_name', ...)`, the field is filtered out by the display logic because it checks `buffs[name]`. Add both `customDmg` (for the formula) and `registerBuff` (for the sheet display).
-- **`includeOriginalEntry: false` forgotten on override buffs** — when a buff is applied via `dmgDazeAndAnomOverride` extras, the standalone `registerBuff` must set 5th param to `false` to prevent double-counting.
-- **`anom_crit_` vs `crit_` for Abloom** — Abloom CRIT uses `anom_crit_`/`anom_crit_dmg_` tags (anomaly pipeline), not regular `crit_`/`crit_dmg_`. Using wrong tag means the CRIT stat has no effect.
-- **Generated files out of sync** — always run `gen-file` after data changes and before testing.
-- **Orphan conditionals in meta files** — if you add granular per-skill buffs, the `conditionals.ts` meta file may generate extra conditional entries for unused bool conditionals. Remove any that are not used by any character sheet.
-- **Linked conditionals across sections** — when linking conditionals across core/ability/M1 sections, ensure all linked names exist in the same `allBoolConditionals` call and that each conditional's `linked` array references the others symmetrically.
+- **`customDmg` without a matching `registerBuff`** — the formula exists as an opt target but the field never renders, because the sheet display filter looks up `buffs[name]`. Always pair them (1.6).
+- **Forgotten `includeOriginalEntry: false`** — skill-scoped buffs applied only via `dmgDazeAndAnomOverride` extras must set the 5th `registerBuff` param to `false`, or the buff also applies globally and over-buffs every hit of that damage type (1.3).
+- **`team` mismatch** — `notOwnBuff`/`teamBuff` buffs must be registered with `team: true`; plain `ownBuff` self-buffs keep `team: false`. The generated `buffs.ts` reflects this.
+- **`linked` not symmetric** — every conditional in a linked group must list all the others, and all names must come from the same `allBoolConditionals` call (3.3).
+- **Missing `targeted: true`** — a conditional whose buffs apply to another agent needs `targeted: true`, or there's no way to aim the toggle at the teammate (3.5).
+- **Wrong description component** — core paragraphs need `CoreGameDesc` (uses the real core level), mindscapes need `GameDesc` with `ns="char_<Key>_gen"`; skill abilities with `{CAL:...}` tokens need `SkillGameDesc` (3.8).
+- **Paragraph indexes on non-dict descs** — `core.desc.<level>` is a plain string for some characters; `CoreGameDesc paragraph={N}` renders nothing in that case. When a description is not a dict of paragraphs, render the whole string (no `paragraph` prop) or use `GameDescSlice` for partial text (3.8, 3.10).
+- **Missing `getVariant` / `ColorText` imports** — always add them when using custom fields.
+- **Grouping by stat instead of effect** — the sheet must show one doc per effect, not one doc per stat. When in doubt, split docs when the buffs come from different descriptions (3.1).
+- **Editing generated files** — `meta/char/<Char>/*.ts` are generated; hand-edits are wiped by `gen-file`.

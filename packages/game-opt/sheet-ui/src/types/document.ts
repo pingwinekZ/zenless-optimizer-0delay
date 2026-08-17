@@ -17,6 +17,8 @@ export interface FieldsDocument extends BaseDocument {
   paragraph?: number
   /** Override the full locale key for the hover card description (e.g. "special.EXSpecialAttackSymphonyOfTheReaperDaybreak.desc.0") */
   descKey?: string
+  /** Custom description rendered instead of the auto-computed hover card description */
+  description?: ReactNode
 }
 export interface ConditionalDocument extends BaseDocument {
   type: 'conditional'

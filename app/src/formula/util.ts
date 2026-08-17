@@ -69,7 +69,7 @@ export const DEFAULT_TEAMMATE_CHAR = {
   assist: 11,
   core: 6,
   mindscape: 0,
-  potential: 5,
+  potential: 6,
 } as const satisfies Omit<CharBufferInput, 'key'>
 
 export function charTagMapNodeEntries(
