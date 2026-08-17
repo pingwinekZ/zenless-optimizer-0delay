@@ -53,10 +53,23 @@ jobs:
         id: output-date
         run: echo "date=$(date -u)" >> $GITHUB_OUTPUT
       - name: Maintain comment
-        uses: actions-cool/maintain-one-comment@v3
         if: github.event_name != 'workflow_dispatch'
-        with:
-          body: |
-            [${{ steps.output-date.outputs.date }}] - Deleted deployment
-          body-include: '<!-- Created by actions-cool/maintain-one-comment -->'
-          update-mode: 'append'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          marker='<!-- Created by actions-cool/maintain-one-comment -->'
+          entry="[${{ steps.output-date.outputs.date }}] - Deleted deployment"
+          pr_number="${{ github.event.pull_request.number }}"
+          comment_id="$(gh api "repos/${{ github.repository }}/issues/$pr_number/comments" \
+            --jq ".[] | select(.body | contains(\"$marker\")) | .id" | tail -n 1)"
+          if [ -n "$comment_id" ]; then
+            gh api "repos/${{ github.repository }}/issues/comments/$comment_id" \
+              --jq .body > /tmp/comment-body.txt
+            printf '\n%s' "$entry" >> /tmp/comment-body.txt
+            gh api "repos/${{ github.repository }}/issues/comments/$comment_id" \
+              -X PATCH -F "body=@/tmp/comment-body.txt" > /dev/null
+          else
+            printf '%s\n%s' "$entry" "$marker" > /tmp/comment-body.txt
+            gh api "repos/${{ github.repository }}/issues/$pr_number/comments" \
+              -F "body=@/tmp/comment-body.txt" > /dev/null
+          fi
