@@ -336,6 +336,16 @@ function RoaringFurnaceCondDesc({ phase }: { phase: number }) {
   return <GameText text={condDesc} />
 }
 
+/** DEF Reduction portion of SpectralGaze's phase description (first two sentences). */
+function SpectralGazeDefRedDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_SpectralGaze_gen')
+  const fullDesc = t(`wengine_SpectralGaze_gen:phaseDescs.${phase - 1}`)
+  const marker = 'Passive effects of the same name do not stack.'
+  const idx = fullDesc.indexOf(marker)
+  if (idx === -1) return <GameText text={fullDesc} />
+  return <GameText text={fullDesc.slice(0, idx + marker.length)} />
+}
+
 /** CRIT DMG portion of MyriadEclipse's phase description (first sentence). */
 const MyriadEclipseCritDesc = firstSentenceDesc('wengine_MyriadEclipse_gen')
 
@@ -889,6 +899,14 @@ export function WEngineConditionalsDisplay({
           ) {
             return false
           }
+          // SpectralGaze: Spirit Lock stacks are self-only, hide from teammate view
+          if (
+            wengineKey === 'SpectralGaze' &&
+            condName === 'spiritLock' &&
+            teammateKey
+          ) {
+            return false
+          }
           return true
         })
         .map(([condName, condData]) => (
@@ -985,6 +1003,9 @@ export function WEngineConditionalsDisplay({
               ) : wengineKey === 'MyriadEclipse' &&
                 condName === 'deathSentence' ? (
                 <MyriadEclipseCondDesc phase={phase} />
+              ) : wengineKey === 'SpectralGaze' &&
+                condName === 'hit_aftershock_electric' ? (
+                <SpectralGazeDefRedDesc phase={phase} />
               ) : undefined
             }
           />

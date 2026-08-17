@@ -1,5 +1,31 @@
 // WARNING: Generated file, do not modify
 export const buffs = {
+  m4_disconnect_dmg: {
+    sheet: 'Trigger',
+    name: 'm4_disconnect_dmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Trigger',
+      damageType1: 'elemental',
+      name: 'm4_disconnect_dmg',
+    },
+    team: false,
+  },
+  m4_disconnect_daze: {
+    sheet: 'Trigger',
+    name: 'm4_disconnect_daze',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dazeInc_',
+      sheet: 'Trigger',
+      damageType1: 'elemental',
+      name: 'm4_disconnect_daze',
+    },
+    team: false,
+  },
   core_stun_: {
     sheet: 'Trigger',
     name: 'core_stun_',
@@ -25,19 +51,6 @@ export const buffs = {
     },
     team: false,
   },
-  m1_stun_: {
-    sheet: 'Trigger',
-    name: 'm1_stun_',
-    tag: {
-      et: 'display',
-      qt: 'common',
-      q: 'stun_',
-      sheet: 'Trigger',
-      damageType1: 'aftershock',
-      name: 'm1_stun_',
-    },
-    team: false,
-  },
   m2_crit_dmg_: {
     sheet: 'Trigger',
     name: 'm2_crit_dmg_',
@@ -50,15 +63,15 @@ export const buffs = {
     },
     team: true,
   },
-  m6_armor_break_rounds_dmg_: {
+  m6_armor_break_rounds_dmg: {
     sheet: 'Trigger',
-    name: 'm6_armor_break_rounds_dmg_',
+    name: 'm6_armor_break_rounds_dmg',
     tag: {
       et: 'display',
       qt: 'combat',
       q: 'common_dmg_',
       sheet: 'Trigger',
-      name: 'm6_armor_break_rounds_dmg_',
+      name: 'm6_armor_break_rounds_dmg',
     },
     team: false,
   },

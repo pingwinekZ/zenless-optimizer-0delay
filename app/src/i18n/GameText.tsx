@@ -2,6 +2,7 @@ import { ColorText, ImgIcon } from '@zenless-optimizer/common/ui'
 import { useMemo } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import { commonDefIcon } from '../assets'
+import { sliceBetween } from './sliceBetween'
 
 const COND_GREEN = '#2BAD00'
 
@@ -73,4 +74,44 @@ export function GameDesc({ ns, key18 }: { ns: string; key18: string }) {
       ))}
     </>
   )
+}
+
+/**
+ * Renders a substring of a locale string, sliced between two stable text
+ * markers (see `sliceBetween`). Unlike paragraph indexing, the slice
+ * survives wording changes as long as the markers remain in the text.
+ *
+ * @example
+ * <GameDescSlice
+ *   ns="char_Trigger_gen"
+ *   key18="mindscapes.1.desc"
+ *   from="The Stun DMG Multiplier"
+ *   to="Soul-Searching Gaze"
+ * />
+ */
+export function GameDescSlice({
+  ns,
+  key18,
+  from,
+  to,
+}: {
+  ns: string
+  key18: string
+  from: string
+  to: string
+}) {
+  const { t } = useTranslation(ns)
+  const text = t(`${ns}:${key18}`)
+  const slice = useMemo(() => {
+    if (typeof text !== 'string') return undefined
+    return sliceBetween(text, from, to)
+  }, [text, from, to])
+
+  if (slice === undefined) {
+    console.warn(
+      `GameDescSlice: could not slice "${ns}:${key18}" between "${from}" and "${to}"`
+    )
+    return null
+  }
+  return <GameText text={slice} />
 }

@@ -1,5 +1,6 @@
 import {
   cmpGE,
+  max,
   min,
   prod,
   subscript,
@@ -35,9 +36,7 @@ const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
-const { aftershock_hit } = allBoolConditionals(key, undefined, {
-  aftershock_hit: 1,
-})
+const { aftershock_hit } = allBoolConditionals(key, undefined)
 const { hunters_gaze } = allNumConditionals(
   key,
   true,
@@ -132,6 +131,26 @@ const sheet = register(
     { ...baseTag },
     cmpGE(char.mindscape, 4, percent(dm.m4.daze))
   ),
+  registerBuff(
+    'm4_disconnect_dmg',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'elemental',
+      cmpGE(char.mindscape, 4, percent(dm.m4.dmg))
+    ),
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff(
+    'm4_disconnect_daze',
+    ownBuff.combat.dazeInc_.addWithDmgType(
+      'elemental',
+      cmpGE(char.mindscape, 4, percent(dm.m4.daze))
+    ),
+    undefined,
+    undefined,
+    false
+  ),
   ...customDmg(
     'm6_armor_break_rounds_dmg',
     { ...baseTag },
@@ -148,7 +167,12 @@ const sheet = register(
   registerBuff(
     'core_stun_',
     enemyDebuff.common.stun_.add(
-      aftershock_hit.ifOn(subscript(char.core, dm.core.stun_))
+      aftershock_hit.ifOn(
+        sum(
+          subscript(char.core, dm.core.stun_),
+          cmpGE(char.mindscape, 1, dm.m1.stun_)
+        )
+      )
     )
   ),
   registerBuff(
@@ -162,21 +186,17 @@ const sheet = register(
         ),
         2,
         min(
-          prod(
-            sum(own.final.crit_, percent(-dm.ability.crit_threshold_)),
-            percent(dm.ability.aftershock_dazeInc_),
-            100
+          max(
+            0,
+            prod(
+              sum(own.final.crit_, percent(-dm.ability.crit_threshold_)),
+              percent(dm.ability.aftershock_dazeInc_),
+              100
+            )
           ),
           percent(dm.ability.max_dazeInc_)
         )
       )
-    )
-  ),
-  registerBuff(
-    'm1_stun_',
-    enemyDebuff.common.stun_.addWithDmgType(
-      'aftershock',
-      cmpGE(char.mindscape, 1, aftershock_hit.ifOn(dm.m1.stun_))
     )
   ),
   registerBuff(
@@ -188,7 +208,7 @@ const sheet = register(
     true
   ),
   registerBuff(
-    'm6_armor_break_rounds_dmg_',
+    'm6_armor_break_rounds_dmg',
     m6_armor_break_rounds_dmg_,
     undefined,
     undefined,

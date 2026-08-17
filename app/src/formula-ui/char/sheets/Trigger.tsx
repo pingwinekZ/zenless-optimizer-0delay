@@ -1,7 +1,7 @@
 import { ColorText } from '@zenless-optimizer/common/ui'
 import type { CharacterKey } from '../../../consts'
 import { Trigger } from '../../../formula'
-import { GameDesc } from '../../../i18n'
+import { GameDesc, GameDescSlice } from '../../../i18n'
 import { trans } from '../../util'
 import { CoreGameDesc, createBaseSheet, fieldForBuff } from '../sheetUtil'
 import { getVariant } from '../util'
@@ -18,7 +18,20 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('coreCond'),
-        description: <CoreGameDesc characterKey={key} paragraph={2} />,
+        description: (
+          <>
+            <CoreGameDesc characterKey={key} />
+            <div style={{ marginTop: 8 }}>
+              M1:{' '}
+              <GameDescSlice
+                ns="char_Trigger_gen"
+                key18="mindscapes.1.desc"
+                from="The Stun DMG Multiplier"
+                to="Soul-Searching Gaze"
+              />
+            </div>
+          </>
+        ),
         metadata: cond.aftershock_hit,
         fields: [fieldForBuff(buff.core_stun_)],
       },
@@ -36,22 +49,6 @@ const sheet = createBaseSheet(key, {
             </ColorText>
           ),
           fieldRef: buff.ability_aftershock_dazeInc_.tag,
-        },
-      ],
-    },
-  ],
-  m1: [
-    {
-      type: 'fields',
-      header: { icon: null, text: ch('m1_header') },
-      fields: [
-        {
-          title: (
-            <ColorText color={getVariant(buff.m1_stun_.tag)}>
-              {ch('m1_stun_')}
-            </ColorText>
-          ),
-          fieldRef: buff.m1_stun_.tag,
         },
       ],
     },
@@ -107,14 +104,6 @@ const sheet = createBaseSheet(key, {
             </ColorText>
           ),
           fieldRef: formula.m6_armor_break_rounds_dmg.tag,
-        },
-        {
-          title: (
-            <ColorText color={getVariant(buff.m6_armor_break_rounds_dmg_.tag)}>
-              {ch('m6_armor_break_rounds_dmg_')}
-            </ColorText>
-          ),
-          fieldRef: buff.m6_armor_break_rounds_dmg_.tag,
         },
       ],
     },
