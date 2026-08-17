@@ -15,6 +15,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      PR_REPO_CONFIGURED: ${{ vars.PR_REPO != '' && secrets.PR_REPO_SSH_KEY != '' }}
     steps:
       - name: Determine build information
         id: build-info
@@ -26,7 +28,7 @@ jobs:
             echo "deploy_path=${{ github.event.number }}" >> $GITHUB_OUTPUT
           fi
       - name: Checkout external gh-pages
-        if: ${{ vars.PR_REPO != '' && secrets.PR_REPO_SSH_KEY != '' }}
+        if: ${{ env.PR_REPO_CONFIGURED == 'true' }}
         uses: actions/checkout@v6
         with:
           repository: ${{ vars.PR_REPO }}
@@ -34,7 +36,7 @@ jobs:
           ref: gh-pages
           path: gh-pages
       - name: Make commit to deploy
-        if: ${{ vars.PR_REPO != '' && secrets.PR_REPO_SSH_KEY != '' }}
+        if: ${{ env.PR_REPO_CONFIGURED == 'true' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -43,7 +45,7 @@ jobs:
           git commit -m "clean ${{ steps.build-info.outputs.deploy_path }}"
         working-directory: gh-pages
       - name: Push commit
-        if: ${{ vars.PR_REPO != '' && secrets.PR_REPO_SSH_KEY != '' }}
+        if: ${{ env.PR_REPO_CONFIGURED == 'true' }}
         uses: nick-fields/retry@v2
         with:
           max_attempts: 4
@@ -56,7 +58,7 @@ jobs:
         id: output-date
         run: echo "date=$(date -u)" >> $GITHUB_OUTPUT
       - name: Maintain comment
-        if: ${{ github.event_name != 'workflow_dispatch' && vars.PR_REPO != '' && secrets.PR_REPO_SSH_KEY != '' }}
+        if: ${{ github.event_name != 'workflow_dispatch' && env.PR_REPO_CONFIGURED == 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
