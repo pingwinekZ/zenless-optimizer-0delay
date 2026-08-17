@@ -3,7 +3,13 @@ import type { CharacterKey } from '../../../consts'
 import { Trigger } from '../../../formula'
 import { GameDesc, GameDescSlice } from '../../../i18n'
 import { trans } from '../../util'
-import { CoreGameDesc, createBaseSheet, fieldForBuff } from '../sheetUtil'
+import {
+  CoreGameDesc,
+  createBaseSheet,
+  fieldForBuff,
+  PrefixedLine,
+  useEffectiveMindscape,
+} from '../sheetUtil'
 import { getVariant } from '../util'
 
 const key: CharacterKey = 'Trigger'
@@ -12,26 +18,30 @@ const cond = Trigger.conditionals
 const buff = Trigger.buffs
 const formula = Trigger.formulas
 
+function CoreDescription() {
+  const mindscape = useEffectiveMindscape(key)
+  return (
+    <>
+      <CoreGameDesc characterKey={key} />
+      <PrefixedLine prefix="M1" dimmed={mindscape < 1}>
+        <GameDescSlice
+          ns="char_Trigger_gen"
+          key18="mindscapes.1.desc"
+          from="The Stun DMG Multiplier"
+          to="Soul-Searching Gaze"
+        />
+      </PrefixedLine>
+    </>
+  )
+}
+
 const sheet = createBaseSheet(key, {
   core: [
     {
       type: 'conditional',
       conditional: {
         label: ch('coreCond'),
-        description: (
-          <>
-            <CoreGameDesc characterKey={key} />
-            <div style={{ marginTop: 8 }}>
-              M1:{' '}
-              <GameDescSlice
-                ns="char_Trigger_gen"
-                key18="mindscapes.1.desc"
-                from="The Stun DMG Multiplier"
-                to="Soul-Searching Gaze"
-              />
-            </div>
-          </>
-        ),
+        description: <CoreDescription />,
         metadata: cond.aftershock_hit,
         fields: [fieldForBuff(buff.core_stun_)],
       },

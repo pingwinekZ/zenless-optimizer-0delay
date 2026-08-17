@@ -1,3 +1,4 @@
 {
-  "cond": "Buff Stacks"
+  "passive_crit_dmg_": "CD",
+  "basicSpecialAftershockHitCond": "Basic / Special / Aftershock Hit · CD & DMG"
 }

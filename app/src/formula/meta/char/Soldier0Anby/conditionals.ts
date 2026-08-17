@@ -4,6 +4,5 @@ export const conditionals = {
     sheet: 'Soldier0Anby',
     name: 'markedWithSilverStar',
     type: 'bool',
-    mindscapeRequirement: 2,
   },
 } as const

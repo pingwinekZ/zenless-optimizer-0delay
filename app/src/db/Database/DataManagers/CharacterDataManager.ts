@@ -145,7 +145,7 @@ export function initialCharacterData(key: CharacterKey): ICachedCharacter {
     core: 6,
     promotion: 5,
     mindscape: 0,
-    potential: 5,
+    potential: 6,
     dodge: 11,
     basic: 11,
     chain: 11,

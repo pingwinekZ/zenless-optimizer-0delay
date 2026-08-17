@@ -355,6 +355,17 @@ const MyriadEclipseCondDesc = fromMarkerDesc(
   'When using'
 )
 
+/** CRIT DMG portion of SeveredInnocence's phase description (first sentence). */
+const SeveredInnocenceCritDesc = firstSentenceDesc(
+  'wengine_SeveredInnocence_gen'
+)
+
+/** Conditional portion of SeveredInnocence's phase description (from "When" to end). */
+const SeveredInnocenceCondDesc = fromMarkerDesc(
+  'wengine_SeveredInnocence_gen',
+  'When '
+)
+
 const WenginePassiveGroup = memo(function WenginePassiveGroup({
   wengineKey,
   header,
@@ -826,6 +837,9 @@ export function WEngineConditionalsDisplay({
                 ) : wengineKey === 'MyriadEclipse' &&
                   firstFieldName === 'crit_dmg_' ? (
                   <MyriadEclipseCritDesc phase={phase} />
+                ) : wengineKey === 'SeveredInnocence' &&
+                  firstFieldName === 'passive_crit_dmg_' ? (
+                  <SeveredInnocenceCritDesc phase={phase} />
                 ) : undefined
 
               return group.header ? (
@@ -1003,6 +1017,9 @@ export function WEngineConditionalsDisplay({
               ) : wengineKey === 'MyriadEclipse' &&
                 condName === 'deathSentence' ? (
                 <MyriadEclipseCondDesc phase={phase} />
+              ) : wengineKey === 'SeveredInnocence' &&
+                condName === 'basicSpecialAftershockHit' ? (
+                <SeveredInnocenceCondDesc phase={phase} />
               ) : wengineKey === 'SpectralGaze' &&
                 condName === 'hit_aftershock_electric' ? (
                 <SpectralGazeDefRedDesc phase={phase} />

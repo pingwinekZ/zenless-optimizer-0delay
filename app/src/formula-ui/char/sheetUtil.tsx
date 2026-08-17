@@ -5,7 +5,7 @@ import type {
   Document,
   UISheetElement,
 } from '@zenless-optimizer/game-opt/sheet-ui'
-import { useMemo } from 'react'
+import { createContext, type ReactNode, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { commonDefIcon, mindscapeDefIcon } from '../../assets'
 import type { CharacterKey, SkillKey } from '../../consts'
@@ -414,5 +414,41 @@ export function SkillGameDesc({
         )
       })}
     </>
+  )
+}
+
+/**
+ * Effective mindscape used for display dimming. Provided by views that know
+ * the character's effective mindscape (e.g. the teammate card, where the
+ * teammate override takes precedence over the character DB value).
+ */
+export const EffectiveMindscapeContext = createContext<number | undefined>(
+  undefined
+)
+
+export function useEffectiveMindscape(characterKey: CharacterKey): number {
+  const effectiveMindscape = useContext(EffectiveMindscapeContext)
+  const character = useCharacter(characterKey)
+  return effectiveMindscape ?? character?.mindscape ?? 0
+}
+
+/**
+ * Renders a description line prefixed with a label (e.g. "P1", "M4"),
+ * dimmed when the required gate (potential/mindscape level) is not met.
+ * Shared so future character sheets reuse the same dimmed-line pattern.
+ */
+export function PrefixedLine({
+  prefix,
+  dimmed,
+  children,
+}: {
+  prefix: string
+  dimmed: boolean
+  children: ReactNode
+}) {
+  return (
+    <div style={{ marginTop: 8, ...(dimmed ? { opacity: 0.5 } : {}) }}>
+      {prefix}: {children}
+    </div>
   )
 }

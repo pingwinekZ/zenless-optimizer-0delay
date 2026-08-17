@@ -55,7 +55,7 @@ const dm = {
   },
   potential: {
     crit_dmg_: data_gen.potentialParams[0],
-    stackThreshold: data_gen.potentialParams[1][1],
+    stackThreshold: data_gen.potentialParams[1][2],
     ice_resIgn_: data_gen.potentialParams[2],
   },
   m1: {

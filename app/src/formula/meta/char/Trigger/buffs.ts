@@ -36,7 +36,19 @@ export const buffs = {
       sheet: 'Trigger',
       name: 'core_stun_',
     },
-    team: false,
+    team: true,
+  },
+  core_stun_unstun_: {
+    sheet: 'Trigger',
+    name: 'core_stun_unstun_',
+    tag: {
+      et: 'display',
+      qt: 'common',
+      q: 'unstun_',
+      sheet: 'Trigger',
+      name: 'core_stun_unstun_',
+    },
+    team: true,
   },
   ability_aftershock_dazeInc_: {
     sheet: 'Trigger',

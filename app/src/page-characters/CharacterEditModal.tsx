@@ -23,6 +23,7 @@ import {
   type CharacterKey,
   coreByLevel,
   type PhaseKey,
+  potentialLimits,
   type SkillKey,
   skillByLevel,
   type WengineKey,
@@ -196,7 +197,7 @@ export function CharacterEditModal({
               </Text>
               <Box mb="md">
                 <SegmentedControl
-                  data={[0, 1, 2, 3, 4, 5].map((p) => ({
+                  data={potentialLimits.map((p) => ({
                     value: String(p),
                     label: `P${p}`,
                   }))}

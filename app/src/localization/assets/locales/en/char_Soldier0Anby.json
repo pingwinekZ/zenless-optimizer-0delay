@@ -1,10 +1,8 @@
 {
   "potential_header": "Aftershock DMG",
-  "coreCond": "Enemy marked with Silver Star · DMG & CD",
+  "markedWithSilverStarCond": "Silver Star · DMG & CD & RES Ignore",
   "ability_header": "CR & DMG",
   "m2_header": "CR",
-  "m2_crit_": "CR",
-  "m4_header": "RES Ignore",
-  "m4_electric_resIgn_": "Electric RES Ignore",
-  "m6_header": "Aftershock DMG"
+  "m6_header": "Additional DMG",
+  "m6_dmg": "White Thunder Additional DMG"
 }
