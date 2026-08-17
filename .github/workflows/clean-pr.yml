@@ -26,6 +26,7 @@ jobs:
             echo "deploy_path=${{ github.event.number }}" >> $GITHUB_OUTPUT
           fi
       - name: Checkout external gh-pages
+        if: ${{ vars.PR_REPO != '' && secrets.PR_REPO_SSH_KEY != '' }}
         uses: actions/checkout@v6
         with:
           repository: ${{ vars.PR_REPO }}
@@ -33,6 +34,7 @@ jobs:
           ref: gh-pages
           path: gh-pages
       - name: Make commit to deploy
+        if: ${{ vars.PR_REPO != '' && secrets.PR_REPO_SSH_KEY != '' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -41,6 +43,7 @@ jobs:
           git commit -m "clean ${{ steps.build-info.outputs.deploy_path }}"
         working-directory: gh-pages
       - name: Push commit
+        if: ${{ vars.PR_REPO != '' && secrets.PR_REPO_SSH_KEY != '' }}
         uses: nick-fields/retry@v2
         with:
           max_attempts: 4
@@ -53,7 +56,7 @@ jobs:
         id: output-date
         run: echo "date=$(date -u)" >> $GITHUB_OUTPUT
       - name: Maintain comment
-        if: github.event_name != 'workflow_dispatch'
+        if: ${{ github.event_name != 'workflow_dispatch' && vars.PR_REPO != '' && secrets.PR_REPO_SSH_KEY != '' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
