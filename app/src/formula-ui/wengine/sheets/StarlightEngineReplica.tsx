@@ -2,13 +2,11 @@ import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
 import { wengineAsset } from '../../../assets'
 import type { WengineKey } from '../../../consts'
 import { StarlightEngineReplica } from '../../../formula'
-import { mappedStats } from '../../../stats'
 import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'StarlightEngineReplica'
 const [chg, ch] = trans('wengine', key)
-const dm = mappedStats.wengine[key]
 const icon = wengineAsset(key)
 const cond = StarlightEngineReplica.conditionals
 const buff = StarlightEngineReplica.buffs
@@ -28,15 +26,9 @@ const sheet: UISheetElement = {
     {
       type: 'conditional',
       conditional: {
-        label: ch('cond'),
+        label: ch('hitFromAwayCond'),
         metadata: cond.hit_away,
-        fields: [
-          tagToTagField(buff.cond_dmg_.tag),
-          {
-            title: 'Duration', // TODO: L10n,
-            fieldValue: dm.duration,
-          },
-        ],
+        fields: [tagToTagField(buff.cond_dmg_.tag)],
       },
     },
   ],

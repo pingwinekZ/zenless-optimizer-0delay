@@ -12,4 +12,16 @@ export const buffs = {
     },
     team: false,
   },
+  cond_crit_: {
+    sheet: 'BigCylinder',
+    name: 'cond_crit_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'crit_',
+      sheet: 'BigCylinder',
+      name: 'cond_crit_',
+    },
+    team: false,
+  },
 } as const

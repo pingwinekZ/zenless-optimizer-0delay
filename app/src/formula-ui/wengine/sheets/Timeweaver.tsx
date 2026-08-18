@@ -2,13 +2,11 @@ import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
 import { wengineAsset } from '../../../assets'
 import type { WengineKey } from '../../../consts'
 import { Timeweaver } from '../../../formula'
-import { mappedStats } from '../../../stats'
 import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'Timeweaver'
 const [chg, ch] = trans('wengine', key)
-const dm = mappedStats.wengine[key]
 const icon = wengineAsset(key)
 const cond = Timeweaver.conditionals
 const buff = Timeweaver.buffs
@@ -27,23 +25,20 @@ const sheet: UISheetElement = {
     },
     {
       type: 'fields',
-      fields: [
-        tagToTagField(buff.passive_electric_anomBuildup_.tag),
-        tagToTagField(buff.passive_disorder_dmg_.tag),
-      ],
+      header: { icon: null, text: ch('passive_electric_anomBuildup_') },
+      fields: [tagToTagField(buff.passive_electric_anomBuildup_.tag)],
+    },
+    {
+      type: 'fields',
+      header: { icon: null, text: ch('passive_disorder_dmg_') },
+      fields: [tagToTagField(buff.passive_disorder_dmg_.tag)],
     },
     {
       type: 'conditional',
       conditional: {
-        label: ch('cond'),
+        label: ch('anomalyHitCond'),
         metadata: cond.hit_anomaly,
-        fields: [
-          tagToTagField(buff.cond_anomProf.tag),
-          {
-            title: 'Duration', // TODO: L10n,
-            fieldValue: dm.duration,
-          },
-        ],
+        fields: [tagToTagField(buff.cond_anomProf.tag)],
       },
     },
   ],

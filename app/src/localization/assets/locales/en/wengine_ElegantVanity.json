@@ -1,3 +1,3 @@
 {
-  "cond": "Wearer consumed 25 Energy or more"
+  "energyConsumedCond": "25 Energy Consumed · DMG"
 }

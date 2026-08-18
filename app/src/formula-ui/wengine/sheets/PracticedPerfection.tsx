@@ -2,13 +2,11 @@ import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
 import { wengineAsset } from '../../../assets'
 import type { WengineKey } from '../../../consts'
 import { PracticedPerfection } from '../../../formula'
-import { mappedStats } from '../../../stats'
 import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'PracticedPerfection'
 const [chg, ch] = trans('wengine', key)
-const dm = mappedStats.wengine[key]
 const icon = wengineAsset(key)
 const cond = PracticedPerfection.conditionals
 const buff = PracticedPerfection.buffs
@@ -35,13 +33,7 @@ const sheet: UISheetElement = {
       conditional: {
         metadata: cond.stacks,
         label: ch('stacksCond'),
-        fields: [
-          tagToTagField(buff.stacks_phys_dmg_.tag),
-          {
-            title: 'Duration', // TODO: L10n
-            fieldValue: dm.duration,
-          },
-        ],
+        fields: [tagToTagField(buff.stacks_phys_dmg_.tag)],
       },
     },
   ],

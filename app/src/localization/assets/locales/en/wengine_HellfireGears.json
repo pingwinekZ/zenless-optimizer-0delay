@@ -1,4 +1,4 @@
 {
-  "cond1": "Equipper off-field",
-  "cond2": "EX Special Attack used"
+  "offFieldCond": "Off-Field · ER",
+  "exSpecialUsedCond": "EX Special Used · Impact"
 }

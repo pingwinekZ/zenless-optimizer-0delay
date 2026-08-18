@@ -110,9 +110,10 @@ export function WengineSelectionModal({
       size="75%"
       containerProps={{
         style: {
-          height: '70%',
+          minHeight: 0,
+          maxHeight: 'min(910px, 90dvh)',
           maxWidth: 1200,
-          minHeight: 'min(910px, 90dvh)',
+          justifyContent: 'flex-start',
         },
       }}
     >

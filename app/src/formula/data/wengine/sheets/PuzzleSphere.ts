@@ -1,8 +1,8 @@
-import { subscript } from '@zenless-optimizer/pando/engine'
+import { cmpGE, subscript } from '@zenless-optimizer/pando/engine'
 import type { WengineKey } from '../../../../consts'
 import { mappedStats } from '../../../../stats'
 import {
-  allBoolConditionals,
+  allNumConditionals,
   own,
   ownBuff,
   percent,
@@ -19,7 +19,8 @@ const key: WengineKey = 'PuzzleSphere'
 const dm = mappedStats.wengine[key]
 const { phase } = own.wengine
 
-const { launchingExSpecial, targetHpBelow50 } = allBoolConditionals(key)
+// 0 = disabled, 1 = EX Special Attack launched, 2 = + target HP below 50%
+const { stacks } = allNumConditionals(key, true, 0, 2)
 
 const sheet = registerWengine(
   key,
@@ -32,7 +33,7 @@ const sheet = registerWengine(
     ownBuff.combat.crit_dmg_.add(
       cmpSpecialtyAndEquipped(
         key,
-        launchingExSpecial.ifOn(percent(subscript(phase, dm.crit_dmg_)))
+        cmpGE(stacks, 1, percent(subscript(phase, dm.crit_dmg_)))
       )
     ),
     showSpecialtyAndEquipped(key)
@@ -43,7 +44,7 @@ const sheet = registerWengine(
       'exSpecial',
       cmpSpecialtyAndEquipped(
         key,
-        targetHpBelow50.ifOn(percent(subscript(phase, dm.exSpecial_dmg_)))
+        cmpGE(stacks, 2, percent(subscript(phase, dm.exSpecial_dmg_)))
       )
     ),
     showSpecialtyAndEquipped(key)

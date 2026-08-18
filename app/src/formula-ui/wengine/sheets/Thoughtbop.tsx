@@ -26,14 +26,6 @@ const sheet: UISheetElement = {
     {
       type: 'conditional',
       conditional: {
-        label: ch('offFieldCond'),
-        metadata: cond.offField,
-        fields: [tagToTagField(buff.cond_enerRegen.tag)],
-      },
-    },
-    {
-      type: 'conditional',
-      conditional: {
         label: ch('physExSpecialStacksCond'),
         metadata: cond.physExSpecialUsed,
         fields: [

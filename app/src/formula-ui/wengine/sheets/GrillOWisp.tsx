@@ -25,12 +25,13 @@ const sheet: UISheetElement = {
     },
     {
       type: 'fields',
+      header: { icon: null, text: ch('fire_dmg_') },
       fields: [tagToTagField(buff.fire_dmg_.tag)],
     },
     {
       type: 'conditional',
       conditional: {
-        label: ch('cond'),
+        label: ch('hpDecreasedCond'),
         metadata: cond.hpDecreased,
         fields: [tagToTagField(buff.crit_.tag)],
       },

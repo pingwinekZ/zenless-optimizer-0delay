@@ -1,6 +1,6 @@
 // WARNING: Generated file, do not modify
 export const conditionals = {
-  attack: { sheet: 'WeepingCradle', name: 'attack', type: 'bool' },
+  offField: { sheet: 'WeepingCradle', name: 'offField', type: 'bool' },
   stacks: {
     sheet: 'WeepingCradle',
     name: 'stacks',

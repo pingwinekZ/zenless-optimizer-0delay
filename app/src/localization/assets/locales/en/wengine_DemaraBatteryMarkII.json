@@ -1,3 +1,4 @@
 {
-  "cond": "Enemy hit with Dodge Counter or Assist Attack"
+  "passive_electric_dmg_": "DMG",
+  "dodgeCounterOrAssistCond": "Dodge Counter / Assist Hit · ER"
 }

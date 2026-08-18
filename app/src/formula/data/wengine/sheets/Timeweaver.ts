@@ -25,7 +25,8 @@ const sheet = registerWengine(
     'passive_electric_anomBuildup_',
     ownBuff.combat.anomBuildup_.electric.add(
       cmpSpecialtyAndEquipped(key, subscript(phase, dm.electric_anom_buildup_))
-    )
+    ),
+    showSpecialtyAndEquipped(key)
   ),
 
   // Conditional buffs
@@ -51,7 +52,8 @@ const sheet = registerWengine(
           subscript(phase, dm.disorder_dmg_)
         )
       )
-    )
+    ),
+    showSpecialtyAndEquipped(key)
   )
 )
 export default sheet

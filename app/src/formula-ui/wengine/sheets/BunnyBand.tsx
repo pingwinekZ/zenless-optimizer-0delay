@@ -25,12 +25,13 @@ const sheet: UISheetElement = {
     },
     {
       type: 'fields',
+      header: { icon: null, text: ch('passive_hp_') },
       fields: [tagToTagField(buff.passive_hp_.tag)],
     },
     {
       type: 'conditional',
       conditional: {
-        label: ch('cond'),
+        label: ch('shieldedCond'),
         metadata: cond.wearerShielded,
         fields: [tagToTagField(buff.atk_.tag)],
       },

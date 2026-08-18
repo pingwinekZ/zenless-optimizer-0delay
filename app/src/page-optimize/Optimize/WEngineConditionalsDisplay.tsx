@@ -22,7 +22,6 @@ import {
 import { buffAppliesToMainUnit } from '../../formula-ui/teammate'
 import { GameDesc, GameText } from '../../i18n'
 import { getCharStat } from '../../stats'
-import { HeaderText } from '../layout'
 import {
   ConditionalText,
   conditionalAlign,
@@ -339,10 +338,356 @@ function RoaringFurnaceCondDesc({ phase }: { phase: number }) {
 /** CRIT DMG portion of MyriadEclipse's phase description (first sentence). */
 const MyriadEclipseCritDesc = firstSentenceDesc('wengine_MyriadEclipse_gen')
 
+/** Conditional portion of ElegantVanity's phase description (from "When the equipper consumes" to end). */
+const ElegantVanityCondDesc = fromMarkerDesc(
+  'wengine_ElegantVanity_gen',
+  'When the equipper consumes'
+)
+
 /** Conditional portion of MyriadEclipse's phase description (from "When using" to end). */
 const MyriadEclipseCondDesc = fromMarkerDesc(
   'wengine_MyriadEclipse_gen',
   'When using'
+)
+
+/** Ice DMG portion of BashfulDemon's phase description (first sentence). */
+const BashfulDemonIceDmgDesc = firstSentenceDesc('wengine_BashfulDemon_gen')
+
+/** Conditional portion of BashfulDemon's phase description (from "When launching" to end). */
+const BashfulDemonCondDesc = fromMarkerDesc(
+  'wengine_BashfulDemon_gen',
+  'When launching'
+)
+
+/** Max HP portion of BunnyBand's phase description (first sentence). */
+const BunnyBandHpDesc = firstSentenceDesc('wengine_BunnyBand_gen')
+
+/** Conditional portion of BunnyBand's phase description (second sentence). */
+const BunnyBandCondDesc = fromMarkerDesc(
+  'wengine_BunnyBand_gen',
+  'Increases the equipper'
+)
+
+/** Electric DMG portion of DemaraBatteryMarkII's phase description (first sentence). */
+const DemaraBatteryMarkIIDmgDesc = firstSentenceDesc(
+  'wengine_DemaraBatteryMarkII_gen'
+)
+
+/** Conditional portion of DemaraBatteryMarkII's phase description (from "When" to end). */
+const DemaraBatteryMarkIICondDesc = fromMarkerDesc(
+  'wengine_DemaraBatteryMarkII_gen',
+  'When '
+)
+
+/** ATK portion of FusionCompiler's phase description (first paragraph). */
+function FusionCompilerAtkDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_FusionCompiler_gen')
+  const atkDesc = t(`wengine_FusionCompiler_gen:phaseDescs.${phase - 1}.0`)
+  return <GameText text={atkDesc} />
+}
+
+/** Conditional portion of FusionCompiler's phase description (second paragraph). */
+function FusionCompilerCondDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_FusionCompiler_gen')
+  const condDesc = t(`wengine_FusionCompiler_gen:phaseDescs.${phase - 1}.1`)
+  return <GameText text={condDesc} />
+}
+
+/** Fire DMG portion of GrillOWisp's phase description (first sentence). */
+const GrillOWispFireDmgDesc = firstSentenceDesc('wengine_GrillOWisp_gen')
+
+/** Conditional portion of GrillOWisp's phase description (from "When" to end). */
+const GrillOWispCondDesc = fromMarkerDesc('wengine_GrillOWisp_gen', 'When ')
+
+/** CRIT DMG portion of HailstormShrine's phase description (first sentence). */
+const HailstormShrineCritDmgDesc = firstSentenceDesc(
+  'wengine_HailstormShrine_gen'
+)
+
+/** Conditional portion of HailstormShrine's phase description (from "When using" to end). */
+const HailstormShrineCondDesc = fromMarkerDesc(
+  'wengine_HailstormShrine_gen',
+  'When using'
+)
+
+/** CRIT DMG portion of HeartstringNocturne's phase description (first sentence). */
+const HeartstringNocturneCritDmgDesc = firstSentenceDesc(
+  'wengine_HeartstringNocturne_gen'
+)
+
+/** Conditional portion of HeartstringNocturne's phase description (from "When" to end). */
+const HeartstringNocturneCondDesc = fromMarkerDesc(
+  'wengine_HeartstringNocturne_gen',
+  'When '
+)
+
+/** Max HP portion of OriginalTransmorpher's phase description (first sentence). */
+const OriginalTransmorpherHpDesc = firstSentenceDesc(
+  'wengine_OriginalTransmorpher_gen'
+)
+
+/** Conditional portion of OriginalTransmorpher's phase description (from "When attacked" to end). */
+const OriginalTransmorpherCondDesc = fromMarkerDesc(
+  'wengine_OriginalTransmorpher_gen',
+  'When attacked'
+)
+
+/** Energy Regen portion of PeacekeeperSpecialized's phase description (first sentence). */
+const PeacekeeperSpecializedERDesc = firstSentenceDesc(
+  'wengine_PeacekeeperSpecialized_gen'
+)
+
+/** Anomaly Buildup portion of PeacekeeperSpecialized's phase description (second sentence). */
+const PeacekeeperSpecializedBuildupDesc = fromMarkerDesc(
+  'wengine_PeacekeeperSpecialized_gen',
+  'The Anomaly Buildup'
+)
+
+/** CRIT Rate portion of RiotSuppressorMarkVI's phase description (first sentence). */
+const RiotSuppressorMarkVICritDesc = firstSentenceDesc(
+  'wengine_RiotSuppressorMarkVI_gen'
+)
+
+/** Conditional portion of RiotSuppressorMarkVI's phase description (from "Launching" to end). */
+const RiotSuppressorMarkVICondDesc = fromMarkerDesc(
+  'wengine_RiotSuppressorMarkVI_gen',
+  'Launching '
+)
+
+/** DMG Reduction portion of SpringEmbrace's phase description (first sentence). */
+const SpringEmbraceDmgRedDesc = firstSentenceDesc('wengine_SpringEmbrace_gen')
+
+/** Conditional portion of SpringEmbrace's phase description (from "When attacked" to end). */
+const SpringEmbraceCondDesc = fromMarkerDesc(
+  'wengine_SpringEmbrace_gen',
+  'When attacked'
+)
+
+/** Physical DMG portion of SteelCushion's phase description (first sentence). */
+const SteelCushionPhysDmgDesc = firstSentenceDesc('wengine_SteelCushion_gen')
+
+/** Conditional portion of SteelCushion's phase description (second sentence). */
+const SteelCushionCondDesc = fromMarkerDesc(
+  'wengine_SteelCushion_gen',
+  "The equipper's DMG"
+)
+
+/** Shield portion of TusksOfFury's phase description (first sentence). */
+const TusksOfFuryShieldDesc = firstSentenceDesc('wengine_TusksOfFury_gen')
+
+/** Conditional portion of TusksOfFury's phase description (from "When" to end). */
+const TusksOfFuryCondDesc = fromMarkerDesc('wengine_TusksOfFury_gen', 'When ')
+
+/** CRIT Rate portion of ZanshinHerbCase's phase description (first sentence). */
+const ZanshinHerbCaseCritDesc = firstSentenceDesc('wengine_ZanshinHerbCase_gen')
+
+/** Dash Electric DMG portion of ZanshinHerbCase's phase description (second sentence). */
+function ZanshinHerbCaseDashDmgDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_ZanshinHerbCase_gen')
+  const fullDesc = t(`wengine_ZanshinHerbCase_gen:phaseDescs.${phase - 1}`)
+  const firstDot = fullDesc.indexOf('. ')
+  if (firstDot === -1) return <GameText text={fullDesc} />
+  const secondDot = fullDesc.indexOf('. ', firstDot + 2)
+  if (secondDot === -1) return <GameText text={fullDesc.slice(firstDot + 2)} />
+  return <GameText text={fullDesc.slice(firstDot + 2, secondDot + 1)} />
+}
+
+/** Conditional portion of ZanshinHerbCase's phase description (from "When any squad member" to end). */
+const ZanshinHerbCaseCondDesc = fromMarkerDesc(
+  'wengine_ZanshinHerbCase_gen',
+  'When any squad member'
+)
+
+/** ATK portion of CannonRotor's phase description (first sentence). */
+const CannonRotorAtkDesc = firstSentenceDesc('wengine_CannonRotor_gen')
+
+/** Critical-hit Additional DMG portion of CannonRotor's phase description (after the first sentence). */
+function CannonRotorDmgDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_CannonRotor_gen')
+  const fullDesc = t(`wengine_CannonRotor_gen:phaseDescs.${phase - 1}`)
+  const idx = fullDesc.indexOf('. ')
+  if (idx === -1) return <GameText text={fullDesc} />
+  return <GameText text={fullDesc.slice(idx + 2)} />
+}
+
+/** Electric Anomaly Buildup + Special Attack portion of Timeweaver's phase description (first paragraph). */
+function TimeweaverCondDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_Timeweaver_gen')
+  const fullDesc = t(`wengine_Timeweaver_gen:phaseDescs.${phase - 1}.0`)
+  const marker = 'When '
+  const idx = fullDesc.indexOf(marker)
+  if (idx === -1) return <GameText text={fullDesc} />
+  return <GameText text={fullDesc.slice(idx)} />
+}
+
+/** Electric Anomaly Buildup portion of Timeweaver's phase description (first sentence of the first paragraph). */
+function TimeweaverElectricBuildupDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_Timeweaver_gen')
+  const part0 = t(`wengine_Timeweaver_gen:phaseDescs.${phase - 1}.0`)
+  const idx = part0.indexOf('. ')
+  const buildup = idx === -1 ? part0 : part0.slice(0, idx + 1)
+  return <GameText text={buildup} />
+}
+
+/** Disorder DMG portion of Timeweaver's phase description (second paragraph). */
+function TimeweaverDisorderDmgDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_Timeweaver_gen')
+  const part1 = t(`wengine_Timeweaver_gen:phaseDescs.${phase - 1}.1`)
+  return <GameText text={part1} />
+}
+
+/** Off-field Energy Regen portion of HellfireGears's phase description (first part). */
+function HellfireGearsOffFieldDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_HellfireGears_gen')
+  const desc = t(`wengine_HellfireGears_gen:phaseDescs.${phase - 1}.0`)
+  return <GameText text={desc} />
+}
+
+/** EX Special Impact portion of HellfireGears's phase description (second part). */
+function HellfireGearsCondDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_HellfireGears_gen')
+  const desc = t(`wengine_HellfireGears_gen:phaseDescs.${phase - 1}.1`)
+  return <GameText text={desc} />
+}
+
+/** RoaringRide's phase description (both parts). */
+function RoaringRideDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_RoaringRide_gen')
+  const desc0 = t(`wengine_RoaringRide_gen:phaseDescs.${phase - 1}.0`)
+  const desc1 = t(`wengine_RoaringRide_gen:phaseDescs.${phase - 1}.1`)
+  return (
+    <>
+      <div style={{ marginBottom: 8 }}>
+        <GameText text={desc0} />
+      </div>
+      <GameText text={desc1} />
+    </>
+  )
+}
+
+/** Battle Edge portion of KnightsExtolment's phase description (both parts). */
+function KnightsExtolmentDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_KnightsExtolment_gen')
+  const desc0 = t(`wengine_KnightsExtolment_gen:phaseDescs.${phase - 1}.0`)
+  const desc1 = t(`wengine_KnightsExtolment_gen:phaseDescs.${phase - 1}.1`)
+  return (
+    <>
+      <div style={{ marginBottom: 8 }}>
+        <GameText text={desc0} />
+      </div>
+      <GameText text={desc1} />
+    </>
+  )
+}
+
+/** CRIT DMG portion of SeveredInnocence's phase description (first sentence). */
+const SeveredInnocenceCritDesc = firstSentenceDesc(
+  'wengine_SeveredInnocence_gen'
+)
+
+/** Conditional portion of SeveredInnocence's phase description (from "When the equipper lands" to end). */
+const SeveredInnocenceCondDesc = fromMarkerDesc(
+  'wengine_SeveredInnocence_gen',
+  'When the equipper lands'
+)
+
+/** DEF Reduction portion of SpectralGaze's phase description (first two sentences). */
+function SpectralGazeDefRedDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_SpectralGaze_gen')
+  const fullDesc = t(`wengine_SpectralGaze_gen:phaseDescs.${phase - 1}`)
+  const marker = 'Passive effects of the same name do not stack.'
+  const idx = fullDesc.indexOf(marker)
+  if (idx === -1) return <GameText text={fullDesc} />
+  return <GameText text={fullDesc.slice(0, idx + marker.length)} />
+}
+
+/** Conditional portion of SpectralGaze's phase description (from "When this effect is triggered" to end). */
+const SpectralGazeSpiritLockDesc = fromMarkerDesc(
+  'wengine_SpectralGaze_gen',
+  'When this effect is triggered'
+)
+
+/** Ice DMG portion of DeepSeaVisitor's phase description (first sentence). */
+const DeepSeaVisitorIceDmgDesc = firstSentenceDesc('wengine_DeepSeaVisitor_gen')
+
+/** Basic Attack CRIT portion of DeepSeaVisitor's phase description (second sentence). */
+function DeepSeaVisitorBasicCritDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_DeepSeaVisitor_gen')
+  const fullDesc = t(`wengine_DeepSeaVisitor_gen:phaseDescs.${phase - 1}`)
+  const marker = 'Upon hitting'
+  const startIdx = fullDesc.indexOf(marker)
+  if (startIdx === -1) return <GameText text={fullDesc} />
+  const endIdx = fullDesc.indexOf('. ', startIdx)
+  if (endIdx === -1) return <GameText text={fullDesc.slice(startIdx)} />
+  return <GameText text={fullDesc.slice(startIdx, endIdx + 1)} />
+}
+
+/** Ice Dash CRIT portion of DeepSeaVisitor's phase description (from "When dealing" to end). */
+const DeepSeaVisitorIceDashCritDesc = fromMarkerDesc(
+  'wengine_DeepSeaVisitor_gen',
+  'When dealing'
+)
+
+/** Off-field Energy Regen portion of Housekeeper's phase description (first sentence). */
+const HousekeeperOffFieldDesc = firstSentenceDesc('wengine_Housekeeper_gen')
+
+/** Conditional portion of Housekeeper's phase description (from "When an EX Special Attack" to end). */
+function HousekeeperExSpecialHitDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_Housekeeper_gen')
+  const fullDesc = t(`wengine_Housekeeper_gen:phaseDescs.${phase - 1}`)
+  // The text has <ct> tags, so we search for the unique plain-text anchor
+  const marker = 'hits an enemy'
+  const idx = fullDesc.indexOf(marker)
+  if (idx < 0) return <GameText text={fullDesc} />
+  // Find the start of "When an " before this marker
+  const start = fullDesc.lastIndexOf('When an ', idx)
+  if (start < 0) return <GameText text={fullDesc} />
+  return <GameText text={fullDesc.slice(start)} />
+}
+
+/** Quick/Perfect Assist Impact portion of BlazingLaurel's phase description (first sentence). */
+const BlazingLaurelAssistImpactDesc = firstSentenceDesc(
+  'wengine_BlazingLaurel_gen'
+)
+
+/** Wilt portion of BlazingLaurel's phase description (from "When the equipper launches" to end). */
+const BlazingLaurelWiltDesc = fromMarkerDesc(
+  'wengine_BlazingLaurel_gen',
+  'When the equipper launches'
+)
+
+/** Off-field Energy Regen portion of FlamemakerShaker's phase description (first sentence). */
+const FlamemakerShakerOffFieldDesc = firstSentenceDesc(
+  'wengine_FlamemakerShaker_gen'
+)
+
+/** Conditional portion of FlamemakerShaker's phase description (from "When hitting" to end). */
+const FlamemakerShakerCondDesc = fromMarkerDesc(
+  'wengine_FlamemakerShaker_gen',
+  'When hitting'
+)
+
+/** DMG Reduction portion of BigCylinder's phase description (first sentence). */
+const BigCylinderDmgRedDesc = firstSentenceDesc('wengine_BigCylinder_gen')
+
+/** Additional DMG portion of BigCylinder's phase description (from "After being attacked" to end). */
+const BigCylinderDmgDesc = fromMarkerDesc(
+  'wengine_BigCylinder_gen',
+  'After being attacked'
+)
+
+/** EX Special & Ultimate DMG portion of TremorTrigramVessel's phase description (first sentence). */
+const TremorTrigramVesselDmgDesc = firstSentenceDesc(
+  'wengine_TremorTrigramVessel_gen'
+)
+
+/** Off-field Energy Regen portion of WeepingCradle's phase description (first sentence). */
+const WeepingCradleOffFieldDesc = firstSentenceDesc('wengine_WeepingCradle_gen')
+
+/** DMG Stacks portion of WeepingCradle's phase description (from "Attacks from" to end). */
+const WeepingCradleDmgDesc = fromMarkerDesc(
+  'wengine_WeepingCradle_gen',
+  'Attacks from'
 )
 
 const WenginePassiveGroup = memo(function WenginePassiveGroup({
@@ -505,7 +850,6 @@ export function WEngineConditionalsDisplay({
   const calc = useZzzCalcContext()
   const phase =
     propPhase ?? (calc ? (calc.compute(own.wengine.phase).val ?? 1) : 1)
-  const { t } = useTranslation('wengineNames_gen')
   const mainChar = useCharacterContext()!
   const { database } = useDatabaseContext()
   const team = useTeam(mainChar.key)
@@ -678,6 +1022,15 @@ export function WEngineConditionalsDisplay({
               ? false
               : matchingBuffFields.some((f: Field) => isBuffFieldTeamWide(f))
           if (!hasTeamBuff) return
+          // JoyauDore: self-only AP passive should not show for teammates
+          if (
+            wengineKey === 'JoyauDore' &&
+            matchingBuffFields.some(
+              (f) => 'fieldRef' in f && f.fieldRef?.name === 'anomProf'
+            )
+          ) {
+            return
+          }
           const teamFields = doc.fields.filter(
             (f: Field) =>
               !wengineBuffs ||
@@ -708,7 +1061,6 @@ export function WEngineConditionalsDisplay({
   if (!wengineKey) {
     return (
       <Flex direction="column" gap={5}>
-        <HeaderText>W-Engine Conditionals</HeaderText>
         <Text size="sm" c="dimmed">
           No W-Engine equipped.
         </Text>
@@ -727,7 +1079,6 @@ export function WEngineConditionalsDisplay({
   if (condEntries.length === 0 && !hasPassives)
     return (
       <Flex direction="column" gap={5}>
-        <HeaderText>{t(wengineKey)} Conditionals</HeaderText>
         <Text size="sm" c="dimmed">
           No conditionals for this W-Engine.
         </Text>
@@ -736,7 +1087,6 @@ export function WEngineConditionalsDisplay({
 
   return (
     <Flex direction="column" gap={5}>
-      <HeaderText>{t(wengineKey)} Conditionals</HeaderText>
       {/* Render passive (always-active) team-wide buffs */}
       {showPassives && hasPassives && (
         <Flex direction="column" gap={4}>
@@ -816,6 +1166,78 @@ export function WEngineConditionalsDisplay({
                 ) : wengineKey === 'MyriadEclipse' &&
                   firstFieldName === 'crit_dmg_' ? (
                   <MyriadEclipseCritDesc phase={phase} />
+                ) : wengineKey === 'BashfulDemon' &&
+                  firstFieldName === 'passive_ice_dmg_' ? (
+                  <BashfulDemonIceDmgDesc phase={phase} />
+                ) : wengineKey === 'BunnyBand' &&
+                  firstFieldName === 'passive_hp_' ? (
+                  <BunnyBandHpDesc phase={phase} />
+                ) : wengineKey === 'DemaraBatteryMarkII' &&
+                  firstFieldName === 'passive_electric_dmg_' ? (
+                  <DemaraBatteryMarkIIDmgDesc phase={phase} />
+                ) : wengineKey === 'FusionCompiler' &&
+                  firstFieldName === 'passive_atk_' ? (
+                  <FusionCompilerAtkDesc phase={phase} />
+                ) : wengineKey === 'GrillOWisp' &&
+                  firstFieldName === 'fire_dmg_' ? (
+                  <GrillOWispFireDmgDesc phase={phase} />
+                ) : wengineKey === 'HailstormShrine' &&
+                  firstFieldName === 'passive_crit_dmg_' ? (
+                  <HailstormShrineCritDmgDesc phase={phase} />
+                ) : wengineKey === 'HeartstringNocturne' &&
+                  firstFieldName === 'passive_crit_dmg_' ? (
+                  <HeartstringNocturneCritDmgDesc phase={phase} />
+                ) : wengineKey === 'OriginalTransmorpher' &&
+                  firstFieldName === 'passive_hp_' ? (
+                  <OriginalTransmorpherHpDesc phase={phase} />
+                ) : wengineKey === 'PeacekeeperSpecialized' &&
+                  firstFieldName === 'passive_exSpecial_anomBuildup_' ? (
+                  <PeacekeeperSpecializedBuildupDesc phase={phase} />
+                ) : wengineKey === 'RiotSuppressorMarkVI' &&
+                  firstFieldName === 'passive_crit_' ? (
+                  <RiotSuppressorMarkVICritDesc phase={phase} />
+                ) : wengineKey === 'SpringEmbrace' &&
+                  firstFieldName === 'passive_dmg_red_' ? (
+                  <SpringEmbraceDmgRedDesc phase={phase} />
+                ) : wengineKey === 'SteelCushion' &&
+                  firstFieldName === 'passive_physical_dmg_' ? (
+                  <SteelCushionPhysDmgDesc phase={phase} />
+                ) : wengineKey === 'TusksOfFury' &&
+                  firstFieldName === 'passive_shield_' ? (
+                  <TusksOfFuryShieldDesc phase={phase} />
+                ) : wengineKey === 'ZanshinHerbCase' &&
+                  firstFieldName === 'passive_crit_' ? (
+                  <ZanshinHerbCaseCritDesc phase={phase} />
+                ) : wengineKey === 'ZanshinHerbCase' &&
+                  firstFieldName === 'passive_electric_dmg_' ? (
+                  <ZanshinHerbCaseDashDmgDesc phase={phase} />
+                ) : wengineKey === 'CannonRotor' &&
+                  firstFieldName === 'passive_atk_' ? (
+                  <CannonRotorAtkDesc phase={phase} />
+                ) : wengineKey === 'CannonRotor' &&
+                  firstFieldName === 'damage' ? (
+                  <CannonRotorDmgDesc phase={phase} />
+                ) : wengineKey === 'DeepSeaVisitor' &&
+                  firstFieldName === 'passive_ice_dmg_' ? (
+                  <DeepSeaVisitorIceDmgDesc phase={phase} />
+                ) : wengineKey === 'SeveredInnocence' &&
+                  firstFieldName === 'passive_crit_dmg_' ? (
+                  <SeveredInnocenceCritDesc phase={phase} />
+                ) : wengineKey === 'Timeweaver' &&
+                  firstFieldName === 'passive_electric_anomBuildup_' ? (
+                  <TimeweaverElectricBuildupDesc phase={phase} />
+                ) : wengineKey === 'Timeweaver' &&
+                  firstFieldName === 'passive_disorder_dmg_' ? (
+                  <TimeweaverDisorderDmgDesc phase={phase} />
+                ) : wengineKey === 'BigCylinder' &&
+                  firstFieldName === 'passive_dmg_red_' ? (
+                  <BigCylinderDmgRedDesc phase={phase} />
+                ) : wengineKey === 'BigCylinder' &&
+                  firstFieldName === 'damage' ? (
+                  <BigCylinderDmgDesc phase={phase} />
+                ) : wengineKey === 'TremorTrigramVessel' &&
+                  firstFieldName === 'exSpecial_dmg_' ? (
+                  <TremorTrigramVesselDmgDesc phase={phase} />
                 ) : undefined
 
               return group.header ? (
@@ -885,6 +1307,30 @@ export function WEngineConditionalsDisplay({
           if (
             wengineKey === 'Metanukimorphosis' &&
             condName === 'physical_exSpecial_ult' &&
+            teammateKey
+          ) {
+            return false
+          }
+          // SpectralGaze: Spirit Lock stacks are self-only (equipper Impact), hide from teammate view
+          if (
+            wengineKey === 'SpectralGaze' &&
+            condName === 'spiritLock' &&
+            teammateKey
+          ) {
+            return false
+          }
+          // BlazingLaurel: Quick/Perfect Assist Impact is self-only, hide from teammate view
+          if (
+            wengineKey === 'BlazingLaurel' &&
+            condName === 'quickOrPerfectAssistUsed' &&
+            teammateKey
+          ) {
+            return false
+          }
+          // WeepingCradle: Off-field Energy Regen is self-only, hide from teammate view
+          if (
+            wengineKey === 'WeepingCradle' &&
+            condName === 'offField' &&
             teammateKey
           ) {
             return false
@@ -985,6 +1431,97 @@ export function WEngineConditionalsDisplay({
               ) : wengineKey === 'MyriadEclipse' &&
                 condName === 'deathSentence' ? (
                 <MyriadEclipseCondDesc phase={phase} />
+              ) : wengineKey === 'ElegantVanity' &&
+                condName === 'consumed25Energy' ? (
+                <ElegantVanityCondDesc phase={phase} />
+              ) : wengineKey === 'BashfulDemon' &&
+                condName === 'launch_ex_attack' ? (
+                <BashfulDemonCondDesc phase={phase} />
+              ) : wengineKey === 'BunnyBand' &&
+                condName === 'wearerShielded' ? (
+                <BunnyBandCondDesc phase={phase} />
+              ) : wengineKey === 'DemaraBatteryMarkII' &&
+                condName === 'dodgeCounterOrAssistHit' ? (
+                <DemaraBatteryMarkIICondDesc phase={phase} />
+              ) : wengineKey === 'FusionCompiler' &&
+                condName === 'specialUsed' ? (
+                <FusionCompilerCondDesc phase={phase} />
+              ) : wengineKey === 'GrillOWisp' && condName === 'hpDecreased' ? (
+                <GrillOWispCondDesc phase={phase} />
+              ) : wengineKey === 'HailstormShrine' &&
+                condName === 'exSpecialOrAnomaly' ? (
+                <HailstormShrineCondDesc phase={phase} />
+              ) : wengineKey === 'HeartstringNocturne' &&
+                condName === 'heartstring' ? (
+                <HeartstringNocturneCondDesc phase={phase} />
+              ) : wengineKey === 'OriginalTransmorpher' &&
+                condName === 'equipperHit' ? (
+                <OriginalTransmorpherCondDesc phase={phase} />
+              ) : wengineKey === 'PeacekeeperSpecialized' &&
+                condName === 'shielded' ? (
+                <PeacekeeperSpecializedERDesc phase={phase} />
+              ) : wengineKey === 'RiotSuppressorMarkVI' &&
+                condName === 'charge' ? (
+                <RiotSuppressorMarkVICondDesc phase={phase} />
+              ) : wengineKey === 'SpringEmbrace' &&
+                condName === 'when_attacked' ? (
+                <SpringEmbraceCondDesc phase={phase} />
+              ) : wengineKey === 'SteelCushion' && condName === 'hit_behind' ? (
+                <SteelCushionCondDesc phase={phase} />
+              ) : wengineKey === 'TusksOfFury' &&
+                condName === 'interrupt_perfdodge' ? (
+                <TusksOfFuryCondDesc phase={phase} />
+              ) : wengineKey === 'ZanshinHerbCase' &&
+                condName === 'apply_anom_stun' ? (
+                <ZanshinHerbCaseCondDesc phase={phase} />
+              ) : wengineKey === 'Timeweaver' && condName === 'hit_anomaly' ? (
+                <TimeweaverCondDesc phase={phase} />
+              ) : wengineKey === 'DeepSeaVisitor' && condName === 'basicHit' ? (
+                <DeepSeaVisitorBasicCritDesc phase={phase} />
+              ) : wengineKey === 'DeepSeaVisitor' &&
+                condName === 'iceDashAtkHit' ? (
+                <DeepSeaVisitorIceDashCritDesc phase={phase} />
+              ) : wengineKey === 'SeveredInnocence' &&
+                condName === 'basicSpecialAftershockHit' ? (
+                <SeveredInnocenceCondDesc phase={phase} />
+              ) : wengineKey === 'SpectralGaze' &&
+                condName === 'hit_aftershock_electric' ? (
+                <SpectralGazeDefRedDesc phase={phase} />
+              ) : wengineKey === 'SpectralGaze' && condName === 'spiritLock' ? (
+                <SpectralGazeSpiritLockDesc phase={phase} />
+              ) : wengineKey === 'HellfireGears' && condName === 'offField' ? (
+                <HellfireGearsOffFieldDesc phase={phase} />
+              ) : wengineKey === 'HellfireGears' &&
+                condName === 'exSpecialUsed' ? (
+                <HellfireGearsCondDesc phase={phase} />
+              ) : wengineKey === 'RoaringRide' ? (
+                <RoaringRideDesc phase={phase} />
+              ) : wengineKey === 'KnightsExtolment' &&
+                condName === 'battle_edge_stacks' ? (
+                <KnightsExtolmentDesc phase={phase} />
+              ) : wengineKey === 'Housekeeper' && condName === 'offField' ? (
+                <HousekeeperOffFieldDesc phase={phase} />
+              ) : wengineKey === 'Housekeeper' &&
+                condName === 'exSpecialHits' ? (
+                <HousekeeperExSpecialHitDesc phase={phase} />
+              ) : wengineKey === 'BlazingLaurel' &&
+                condName === 'quickOrPerfectAssistUsed' ? (
+                <BlazingLaurelAssistImpactDesc phase={phase} />
+              ) : wengineKey === 'BlazingLaurel' && condName === 'wilt' ? (
+                <BlazingLaurelWiltDesc phase={phase} />
+              ) : wengineKey === 'FlamemakerShaker' &&
+                condName === 'offField' ? (
+                <FlamemakerShakerOffFieldDesc phase={phase} />
+              ) : wengineKey === 'FlamemakerShaker' &&
+                condName === 'exSpecialAssistHits' ? (
+                <FlamemakerShakerCondDesc phase={phase} />
+              ) : wengineKey === 'BigCylinder' &&
+                condName === 'afterAttacked' ? (
+                <BigCylinderDmgDesc phase={phase} />
+              ) : wengineKey === 'WeepingCradle' && condName === 'offField' ? (
+                <WeepingCradleOffFieldDesc phase={phase} />
+              ) : wengineKey === 'WeepingCradle' && condName === 'stacks' ? (
+                <WeepingCradleDmgDesc phase={phase} />
               ) : undefined
             }
           />

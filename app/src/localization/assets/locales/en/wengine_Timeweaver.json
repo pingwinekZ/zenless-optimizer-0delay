@@ -1,3 +1,5 @@
 {
-  "cond": "When Special Attacks or EX Special Attacks hit enemies suffering an Attribute Anomaly"
+  "anomalyHitCond": "Anomaly Hit · AP",
+  "passive_electric_anomBuildup_": "AB",
+  "passive_disorder_dmg_": "DMG"
 }

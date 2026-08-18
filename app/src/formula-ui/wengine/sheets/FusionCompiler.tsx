@@ -2,13 +2,11 @@ import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
 import { wengineAsset } from '../../../assets'
 import type { WengineKey } from '../../../consts'
 import { FusionCompiler } from '../../../formula'
-import { mappedStats } from '../../../stats'
 import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'FusionCompiler'
 const [chg, ch] = trans('wengine', key)
-const dm = mappedStats.wengine[key]
 const icon = wengineAsset(key)
 const cond = FusionCompiler.conditionals
 const buff = FusionCompiler.buffs
@@ -27,20 +25,15 @@ const sheet: UISheetElement = {
     },
     {
       type: 'fields',
+      header: { icon: null, text: ch('passive_atk_') },
       fields: [tagToTagField(buff.passive_atk_.tag)],
     },
     {
       type: 'conditional',
       conditional: {
-        label: ch('cond'),
+        label: ch('specialUsedCond'),
         metadata: cond.specialUsed,
-        fields: [
-          tagToTagField(buff.anomProf.tag),
-          {
-            title: 'Duration', // TODO: L10n,
-            fieldValue: dm.duration,
-          },
-        ],
+        fields: [tagToTagField(buff.anomProf.tag)],
       },
     },
   ],

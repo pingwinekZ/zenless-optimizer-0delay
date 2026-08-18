@@ -6,7 +6,7 @@ import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'GildedBlossom'
-const [chg, _ch] = trans('wengine', key)
+const [chg, ch] = trans('wengine', key)
 const icon = wengineAsset(key)
 const buff = GildedBlossom.buffs
 
@@ -24,6 +24,7 @@ const sheet: UISheetElement = {
     },
     {
       type: 'fields',
+      header: { icon: null, text: ch('passive_header') },
       fields: [
         tagToTagField(buff.passive_atk_.tag),
         tagToTagField(buff.passive_exSpecial_dmg_.tag),

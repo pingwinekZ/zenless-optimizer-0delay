@@ -8,7 +8,6 @@ import { PhaseWrapper } from '../components'
 const key: WengineKey = 'PeacekeeperSpecialized'
 const [chg, ch] = trans('wengine', key)
 const icon = wengineAsset(key)
-const cond = PeacekeeperSpecialized.conditionals
 const buff = PeacekeeperSpecialized.buffs
 
 const sheet: UISheetElement = {
@@ -24,15 +23,8 @@ const sheet: UISheetElement = {
       ),
     },
     {
-      type: 'conditional',
-      conditional: {
-        label: ch('cond'),
-        metadata: cond.shielded,
-        fields: [tagToTagField(buff.enerRegen.tag)],
-      },
-    },
-    {
       type: 'fields',
+      header: { icon: null, text: ch('ab') },
       fields: [
         tagToTagField(buff.passive_exSpecial_anomBuildup_.tag),
         tagToTagField(buff.passive_assist_anomBuildup_.tag),

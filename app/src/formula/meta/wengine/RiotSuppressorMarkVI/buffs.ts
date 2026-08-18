@@ -26,4 +26,18 @@ export const buffs = {
     },
     team: false,
   },
+  dash_ether_dmg_: {
+    sheet: 'RiotSuppressorMarkVI',
+    name: 'dash_ether_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'RiotSuppressorMarkVI',
+      attribute: 'ether',
+      damageType1: 'dash',
+      name: 'dash_ether_dmg_',
+    },
+    team: false,
+  },
 } as const

@@ -1,3 +1,4 @@
 {
-  "cond": "Charge"
+  "passive_crit_": "CR",
+  "chargeCond": "Charge · DMG"
 }

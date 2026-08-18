@@ -1,3 +1,4 @@
 {
-  "cond": "Heartstring"
+  "passive_crit_dmg_": "CD",
+  "heartstringCond": "Heartstring · RES Ignore"
 }

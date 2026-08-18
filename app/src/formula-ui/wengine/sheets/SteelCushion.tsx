@@ -25,12 +25,13 @@ const sheet: UISheetElement = {
     },
     {
       type: 'fields',
+      header: { icon: null, text: ch('passive_physical_dmg_') },
       fields: [tagToTagField(buff.passive_physical_dmg_.tag)],
     },
     {
       type: 'conditional',
       conditional: {
-        label: ch('cond'),
+        label: ch('hitBehindCond'),
         metadata: cond.hit_behind,
         fields: [tagToTagField(buff.cond_dmg_.tag)],
       },

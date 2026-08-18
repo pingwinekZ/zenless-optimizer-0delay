@@ -4,15 +4,11 @@ import type { CSSProperties, ReactNode } from 'react'
 const defaultGap = 5
 const defaultPadding = 11
 
-const smallWidth = 226
-const mediumWidth = 398
-const largeWidth = 1258
-
-const dimsBySize: Record<string, number> = {
-  small: smallWidth,
-  narrow: 248,
-  medium: mediumWidth,
-  large: largeWidth,
+const dimsBySize: Record<string, { minWidth: number }> = {
+  small: { minWidth: 200 },
+  narrow: { minWidth: 220 },
+  medium: { minWidth: 350 },
+  large: { minWidth: 600 },
 }
 
 export function FormCard({
@@ -29,12 +25,14 @@ export function FormCard({
   justify?: string
 }) {
   const size = sizeProp ?? 'small'
-  const width = dimsBySize[size]
+  const { minWidth } = dimsBySize[size]
 
   return (
     <Flex
       className="hide-scrollbar"
       style={{
+        flex: 1,
+        minWidth,
         borderRadius: 6,
         backgroundColor: 'var(--layer-2)',
         height: height ?? 415,
@@ -43,10 +41,10 @@ export function FormCard({
         overflow: style?.overflow,
       }}
     >
-      <Flex style={{ width: width }} justify={justify}>
+      <Flex style={{ flex: 1, minWidth: 0 }} justify={justify}>
         <Flex
           direction="column"
-          style={{ width: width }}
+          style={{ flex: 1, minWidth: 0 }}
           gap={defaultGap}
           justify={justify}
         >

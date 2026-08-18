@@ -1,3 +1,4 @@
 {
-  "cond": "Shielded"
+  "passive_hp_": "HP",
+  "shieldedCond": "Shielded · ATK"
 }

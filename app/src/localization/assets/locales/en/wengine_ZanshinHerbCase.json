@@ -1,3 +1,5 @@
 {
-  "cond": "When any squad member applies an Attribute Anomaly or Stuns an enemy"
+  "passive_crit_": "CR",
+  "passive_electric_dmg_": "DMG",
+  "anomalyOrStunCond": "Anomaly / Stun · CR"
 }

@@ -12,7 +12,6 @@ import {
 } from '@zenless-optimizer/game-opt/sheet-ui'
 import type { ReactNode } from 'react'
 import { memo, useContext, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 import {
   type AttributeKey,
   type CharacterKey,
@@ -31,7 +30,6 @@ import { buffAppliesToMainUnit } from '../../formula-ui/teammate'
 import { GameDesc, GameText } from '../../i18n'
 import { getCharStat } from '../../stats'
 import { ElementIcon } from '../../svgicons'
-import { HeaderText } from '../layout'
 import {
   ConditionalText,
   conditionalAlign,
@@ -381,7 +379,6 @@ export function CharacterConditionalsDisplay({
   showPassives?: boolean
   teammateKey?: CharacterKey
 }) {
-  const { t } = useTranslation('charNames_gen')
   const mainChar = useCharacterContext()!
   const { database } = useDatabaseContext()
   const team = useTeam(mainChar.key)
@@ -584,7 +581,6 @@ export function CharacterConditionalsDisplay({
 
   return (
     <Flex direction="column" gap={5}>
-      <HeaderText>{t(characterKey)} Conditionals</HeaderText>
       {fluxedElementRow}
       {sectionGroups.map((group) => (
         <Box key={group.sectionKey}>

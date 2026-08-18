@@ -1,4 +1,4 @@
 {
-  "cond1": "Equipper off-field",
-  "cond2": "EX Special Attack hits"
+  "offFieldCond": "Off-Field · ER",
+  "exSpecialHitCond": "EX Special Hit · DMG"
 }

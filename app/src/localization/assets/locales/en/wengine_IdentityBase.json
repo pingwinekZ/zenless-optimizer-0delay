@@ -1,3 +1,3 @@
 {
-  "cond": "Equipper gets attacked"
+  "whenAttackedCond": "Attacked · DEF"
 }

@@ -2,13 +2,11 @@ import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
 import { wengineAsset } from '../../../assets'
 import type { WengineKey } from '../../../consts'
 import { OdeOfResurrectedWings } from '../../../formula'
-import { mappedStats } from '../../../stats'
 import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'OdeOfResurrectedWings'
 const [chg, ch] = trans('wengine', key)
-const dm = mappedStats.wengine[key]
 const icon = wengineAsset(key)
 const cond = OdeOfResurrectedWings.conditionals
 const buff = OdeOfResurrectedWings.buffs
@@ -38,10 +36,6 @@ const sheet: UISheetElement = {
         fields: [
           tagToTagField(buff.anomDmg_.tag),
           tagToTagField(buff.teamDmg_.tag),
-          {
-            title: 'Duration',
-            fieldValue: dm.duration,
-          },
         ],
       },
     },

@@ -1,4 +1,5 @@
 {
-  "cond1": "Enemy hit with a Basic Attack",
-  "cond2": "Dealing Ice DMG with a Dash Attack"
+  "passive_ice_dmg_": "DMG",
+  "basicHitCond": "Basic Hit · CR",
+  "iceDashHitCond": "Dash Ice Hit · CR"
 }

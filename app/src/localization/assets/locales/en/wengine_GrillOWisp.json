@@ -1,3 +1,4 @@
 {
-  "cond": "Equipper's HP decreases"
+  "fire_dmg_": "DMG",
+  "hpDecreasedCond": "HP Decreased · CR"
 }

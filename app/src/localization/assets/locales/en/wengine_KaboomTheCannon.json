@@ -1,3 +1,3 @@
 {
-  "cond": "Friendly unit hits an enemy"
+  "allyHitCond": "Ally Hits Enemy · ATK"
 }

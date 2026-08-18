@@ -65,7 +65,6 @@ function lerpColor(a: string, b: string, t: number): string {
 }
 
 // ── Constants ──
-const GRID_WIDTH = 1302
 const GRID_HEIGHT = 600
 const MIN_HEIGHT = 300
 const DIGITS_3 = 46
@@ -73,7 +72,7 @@ const DIGITS_4 = 52
 const DIGITS_5 = 58
 
 const GRID_CONTAINER_STYLE = {
-  width: GRID_WIDTH,
+  width: '100%',
   minHeight: MIN_HEIGHT,
   height: GRID_HEIGHT,
   resize: 'vertical' as const,

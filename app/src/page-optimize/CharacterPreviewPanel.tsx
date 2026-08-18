@@ -7,7 +7,7 @@ import { useCharacter } from '../db-ui'
 import { getCharStat } from '../stats'
 import { CharacterSingleSelectionModal, WengineSelectionModal } from '../ui'
 
-const containerW = 248
+const containerMinW = 200
 const cardGap = 10
 const lcCardH = 85
 const formCardH = 415
@@ -49,7 +49,7 @@ export function CharacterPreviewPanel({
     : 'var(--layer-2)'
 
   return (
-    <Flex direction="column" gap={cardGap} style={{ width: containerW }}>
+    <Flex direction="column" gap={cardGap} style={{ flex: 1, minWidth: containerMinW }}>
       <CharacterSingleSelectionModal
         show={showCharModal}
         onHide={onHideCharModal}
@@ -67,7 +67,7 @@ export function CharacterPreviewPanel({
       <div
         style={{
           ...cardStyle,
-          width: containerW,
+          width: '100%',
           height: charCardH,
           position: 'relative',
           backgroundColor: bgColor,
@@ -97,7 +97,7 @@ export function CharacterPreviewPanel({
       <div
         style={{
           ...cardStyle,
-          width: containerW,
+          width: '100%',
           height: lcCardH,
           display: 'flex',
           justifyContent: 'center',

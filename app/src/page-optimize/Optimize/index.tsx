@@ -54,6 +54,7 @@ import {
 } from '../../db-ui'
 import { useZzzCalcContext } from '../../formula-ui'
 import { ShowcaseDiscCard } from '../../page-characters'
+import { discCardH, discCardW } from '../../page-characters/constantsUi'
 import {
   type BuildRecipe,
   createSolverConfig,
@@ -158,6 +159,7 @@ function SelectedBuildDiscs({
           disc={discs[slotKey]}
           onClick={() => handleDiscClick(slotKey)}
           effectiveStats={effectiveStats}
+          style={{ width: '100%', height: 'auto', aspectRatio: `${discCardW} / ${discCardH}` }}
         />
       ))}
     </Flex>
@@ -1213,8 +1215,8 @@ function OptimizeWrapper() {
           paddingBottom: isMobileLayout ? 80 : 0,
         }}
       >
-        {/* ─── Left Column: Form + Grid (1302px) ─── */}
-        <Stack gap="md" w={1302}>
+        {/* ─── Left Column: Form + Grid ─── */}
+        <Stack gap="md" style={{ flex: 1, minWidth: 0 }}>
           {/* Form Area */}
           <OptimizerForm
             characterKey={characterKey}
@@ -1239,7 +1241,7 @@ function OptimizeWrapper() {
                 align="center"
                 justify="center"
                 style={{
-                  width: 1302,
+                  width: '100%',
                   height: 300,
                   backgroundColor: 'var(--layer-2)',
                   borderRadius: 6,

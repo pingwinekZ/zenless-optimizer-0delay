@@ -2,10 +2,8 @@ import { cmpGE, prod, subscript } from '@zenless-optimizer/pando/engine'
 import type { WengineKey } from '../../../../consts'
 import { mappedStats } from '../../../../stats'
 import {
-  allBoolConditionals,
   allNumConditionals,
   own,
-  ownBuff,
   percent,
   registerBuff,
   teamBuff,
@@ -21,7 +19,6 @@ const key: WengineKey = 'Thoughtbop'
 const dm = mappedStats.wengine[key]
 const { phase } = own.wengine
 
-const { offField } = allBoolConditionals(key)
 const { physExSpecialUsed } = allNumConditionals(key, true, 0, dm.maxStacks)
 
 const sheet = registerWengine(
@@ -30,16 +27,6 @@ const sheet = registerWengine(
   entriesForWengine(key),
 
   // Conditional buffs
-  registerBuff(
-    'cond_enerRegen',
-    ownBuff.combat.enerRegen.add(
-      cmpSpecialtyAndEquipped(
-        key,
-        offField.ifOn(percent(subscript(phase, dm.enerRegen)))
-      )
-    ),
-    showSpecialtyAndEquipped(key)
-  ),
   registerBuff(
     'team_common_dmg_',
     teamBuff.combat.common_dmg_.addOnce(

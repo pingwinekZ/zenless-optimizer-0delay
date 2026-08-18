@@ -6,7 +6,7 @@ import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'VortexRevolver'
-const [chg, _ch] = trans('wengine', key)
+const [chg, ch] = trans('wengine', key)
 const icon = wengineAsset(key)
 const buff = VortexRevolver.buffs
 
@@ -24,6 +24,7 @@ const sheet: UISheetElement = {
     },
     {
       type: 'fields',
+      header: { icon: null, text: ch('passive_exSpecial_daze_') },
       fields: [tagToTagField(buff.passive_exSpecial_daze_.tag)],
     },
   ],

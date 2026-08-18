@@ -2,14 +2,13 @@ import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
 import { wengineAsset } from '../../../assets'
 import type { WengineKey } from '../../../consts'
 import { BigCylinder } from '../../../formula'
-import { mappedStats } from '../../../stats'
 import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'BigCylinder'
-const [chg, _ch] = trans('wengine', key)
-const dm = mappedStats.wengine[key]
+const [chg, ch] = trans('wengine', key)
 const icon = wengineAsset(key)
+const cond = BigCylinder.conditionals
 const buff = BigCylinder.buffs
 const formula = BigCylinder.formulas
 
@@ -27,7 +26,16 @@ const sheet: UISheetElement = {
     },
     {
       type: 'fields',
+      header: { icon: null, text: ch('passive_dmg_red_') },
       fields: [tagToTagField(buff.passive_dmg_red_.tag)],
+    },
+    {
+      type: 'conditional',
+      conditional: {
+        label: ch('afterAttackedCond'),
+        metadata: cond.afterAttacked,
+        fields: [tagToTagField(buff.cond_crit_.tag)],
+      },
     },
     {
       type: 'fields',
@@ -35,10 +43,6 @@ const sheet: UISheetElement = {
         {
           title: 'Additional DMG',
           fieldRef: formula.damage.tag,
-        },
-        {
-          title: 'Cooldown',
-          fieldValue: dm.cooldown,
         },
       ],
     },

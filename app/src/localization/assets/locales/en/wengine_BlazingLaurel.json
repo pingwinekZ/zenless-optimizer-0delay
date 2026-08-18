@@ -1,4 +1,4 @@
 {
-  "cond1": "Quick Assist or Perfect Assist used",
-  "cond2": "Wilt"
+  "quickOrPerfectAssistCond": "Quick Assist / Perfect Assist · Impact",
+  "wiltCond": "Wilt · CD"
 }

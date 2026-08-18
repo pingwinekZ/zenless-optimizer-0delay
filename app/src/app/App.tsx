@@ -160,16 +160,13 @@ function Content() {
   return (
     <Flex direction="column" mih="100vh" pos="relative">
       <Header anchor="back-to-top-anchor" />
-      <Flex gap={96} style={{ flex: 1 }}>
+      <Flex gap={8} style={{ flex: 1 }}>
         <LayoutSider />
         <Box
           style={{
             padding: '10px 10px 0 10px',
-            margin: '0 auto',
             minHeight: 280,
             overflow: 'initial',
-            display: 'flex',
-            justifyContent: 'space-around',
             width: '100%',
           }}
         >

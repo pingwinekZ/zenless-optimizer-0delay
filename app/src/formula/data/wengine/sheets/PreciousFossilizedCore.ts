@@ -1,7 +1,7 @@
-import { subscript, sum } from '@zenless-optimizer/pando/engine'
+import { cmpGE, subscript, sum } from '@zenless-optimizer/pando/engine'
 import type { WengineKey } from '../../../../consts'
 import { mappedStats } from '../../../../stats'
-import { allBoolConditionals, own, ownBuff, registerBuff } from '../../util'
+import { allNumConditionals, own, ownBuff, registerBuff } from '../../util'
 import {
   cmpSpecialtyAndEquipped,
   entriesForWengine,
@@ -13,7 +13,8 @@ const key: WengineKey = 'PreciousFossilizedCore'
 const dm = mappedStats.wengine[key]
 const { phase } = own.wengine
 
-const { enemyHpGE50, enemyHpGE75 } = allBoolConditionals(key)
+// 0 = disabled, 1 = Enemy HP ≥ 50%, 2 = Enemy HP ≥ 75%
+const { enemyHpGE } = allNumConditionals(key, true, 0, 2)
 
 const sheet = registerWengine(
   key,
@@ -26,11 +27,9 @@ const sheet = registerWengine(
     ownBuff.combat.dazeInc_.add(
       cmpSpecialtyAndEquipped(
         key,
-        enemyHpGE50.ifOn(
-          sum(
-            subscript(phase, dm.daze_),
-            enemyHpGE75.ifOn(subscript(phase, dm.extra_daze_))
-          )
+        sum(
+          cmpGE(enemyHpGE, 1, subscript(phase, dm.daze_)),
+          cmpGE(enemyHpGE, 2, subscript(phase, dm.extra_daze_))
         )
       )
     ),

@@ -25,14 +25,18 @@ const sheet: UISheetElement = {
     },
     {
       type: 'fields',
+      header: { icon: null, text: ch('passive_crit_') },
       fields: [tagToTagField(buff.passive_crit_.tag)],
     },
     {
       type: 'conditional',
       conditional: {
-        label: ch('cond'),
+        label: ch('chargeCond'),
         metadata: cond.charge,
-        fields: [tagToTagField(buff.basic_ether_dmg_.tag)],
+        fields: [
+          tagToTagField(buff.basic_ether_dmg_.tag),
+          tagToTagField(buff.dash_ether_dmg_.tag),
+        ],
       },
     },
   ],

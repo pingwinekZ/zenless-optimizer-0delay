@@ -2,13 +2,11 @@ import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
 import { wengineAsset } from '../../../assets'
 import type { WengineKey } from '../../../consts'
 import { RadiowaveJourney } from '../../../formula'
-import { mappedStats } from '../../../stats'
 import { st, tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'RadiowaveJourney'
 const [chg] = trans('wengine', key)
-const dm = mappedStats.wengine[key]
 const icon = wengineAsset(key)
 const cond = RadiowaveJourney.conditionals
 const buff = RadiowaveJourney.buffs
@@ -33,13 +31,7 @@ const sheet: UISheetElement = {
           val1: '$t(skills.chain)',
           val2: '$t(skills.ult)',
         }),
-        fields: [
-          tagToTagField(buff.launchingChainOrUlt_sheerForce.tag),
-          {
-            title: st('duration'),
-            fieldValue: dm.duration,
-          },
-        ],
+        fields: [tagToTagField(buff.launchingChainOrUlt_sheerForce.tag)],
       },
     },
   ],

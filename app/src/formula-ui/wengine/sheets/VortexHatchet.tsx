@@ -2,13 +2,11 @@ import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
 import { wengineAsset } from '../../../assets'
 import type { WengineKey } from '../../../consts'
 import { VortexHatchet } from '../../../formula'
-import { mappedStats } from '../../../stats'
 import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'VortexHatchet'
 const [chg, ch] = trans('wengine', key)
-const dm = mappedStats.wengine[key]
 const icon = wengineAsset(key)
 const cond = VortexHatchet.conditionals
 const buff = VortexHatchet.buffs
@@ -28,19 +26,9 @@ const sheet: UISheetElement = {
     {
       type: 'conditional',
       conditional: {
-        label: ch('cond'),
+        label: ch('enteringCombatCond'),
         metadata: cond.entering,
-        fields: [
-          tagToTagField(buff.cond_impact_.tag),
-          {
-            title: 'Duration', // TODO: L10n,
-            fieldValue: dm.duration,
-          },
-          {
-            title: 'Cooldown', // TODO: L10n,
-            fieldValue: dm.cooldown,
-          },
-        ],
+        fields: [tagToTagField(buff.cond_impact_.tag)],
       },
     },
   ],

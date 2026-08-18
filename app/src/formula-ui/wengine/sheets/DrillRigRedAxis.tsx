@@ -2,13 +2,11 @@ import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
 import { wengineAsset } from '../../../assets'
 import type { WengineKey } from '../../../consts'
 import { DrillRigRedAxis } from '../../../formula'
-import { mappedStats } from '../../../stats'
 import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'DrillRigRedAxis'
 const [chg, ch] = trans('wengine', key)
-const dm = mappedStats.wengine[key]
 const icon = wengineAsset(key)
 const cond = DrillRigRedAxis.conditionals
 const buff = DrillRigRedAxis.buffs
@@ -28,19 +26,11 @@ const sheet: UISheetElement = {
     {
       type: 'conditional',
       conditional: {
-        label: ch('cond'),
+        label: ch('exSpecialOrChainCond'),
         metadata: cond.exSpecialOrChainUsed,
         fields: [
           tagToTagField(buff.basic_eletric_dmg_.tag),
           tagToTagField(buff.dash_eletric_dmg_.tag),
-          {
-            title: 'Duration', // TODO: L10n,
-            fieldValue: dm.duration,
-          },
-          {
-            title: 'Cooldown', // TODO: L10n,
-            fieldValue: dm.cooldown,
-          },
         ],
       },
     },

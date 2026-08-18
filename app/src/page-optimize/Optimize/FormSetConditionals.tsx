@@ -1,5 +1,5 @@
 import {
-  Divider,
+  Box,
   Drawer,
   Flex,
   HoverCard,
@@ -7,19 +7,34 @@ import {
   Switch,
   Text,
 } from '@mantine/core'
+import { stableArr } from '@zenless-optimizer/common/util'
 import type { IConditionalData } from '@zenless-optimizer/game-opt/engine'
-import { Suspense, useEffect, useMemo, useState } from 'react'
+import { TagContext } from '@zenless-optimizer/game-opt/formula-ui'
+import type { Field } from '@zenless-optimizer/game-opt/sheet-ui'
+import { TagFieldDisplay } from '@zenless-optimizer/game-opt/sheet-ui'
+import {
+  type ReactNode,
+  Suspense,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { discDefIcon } from '../../assets'
 import { allDiscSetKeys, discSetNames } from '../../consts'
+import type { TeamConditional } from '../../db'
 import { useCharacterContext, useDatabaseContext, useTeam } from '../../db-ui'
 import { conditionals } from '../../formula'
-import { i18n, Translate } from '../../i18n'
+import { CharCalcMockCountProvider, discUiSheets } from '../../formula-ui'
+import { GameDesc, i18n } from '../../i18n'
 
-const conditionalIconWidth = 32
-const conditionalNameWidth = 255
-const conditionalInputWidth = 100
-const defaultGap = 5
-const columnGap = 6
+const cardStyle: React.CSSProperties = {
+  borderRadius: 6,
+  backgroundColor: 'var(--layer-2)',
+  padding: '8px 10px',
+  boxShadow: 'var(--shadow-card)',
+  border: '1px solid var(--mantine-color-default-border)',
+}
 
 export function FormSetConditionals({
   show,
@@ -50,40 +65,129 @@ function FormSetConditionalsContent() {
     i18n.loadNamespaces(allDiscSetKeys.map((key) => `disc_${key}_gen`))
   }, [])
 
-  const discOptions = useMemo(
-    () =>
-      allDiscSetKeys.map((key) => {
-        const sheetConditionals = (conditionals as Record<string, unknown>)[
-          key
-        ] as Record<string, IConditionalData> | undefined
-        if (!sheetConditionals) return null
-        const entries = Object.entries(sheetConditionals)
-        if (entries.length === 0) return null
-        return (
-          <DiscSetConditionalRow key={key} sheet={key} condEntries={entries} />
-        )
-      }),
-    []
-  )
+  const character = useCharacterContext()
+  const team = useTeam(character?.key)
+  const teamConditionals =
+    team?.frames[0]?.conditionals ?? stableArr<TeamConditional>()
 
+  const discOptions = useMemo(() => {
+    const items: React.ReactNode[] = []
+    for (const key of allDiscSetKeys) {
+      const sheetConditionals = (conditionals as Record<string, unknown>)[
+        key
+      ] as Record<string, IConditionalData> | undefined
+      if (!sheetConditionals) continue
+      const entries = Object.entries(sheetConditionals)
+      if (entries.length === 0) continue
+      items.push(
+        <DiscSetConditionalCard key={key} sheet={key} condEntries={entries} />
+      )
+    }
+    return items
+  }, [])
+
+  if (!character) return null
   return (
-    <Flex direction="column" gap={columnGap}>
-      <Flex gap={defaultGap} align="center">
-        <div style={{ width: conditionalIconWidth }} />
-        <div style={{ width: conditionalNameWidth }} />
-        <Flex style={{ flex: 1 }} justify="flex-end">
-          <Text size="xs" c="dimmed">
-            Effect
-          </Text>
-        </Flex>
-      </Flex>
-      <Divider />
-      {discOptions}
-    </Flex>
+    // Mock all disc set counts so conditional buff fields always display
+    // their nominal values, even for sets the character hasn't equipped.
+    <CharCalcMockCountProvider
+      character={character}
+      conditionals={teamConditionals}
+    >
+      <Box
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: 6,
+        }}
+      >
+        {discOptions}
+      </Box>
+    </CharCalcMockCountProvider>
   )
 }
 
-function DiscSetConditionalRow({
+type CondInfoEntry = {
+  label: ReactNode
+  descKey: string
+  fields: Field[]
+}
+
+/**
+ * Extract labels, description keys, and buff fields from the disc UI sheet
+ * for each conditional.
+ */
+function useCondInfo(sheet: string) {
+  return useMemo(() => {
+    const discSheet = (discUiSheets as Record<string, unknown>)[sheet] as
+      | Record<
+          string,
+          {
+            documents: Array<{
+              type: string
+              conditional?: {
+                metadata: { name: string }
+                label?: unknown
+                fields?: Field[]
+              }
+            }>
+          }
+        >
+      | undefined
+    if (!discSheet) return undefined
+
+    const result: Record<string, CondInfoEntry> = {}
+
+    for (const blockKey of ['2', '4'] as const) {
+      const block = discSheet[blockKey]
+      if (!block) continue
+      const descKey = `desc${blockKey}`
+
+      for (const doc of block.documents) {
+        if (doc.type !== 'conditional' || !doc.conditional) continue
+        const condName = doc.conditional.metadata.name
+        const existing = result[condName]
+
+        // Use first found label (don't overwrite)
+        const label =
+          doc.conditional.label && typeof doc.conditional.label !== 'function'
+            ? (doc.conditional.label as ReactNode)
+            : undefined
+
+        if (!existing) {
+          result[condName] = {
+            label: label ?? resolveCondLabel(sheet, condName),
+            descKey,
+            fields: doc.conditional.fields ?? [],
+          }
+        } else {
+          if (!existing.label && label) existing.label = label
+          existing.fields.push(...(doc.conditional.fields ?? []))
+        }
+      }
+    }
+
+    // Ensure every conditional has a label
+    const sheetConditionals = (conditionals as Record<string, unknown>)[
+      sheet
+    ] as Record<string, IConditionalData> | undefined
+    if (sheetConditionals) {
+      for (const condName of Object.keys(sheetConditionals)) {
+        if (!result[condName]) {
+          result[condName] = {
+            label: resolveCondLabel(sheet, condName),
+            descKey: 'desc4',
+            fields: [],
+          }
+        }
+      }
+    }
+
+    return Object.keys(result).length > 0 ? result : undefined
+  }, [sheet])
+}
+
+function DiscSetConditionalCard({
   sheet,
   condEntries,
 }: {
@@ -92,6 +196,7 @@ function DiscSetConditionalRow({
 }) {
   const character = useCharacterContext()!
   const team = useTeam(character.key)
+  const condInfo = useCondInfo(sheet)
 
   const currentValues = useMemo(() => {
     const vals: Record<string, number> = {}
@@ -111,86 +216,157 @@ function DiscSetConditionalRow({
   }, [team, sheet, condEntries])
 
   return (
+    <Box style={cardStyle}>
+      {/* Row 1: icon + set name */}
+      <Flex gap={6} align="center" mb={6}>
+        <img
+          src={discDefIcon(sheet as any)}
+          style={{ width: 24, height: 24, display: 'block', flexShrink: 0 }}
+          alt=""
+        />
+        <Text
+          size="xs"
+          fw={600}
+          style={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {discSetNames[sheet as keyof typeof discSetNames] ?? sheet}
+        </Text>
+      </Flex>
+
+      {/* Rows 2+: toggle under the icon, one conditional per row */}
+      <Flex direction="column" gap={3}>
+        {condEntries.map(([condName, condData]) => {
+          const info = condInfo?.[condName]
+          return (
+            <CondRow
+              key={condName}
+              sheet={sheet}
+              condName={condName}
+              condData={condData}
+              currentValue={currentValues[condName]}
+              label={info?.label}
+              descKey={info?.descKey}
+              fields={info?.fields}
+            />
+          )
+        })}
+      </Flex>
+    </Box>
+  )
+}
+
+function CondRow({
+  sheet,
+  condName,
+  condData,
+  currentValue,
+  label,
+  descKey,
+  fields,
+}: {
+  sheet: string
+  condName: string
+  condData: IConditionalData
+  currentValue: number
+  label?: ReactNode
+  descKey?: string
+  fields?: Field[]
+}) {
+  const character = useCharacterContext()!
+  const outerTag = useContext(TagContext)
+  const tagForFields = useMemo(
+    () => ({ ...outerTag, src: character.key }),
+    [outerTag, character.key]
+  )
+  const row = (
+    <Flex align="center" gap={4}>
+      <Box style={{ flexShrink: 0 }}>
+        <ConditionalInput
+          sheet={sheet}
+          condName={condName}
+          condData={condData}
+          currentValue={currentValue}
+        />
+      </Box>
+      {label && (
+        <Text size="xs" c="dimmed" style={{ lineHeight: 1.3, minWidth: 0 }}>
+          {label}
+        </Text>
+      )}
+    </Flex>
+  )
+
+  return (
     <HoverCard
       width={400}
       position="left"
       withArrow
-      openDelay={300}
-      closeDelay={200}
+      openDelay={200}
+      closeDelay={150}
     >
-      <HoverCard.Target>
-        <Flex gap={defaultGap} align="center" style={{ cursor: 'default' }}>
-          <div style={{ width: conditionalIconWidth, marginRight: 5 }}>
-            <img
-              src={discDefIcon(sheet as any)}
-              style={{
-                width: conditionalIconWidth,
-                height: conditionalIconWidth,
-                display: 'block',
-              }}
-              alt=""
-            />
-          </div>
-          <div
-            style={{
-              width: conditionalNameWidth,
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {discSetNames[sheet as keyof typeof discSetNames] ?? sheet}
-          </div>
-          <Flex
-            style={{ flex: 1 }}
-            gap={defaultGap}
-            justify="flex-end"
-            wrap="wrap"
-          >
-            {condEntries.map(([condName, condData]) => (
-              <ConditionalInput
-                key={condName}
-                sheet={sheet}
-                condName={condName}
-                condData={condData}
-                currentValue={currentValues[condName]}
-              />
-            ))}
-          </Flex>
-        </Flex>
-      </HoverCard.Target>
+      <HoverCard.Target>{row}</HoverCard.Target>
       <HoverCard.Dropdown style={{ fontSize: 13 }}>
         <Text fw={600} mb={4} size="sm">
-          {discSetNames[sheet as keyof typeof discSetNames] ?? sheet}
+          {label}
         </Text>
-        <Text size="xs" fw={600} tt="uppercase" c="dimmed" mb={4}>
-          Set description
-        </Text>
-        <Suspense fallback={null}>
-          <DiscSetDesc sheet={sheet} />
-        </Suspense>
+        {descKey && (
+          <Text size="sm" mb={8}>
+            <Suspense fallback={null}>
+              <GameDesc ns={`disc_${sheet}_gen`} key18={descKey} />
+            </Suspense>
+          </Text>
+        )}
+        {fields && fields.length > 0 && (
+          <Box opacity={currentValue === 0 ? 0.5 : undefined}>
+            {currentValue > 0 && <hr />}
+            <Box mt={4}>
+              <TagContext.Provider value={tagForFields as any}>
+                {fields.map(
+                  (field, i) =>
+                    'fieldRef' in field && (
+                      <TagFieldDisplay
+                        key={i}
+                        field={field}
+                        showZero={currentValue === 0}
+                        rowSx={{
+                          paddingTop: 1,
+                          paddingBottom: 1,
+                          gap: 6,
+                        }}
+                      />
+                    )
+                )}
+              </TagContext.Provider>
+            </Box>
+          </Box>
+        )}
       </HoverCard.Dropdown>
     </HoverCard>
   )
 }
 
-function DiscSetDesc({ sheet }: { sheet: string }) {
-  return (
-    <>
-      <Text size="xs" fw={500} mb={2}>
-        2-Piece
-      </Text>
-      <Text size="xs" c="dimmed" mb={4}>
-        <Translate ns={`disc_${sheet}_gen`} key18="desc2" />
-      </Text>
-      <Text size="xs" fw={500} mb={2}>
-        4-Piece
-      </Text>
-      <Text size="xs" c="dimmed" mb={4}>
-        <Translate ns={`disc_${sheet}_gen`} key18="desc4" />
-      </Text>
-    </>
-  )
+/**
+ * Resolve a human-readable label for a disc set conditional by trying
+ * several i18n key patterns in the disc set's locale namespace.
+ */
+function resolveCondLabel(sheet: string, condName: string): string {
+  const ns = `disc_${sheet}`
+  // Try the raw key first
+  let translated = i18n.t(condName, { ns })
+  if (typeof translated === 'string' && translated !== condName)
+    return translated
+  // Try common prefixes used in disc set locale files
+  for (const prefix of ['set4_cond_', 'set2_cond_', 'cond']) {
+    const key = `${prefix}${condName}`
+    translated = i18n.t(key, { ns })
+    if (typeof translated === 'string' && translated !== key) return translated
+  }
+  // Fallback: format the raw name
+  return condName.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
 }
 
 function ConditionalInput({
@@ -226,7 +402,6 @@ function ConditionalInput({
         checked={currentValue > 0}
         onChange={(e) => setValue(e.currentTarget.checked ? 1 : 0)}
         size="xs"
-        style={{ width: conditionalInputWidth }}
       />
     )
   }
@@ -244,7 +419,7 @@ function ConditionalInput({
         value={String(currentValue)}
         onChange={(v) => setValue(v != null ? Number(v) : 0)}
         size="xs"
-        style={{ width: conditionalInputWidth }}
+        style={{ width: 50 }}
         comboboxProps={{ keepMounted: false, width: 160 }}
       />
     )

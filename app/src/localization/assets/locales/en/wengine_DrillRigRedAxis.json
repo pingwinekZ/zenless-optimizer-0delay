@@ -1,3 +1,3 @@
 {
-  "cond": "EX Special Attack or Chain Attack used"
+  "exSpecialOrChainCond": "EX Special / Chain Used · DMG"
 }

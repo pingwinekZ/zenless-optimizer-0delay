@@ -1,13 +1,7 @@
 import { subscript } from '@zenless-optimizer/pando/engine'
 import type { WengineKey } from '../../../../consts'
 import { mappedStats } from '../../../../stats'
-import {
-  allBoolConditionals,
-  own,
-  ownBuff,
-  registerBuff,
-  teamBuff,
-} from '../../util'
+import { own, ownBuff, registerBuff } from '../../util'
 import {
   cmpSpecialtyAndEquipped,
   entriesForWengine,
@@ -18,8 +12,6 @@ import {
 const key: WengineKey = 'SpringEmbrace'
 const dm = mappedStats.wengine[key]
 const { phase } = own.wengine
-
-const { when_attacked } = allBoolConditionals(key)
 
 const sheet = registerWengine(
   key,
@@ -33,19 +25,6 @@ const sheet = registerWengine(
       cmpSpecialtyAndEquipped(key, subscript(phase, dm.dmg_red_))
     ),
     showSpecialtyAndEquipped(key)
-  ),
-
-  // Conditional buffs
-  registerBuff(
-    'cond_enerRegen_',
-    teamBuff.combat.enerRegen_.add(
-      cmpSpecialtyAndEquipped(
-        key,
-        when_attacked.ifOn(subscript(phase, dm.enerRegen_))
-      )
-    ),
-    showSpecialtyAndEquipped(key),
-    true
   )
 )
 export default sheet
