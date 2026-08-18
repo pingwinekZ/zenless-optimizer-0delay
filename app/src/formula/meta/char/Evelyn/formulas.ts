@@ -1021,6 +1021,7 @@ export const formulas = {
       sheet: 'Evelyn',
       attribute: 'fire',
       skillType1: 'chainSkill',
+      damageType1: 'chain',
       name: 'm6_follow_up_dmg_',
     },
   },

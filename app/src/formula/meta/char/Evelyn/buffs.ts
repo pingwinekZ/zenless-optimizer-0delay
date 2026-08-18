@@ -1,5 +1,18 @@
 // WARNING: Generated file, do not modify
 export const buffs = {
+  m6_follow_up_dmg_: {
+    sheet: 'Evelyn',
+    name: 'm6_follow_up_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Evelyn',
+      skillType2: 'chainSkill',
+      name: 'm6_follow_up_dmg_',
+    },
+    team: false,
+  },
   core_crit_: {
     sheet: 'Evelyn',
     name: 'core_crit_',

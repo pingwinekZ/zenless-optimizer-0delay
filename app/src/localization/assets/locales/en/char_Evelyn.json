@@ -1,13 +1,13 @@
 {
-  "core_header": "Binding Seal · CRIT Rate",
-  "coreCond": "Upon entering Binding Seal",
-  "ability_header": "Chain & Ultimate DMG",
-  "m1_header": "DEF Ignore",
-  "m1Cond": "When Evelyn attacks Bound enemies",
+  "bindingSealCond": "Binding Seal · CR",
+  "enemyBoundCond": "Bound · DEF Ignore",
+  "m4ShieldExistsCond": "Shield · CD",
+  "ability_header": "DMG",
+  "ability_chain_dmg_": "Chain DMG",
+  "ability_ult_dmg_": "Ultimate DMG",
   "m2_header": "ATK",
-  "m4_header": "Shield & CRIT DMG",
+  "m4_header": "Shield",
   "m4_shield": "Shield Strength",
-  "m4Cond": "While shield exists",
-  "m6_header": "Follow-up DMG",
-  "m6_follow_up_dmg": "Lunalux Garrote follow-up attack DMG"
+  "m6_header": "Additional DMG",
+  "m6_follow_up_dmg": "Lunalux Garrote Additional DMG"
 }
