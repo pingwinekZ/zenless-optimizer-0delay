@@ -13,6 +13,7 @@ import { TagContext } from '@zenless-optimizer/game-opt/formula-ui'
 import type { Field } from '@zenless-optimizer/game-opt/sheet-ui'
 import { TagFieldDisplay } from '@zenless-optimizer/game-opt/sheet-ui'
 import {
+  isValidElement,
   type ReactNode,
   Suspense,
   useContext,
@@ -109,6 +110,7 @@ function FormSetConditionalsContent() {
 
 type CondInfoEntry = {
   label: ReactNode
+  description?: ReactNode
   descKey: string
   fields: Field[]
 }
@@ -128,6 +130,7 @@ function useCondInfo(sheet: string) {
               conditional?: {
                 metadata: { name: string }
                 label?: unknown
+                description?: unknown
                 fields?: Field[]
               }
             }>
@@ -153,15 +156,23 @@ function useCondInfo(sheet: string) {
           doc.conditional.label && typeof doc.conditional.label !== 'function'
             ? (doc.conditional.label as ReactNode)
             : undefined
+        const description =
+          doc.conditional.description &&
+          typeof doc.conditional.description !== 'function'
+            ? (doc.conditional.description as ReactNode)
+            : undefined
 
         if (!existing) {
           result[condName] = {
             label: label ?? resolveCondLabel(sheet, condName),
+            description,
             descKey,
             fields: doc.conditional.fields ?? [],
           }
         } else {
           if (!existing.label && label) existing.label = label
+          if (!existing.description && description)
+            existing.description = description
           existing.fields.push(...(doc.conditional.fields ?? []))
         }
       }
@@ -249,6 +260,7 @@ function DiscSetConditionalCard({
               condData={condData}
               currentValue={currentValues[condName]}
               label={info?.label}
+              description={info?.description}
               descKey={info?.descKey}
               fields={info?.fields}
             />
@@ -265,6 +277,7 @@ function CondRow({
   condData,
   currentValue,
   label,
+  description,
   descKey,
   fields,
 }: {
@@ -273,6 +286,7 @@ function CondRow({
   condData: IConditionalData
   currentValue: number
   label?: ReactNode
+  description?: ReactNode
   descKey?: string
   fields?: Field[]
 }) {
@@ -313,13 +327,11 @@ function CondRow({
         <Text fw={600} mb={4} size="sm">
           {label}
         </Text>
-        {descKey && (
-          <Text size="sm" mb={8}>
-            <Suspense fallback={null}>
-              <GameDesc ns={`disc_${sheet}_gen`} key18={descKey} />
-            </Suspense>
-          </Text>
-        )}
+        <CondDescription
+          sheet={sheet}
+          description={description}
+          descKey={descKey}
+        />
         {fields && fields.length > 0 && (
           <Box opacity={currentValue === 0 ? 0.5 : undefined}>
             {currentValue > 0 && <hr />}
@@ -346,6 +358,61 @@ function CondRow({
         )}
       </HoverCard.Dropdown>
     </HoverCard>
+  )
+}
+
+/**
+ * Resolve the i18n key from a `ch(key)` Translate element.
+ */
+function translateKey(node: ReactNode): string | undefined {
+  if (
+    isValidElement(node) &&
+    node.props &&
+    typeof node.props === 'object' &&
+    'key18' in node.props
+  )
+    return (node.props as { key18?: string }).key18
+  return undefined
+}
+
+/**
+ * Render a conditional's description. Sliced descriptions are locale keys
+ * rendered through GameDesc (full GameText formatting incl. green number
+ * highlighting); unsliced sets fall back to the set's full desc2/desc4 text.
+ */
+function CondDescription({
+  sheet,
+  description,
+  descKey,
+}: {
+  sheet: string
+  description?: ReactNode
+  descKey?: string
+}) {
+  const descKey18 = description ? translateKey(description) : undefined
+  if (descKey18) {
+    return (
+      <Text size="sm" mb={8}>
+        <Suspense fallback={null}>
+          <GameDesc ns={`disc_${sheet}`} key18={descKey18} />
+        </Suspense>
+      </Text>
+    )
+  }
+  if (description) {
+    return (
+      <Text size="sm" mb={8} style={{ whiteSpace: 'pre-wrap' }}>
+        {description}
+      </Text>
+    )
+  }
+  if (!descKey) return null
+  return (
+    <Text size="sm" mb={8}>
+      <Suspense fallback={null}>
+        <GameDesc ns={`disc_${sheet}_gen`} key18={descKey} />
+      </Suspense>
+    </Text>
   )
 }
 

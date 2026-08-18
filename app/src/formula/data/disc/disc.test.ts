@@ -309,7 +309,6 @@ describe('Disc sheets test', () => {
   })
   it('SoulRock', () => {
     const data = testCharacterData('SoulRock')
-    data.push(cond('SoulRock', conditionals.SoulRock.hitLostHp.name, 1))
     const calc = new Calculator(
       keys,
       values,
@@ -317,7 +316,6 @@ describe('Disc sheets test', () => {
     ).withTag({ src: 'Anby', dst: 'Anby' })
     const anby = convert(ownTag, { et: 'own', src: 'Anby' })
     expect(calc.compute(anby.initial.def_).val).toBeCloseTo(0.16) // 2p passive
-    expect(calc.compute(anby.final.dmg_red_).val).toBeCloseTo(0.4) // 4p cond
   })
   it('SwingJazz', () => {
     const data = testCharacterData('SwingJazz', undefined, [

@@ -88,7 +88,10 @@ export function CharacterSingleSelectionModal({
         },
       }}
     >
-      <Flex direction="column" style={{ maxHeight: '100%', overflow: 'hidden' }}>
+      <Flex
+        direction="column"
+        style={{ maxHeight: '100%', overflow: 'hidden' }}
+      >
         {/* ─── Filter bar ─── */}
         <Box p="md" pb={0}>
           <Flex gap="sm" wrap="wrap" align="center">

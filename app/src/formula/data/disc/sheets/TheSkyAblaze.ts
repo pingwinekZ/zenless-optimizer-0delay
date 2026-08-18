@@ -1,4 +1,4 @@
-import { cmpGE } from '@zenless-optimizer/pando/engine'
+import { cmpEq, cmpGE } from '@zenless-optimizer/pando/engine'
 import type { DiscSetKey } from '../../../../consts'
 import {
   allBoolConditionals,
@@ -14,7 +14,7 @@ const key: DiscSetKey = 'TheSkyAblaze'
 const discCount = own.common.count.sheet(key)
 const showCond4Set = cmpGE(discCount, 4, 'infer', '')
 
-const { ether_crit_dmg_active, ex_ult_atk_active } = allBoolConditionals(key)
+const { ex_ult_atk_active } = allBoolConditionals(key)
 
 const sheet = registerDisc(
   key,
@@ -25,7 +25,7 @@ const sheet = registerDisc(
   registerBuff(
     'set4_ether_crit_dmg_',
     ownBuff.combat.crit_dmg_.add(
-      cmpGE(discCount, 4, ether_crit_dmg_active.ifOn(percent(0.3)))
+      cmpEq(own.char.attribute, 'ether', cmpGE(discCount, 4, percent(0.3)))
     ),
     showCond4Set
   ),

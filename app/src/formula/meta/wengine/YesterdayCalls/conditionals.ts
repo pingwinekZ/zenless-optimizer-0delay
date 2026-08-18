@@ -1,6 +1,5 @@
 // WARNING: Generated file, do not modify
 export const conditionals = {
-  offField: { sheet: 'YesterdayCalls', name: 'offField', type: 'bool' },
   physExSpecialUsed: {
     sheet: 'YesterdayCalls',
     name: 'physExSpecialUsed',

@@ -34,16 +34,19 @@ const sheet: UISheet<'2' | '4'> = {
         type: 'conditional',
         conditional: {
           label: ch('set4_cond_inEtherVeil'),
+          description: ch('set4_cond_inEtherVeil_desc'),
           metadata: cond.inEtherVeil,
+          fields: [tagToTagField(buff.set4_inVeil_crit_.tag)],
         },
       },
       {
         type: 'conditional',
         conditional: {
           label: ch('set4_cond_activateExtendVeil'),
+          description: ch('set4_cond_activateExtendVeil_desc'),
           metadata: cond.activateExtendVeil,
           fields: [
-            tagToTagField(buff.set4_crit_.tag),
+            tagToTagField(buff.set4_activate_crit_.tag),
             tagToTagField(buff.set4_atk_.tag),
           ],
         },

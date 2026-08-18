@@ -38,6 +38,7 @@ const sheet: UISheet<'2' | '4'> = {
         type: 'conditional',
         conditional: {
           label: ch('set4_cond'),
+          description: ch('set4_cond_desc'),
           metadata: cond.apply_or_trigger,
           fields: [tagToTagField(buff.set4_cond.tag)],
         },

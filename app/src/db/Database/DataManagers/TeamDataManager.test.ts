@@ -149,7 +149,7 @@ describe('TeamDataManager', () => {
           bonusStats: [],
           conditionals: [
             {
-              sheet: 'FeatheredFate',
+              sheet: 'HormonePunk',
               src: mainKey,
               dst: null,
               condKey: 'entering_combat',
@@ -166,7 +166,7 @@ describe('TeamDataManager', () => {
     const result = teams['validate'](team, mainKey)
     const conds = result?.frames[0]?.conditionals
     const disabled = conds?.find(
-      (c) => c.sheet === 'FeatheredFate' && c.condKey === 'entering_combat'
+      (c) => c.sheet === 'HormonePunk' && c.condKey === 'entering_combat'
     )
     expect(disabled?.condValue).toBe(0)
     expect(conds?.length).toBeGreaterThan(1)
@@ -198,7 +198,7 @@ describe('TeamDataManager', () => {
     const conds = reloaded.teams.get(mainKey)?.frames[0]?.conditionals
     expect(conds?.length).toBeGreaterThan(0)
     expect(
-      conds?.some((c) => c.sheet === 'FeatheredFate' && c.condValue > 0)
+      conds?.some((c) => c.sheet === 'HormonePunk' && c.condValue > 0)
     ).toBe(true)
   })
 })

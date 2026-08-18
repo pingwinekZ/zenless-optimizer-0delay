@@ -25,18 +25,6 @@ export const buffs = {
     },
     team: false,
   },
-  offFieldEnerRegen: {
-    sheet: 'ChiefSidekick',
-    name: 'offFieldEnerRegen',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'enerRegen',
-      sheet: 'ChiefSidekick',
-      name: 'offFieldEnerRegen',
-    },
-    team: false,
-  },
   teamDmg_: {
     sheet: 'ChiefSidekick',
     name: 'teamDmg_',

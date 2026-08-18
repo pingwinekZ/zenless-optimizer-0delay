@@ -8,5 +8,4 @@ export const conditionals = {
     min: 0,
     max: 2,
   },
-  offField: { sheet: 'HellfireGears', name: 'offField', type: 'bool' },
 } as const

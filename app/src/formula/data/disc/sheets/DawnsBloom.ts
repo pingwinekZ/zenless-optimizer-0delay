@@ -1,4 +1,4 @@
-import { cmpEq, cmpGE } from '@zenless-optimizer/pando/engine'
+import { cmpEq, cmpGE, sum } from '@zenless-optimizer/pando/engine'
 import type { DiscSetKey } from '../../../../consts'
 import {
   allBoolConditionals,
@@ -46,6 +46,28 @@ const sheet = registerDisc(
       )
     ),
     showCond4Set
+  ),
+  // Display-only: passive + conditional combined (for the conditional field)
+  registerBuff(
+    'set4_total_basic_dmg_',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'basic',
+      cmpGE(
+        discCount,
+        4,
+        sum(
+          percent(0.2),
+          cmpEq(
+            own.char.specialty,
+            'attack',
+            exSpecial_ult_used.ifOn(percent(0.2))
+          )
+        )
+      )
+    ),
+    showCond4Set,
+    false,
+    false
   )
 )
 export default sheet

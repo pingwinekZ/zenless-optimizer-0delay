@@ -1,4 +1,4 @@
 {
-  "set4_ether_crit_cond": "Equipper is an Ether attribute Agent",
-  "set4_ex_ult_atk_cond": "EX Special Attack or Ultimate used"
+  "set4_ex_ult_atk_cond": "EX Special / Ultimate Used · ATK",
+  "set4_ex_ult_atk_cond_desc": "When the equipper uses an <ct color=#FFFFFF>EX Special Attack</ct> or <ct color=#FFFFFF>Ultimate</ct>, their ATK increases by 10% for 30s. Repeated triggers reset the duration."
 }

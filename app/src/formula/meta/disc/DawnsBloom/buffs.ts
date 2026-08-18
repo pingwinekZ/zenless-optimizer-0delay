@@ -39,4 +39,17 @@ export const buffs = {
     },
     team: false,
   },
+  set4_total_basic_dmg_: {
+    sheet: 'DawnsBloom',
+    name: 'set4_total_basic_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'DawnsBloom',
+      damageType1: 'basic',
+      name: 'set4_total_basic_dmg_',
+    },
+    team: false,
+  },
 } as const

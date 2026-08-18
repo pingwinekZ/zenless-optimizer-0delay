@@ -13,15 +13,27 @@ export const buffs = {
     },
     team: false,
   },
-  set4_crit_: {
+  set4_inVeil_crit_: {
     sheet: 'WhiteWaterBallad',
-    name: 'set4_crit_',
+    name: 'set4_inVeil_crit_',
     tag: {
       et: 'display',
       qt: 'combat',
       q: 'crit_',
       sheet: 'WhiteWaterBallad',
-      name: 'set4_crit_',
+      name: 'set4_inVeil_crit_',
+    },
+    team: false,
+  },
+  set4_activate_crit_: {
+    sheet: 'WhiteWaterBallad',
+    name: 'set4_activate_crit_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'crit_',
+      sheet: 'WhiteWaterBallad',
+      name: 'set4_activate_crit_',
     },
     team: false,
   },

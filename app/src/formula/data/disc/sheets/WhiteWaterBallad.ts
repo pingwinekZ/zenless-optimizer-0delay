@@ -1,4 +1,4 @@
-import { cmpEq, cmpGE, sum } from '@zenless-optimizer/pando/engine'
+import { cmpEq, cmpGE } from '@zenless-optimizer/pando/engine'
 import type { DiscSetKey } from '../../../../consts'
 import {
   allBoolConditionals,
@@ -23,18 +23,22 @@ const sheet = registerDisc(
 
   // Conditional buffs
   registerBuff(
-    'set4_crit_',
+    'set4_inVeil_crit_',
+    ownBuff.combat.crit_.add(
+      cmpGE(discCount, 4, inEtherVeil.ifOn(percent(0.1)))
+    ),
+    showCond4Set
+  ),
+  registerBuff(
+    'set4_activate_crit_',
     ownBuff.combat.crit_.add(
       cmpGE(
         discCount,
         4,
-        sum(
-          inEtherVeil.ifOn(percent(0.1)),
-          cmpEq(
-            own.char.specialty,
-            'attack',
-            activateExtendVeil.ifOn(percent(0.1))
-          )
+        cmpEq(
+          own.char.specialty,
+          'attack',
+          activateExtendVeil.ifOn(percent(0.1))
         )
       )
     ),
@@ -43,7 +47,15 @@ const sheet = registerDisc(
   registerBuff(
     'set4_atk_',
     ownBuff.combat.atk_.add(
-      cmpEq(own.char.specialty, 'attack', activateExtendVeil.ifOn(percent(0.1)))
+      cmpGE(
+        discCount,
+        4,
+        cmpEq(
+          own.char.specialty,
+          'attack',
+          activateExtendVeil.ifOn(percent(0.1))
+        )
+      )
     ),
     showCond4Set
   )

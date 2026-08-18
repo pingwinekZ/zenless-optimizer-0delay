@@ -44,7 +44,9 @@ export function FormRow({
         <Accordion.Item value={id}>
           <Accordion.Control>{label ?? t(`${id}` as never)}</Accordion.Control>
           <Accordion.Panel>
-            <Flex gap={10} wrap="wrap">{children}</Flex>
+            <Flex gap={10} wrap="wrap">
+              {children}
+            </Flex>
           </Accordion.Panel>
         </Accordion.Item>
       </Accordion>

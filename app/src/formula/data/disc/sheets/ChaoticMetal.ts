@@ -1,4 +1,4 @@
-import { cmpGE, prod } from '@zenless-optimizer/pando/engine'
+import { cmpGE, prod, sum } from '@zenless-optimizer/pando/engine'
 import type { DiscSetKey } from '../../../../consts'
 import {
   allNumConditionals,
@@ -32,6 +32,20 @@ const sheet = registerDisc(
       cmpGE(discCount, 4, prod(trigger_corruption, percent(0.055)))
     ),
     showCond4Set
+  ),
+  // Display-only: passive + conditional combined (for the conditional field)
+  registerBuff(
+    'set4_total_crit_dmg_',
+    ownBuff.combat.crit_dmg_.add(
+      cmpGE(
+        discCount,
+        4,
+        sum(percent(0.2), prod(trigger_corruption, percent(0.055)))
+      )
+    ),
+    showCond4Set,
+    false,
+    false
   )
 )
 export default sheet

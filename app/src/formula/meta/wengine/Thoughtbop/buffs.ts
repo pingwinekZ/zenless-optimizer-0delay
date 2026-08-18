@@ -1,17 +1,5 @@
 // WARNING: Generated file, do not modify
 export const buffs = {
-  cond_enerRegen: {
-    sheet: 'Thoughtbop',
-    name: 'cond_enerRegen',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'enerRegen',
-      sheet: 'Thoughtbop',
-      name: 'cond_enerRegen',
-    },
-    team: false,
-  },
   team_common_dmg_: {
     sheet: 'Thoughtbop',
     name: 'team_common_dmg_',

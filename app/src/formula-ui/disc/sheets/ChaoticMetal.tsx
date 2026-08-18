@@ -39,7 +39,7 @@ const sheet: UISheet<'2' | '4'> = {
         conditional: {
           label: ch('set4_cond'),
           metadata: cond.trigger_corruption,
-          fields: [tagToTagField(buff.set4_cond_trigger_corruption.tag)],
+          fields: [tagToTagField(buff.set4_total_crit_dmg_.tag)],
         },
       },
     ],

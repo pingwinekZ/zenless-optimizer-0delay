@@ -159,7 +159,11 @@ function SelectedBuildDiscs({
           disc={discs[slotKey]}
           onClick={() => handleDiscClick(slotKey)}
           effectiveStats={effectiveStats}
-          style={{ width: '100%', height: 'auto', aspectRatio: `${discCardW} / ${discCardH}` }}
+          style={{
+            width: '100%',
+            height: 'auto',
+            aspectRatio: `${discCardW} / ${discCardH}`,
+          }}
         />
       ))}
     </Flex>

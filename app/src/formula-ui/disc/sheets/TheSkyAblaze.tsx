@@ -31,17 +31,14 @@ const sheet: UISheet<'2' | '4'> = {
         text: chg('desc4'),
       },
       {
-        type: 'conditional',
-        conditional: {
-          label: ch('set4_ether_crit_cond'),
-          metadata: cond.ether_crit_dmg_active,
-          fields: [tagToTagField(buff.set4_ether_crit_dmg_.tag)],
-        },
+        type: 'fields',
+        fields: [tagToTagField(buff.set4_ether_crit_dmg_.tag)],
       },
       {
         type: 'conditional',
         conditional: {
           label: ch('set4_ex_ult_atk_cond'),
+          description: ch('set4_ex_ult_atk_cond_desc'),
           metadata: cond.ex_ult_atk_active,
           fields: [tagToTagField(buff.set4_ex_ult_atk_.tag)],
         },

@@ -2,11 +2,11 @@ import type { UISheet } from '@zenless-optimizer/game-opt/sheet-ui'
 import { discDefIcon } from '../../../assets'
 import type { DiscSetKey } from '../../../consts'
 import { KingOfTheSummit } from '../../../formula'
-import { st, tagToTagField, trans } from '../../util'
+import { tagToTagField, trans } from '../../util'
 import { Set2Display, Set4Display } from '../components'
 
 const key: DiscSetKey = 'KingOfTheSummit'
-const [chg, _ch] = trans('disc', key)
+const [chg, ch] = trans('disc', key)
 const icon = discDefIcon(key)
 const cond = KingOfTheSummit.conditionals
 const buff = KingOfTheSummit.buffs
@@ -38,10 +38,7 @@ const sheet: UISheet<'2' | '4'> = {
         type: 'conditional',
         conditional: {
           metadata: cond.launchExSpecialOrChain,
-          label: st('uponLaunch.2', {
-            val1: '$t(skills.exSpecial)',
-            val2: '$t(skills.chain)',
-          }),
+          label: ch('set4_cond'),
           fields: [
             tagToTagField(buff.set4_team_launchExSpecialOrChain_crit_dmg_.tag),
           ],

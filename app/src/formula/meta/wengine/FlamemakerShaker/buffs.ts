@@ -1,17 +1,5 @@
 // WARNING: Generated file, do not modify
 export const buffs = {
-  enerRegen: {
-    sheet: 'FlamemakerShaker',
-    name: 'enerRegen',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'enerRegen',
-      sheet: 'FlamemakerShaker',
-      name: 'enerRegen',
-    },
-    team: false,
-  },
   common_dmg_: {
     sheet: 'FlamemakerShaker',
     name: 'common_dmg_',

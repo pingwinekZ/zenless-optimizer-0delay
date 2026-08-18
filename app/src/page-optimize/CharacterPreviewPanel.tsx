@@ -49,7 +49,11 @@ export function CharacterPreviewPanel({
     : 'var(--layer-2)'
 
   return (
-    <Flex direction="column" gap={cardGap} style={{ flex: 1, minWidth: containerMinW }}>
+    <Flex
+      direction="column"
+      gap={cardGap}
+      style={{ flex: 1, minWidth: containerMinW }}
+    >
       <CharacterSingleSelectionModal
         show={showCharModal}
         onHide={onHideCharModal}

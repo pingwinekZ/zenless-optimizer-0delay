@@ -2,11 +2,11 @@ import type { UISheet } from '@zenless-optimizer/game-opt/sheet-ui'
 import { discDefIcon } from '../../../assets'
 import type { DiscSetKey } from '../../../consts'
 import { ShiningAria } from '../../../formula'
-import { st, tagToTagField, trans } from '../../util'
+import { tagToTagField, trans } from '../../util'
 import { Set2Display, Set4Display } from '../components'
 
 const key: DiscSetKey = 'ShiningAria'
-const [chg, _ch] = trans('disc', key)
+const [chg, ch] = trans('disc', key)
 const icon = discDefIcon(key)
 const cond = ShiningAria.conditionals
 const buff = ShiningAria.buffs
@@ -33,7 +33,8 @@ const sheet: UISheet<'2' | '4'> = {
       {
         type: 'conditional',
         conditional: {
-          label: st('uponHit.1', { val1: '$t(skills.basic)' }),
+          label: ch('set4_cond'),
+          description: ch('set4_cond_desc'),
           metadata: cond.enemyHit,
           fields: [
             tagToTagField(buff.set4_anomProf.tag),

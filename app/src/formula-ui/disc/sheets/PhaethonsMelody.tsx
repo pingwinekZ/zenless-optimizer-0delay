@@ -34,6 +34,7 @@ const sheet: UISheet<'2' | '4'> = {
         type: 'conditional',
         conditional: {
           label: ch('set4_cond_squad_use_ex'),
+          description: ch('set4_cond_squad_use_ex_desc'),
           metadata: cond.squad_use_ex,
           fields: [tagToTagField(buff.set4_squad_anomProf.tag)],
         },
@@ -42,6 +43,7 @@ const sheet: UISheet<'2' | '4'> = {
         type: 'conditional',
         conditional: {
           label: ch('set4_cond_not_char_use_ex'),
+          description: ch('set4_cond_not_char_use_ex_desc'),
           metadata: cond.not_char_use_ex,
           fields: [tagToTagField(buff.set4_not_self_ether_.tag)],
         },
