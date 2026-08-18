@@ -349,10 +349,12 @@ export function SkillGameDesc({
   characterKey,
   ns,
   key18,
+  paragraph,
 }: {
   characterKey: CharacterKey
   ns: string
   key18: string
+  paragraph?: number
 }) {
   const char = useCharacter(characterKey)
   const skillLevels = useMemo(() => {
@@ -400,14 +402,20 @@ export function SkillGameDesc({
   const paragraphs = Object.values(obj as Record<string, string>).filter(
     (v): v is string => typeof v === 'string'
   )
+  const filteredParagraphs =
+    paragraph !== undefined
+      ? paragraphs.slice(paragraph, paragraph + 1)
+      : paragraphs
   return (
     <>
-      {paragraphs.map((para, i) => {
+      {filteredParagraphs.map((para, i) => {
         const processed = processCalcTokens(para, skillLevels)
         return (
           <div
             key={i}
-            style={{ marginBottom: i < paragraphs.length - 1 ? 8 : 0 }}
+            style={{
+              marginBottom: i < filteredParagraphs.length - 1 ? 8 : 0,
+            }}
           >
             <GameText text={processed} />
           </div>

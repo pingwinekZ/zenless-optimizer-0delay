@@ -46,7 +46,7 @@ export const buffs = {
       sheet: 'AstraYao',
       name: 'm1_resRed_',
     },
-    team: false,
+    team: true,
   },
   m4_attack_quickAssist_extraDmg: {
     sheet: 'AstraYao',

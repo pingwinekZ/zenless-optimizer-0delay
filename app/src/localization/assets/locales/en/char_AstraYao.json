@@ -1,15 +1,15 @@
 {
-  "idyllic_cadenzaCond": "Idyllic Cadenza",
+  "idyllic_cadenzaCond": "Idyllic Cadenza · DMG & CD",
   "ult_heal": "Healing",
-  "m1Cond": "RES shred",
-  "m2_atkBuffInc_": "ATK%",
-  "m2_maxIncrease": "ATK Cap",
-  "m6_mv_mult_": "Tremolo and Tone Clusters DMG",
-  "m6_crit_": "CRIT Rate",
-  "m6Cond": "CR",
+  "m1Cond": "Attack Hit · RES Reduction",
+  "m6_mv_mult_": "Chord DMG",
+  "m6_crit_": "Chord CRIT Rate",
+  "m6Cond": "Precise Assist · CR",
   "m6_capriccio_crit_": "Capriccio CRIT Rate",
-  "coreCond": "ATK",
-  "m2_header": "ATK",
-  "m4_dmg": "DMG",
-  "m6_header": "CR & DMG"
+  "coreCond": "Graceful Andante · ATK",
+  "m6CadenzaCond": "Idyllic Cadenza · DMG & CR",
+  "m4CadenzaCond": "Idyllic Cadenza · DMG / AM / Daze",
+  "m4_attack_dmg": "Attack · Extra DMG",
+  "m4_anomaly_anomBuildup_": "Anomaly · Anomaly Buildup",
+  "m4_stun_dazeInc_": "Stun · Daze"
 }
