@@ -335,6 +335,16 @@ function RoaringFurnaceCondDesc({ phase }: { phase: number }) {
   return <GameText text={condDesc} />
 }
 
+/** DEF Reduction portion of SpectralGaze's phase description (first two sentences). */
+function SpectralGazeDefRedDesc({ phase }: { phase: number }) {
+  const { t } = useTranslation('wengine_SpectralGaze_gen')
+  const fullDesc = t(`wengine_SpectralGaze_gen:phaseDescs.${phase - 1}`)
+  const marker = 'Passive effects of the same name do not stack.'
+  const idx = fullDesc.indexOf(marker)
+  if (idx === -1) return <GameText text={fullDesc} />
+  return <GameText text={fullDesc.slice(0, idx + marker.length)} />
+}
+
 /** CRIT DMG portion of MyriadEclipse's phase description (first sentence). */
 const MyriadEclipseCritDesc = firstSentenceDesc('wengine_MyriadEclipse_gen')
 
@@ -590,16 +600,6 @@ const SeveredInnocenceCondDesc = fromMarkerDesc(
   'wengine_SeveredInnocence_gen',
   'When the equipper lands'
 )
-
-/** DEF Reduction portion of SpectralGaze's phase description (first two sentences). */
-function SpectralGazeDefRedDesc({ phase }: { phase: number }) {
-  const { t } = useTranslation('wengine_SpectralGaze_gen')
-  const fullDesc = t(`wengine_SpectralGaze_gen:phaseDescs.${phase - 1}`)
-  const marker = 'Passive effects of the same name do not stack.'
-  const idx = fullDesc.indexOf(marker)
-  if (idx === -1) return <GameText text={fullDesc} />
-  return <GameText text={fullDesc.slice(0, idx + marker.length)} />
-}
 
 /** Conditional portion of SpectralGaze's phase description (from "When this effect is triggered" to end). */
 const SpectralGazeSpiritLockDesc = fromMarkerDesc(

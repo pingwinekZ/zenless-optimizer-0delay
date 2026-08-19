@@ -1,5 +1,6 @@
 import {
   cmpGE,
+  max,
   min,
   prod,
   subscript,
@@ -35,9 +36,7 @@ const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
-const { aftershock_hit } = allBoolConditionals(key, undefined, {
-  aftershock_hit: 1,
-})
+const { aftershock_hit } = allBoolConditionals(key, undefined)
 const { hunters_gaze } = allNumConditionals(
   key,
   true,
@@ -49,6 +48,15 @@ const { hunters_gaze } = allNumConditionals(
 
 const m6_armor_break_rounds_dmg_ = ownBuff.combat.common_dmg_.add(
   cmpGE(char.mindscape, 6, dm.m6.round_dmg_)
+)
+
+// Core passive Stun DMG Multiplier increase. Applies even if the target
+// isn't stunned, so it's added to both the stunned and unstunned multipliers.
+const core_stun_ = aftershock_hit.ifOn(
+  sum(
+    subscript(char.core, dm.core.stun_),
+    cmpGE(char.mindscape, 1, dm.m1.stun_)
+  )
 )
 
 const sheet = register(
@@ -132,6 +140,26 @@ const sheet = register(
     { ...baseTag },
     cmpGE(char.mindscape, 4, percent(dm.m4.daze))
   ),
+  registerBuff(
+    'm4_disconnect_dmg',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'elemental',
+      cmpGE(char.mindscape, 4, percent(dm.m4.dmg))
+    ),
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff(
+    'm4_disconnect_daze',
+    ownBuff.combat.dazeInc_.addWithDmgType(
+      'elemental',
+      cmpGE(char.mindscape, 4, percent(dm.m4.daze))
+    ),
+    undefined,
+    undefined,
+    false
+  ),
   ...customDmg(
     'm6_armor_break_rounds_dmg',
     { ...baseTag },
@@ -145,11 +173,19 @@ const sheet = register(
   ),
 
   // Buffs
+  // The core passive buff is an enemy debuff that benefits the whole squad,
+  // so it's registered as a team buff for the teammate view
   registerBuff(
     'core_stun_',
-    enemyDebuff.common.stun_.add(
-      aftershock_hit.ifOn(subscript(char.core, dm.core.stun_))
-    )
+    enemyDebuff.common.stun_.add(core_stun_),
+    undefined,
+    true
+  ),
+  registerBuff(
+    'core_stun_unstun_',
+    enemyDebuff.common.unstun_.add(core_stun_),
+    undefined,
+    true
   ),
   registerBuff(
     'ability_aftershock_dazeInc_',
@@ -162,21 +198,17 @@ const sheet = register(
         ),
         2,
         min(
-          prod(
-            sum(own.final.crit_, percent(-dm.ability.crit_threshold_)),
-            percent(dm.ability.aftershock_dazeInc_),
-            100
+          max(
+            0,
+            prod(
+              sum(own.final.crit_, percent(-dm.ability.crit_threshold_)),
+              percent(dm.ability.aftershock_dazeInc_),
+              100
+            )
           ),
           percent(dm.ability.max_dazeInc_)
         )
       )
-    )
-  ),
-  registerBuff(
-    'm1_stun_',
-    enemyDebuff.common.stun_.addWithDmgType(
-      'aftershock',
-      cmpGE(char.mindscape, 1, aftershock_hit.ifOn(dm.m1.stun_))
     )
   ),
   registerBuff(
@@ -188,7 +220,7 @@ const sheet = register(
     true
   ),
   registerBuff(
-    'm6_armor_break_rounds_dmg_',
+    'm6_armor_break_rounds_dmg',
     m6_armor_break_rounds_dmg_,
     undefined,
     undefined,

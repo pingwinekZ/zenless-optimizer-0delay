@@ -12,6 +12,7 @@ import {
 } from '@zenless-optimizer/game-opt/sheet-ui'
 import type { ReactNode } from 'react'
 import { memo, useContext, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   type AttributeKey,
   type CharacterKey,
@@ -25,11 +26,15 @@ import {
 } from '../../db-ui'
 import { buffs, conditionals } from '../../formula'
 import { charSheets, TagDisplay } from '../../formula-ui'
-import { SkillGameDesc } from '../../formula-ui/char/sheetUtil'
+import {
+  EffectiveMindscapeContext,
+  SkillGameDesc,
+} from '../../formula-ui/char/sheetUtil'
 import { buffAppliesToMainUnit } from '../../formula-ui/teammate'
 import { GameDesc, GameText } from '../../i18n'
 import { getCharStat } from '../../stats'
 import { ElementIcon } from '../../svgicons'
+import { HeaderText } from '../layout'
 import {
   ConditionalText,
   conditionalAlign,
@@ -82,6 +87,7 @@ type PassiveEntry = {
   paragraph?: number
   descKey?: string
   groupTitle?: ReactNode
+  description?: ReactNode
 }
 
 type SectionConditional = {
@@ -281,6 +287,7 @@ function extractCharPassiveFields(
       paragraph?: number
       descKey?: string
       groupTitle?: ReactNode
+      description?: ReactNode
     }[]
   | undefined {
   const sheet = charSheets[characterKey]
@@ -297,6 +304,7 @@ function extractCharPassiveFields(
     paragraph?: number
     descKey?: string
     groupTitle?: ReactNode
+    description?: ReactNode
   }[] = []
   Object.entries(sheet).forEach(([sectionKey, section]) => {
     const mindscape = sectionKey.startsWith('m')
@@ -352,6 +360,7 @@ function extractCharPassiveFields(
               doc.type === 'fields' && 'descKey' in doc
                 ? (doc as FieldsDocument).descKey
                 : undefined,
+            description: (doc as FieldsDocument).description,
             groupTitle:
               doc.type === 'fields' && 'header' in doc && doc.header
                 ? doc.header.text
@@ -380,6 +389,7 @@ export function CharacterConditionalsDisplay({
   teammateKey?: CharacterKey
 }) {
   const mainChar = useCharacterContext()!
+  const { t } = useTranslation('charNames_gen')
   const { database } = useDatabaseContext()
   const team = useTeam(mainChar.key)
   const effectiveMindscape = mindscapeOverride ?? mainChar.mindscape
@@ -580,48 +590,52 @@ export function CharacterConditionalsDisplay({
   }
 
   return (
-    <Flex direction="column" gap={5}>
-      {fluxedElementRow}
-      {sectionGroups.map((group) => (
-        <Box key={group.sectionKey}>
-          <Text size="xs" fw={600} c="dimmed" mb={2}>
-            {SECTION_DISPLAY_NAMES[group.sectionKey] ?? group.sectionKey}
-          </Text>
-          <Flex direction="column" gap={2}>
-            {group.passives.map((entry, i) => (
-              <PassiveFieldRow
-                key={`p-${i}`}
-                characterKey={characterKey}
-                fields={entry.fields}
-                sectionKey={entry.sectionKey}
-                paragraph={entry.paragraph}
-                descKey={entry.descKey}
-                groupTitle={entry.groupTitle}
-                disabled={effectiveMindscape < entry.mindscape}
-              />
-            ))}
-            {group.conditionals.map((c) => (
-              <CharacterConditionalRow
-                key={c.condName}
-                characterKey={characterKey}
-                condName={c.condName}
-                condData={c.condData}
-                team={team}
-                database={database}
-                mainCharKey={mainChar.key}
-                src={src}
-                mindscape={effectiveMindscape}
-                fields={c.fields}
-                description={c.description}
-                label={c.label}
-                showZeroFields={showZeroFields}
-                linked={c.linked}
-              />
-            ))}
-          </Flex>
-        </Box>
-      ))}
-    </Flex>
+    <EffectiveMindscapeContext.Provider value={effectiveMindscape}>
+      <Flex direction="column" gap={5}>
+        <HeaderText>{t(characterKey)} Conditionals</HeaderText>
+        {fluxedElementRow}
+        {sectionGroups.map((group) => (
+          <Box key={group.sectionKey}>
+            <Text size="xs" fw={600} c="dimmed" mb={2}>
+              {SECTION_DISPLAY_NAMES[group.sectionKey] ?? group.sectionKey}
+            </Text>
+            <Flex direction="column" gap={2}>
+              {group.passives.map((entry, i) => (
+                <PassiveFieldRow
+                  key={`p-${i}`}
+                  characterKey={characterKey}
+                  fields={entry.fields}
+                  sectionKey={entry.sectionKey}
+                  paragraph={entry.paragraph}
+                  descKey={entry.descKey}
+                  groupTitle={entry.groupTitle}
+                  description={entry.description}
+                  disabled={effectiveMindscape < entry.mindscape}
+                />
+              ))}
+              {group.conditionals.map((c) => (
+                <CharacterConditionalRow
+                  key={c.condName}
+                  characterKey={characterKey}
+                  condName={c.condName}
+                  condData={c.condData}
+                  team={team}
+                  database={database}
+                  mainCharKey={mainChar.key}
+                  src={src}
+                  mindscape={effectiveMindscape}
+                  fields={c.fields}
+                  description={c.description}
+                  label={c.label}
+                  showZeroFields={showZeroFields}
+                  linked={c.linked}
+                />
+              ))}
+            </Flex>
+          </Box>
+        ))}
+      </Flex>
+    </EffectiveMindscapeContext.Provider>
   )
 }
 
@@ -786,7 +800,14 @@ const CharacterConditionalRow = memo(function CharacterConditionalRow({
           {label}
         </Text>
         {description && (
-          <Text size="sm" mb={8} style={{ whiteSpace: 'pre-wrap' }}>
+          <Text
+            size="sm"
+            mb={8}
+            style={{
+              whiteSpace: 'pre-wrap',
+              opacity: isMindscapeDisabled ? 0.5 : undefined,
+            }}
+          >
             {renderDescription(description)}
           </Text>
         )}
@@ -836,6 +857,7 @@ const PassiveFieldRow = memo(function PassiveFieldRow({
   paragraph,
   descKey: descKeyOverride,
   groupTitle,
+  description,
   disabled = false,
 }: {
   characterKey: CharacterKey
@@ -844,6 +866,7 @@ const PassiveFieldRow = memo(function PassiveFieldRow({
   paragraph?: number
   descKey?: string
   groupTitle?: ReactNode
+  description?: ReactNode
   disabled?: boolean
 }) {
   const outerTag = useContext(TagContext)
@@ -898,27 +921,44 @@ const PassiveFieldRow = memo(function PassiveFieldRow({
         <Text fw={600} mb={4} size="sm">
           {displayTitle}
         </Text>
-        {descKey && (
-          <Text size="sm" mb={8}>
-            {firstFieldRef?.name?.startsWith('ability_') ? (
-              <>
-                <div style={{ marginBottom: 8 }}>
-                  <GameDesc ns={ns} key18="ability.desc.0" />
-                </div>
+        {description ? (
+          <Text
+            size="sm"
+            mb={8}
+            style={{
+              whiteSpace: 'pre-wrap',
+              opacity: disabled ? 0.5 : undefined,
+            }}
+          >
+            {renderDescription(description)}
+          </Text>
+        ) : (
+          descKey && (
+            <Text
+              size="sm"
+              mb={8}
+              style={{ opacity: disabled ? 0.5 : undefined }}
+            >
+              {firstFieldRef?.name?.startsWith('ability_') ? (
+                <>
+                  <div style={{ marginBottom: 8 }}>
+                    <GameDesc ns={ns} key18="ability.desc.0" />
+                  </div>
+                  <SkillGameDesc
+                    characterKey={characterKey}
+                    ns={ns}
+                    key18={descKey}
+                  />
+                </>
+              ) : (
                 <SkillGameDesc
                   characterKey={characterKey}
                   ns={ns}
                   key18={descKey}
                 />
-              </>
-            ) : (
-              <SkillGameDesc
-                characterKey={characterKey}
-                ns={ns}
-                key18={descKey}
-              />
-            )}
-          </Text>
+              )}
+            </Text>
+          )
         )}
         <Box opacity={disabled ? 0.5 : undefined}>
           <hr />

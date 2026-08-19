@@ -1,5 +1,18 @@
 // WARNING: Generated file, do not modify
 export const buffs = {
+  m6_additional_dmg: {
+    sheet: 'Soldier0Anby',
+    name: 'm6_additional_dmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Soldier0Anby',
+      damageType1: 'aftershock',
+      name: 'm6_additional_dmg',
+    },
+    team: false,
+  },
   core_common_dmg_: {
     sheet: 'Soldier0Anby',
     name: 'core_common_dmg_',

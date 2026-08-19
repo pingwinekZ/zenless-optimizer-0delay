@@ -24,7 +24,7 @@
   "mindscapeTitle": "Mindscape",
   "mindscape": "M{{level}}",
   "characterName": "Character Name",
-  "potential": "Potential Lv. {{level}}",
+  "potential": "Potential {{level}}",
   "searchPlaceholder": "Search",
   "gridDensity": {
     "default": "Default",

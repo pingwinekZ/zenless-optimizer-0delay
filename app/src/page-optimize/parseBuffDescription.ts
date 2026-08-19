@@ -202,7 +202,7 @@ function extractTypedIgnore(
   // Captures: (1) prefix conjunction, (2) first value, (3) optional second value,
   //           (4) attribute name before RES, (5) RES or DEF
   const ignoreRe =
-    /(\s(?:,?\s*and\s+|,\s*|as\s+well\s+as\s+|or\s+))?ignor(?:e[sd]?|ing)\s+(\d+)(?:%\/(\d+))?%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)'?s?\s+)?(?:(\w+)\s+)?(?:all[- ]?(?:DMG|attribute)\s+)?(RES|DEF)\b/i
+    /(\s(?:,?\s*and\s+|,\s*|as\s+well\s+as\s+|or\s+))?ignor(?:e[sd]?|ing)\s+(\d+)(?:%\/(\d+))?%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)|target)'?s?\s+(?:(\w+)\s+)?(?:all[- ]?(?:DMG|attribute)\s+)?(RES|DEF)\b/i
 
   const match = sentence.match(ignoreRe)
   if (!match) return sentence
@@ -534,7 +534,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
         // Handle split percentage values like "5%/15%" in ignore clauses
         // (conditional buffs with different values based on e.g. number of Anomaly agents)
         const splitIgnoreMatch = seg.match(
-          /ignor(?:e[sd]?|ing)\s+(\d+)%\/(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)'?s?\s+)?(?:all[- ]?(?:DMG|attribute)\s+)?RES/i
+          /ignor(?:e[sd]?|ing)\s+(\d+)%\/(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)|target)'?s?\s+(?:all[- ]?(?:DMG|attribute)\s+)?RES/i
         )
         if (splitIgnoreMatch) {
           for (const value of [
@@ -566,7 +566,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
         }
 
         const resIgnMatch = seg.match(
-          /ignor(?:e|ing)\s+(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)'?s?\s+)?(?:all[- ]?(?:DMG|attribute)\s+)?RES/i
+          /ignor(?:e|ing)\s+(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)|target)'?s?\s+(?:all[- ]?(?:DMG|attribute)\s+)?RES/i
         )
         if (resIgnMatch) {
           const attr = matchAttribute(seg)
@@ -599,7 +599,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
 
         // --- Check for "ignore N% of enemy [Attribute] RES" ---
         const attrResIgnMatch = seg.match(
-          /ignor(?:e[sd]?|ing)\s+(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)'?s?\s+)?(\w+)\s+RES/i
+          /ignor(?:e[sd]?|ing)\s+(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)|target)'?s?\s+(\w+)\s+RES/i
         )
         if (attrResIgnMatch) {
           const attr = matchAttribute(attrResIgnMatch[2])
@@ -622,7 +622,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
 
         // --- Passive voice: "N% of the enemy's All-Attribute RES is ignored" ---
         const passiveResIgnMatch = seg.match(
-          /(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)'?s?\s+)(?:All[- ]Attribute\s+)?RES\s+is\s+ignored/i
+          /(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)|target)'?s?\s+(?:All[- ]Attribute\s+)?RES\s+is\s+ignored/i
         )
         if (passiveResIgnMatch) {
           bonusStats.push({
