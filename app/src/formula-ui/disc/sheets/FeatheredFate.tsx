@@ -6,9 +6,8 @@ import { tagToTagField, trans } from '../../util'
 import { Set2Display, Set4Display } from '../components'
 
 const key: DiscSetKey = 'FeatheredFate'
-const [chg, ch] = trans('disc', key)
+const [chg, _ch] = trans('disc', key)
 const icon = discDefIcon(key)
-const cond = FeatheredFate.conditionals
 const buff = FeatheredFate.buffs
 
 const sheet: UISheet<'2' | '4'> = {
@@ -31,15 +30,11 @@ const sheet: UISheet<'2' | '4'> = {
         text: chg('desc4'),
       },
       {
-        type: 'conditional',
-        conditional: {
-          label: ch('set4_cond'),
-          metadata: cond.entering_combat,
-          fields: [
-            tagToTagField(buff.set4_anomProf.tag),
-            tagToTagField(buff.set4_anom_dmg_.tag),
-          ],
-        },
+        type: 'fields',
+        fields: [
+          tagToTagField(buff.set4_anomProf.tag),
+          tagToTagField(buff.set4_anom_dmg_.tag),
+        ],
       },
     ],
   },

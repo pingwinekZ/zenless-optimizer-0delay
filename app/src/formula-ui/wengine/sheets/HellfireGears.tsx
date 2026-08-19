@@ -2,13 +2,11 @@ import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
 import { wengineAsset } from '../../../assets'
 import type { WengineKey } from '../../../consts'
 import { HellfireGears } from '../../../formula'
-import { mappedStats } from '../../../stats'
 import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'HellfireGears'
 const [chg, ch] = trans('wengine', key)
-const dm = mappedStats.wengine[key]
 const icon = wengineAsset(key)
 const cond = HellfireGears.conditionals
 const buff = HellfireGears.buffs
@@ -28,23 +26,9 @@ const sheet: UISheetElement = {
     {
       type: 'conditional',
       conditional: {
-        label: ch('cond1'),
-        metadata: cond.offField,
-        fields: [tagToTagField(buff.enerRegen.tag)],
-      },
-    },
-    {
-      type: 'conditional',
-      conditional: {
-        label: ch('cond1'),
+        label: ch('exSpecialUsedCond'),
         metadata: cond.exSpecialUsed,
-        fields: [
-          tagToTagField(buff.impact_.tag),
-          {
-            title: 'Duration', // TODO: L10n,
-            fieldValue: dm.duration,
-          },
-        ],
+        fields: [tagToTagField(buff.impact_.tag)],
       },
     },
   ],

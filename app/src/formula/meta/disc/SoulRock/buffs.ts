@@ -12,16 +12,4 @@ export const buffs = {
     },
     team: false,
   },
-  dmg_red_: {
-    sheet: 'SoulRock',
-    name: 'dmg_red_',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'dmg_red_',
-      sheet: 'SoulRock',
-      name: 'dmg_red_',
-    },
-    team: false,
-  },
 } as const

@@ -26,16 +26,4 @@ export const buffs = {
     },
     team: false,
   },
-  enerRegen: {
-    sheet: 'PeacekeeperSpecialized',
-    name: 'enerRegen',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'enerRegen',
-      sheet: 'PeacekeeperSpecialized',
-      name: 'enerRegen',
-    },
-    team: false,
-  },
 } as const

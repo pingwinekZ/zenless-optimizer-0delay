@@ -1,13 +1,11 @@
 // WARNING: Generated file, do not modify
 export const conditionals = {
-  launchingExSpecial: {
+  stacks: {
     sheet: 'PuzzleSphere',
-    name: 'launchingExSpecial',
-    type: 'bool',
-  },
-  targetHpBelow50: {
-    sheet: 'PuzzleSphere',
-    name: 'targetHpBelow50',
-    type: 'bool',
+    name: 'stacks',
+    type: 'num',
+    int_only: true,
+    min: 0,
+    max: 2,
   },
 } as const

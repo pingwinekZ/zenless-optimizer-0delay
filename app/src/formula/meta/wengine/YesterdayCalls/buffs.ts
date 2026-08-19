@@ -1,17 +1,5 @@
 // WARNING: Generated file, do not modify
 export const buffs = {
-  cond_enerRegen: {
-    sheet: 'YesterdayCalls',
-    name: 'cond_enerRegen',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'enerRegen',
-      sheet: 'YesterdayCalls',
-      name: 'cond_enerRegen',
-    },
-    team: false,
-  },
   cond_dazeInc_: {
     sheet: 'YesterdayCalls',
     name: 'cond_dazeInc_',

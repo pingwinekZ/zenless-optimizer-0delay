@@ -2,7 +2,7 @@ import type { UISheet } from '@zenless-optimizer/game-opt/sheet-ui'
 import { discDefIcon } from '../../../assets'
 import type { DiscSetKey } from '../../../consts'
 import { PolarMetal } from '../../../formula'
-import { trans } from '../../util'
+import { tagToTagField, trans } from '../../util'
 import { Set2Display, Set4Display } from '../components'
 
 const key: DiscSetKey = 'PolarMetal'
@@ -35,6 +35,10 @@ const sheet: UISheet<'2' | '4'> = {
         conditional: {
           label: ch('set4_cond'),
           metadata: cond.freeze_shatter,
+          fields: [
+            tagToTagField(buff.set4_basic_dmg_.tag),
+            tagToTagField(buff.set4_dash_dmg_.tag),
+          ],
         },
       },
       {

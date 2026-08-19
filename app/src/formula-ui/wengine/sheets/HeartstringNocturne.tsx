@@ -2,13 +2,11 @@ import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
 import { wengineAsset } from '../../../assets'
 import type { WengineKey } from '../../../consts'
 import { HeartstringNocturne } from '../../../formula'
-import { mappedStats } from '../../../stats'
 import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'HeartstringNocturne'
 const [chg, ch] = trans('wengine', key)
-const dm = mappedStats.wengine[key]
 const icon = wengineAsset(key)
 const cond = HeartstringNocturne.conditionals
 const buff = HeartstringNocturne.buffs
@@ -27,20 +25,17 @@ const sheet: UISheetElement = {
     },
     {
       type: 'fields',
+      header: { icon: null, text: ch('passive_crit_dmg_') },
       fields: [tagToTagField(buff.passive_crit_dmg_.tag)],
     },
     {
       type: 'conditional',
       conditional: {
-        label: ch('cond'),
+        label: ch('heartstringCond'),
         metadata: cond.heartstring,
         fields: [
           tagToTagField(buff.chain_resIgn_fire_.tag),
           tagToTagField(buff.ult_resIgn_fire_.tag),
-          {
-            title: 'Duration', // TODO: L10n,
-            fieldValue: dm.duration,
-          },
         ],
       },
     },

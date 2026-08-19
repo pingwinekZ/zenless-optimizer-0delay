@@ -1,3 +1,3 @@
 {
-  "cond": "Dealing Ether DMG using an EX Special Attack, Chain Attack, or Ultimate"
+  "etherHitCond": "EX Special / Chain / Ultimate Ether Hit · DMG"
 }

@@ -12,16 +12,4 @@ export const buffs = {
     },
     team: false,
   },
-  cond_enerRegen_: {
-    sheet: 'SpringEmbrace',
-    name: 'cond_enerRegen_',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'enerRegen_',
-      sheet: 'SpringEmbrace',
-      name: 'cond_enerRegen_',
-    },
-    team: true,
-  },
 } as const

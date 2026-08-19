@@ -388,8 +388,8 @@ export function CharacterConditionalsDisplay({
   showPassives?: boolean
   teammateKey?: CharacterKey
 }) {
-  const { t } = useTranslation('charNames_gen')
   const mainChar = useCharacterContext()!
+  const { t } = useTranslation('charNames_gen')
   const { database } = useDatabaseContext()
   const team = useTeam(mainChar.key)
   const effectiveMindscape = mindscapeOverride ?? mainChar.mindscape

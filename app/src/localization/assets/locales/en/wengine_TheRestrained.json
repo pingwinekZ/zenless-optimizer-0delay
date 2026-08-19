@@ -1,3 +1,3 @@
 {
-  "cond": "When an attack hits an enemy"
+  "attackHitCond": "Attack Hits Enemy · DMG & Daze"
 }

@@ -13,16 +13,4 @@ export const buffs = {
     },
     team: false,
   },
-  enerRegen_: {
-    sheet: 'DemaraBatteryMarkII',
-    name: 'enerRegen_',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'enerRegen_',
-      sheet: 'DemaraBatteryMarkII',
-      name: 'enerRegen_',
-    },
-    team: false,
-  },
 } as const

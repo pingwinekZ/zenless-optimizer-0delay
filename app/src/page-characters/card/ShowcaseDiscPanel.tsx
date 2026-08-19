@@ -1,5 +1,5 @@
 import { Box, Flex, Text } from '@mantine/core'
-import { useMemo } from 'react'
+import { type CSSProperties, useMemo } from 'react'
 import { characterAsset, discDefIcon } from '../../assets'
 import type {
   CharacterKey,
@@ -119,6 +119,7 @@ export function ShowcaseDiscCard({
   effectiveStats,
   substatWeights,
   effectiveMainStats,
+  style,
 }: {
   slot: DiscSlotKey
   disc: ICachedDisc | undefined
@@ -126,6 +127,7 @@ export function ShowcaseDiscCard({
   effectiveStats: DiscSubStatKey[]
   substatWeights?: Partial<Record<DiscSubStatKey, number>>
   effectiveMainStats?: Partial<Record<DiscSlotKey, DiscMainStatKey[]>>
+  style?: CSSProperties
 }) {
   const discScore = useMemo(
     () =>
@@ -155,6 +157,7 @@ export function ShowcaseDiscCard({
           justifyContent: 'center',
           gap: 4,
           cursor: onClick ? 'pointer' : undefined,
+          ...style,
         }}
       >
         <ShadowRings />
@@ -206,6 +209,7 @@ export function ShowcaseDiscCard({
         flexDirection: 'column',
         justifyContent: 'space-between',
         cursor: 'pointer',
+        ...style,
       }}
     >
       <ShadowRings />

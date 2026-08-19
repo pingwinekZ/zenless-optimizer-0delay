@@ -1,3 +1,4 @@
 {
-  "cond": "Special Attack or EX Special Attack used"
+  "passive_atk_": "ATK",
+  "specialUsedCond": "Special Used · AP"
 }

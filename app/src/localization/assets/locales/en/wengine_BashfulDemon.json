@@ -1,3 +1,4 @@
 {
-  "cond": "Launching an EX Special Attack"
+  "passive_ice_dmg_": "DMG",
+  "exSpecialLaunchCond": "EX Special Used · ATK"
 }

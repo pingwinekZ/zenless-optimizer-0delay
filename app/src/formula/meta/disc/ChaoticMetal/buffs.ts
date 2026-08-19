@@ -37,4 +37,16 @@ export const buffs = {
     },
     team: false,
   },
+  set4_total_crit_dmg_: {
+    sheet: 'ChaoticMetal',
+    name: 'set4_total_crit_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'crit_dmg_',
+      sheet: 'ChaoticMetal',
+      name: 'set4_total_crit_dmg_',
+    },
+    team: false,
+  },
 } as const

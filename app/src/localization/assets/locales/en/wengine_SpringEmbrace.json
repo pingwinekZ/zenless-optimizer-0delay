@@ -1,3 +1,4 @@
 {
-  "cond": "When attacked"
+  "passive_dmg_red_": "DMG Reduction",
+  "whenAttackedCond": "Attacked · ER"
 }

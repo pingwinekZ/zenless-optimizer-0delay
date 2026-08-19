@@ -26,7 +26,12 @@ export function valueString(
               ? 1
               : 0
   }
-  return `${value.toFixed(fixed)}${unit}`
+  const fixedStr = value.toFixed(fixed)
+  // Strip trailing zeros after decimal point (e.g. '0.400' → '0.4')
+  const trimmed = fixedStr.includes('.')
+    ? fixedStr.replace(/\.?0+$/, '')
+    : fixedStr
+  return `${trimmed}${unit}`
 }
 export function isPercentStat<Key extends string>(key: Key): boolean {
   return key.endsWith('_')

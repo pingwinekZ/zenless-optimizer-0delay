@@ -26,7 +26,7 @@ const sheet: UISheetElement = {
     {
       type: 'conditional',
       conditional: {
-        label: ch('cond'),
+        label: ch('chargeCond'),
         metadata: cond.charge,
         fields: [tagToTagField(buff.cond_ult_dmg_.tag)],
       },

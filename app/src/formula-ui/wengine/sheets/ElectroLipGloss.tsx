@@ -26,7 +26,7 @@ const sheet: UISheetElement = {
     {
       type: 'conditional',
       conditional: {
-        label: ch('cond'),
+        label: ch('anomalyOnEnemyCond'),
         metadata: cond.anomalyOnEnemy,
         fields: [
           tagToTagField(buff.atk_.tag),

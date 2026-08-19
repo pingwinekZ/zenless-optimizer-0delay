@@ -1,13 +1,11 @@
 // WARNING: Generated file, do not modify
 export const conditionals = {
-  enemyHpGE50: {
+  enemyHpGE: {
     sheet: 'PreciousFossilizedCore',
-    name: 'enemyHpGE50',
-    type: 'bool',
-  },
-  enemyHpGE75: {
-    sheet: 'PreciousFossilizedCore',
-    name: 'enemyHpGE75',
-    type: 'bool',
+    name: 'enemyHpGE',
+    type: 'num',
+    int_only: true,
+    min: 0,
+    max: 2,
   },
 } as const

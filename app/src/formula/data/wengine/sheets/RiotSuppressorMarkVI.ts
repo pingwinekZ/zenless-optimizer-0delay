@@ -40,6 +40,17 @@ const sheet = registerWengine(
       )
     ),
     showSpecialtyAndEquipped(key)
+  ),
+  registerBuff(
+    'dash_ether_dmg_',
+    ownBuff.combat.dmg_.ether.addWithDmgType(
+      'dash',
+      cmpSpecialtyAndEquipped(
+        key,
+        charge.ifOn(subscript(phase, dm.basic_ether_dmg_))
+      )
+    ),
+    showSpecialtyAndEquipped(key)
   )
 )
 export default sheet

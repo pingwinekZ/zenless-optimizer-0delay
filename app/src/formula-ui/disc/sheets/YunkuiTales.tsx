@@ -2,11 +2,11 @@ import type { UISheet } from '@zenless-optimizer/game-opt/sheet-ui'
 import { discDefIcon } from '../../../assets'
 import type { DiscSetKey } from '../../../consts'
 import { YunkuiTales } from '../../../formula'
-import { st, tagToTagField, trans } from '../../util'
+import { tagToTagField, trans } from '../../util'
 import { Set2Display, Set4Display } from '../components'
 
 const key: DiscSetKey = 'YunkuiTales'
-const [chg, _ch] = trans('disc', key)
+const [chg, ch] = trans('disc', key)
 const icon = discDefIcon(key)
 const cond = YunkuiTales.conditionals
 const buff = YunkuiTales.buffs
@@ -38,11 +38,7 @@ const sheet: UISheet<'2' | '4'> = {
         type: 'conditional',
         conditional: {
           metadata: cond.uponLaunchExSpecialChainOrUlt,
-          label: st('uponLaunch.3', {
-            val1: '$t(skills.exSpecial)',
-            val2: '$t(skills.chain)',
-            val3: '$t(skills.ult)',
-          }),
+          label: ch('set4_cond'),
           fields: [
             tagToTagField(buff.set4_crit_.tag),
             tagToTagField(buff.set4_sheer_dmg_.tag),

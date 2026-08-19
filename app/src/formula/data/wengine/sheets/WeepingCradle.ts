@@ -1,13 +1,7 @@
-import { prod, subscript, sum } from '@zenless-optimizer/pando/engine'
+import { cmpGE, prod, subscript, sum } from '@zenless-optimizer/pando/engine'
 import type { WengineKey } from '../../../../consts'
 import { mappedStats } from '../../../../stats'
-import {
-  allBoolConditionals,
-  allNumConditionals,
-  own,
-  registerBuff,
-  teamBuff,
-} from '../../util'
+import { allNumConditionals, own, registerBuff, teamBuff } from '../../util'
 import {
   cmpSpecialtyAndEquipped,
   entriesForWengine,
@@ -19,8 +13,7 @@ const key: WengineKey = 'WeepingCradle'
 const dm = mappedStats.wengine[key]
 const { phase } = own.wengine
 
-const { attack } = allBoolConditionals(key)
-const { stacks } = allNumConditionals(key, true, 0, 6)
+const { stacks } = allNumConditionals(key, true, 0, 8)
 
 const sheet = registerWengine(
   key,
@@ -33,10 +26,13 @@ const sheet = registerWengine(
     teamBuff.combat.common_dmg_.add(
       cmpSpecialtyAndEquipped(
         key,
-        attack.ifOn(
+        cmpGE(
+          stacks,
+          1,
           sum(
             subscript(phase, dm.dmg_),
-            prod(stacks, subscript(phase, dm.inc_dmg_))
+            prod(stacks, subscript(phase, dm.inc_dmg_)),
+            prod(-1, subscript(phase, dm.inc_dmg_))
           )
         )
       )

@@ -1,17 +1,5 @@
 // WARNING: Generated file, do not modify
 export const buffs = {
-  enerRegen: {
-    sheet: 'HellfireGears',
-    name: 'enerRegen',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'enerRegen',
-      sheet: 'HellfireGears',
-      name: 'enerRegen',
-    },
-    team: false,
-  },
   impact_: {
     sheet: 'HellfireGears',
     name: 'impact_',

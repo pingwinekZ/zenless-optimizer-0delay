@@ -34,6 +34,7 @@ const sheet: UISheet<'2' | '4'> = {
         type: 'conditional',
         conditional: {
           label: ch('set4_windswept_cond'),
+          description: ch('set4_windswept_cond_desc'),
           metadata: cond.windswept_active,
           fields: [tagToTagField(buff.set4_windswept_dmg_.tag)],
         },
@@ -42,6 +43,7 @@ const sheet: UISheet<'2' | '4'> = {
         type: 'conditional',
         conditional: {
           label: ch('set4_anom_prof_cond'),
+          description: ch('set4_anom_prof_cond_desc'),
           metadata: cond.ex_anom_prof_stacks,
           fields: [tagToTagField(buff.set4_anom_prof.tag)],
         },

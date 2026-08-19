@@ -43,6 +43,7 @@ const sheet: UISheet<'2' | '4'> = {
         type: 'conditional',
         conditional: {
           label: ch('set4_cond'),
+          description: ch('set4_cond_desc'),
           metadata: cond.launching_ult,
           fields: [tagToTagField(buff.set4_cond_launching_ult_atk_.tag)],
         },

@@ -2,13 +2,11 @@ import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
 import { wengineAsset } from '../../../assets'
 import type { WengineKey } from '../../../consts'
 import { QingmingBirdcage } from '../../../formula'
-import { mappedStats } from '../../../stats'
 import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'QingmingBirdcage'
 const [chg, ch] = trans('wengine', key)
-const dm = mappedStats.wengine[key]
 const icon = wengineAsset(key)
 const cond = QingmingBirdcage.conditionals
 const buff = QingmingBirdcage.buffs
@@ -41,10 +39,6 @@ const sheet: UISheetElement = {
           tagToTagField(
             buff.qingmingCompanionStacks_exSpecial_ether_sheer_dmg_.tag
           ),
-          {
-            title: 'Duration', // TODO: L10n
-            fieldValue: dm.duration,
-          },
         ],
       },
     },

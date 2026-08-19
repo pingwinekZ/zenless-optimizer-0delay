@@ -1,4 +1,3 @@
 {
-  "cond1": "When the target's HP is no lower than 50%",
-  "cond2": "When the target's HP is no lower than 75%"
+  "enemyHpGECond": "Enemy HP ≥ 50% / ≥ 75% · Daze"
 }

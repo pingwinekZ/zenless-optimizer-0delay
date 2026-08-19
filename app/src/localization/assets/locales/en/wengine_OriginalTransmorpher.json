@@ -1,3 +1,4 @@
 {
-  "cond": "When attacked"
+  "passive_hp_": "HP",
+  "whenAttackedCond": "Attacked · Impact"
 }

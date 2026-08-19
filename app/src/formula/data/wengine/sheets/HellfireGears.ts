@@ -1,13 +1,7 @@
 import { prod, subscript } from '@zenless-optimizer/pando/engine'
 import type { WengineKey } from '../../../../consts'
 import { mappedStats } from '../../../../stats'
-import {
-  allBoolConditionals,
-  allNumConditionals,
-  own,
-  ownBuff,
-  registerBuff,
-} from '../../util'
+import { allNumConditionals, own, ownBuff, registerBuff } from '../../util'
 import {
   cmpSpecialtyAndEquipped,
   entriesForWengine,
@@ -19,7 +13,6 @@ const key: WengineKey = 'HellfireGears'
 const dm = mappedStats.wengine[key]
 const { phase } = own.wengine
 
-const { offField } = allBoolConditionals(key)
 const { exSpecialUsed } = allNumConditionals(key, true, 0, dm.stacks)
 
 const sheet = registerWengine(
@@ -28,16 +21,6 @@ const sheet = registerWengine(
   entriesForWengine(key),
 
   // Conditional buffs
-  registerBuff(
-    'enerRegen',
-    ownBuff.combat.enerRegen.add(
-      cmpSpecialtyAndEquipped(
-        key,
-        offField.ifOn(subscript(phase, dm.enerRegen))
-      )
-    ),
-    showSpecialtyAndEquipped(key)
-  ),
   registerBuff(
     'impact_',
     ownBuff.combat.impact_.add(

@@ -1,4 +1,4 @@
 {
-  "cond_atk": "Attacks from the equipper",
-  "cond_stacks":"Stacks of increased DMG"
+  "offFieldCond": "Off-field · ER",
+  "stacksCond": "Attack Hit · DMG"
 }

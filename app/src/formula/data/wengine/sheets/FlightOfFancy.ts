@@ -20,6 +20,15 @@ const sheet = registerWengine(
   // Handles base stats and passive buffs
   entriesForWengine(key),
 
+  // Passive buffs
+  registerBuff(
+    'anomBuildup_',
+    ownBuff.combat.anomBuildup_.add(
+      cmpSpecialtyAndEquipped(key, subscript(phase, dm.anomBuildup_))
+    ),
+    showSpecialtyAndEquipped(key)
+  ),
+
   // Conditional buffs
   registerBuff(
     'etherDmg_anomProf',

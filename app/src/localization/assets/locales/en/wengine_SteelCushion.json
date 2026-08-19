@@ -1,3 +1,4 @@
 {
-  "cond": "When hitting the enemy from behind"
+  "passive_physical_dmg_": "DMG",
+  "hitBehindCond": "Behind Enemy · DMG"
 }

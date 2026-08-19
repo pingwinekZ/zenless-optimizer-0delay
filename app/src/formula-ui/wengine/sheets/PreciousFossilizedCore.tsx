@@ -26,16 +26,9 @@ const sheet: UISheetElement = {
     {
       type: 'conditional',
       conditional: {
-        label: ch('cond1'),
-        metadata: cond.enemyHpGE50,
+        label: ch('enemyHpGECond'),
+        metadata: cond.enemyHpGE,
         fields: [tagToTagField(buff.daze_.tag)],
-      },
-    },
-    {
-      type: 'conditional',
-      conditional: {
-        label: ch('cond2'),
-        metadata: cond.enemyHpGE75,
       },
     },
   ],

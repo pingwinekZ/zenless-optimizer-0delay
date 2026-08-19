@@ -2,13 +2,11 @@ import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
 import { wengineAsset } from '../../../assets'
 import type { WengineKey } from '../../../consts'
 import { Housekeeper } from '../../../formula'
-import { mappedStats } from '../../../stats'
 import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'Housekeeper'
 const [chg, ch] = trans('wengine', key)
-const dm = mappedStats.wengine[key]
 const icon = wengineAsset(key)
 const cond = Housekeeper.conditionals
 const buff = Housekeeper.buffs
@@ -28,23 +26,9 @@ const sheet: UISheetElement = {
     {
       type: 'conditional',
       conditional: {
-        label: ch('cond1'),
-        metadata: cond.offField,
-        fields: [tagToTagField(buff.enerRegen.tag)],
-      },
-    },
-    {
-      type: 'conditional',
-      conditional: {
-        label: ch('cond2'),
+        label: ch('exSpecialHitCond'),
         metadata: cond.exSpecialHits,
-        fields: [
-          tagToTagField(buff.physical_dmg_.tag),
-          {
-            title: 'Duration', // TODO: L10n,
-            fieldValue: dm.duration,
-          },
-        ],
+        fields: [tagToTagField(buff.physical_dmg_.tag)],
       },
     },
   ],

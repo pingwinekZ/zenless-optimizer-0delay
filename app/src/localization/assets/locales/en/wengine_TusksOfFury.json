@@ -1,3 +1,4 @@
 {
-  "cond": "When any squad member triggers Interrupt or Perfect Dodge"
+  "passive_shield_": "Shield",
+  "interruptOrPerfDodgeCond": "Interrupt / Perfect Dodge · DMG & Daze"
 }

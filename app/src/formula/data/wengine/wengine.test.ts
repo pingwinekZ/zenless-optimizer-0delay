@@ -226,14 +226,6 @@ describe('Disc sheets test', () => {
 
   it('DemaraBatteryMarkII', () => {
     const { data, characterKey } = testCharacterData('DemaraBatteryMarkII')
-    data.push(
-      cond(
-        characterKey,
-        'DemaraBatteryMarkII',
-        conditionals.DemaraBatteryMarkII.dodgeCounterOrAssistHit.name,
-        1
-      )
-    )
     const calc = new Calculator(
       keys,
       values,
@@ -242,7 +234,6 @@ describe('Disc sheets test', () => {
     const char = convert(ownTag, { et: 'own', src: characterKey })
 
     expect(calc.compute(char.final.dmg_.electric).val).toBeCloseTo(0.24)
-    expect(calc.compute(char.combat.enerRegen_).val).toBeCloseTo(0.275)
   })
 
   it('DrillRigRedAxis', () => {
@@ -313,12 +304,6 @@ describe('Disc sheets test', () => {
       cond(
         characterKey,
         'FlamemakerShaker',
-        conditionals.FlamemakerShaker.offField.name,
-        1
-      ),
-      cond(
-        characterKey,
-        'FlamemakerShaker',
         conditionals.FlamemakerShaker.exSpecialAssistHits.name,
         10
       )
@@ -330,8 +315,7 @@ describe('Disc sheets test', () => {
     ).withTag({ src: characterKey, dst: characterKey })
     const char = convert(ownTag, { et: 'own', src: characterKey })
 
-    expect(calc.compute(char.combat.enerRegen).val).toBeCloseTo(1.2)
-    expect(calc.compute(char.final.common_dmg_).val).toBeCloseTo(10 * 0.07 * 2)
+    expect(calc.compute(char.final.common_dmg_).val).toBeCloseTo(10 * 0.07)
     expect(calc.compute(char.combat.anomProf).val).toBeCloseTo(100)
   })
 
@@ -424,12 +408,6 @@ describe('Disc sheets test', () => {
       cond(
         characterKey,
         'HellfireGears',
-        conditionals.HellfireGears.offField.name,
-        1
-      ),
-      cond(
-        characterKey,
-        'HellfireGears',
         conditionals.HellfireGears.exSpecialUsed.name,
         2
       )
@@ -441,19 +419,12 @@ describe('Disc sheets test', () => {
     ).withTag({ src: characterKey, dst: characterKey })
     const char = convert(ownTag, { et: 'own', src: characterKey })
 
-    expect(calc.compute(char.combat.enerRegen).val).toBeCloseTo(1.2)
     expect(calc.compute(char.combat.impact_).val).toBeCloseTo(2 * 0.2)
   })
 
   it('Housekeeper', () => {
     const { data, characterKey } = testCharacterData('Housekeeper')
     data.push(
-      cond(
-        characterKey,
-        'Housekeeper',
-        conditionals.Housekeeper.offField.name,
-        1
-      ),
       cond(
         characterKey,
         'Housekeeper',
@@ -468,7 +439,6 @@ describe('Disc sheets test', () => {
     ).withTag({ src: characterKey, dst: characterKey })
     const char = convert(ownTag, { et: 'own', src: characterKey })
 
-    expect(calc.compute(char.combat.enerRegen).val).toBeCloseTo(0.72)
     expect(calc.compute(char.combat.dmg_.physical).val).toBeCloseTo(15 * 0.048)
   })
 
@@ -619,14 +589,8 @@ describe('Disc sheets test', () => {
       cond(
         characterKey,
         'MarcatoDesire',
-        conditionals.MarcatoDesire.exSpecialOrChainHitsEnemy.name,
-        1
-      ),
-      cond(
-        characterKey,
-        'MarcatoDesire',
-        conditionals.MarcatoDesire.attributeAnomalyInflicted.name,
-        1
+        conditionals.MarcatoDesire.stacks.name,
+        2
       )
     )
     const calc = new Calculator(
@@ -662,22 +626,13 @@ describe('Disc sheets test', () => {
 
   it('PeacekeeperSpecialized', () => {
     const { data, characterKey } = testCharacterData('PeacekeeperSpecialized')
-    data.push(
-      cond(
-        characterKey,
-        'PeacekeeperSpecialized',
-        conditionals.PeacekeeperSpecialized.shielded.name,
-        1
-      )
-    )
-    const calc = new Calculator(
+    const _calc = new Calculator(
       keys,
       values,
       compileTagMapValues(keys, data)
     ).withTag({ src: characterKey, dst: characterKey })
-    const char = convert(ownTag, { et: 'own', src: characterKey })
+    const _char = convert(ownTag, { et: 'own', src: characterKey })
 
-    expect(calc.compute(char.combat.enerRegen).val).toBeCloseTo(0.64)
     // TODO: check anomaly buildup
   })
 
@@ -784,6 +739,7 @@ describe('Disc sheets test', () => {
     // Base + wengine bonus
     expect(calc.compute(char.final.crit_).val).toBeCloseTo(0.35)
     expect(calc.compute(char.final.dmg_.ether.basic[0]).val).toBeCloseTo(0.7)
+    expect(calc.compute(char.final.dmg_.ether.dash[0]).val).toBeCloseTo(0.7)
   })
 
   it('RoaringRide', () => {

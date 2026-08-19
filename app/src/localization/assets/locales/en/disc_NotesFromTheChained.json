@@ -1,4 +1,6 @@
 {
-  "condAbloom": "When the equipper triggers Abloom",
-  "condFreeze": "When the equipper triggers a Freeze effect"
+  "condAbloom": "Abloom · AP",
+  "condAbloom_desc": "When the equipper triggers <ct color=#FFFFFF>Abloom</ct>, their Anomaly Proficiency increases by 48 for 30s; repeated triggers reset the duration.",
+  "condFreeze": "Freeze · DMG",
+  "condFreeze_desc": "When the equipper triggers a <ct color=#FFFFFF>Freeze</ct> effect, their All-Attribute Anomaly DMG and <ct color=#FFFFFF>Disorder</ct> DMG increase by 16% for 30s; repeated triggers reset the duration."
 }

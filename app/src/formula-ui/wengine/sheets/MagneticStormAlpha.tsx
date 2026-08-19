@@ -2,13 +2,11 @@ import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
 import { wengineAsset } from '../../../assets'
 import type { WengineKey } from '../../../consts'
 import { MagneticStormAlpha } from '../../../formula'
-import { mappedStats } from '../../../stats'
 import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'MagneticStormAlpha'
 const [chg, ch] = trans('wengine', key)
-const dm = mappedStats.wengine[key]
 const icon = wengineAsset(key)
 const cond = MagneticStormAlpha.conditionals
 const buff = MagneticStormAlpha.buffs
@@ -28,19 +26,9 @@ const sheet: UISheetElement = {
     {
       type: 'conditional',
       conditional: {
-        label: ch('cond'),
+        label: ch('anomalyBuildupCond'),
         metadata: cond.anomalyBuildupIncreased,
-        fields: [
-          tagToTagField(buff.anomMas.tag),
-          {
-            title: 'Duration', // TODO: L10n,
-            fieldValue: dm.duration,
-          },
-          {
-            title: 'Cooldown', // TODO: L10n,
-            fieldValue: dm.cooldown,
-          },
-        ],
+        fields: [tagToTagField(buff.anomMas.tag)],
       },
     },
   ],

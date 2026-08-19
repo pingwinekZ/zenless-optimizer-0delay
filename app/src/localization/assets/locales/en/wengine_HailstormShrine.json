@@ -1,3 +1,4 @@
 {
-  "cond": "EX Special Attack used or squad member applies an Attribute Anomaly"
+  "passive_crit_dmg_": "CD",
+  "exSpecialOrAnomalyCond": "EX Special / Anomaly · DMG"
 }
