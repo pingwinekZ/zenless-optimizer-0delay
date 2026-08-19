@@ -57,6 +57,18 @@ const sheet = createBaseSheet(key, {
       },
     },
   ],
+  potential: [
+    {
+      type: 'conditional',
+      conditional: {
+        label: ch('potentialCond'),
+        description:
+          'Increases Impact while Encircle Prey is active and Lycaon performs a Basic Attack, Dash Attack, or Dodge Counter.',
+        metadata: cond.durationLeft,
+        fields: [fieldForBuff(buff.potential_impact_)],
+      },
+    },
+  ],
   m1: [
     {
       type: 'fields',

@@ -5,6 +5,7 @@ import { Miyabi } from '../../../formula'
 import { GameDesc, GameDescSlice } from '../../../i18n'
 import { trans } from '../../util'
 import {
+  AbilityBodyText,
   createBaseSheet,
   fieldForBuff,
   PrefixedLine,
@@ -88,14 +89,14 @@ const sheet = createBaseSheet(key, {
       description: (
         <>
           <GameDesc ns="char_Miyabi_gen" key18="ability.desc.0" />
-          <div style={{ marginTop: 8 }}>
+          <AbilityBodyText characterKey={key}>
             <GameDescSlice
               ns="char_Miyabi_gen"
               key18="ability.desc.1"
               from="<ct color=#FFFFFF>Basic Attack: Shimotsuki</ct> DMG"
               to="%"
             />
-          </div>
+          </AbilityBodyText>
         </>
       ),
       header: { icon: null, text: ch('ability_header') },
@@ -117,14 +118,14 @@ const sheet = createBaseSheet(key, {
         description: (
           <>
             <GameDesc ns="char_Miyabi_gen" key18="ability.desc.0" />
-            <div style={{ marginTop: 8 }}>
+            <AbilityBodyText characterKey={key}>
               <GameDescSlice
                 ns="char_Miyabi_gen"
                 key18="ability.desc.1"
                 from="When any squad member triggers"
                 to="%"
               />
-            </div>
+            </AbilityBodyText>
           </>
         ),
         metadata: cond.disorder_triggered,

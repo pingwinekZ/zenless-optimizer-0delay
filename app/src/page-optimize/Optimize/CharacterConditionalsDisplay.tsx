@@ -29,6 +29,7 @@ import { charSheets, TagDisplay } from '../../formula-ui'
 import {
   EffectiveMindscapeContext,
   SkillGameDesc,
+  usePotentialDescKey,
 } from '../../formula-ui/char/sheetUtil'
 import { buffAppliesToMainUnit } from '../../formula-ui/teammate'
 import { GameDesc, GameText } from '../../i18n'
@@ -120,14 +121,15 @@ function getMindscapeRequirement(condName: string): number | null {
 
 function passiveSectionToDescKey(
   sectionKey: string,
-  fieldName?: string | null,
-  coreLevel?: number
+  fieldName: string | null | undefined,
+  coreLevel: number,
+  potential: number
 ): string | null {
   if (sectionKey === 'core') {
     if (fieldName?.startsWith('ability_')) return 'ability.desc'
     return `core.desc.${coreLevel ?? 0}`
   }
-  if (sectionKey === 'potential') return 'potential.desc.0'
+  if (sectionKey === 'potential') return `potential.desc.${potential}`
   const m = sectionKey.match(/^m([1-6])$/)
   if (m) return `mindscapes.${m[1]}.desc`
   return null
@@ -135,7 +137,8 @@ function passiveSectionToDescKey(
 
 function extractCharConditionalFields(
   characterKey: CharacterKey,
-  teammateKey: CharacterKey | undefined
+  teammateKey: CharacterKey | undefined,
+  potential: number
 ): Record<string, Field[]> | undefined {
   const sheet = charSheets[characterKey]
   if (!sheet) return undefined
@@ -148,7 +151,9 @@ function extractCharConditionalFields(
     section.documents.forEach((doc) => {
       if (doc.type === 'conditional' && doc.conditional) {
         const condName = doc.conditional.metadata.name
-        const fields = doc.conditional.fields ?? []
+        const fields = (doc.conditional.fields ?? []).filter(
+          (f) => !('minPotential' in f) || (f.minPotential ?? 0) <= potential
+        )
         if (isTeammateView) {
           const teamFields = fields.filter((f) => {
             if ('team' in f) {
@@ -278,7 +283,8 @@ function extractCharConditionalLabels(
 
 function extractCharPassiveFields(
   characterKey: CharacterKey,
-  teammateKey: CharacterKey | undefined
+  teammateKey: CharacterKey | undefined,
+  potential: number
 ):
   | {
       fields: Field[]
@@ -313,9 +319,11 @@ function extractCharPassiveFields(
     let fieldsDocIndex = 0
     let abilityFieldsDocIndex = 0
     section.documents.forEach((doc) => {
-      if (doc.type === 'fields' && doc.fields?.length) {
+      if (doc.type === 'fields' && (doc.fields?.length || doc.description)) {
         const groupedFields: Field[] = []
         for (const field of doc.fields) {
+          if ('minPotential' in field && (field.minPotential ?? 0) > potential)
+            continue
           if ('fieldRef' in field && field.fieldRef?.name) {
             const buffMeta = charBuffs[field.fieldRef.name]
             if (!buffMeta) continue
@@ -335,7 +343,7 @@ function extractCharPassiveFields(
             groupedFields.push(field)
           }
         }
-        if (groupedFields.length > 0) {
+        if (groupedFields.length > 0 || (!isTeammateView && doc.description)) {
           const isAbility =
             groupedFields[0] &&
             'fieldRef' in groupedFields[0] &&
@@ -415,9 +423,11 @@ export function CharacterConditionalsDisplay({
     | Record<string, IConditionalData>
     | undefined
 
+  const char = useCharacter(characterKey)
+  const potential = char?.potential ?? 0
   const conditionalFields = useMemo(
-    () => extractCharConditionalFields(characterKey, teammateKey),
-    [characterKey, teammateKey]
+    () => extractCharConditionalFields(characterKey, teammateKey, potential),
+    [characterKey, teammateKey, potential]
   )
   const conditionalDescriptions = useMemo(
     () => extractCharConditionalDescriptions(characterKey),
@@ -428,8 +438,8 @@ export function CharacterConditionalsDisplay({
     [characterKey]
   )
   const visiblePassives = useMemo(
-    () => extractCharPassiveFields(characterKey, teammateKey),
-    [characterKey, teammateKey]
+    () => extractCharPassiveFields(characterKey, teammateKey, potential),
+    [characterKey, teammateKey, potential]
   )
 
   const [conditionalSectionMap, conditionalLinkedMap] = useMemo(() => {
@@ -876,6 +886,7 @@ const PassiveFieldRow = memo(function PassiveFieldRow({
   )
   const char = useCharacter(characterKey)
   const coreLevel = char?.core ?? 0
+  const potential = char?.potential ?? 0
   const firstFieldRef =
     fields.length > 0 && 'fieldRef' in fields[0] ? fields[0].fieldRef : null
   const descKey = useMemo(() => {
@@ -886,11 +897,19 @@ const PassiveFieldRow = memo(function PassiveFieldRow({
     const baseKey = passiveSectionToDescKey(
       sectionKey,
       firstFieldRef?.name,
-      coreLevel
+      coreLevel,
+      potential
     )
     if (paragraph !== undefined && baseKey) return `${baseKey}.${paragraph}`
     return baseKey
-  }, [sectionKey, firstFieldRef?.name, paragraph, coreLevel, descKeyOverride])
+  }, [
+    sectionKey,
+    firstFieldRef?.name,
+    paragraph,
+    coreLevel,
+    potential,
+    descKeyOverride,
+  ])
   const ns = `char_${characterKey}_gen`
   const displayTitle = groupTitle ?? fields[0]?.title
   return (
@@ -942,7 +961,14 @@ const PassiveFieldRow = memo(function PassiveFieldRow({
               {firstFieldRef?.name?.startsWith('ability_') ? (
                 <>
                   <div style={{ marginBottom: 8 }}>
-                    <GameDesc ns={ns} key18="ability.desc.0" />
+                    <GameDesc
+                      ns={ns}
+                      key18={usePotentialDescKey(
+                        characterKey,
+                        ns,
+                        'ability.desc.0'
+                      )}
+                    />
                   </div>
                   <SkillGameDesc
                     characterKey={characterKey}
@@ -960,41 +986,43 @@ const PassiveFieldRow = memo(function PassiveFieldRow({
             </Text>
           )
         )}
-        <Box opacity={disabled ? 0.5 : undefined}>
-          <hr />
-          <Box mt={4}>
-            <TagContext.Provider value={tagForFields as any}>
-              {fields.map((field, i) =>
-                'fieldRef' in field ? (
-                  <TagFieldDisplay
-                    key={i}
-                    field={{
-                      ...field,
-                      title:
-                        i === 0 &&
-                        !groupTitle &&
-                        typeof field.title !== 'string' ? (
-                          <TagDisplay tag={field.fieldRef} preventRecursion />
-                        ) : (
-                          field.title
-                        ),
-                    }}
-                    showZero={true}
-                  />
-                ) : (
-                  <TextFieldDisplay
-                    key={i}
-                    field={
-                      disabled && 'fieldValue' in field
-                        ? { ...field, fieldValue: 0 }
-                        : field
-                    }
-                  />
-                )
-              )}
-            </TagContext.Provider>
+        {fields.length > 0 && (
+          <Box opacity={disabled ? 0.5 : undefined}>
+            <hr />
+            <Box mt={4}>
+              <TagContext.Provider value={tagForFields as any}>
+                {fields.map((field, i) =>
+                  'fieldRef' in field ? (
+                    <TagFieldDisplay
+                      key={i}
+                      field={{
+                        ...field,
+                        title:
+                          i === 0 &&
+                          !groupTitle &&
+                          typeof field.title !== 'string' ? (
+                            <TagDisplay tag={field.fieldRef} preventRecursion />
+                          ) : (
+                            field.title
+                          ),
+                      }}
+                      showZero={true}
+                    />
+                  ) : (
+                    <TextFieldDisplay
+                      key={i}
+                      field={
+                        disabled && 'fieldValue' in field
+                          ? { ...field, fieldValue: 0 }
+                          : field
+                      }
+                    />
+                  )
+                )}
+              </TagContext.Provider>
+            </Box>
           </Box>
-        </Box>
+        )}
       </HoverCard.Dropdown>
     </HoverCard>
   )

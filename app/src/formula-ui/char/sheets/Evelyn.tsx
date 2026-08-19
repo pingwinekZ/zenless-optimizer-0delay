@@ -4,7 +4,11 @@ import { useCharacter } from '../../../db-ui'
 import { Evelyn } from '../../../formula'
 import { GameDesc, GameDescSlice } from '../../../i18n'
 import { trans } from '../../util'
-import { createBaseSheet, fieldForBuff } from '../sheetUtil'
+import {
+  AbilityBodyText,
+  createBaseSheet,
+  fieldForBuff,
+} from '../sheetUtil'
 import { getVariant } from '../util'
 
 const key: CharacterKey = 'Evelyn'
@@ -40,6 +44,19 @@ const sheet = createBaseSheet(key, {
   ability: [
     {
       type: 'fields',
+      description: (
+        <>
+          <GameDesc ns="char_Evelyn_gen" key18="ability.desc.0" />
+          <AbilityBodyText characterKey={key}>
+            <GameDescSlice
+              ns="char_Evelyn_gen"
+              key18="ability.desc.1"
+              from="Evelyn's <ct color=#FFFFFF>Chain Attack</ct> and <ct color=#FFFFFF>Ultimate</ct> DMG increases by"
+              to="125% of the original value."
+            />
+          </AbilityBodyText>
+        </>
+      ),
       header: { icon: null, text: ch('ability_header') },
       fields: [
         {

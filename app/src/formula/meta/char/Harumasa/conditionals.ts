@@ -7,6 +7,11 @@ export const conditionals = {
     mindscapeRequirement: 2,
   },
   enemy_anomaly: { sheet: 'Harumasa', name: 'enemy_anomaly', type: 'bool' },
+  exSpecial_chain_ult_activated: {
+    sheet: 'Harumasa',
+    name: 'exSpecial_chain_ult_activated',
+    type: 'bool',
+  },
   gleaming_edge: {
     sheet: 'Harumasa',
     name: 'gleaming_edge',

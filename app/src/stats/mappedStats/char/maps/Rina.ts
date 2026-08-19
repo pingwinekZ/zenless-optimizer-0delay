@@ -47,6 +47,13 @@ const dm = {
     shocked_duration: data_gen.abilityParams[0],
     electric_dmg_: data_gen.abilityParams[1],
   },
+  potential: {
+    pen_ratio_: data_gen.potentialParams[0],
+    atk_per_pen: data_gen.potentialParams[2],
+    def_per_pen: data_gen.potentialParams[3],
+    max_atk: data_gen.potentialParams[4],
+    max_def: data_gen.potentialParams[5],
+  },
   m1: {
     duration: data_gen.mindscapeParams[0][0],
     core_buff_: data_gen.mindscapeParams[0][1],

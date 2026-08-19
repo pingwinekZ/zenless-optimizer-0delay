@@ -165,4 +165,16 @@ export const buffs = {
     },
     team: false,
   },
+  potential_impact_: {
+    sheet: 'Lycaon',
+    name: 'potential_impact_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'impact_',
+      sheet: 'Lycaon',
+      name: 'potential_impact_',
+    },
+    team: false,
+  },
 } as const

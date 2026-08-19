@@ -8,6 +8,7 @@ export type TagField = {
   icon?: ReactNode
   multi?: number // for multi-hits, displayed before a number, e.g. 3x100
   team?: boolean // true if buff affects whole team
+  minPotential?: number // field hidden below this potential level
 }
 
 export type TextField = {

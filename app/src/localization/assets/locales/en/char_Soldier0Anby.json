@@ -4,5 +4,7 @@
   "ability_header": "CR & DMG",
   "m2_header": "CR",
   "m6_header": "Additional DMG",
-  "m6_dmg": "White Thunder Additional DMG"
+  "m6_dmg": "White Thunder Additional DMG",
+  "abilityAftershockCond": "Silver Star · Aftershock DMG",
+  "m4_electric_resIgn": "Silver Star · M4 RES Ignore"
 }

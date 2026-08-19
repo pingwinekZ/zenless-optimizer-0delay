@@ -63,6 +63,18 @@ const sheet = createBaseSheet(key, {
       },
     },
   ],
+  potential: [
+    {
+      type: 'conditional',
+      conditional: {
+        label: ch('potentialCond'),
+        description:
+          'Increases the CRIT DMG of Assault instances triggered by Jane.',
+        metadata: cond.potential_assault_triggered,
+        fields: [fieldForBuff(buff.potential_assault_crit_dmg_)],
+      },
+    },
+  ],
   m1: [
     {
       type: 'fields',

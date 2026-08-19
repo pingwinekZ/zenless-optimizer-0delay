@@ -43,4 +43,5 @@ export const conditionals = {
     type: 'bool',
     mindscapeRequirement: 2,
   },
+  pawpad_ambush: { sheet: 'Nekomata', name: 'pawpad_ambush', type: 'bool' },
 } as const

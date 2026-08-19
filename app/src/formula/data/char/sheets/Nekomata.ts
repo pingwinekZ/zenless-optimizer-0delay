@@ -43,6 +43,7 @@ const { chain_ult_used } = allNumConditionals(
   undefined,
   { chain_ult_used: 6 }
 )
+const { pawpad_ambush } = allBoolConditionals(key)
 
 const sheet = register(
   key,
@@ -92,6 +93,14 @@ const sheet = register(
         char.mindscape,
         2,
         one_enemy_onField.ifOn(percent(dm.m2.enerRegen_))
+      )
+    )
+  ),
+  registerBuff(
+    'potential_crit_dmg_',
+    ownBuff.combat.crit_dmg_.add(
+      pawpad_ambush.ifOn(
+        percent(subscript(char.potential, dm.potential.crit_dmg_))
       )
     )
   ),

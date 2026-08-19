@@ -53,6 +53,9 @@ const dm = {
   ability: {
     stun_: data_gen.abilityParams[0],
   },
+  potential: {
+    impact_: data_gen.potentialParams[0],
+  },
   m1: {
     dazeInc_: data_gen.mindscapeParams[0][0],
     cooldown: data_gen.mindscapeParams[0][1],

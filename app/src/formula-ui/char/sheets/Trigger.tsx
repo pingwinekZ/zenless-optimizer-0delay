@@ -4,6 +4,7 @@ import { Trigger } from '../../../formula'
 import { GameDesc, GameDescSlice } from '../../../i18n'
 import { trans } from '../../util'
 import {
+  AbilityBodyText,
   CoreGameDesc,
   createBaseSheet,
   fieldForBuff,
@@ -50,6 +51,19 @@ const sheet = createBaseSheet(key, {
   ability: [
     {
       type: 'fields',
+      description: (
+        <>
+          <GameDesc ns="char_Trigger_gen" key18="ability.desc.0" />
+          <AbilityBodyText characterKey={key}>
+            <GameDescSlice
+              ns="char_Trigger_gen"
+              key18="ability.desc.1"
+              from="When Trigger's CRIT Rate exceeds"
+              to="75%"
+            />
+          </AbilityBodyText>
+        </>
+      ),
       header: { icon: null, text: ch('ability_header') },
       fields: [
         {

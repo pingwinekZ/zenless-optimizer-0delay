@@ -59,6 +59,12 @@ const dm = {
     common_dmg_: data_gen.abilityParams[0],
     stacks: data_gen.abilityParams[1],
   },
+  potential: {
+    atk_: data_gen.potentialParams[0],
+    electric_resIgn_: data_gen.potentialParams[1],
+    duration: data_gen.potentialParams[2][2],
+    stacks: data_gen.potentialParams[3][2],
+  },
   m1: {
     max_stacks: data_gen.mindscapeParams[0][0],
     shots_fired: data_gen.mindscapeParams[0][1],

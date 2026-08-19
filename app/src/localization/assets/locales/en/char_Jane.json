@@ -10,5 +10,6 @@
   "m2_header": "DEF Ignore & Assault CRIT DMG",
   "m4_header": "Anomaly DMG",
   "m6_header": "CRIT & Additional Attack",
-  "m6_additional_dmg": "Additional Attack DMG"
+  "m6_additional_dmg": "Additional Attack DMG",
+  "potentialCond": "When Jane triggers Assault"
 }

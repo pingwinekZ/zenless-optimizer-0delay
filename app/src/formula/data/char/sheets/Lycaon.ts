@@ -1,4 +1,10 @@
-import { cmpGE, prod, subscript, sum } from '@zenless-optimizer/pando/engine'
+import {
+  cmpGE,
+  cmpGT,
+  prod,
+  subscript,
+  sum,
+} from '@zenless-optimizer/pando/engine'
 import { type CharacterKey } from '../../../../consts'
 import { allStats, mappedStats } from '../../../../stats'
 import {
@@ -305,6 +311,16 @@ const sheet = register(
     'm6_common_dmg_',
     ownBuff.combat.common_dmg_.add(
       cmpGE(char.mindscape, 6, prod(charged_hits, percent(dm.m6.common_dmg_)))
+    )
+  ),
+  registerBuff(
+    'potential_impact_',
+    ownBuff.combat.impact_.add(
+      cmpGT(
+        durationLeft,
+        0,
+        percent(subscript(char.potential, dm.potential.impact_))
+      )
     )
   )
 )

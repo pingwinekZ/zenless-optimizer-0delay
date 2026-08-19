@@ -50,6 +50,18 @@ export const buffs = {
     },
     team: false,
   },
+  potential_crit_dmg_: {
+    sheet: 'Nekomata',
+    name: 'potential_crit_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'crit_dmg_',
+      sheet: 'Nekomata',
+      name: 'potential_crit_dmg_',
+    },
+    team: false,
+  },
   m4_crit_: {
     sheet: 'Nekomata',
     name: 'm4_crit_',

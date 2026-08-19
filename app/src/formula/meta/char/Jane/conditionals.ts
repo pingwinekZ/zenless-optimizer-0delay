@@ -26,4 +26,9 @@ export const conditionals = {
     mindscapeRequirement: 6,
   },
   passion: { sheet: 'Jane', name: 'passion', type: 'bool' },
+  potential_assault_triggered: {
+    sheet: 'Jane',
+    name: 'potential_assault_triggered',
+    type: 'bool',
+  },
 } as const

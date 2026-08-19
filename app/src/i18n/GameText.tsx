@@ -23,8 +23,9 @@ const textComponents = {
   IconSwitch: <ImgIcon src={commonDefIcon('assistFlat')} size={1.5} />,
 }
 
-// Matches numbers (int, decimal, comma-formatted) optionally followed by %
-const NUM_RE = /\d+(?:[,.]\d+)*(?:%)?/g
+// Matches numbers (int, decimal, comma-formatted) optionally followed by %,
+// excluding digits that are part of a character name like "Soldier 0 - Anby"
+const NUM_RE = /(?<!Soldier \d*)\d+(?:[,.]\d+)*(?:%)?/g
 
 function highlightNumbers(text: string): string {
   // Split into tags and text runs, wrap bare numbers in text runs with gold
@@ -94,18 +95,24 @@ export function GameDescSlice({
   key18,
   from,
   to,
+  capitalize = false,
 }: {
   ns: string
   key18: string
   from: string
   to: string
+  /** Capitalizes the first letter of the sliced text (e.g. when the slice starts mid-sentence) */
+  capitalize?: boolean
 }) {
   const { t } = useTranslation(ns)
   const text = t(`${ns}:${key18}`)
   const slice = useMemo(() => {
     if (typeof text !== 'string') return undefined
-    return sliceBetween(text, from, to)
-  }, [text, from, to])
+    const sliced = sliceBetween(text, from, to)
+    if (sliced === undefined) return undefined
+    if (!capitalize || sliced.length === 0) return sliced
+    return sliced.charAt(0).toUpperCase() + sliced.slice(1)
+  }, [text, from, to, capitalize])
 
   if (slice === undefined) {
     console.warn(

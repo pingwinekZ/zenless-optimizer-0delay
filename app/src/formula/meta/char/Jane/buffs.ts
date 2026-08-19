@@ -126,4 +126,17 @@ export const buffs = {
     },
     team: false,
   },
+  potential_assault_crit_dmg_: {
+    sheet: 'Jane',
+    name: 'potential_assault_crit_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anom_crit_dmg_',
+      sheet: 'Jane',
+      attribute: 'physical',
+      name: 'potential_assault_crit_dmg_',
+    },
+    team: true,
+  },
 } as const

@@ -1,13 +1,15 @@
 import { ColorText } from '@zenless-optimizer/common/ui'
+import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { CharacterKey } from '../../../consts'
+import { useCharacter } from '../../../db-ui'
 import { Sigrid } from '../../../formula'
-import { GameDesc } from '../../../i18n'
+import { GameDesc, GameDescSlice, GameText } from '../../../i18n'
 import { trans } from '../../util'
 import {
-  CoreGameDesc,
+  AbilityBodyText,
   createBaseSheet,
   fieldForBuff,
-  SkillGameDesc,
 } from '../sheetUtil'
 import { getVariant } from '../util'
 
@@ -17,6 +19,87 @@ const cond = Sigrid.conditionals
 const buff = Sigrid.buffs
 const formula = Sigrid.formulas
 
+const ns = 'char_Sigrid_gen'
+
+function TemperedDescription() {
+  const { t } = useTranslation(ns)
+  const paragraphs = useMemo(() => {
+    const obj = t(`${ns}:chain.ChainAttackEncroachingIce.desc`, {
+      returnObjects: true,
+    })
+    if (typeof obj !== 'object' || obj === null) return []
+    return Object.values(obj as Record<string, string>).filter(
+      (v): v is string => typeof v === 'string'
+    )
+  }, [t])
+  if (paragraphs.length < 3) return null
+  return (
+    <>
+      <GameText text={paragraphs[0]} />
+      <div style={{ marginTop: 8 }}>
+        <GameText text={paragraphs[2]} />
+      </div>
+    </>
+  )
+}
+
+function CoreCritDescription() {
+  const char = useCharacter(key)
+  const coreLevel = char?.core ?? 0
+  return (
+    <GameDescSlice
+      ns={ns}
+      key18={`core.desc.${coreLevel}.5`}
+      from="Activating or refreshing Aerial Patrol Spear increases Sigrid's CRIT Rate by"
+      to="Repeated triggers extend the duration by"
+    />
+  )
+}
+
+function M1AdditionalDmgDescription() {
+  return (
+    <GameDescSlice
+      ns={ns}
+      key18="mindscapes.1.desc"
+      from="Upon activating the 3rd stage of <ct color=#FFFFFF>Basic Attack: Converging Spear</ct>"
+      to="<ct color=#98EFF0>Ice DMG</ct>"
+    />
+  )
+}
+
+function M1AtkDescription() {
+  return (
+    <GameDescSlice
+      ns={ns}
+      key18="mindscapes.1.desc"
+      from="Sigrid's <ct color=#FFFFFF>ATK</ct> increases by"
+      to="<ct color=#FFFFFF>25%</ct>"
+    />
+  )
+}
+
+function M2Description() {
+  return (
+    <GameDescSlice
+      ns={ns}
+      key18="mindscapes.2.desc"
+      from="PEN Ratio of <ct color=#FFFFFF>Unbridled Spear</ct> attacks and <ct color=#FFFFFF>Basic Attack: Converging Spear</ct>"
+      to="extended by 2s"
+    />
+  )
+}
+
+function M6Description() {
+  return (
+    <GameDescSlice
+      ns={ns}
+      key18="mindscapes.6.desc"
+      from="When <ct color=#FFFFFF>Basic Attack: Converging Spear</ct>'s"
+      to="<ct color=#98EFF0>Ice DMG</ct>"
+    />
+  )
+}
+
 const sheet = createBaseSheet(key, {
   perSkillAbility: {
     chain: {
@@ -25,13 +108,7 @@ const sheet = createBaseSheet(key, {
           type: 'conditional',
           conditional: {
             label: ch('temperedCond'),
-            description: (
-              <SkillGameDesc
-                characterKey={key}
-                ns="char_Sigrid_gen"
-                key18="chain.ChainAttackEncroachingIce.desc"
-              />
-            ),
+            description: <TemperedDescription />,
             metadata: cond.tempered,
             fields: [
               {
@@ -55,7 +132,7 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('patrolActiveCond'),
-        description: <CoreGameDesc characterKey={key} paragraph={5} />,
+        description: <CoreCritDescription />,
         metadata: cond.patrolActive,
         fields: [fieldForBuff(buff.core_patrol_crit_)],
         linked: 'patrolActiveM4',
@@ -66,6 +143,15 @@ const sheet = createBaseSheet(key, {
     {
       type: 'fields',
       header: { icon: null, text: ch('ability_atk') },
+      description: (
+        <>
+          <GameDesc ns={ns} key18="ability.desc.0" />
+          <div style={{ marginBottom: 8 }} />
+          <AbilityBodyText characterKey={key}>
+            <GameDesc ns={ns} key18="ability.desc.1" />
+          </AbilityBodyText>
+        </>
+      ),
       fields: [fieldForBuff(buff.ability_atk)],
     },
     {
@@ -74,9 +160,16 @@ const sheet = createBaseSheet(key, {
         label: ch('contaminationCond'),
         description: (
           <>
-            <GameDesc ns="char_Sigrid_gen" key18="ability.desc.0" />
+            <GameDesc ns={ns} key18="ability.desc.0" />
             <div style={{ marginBottom: 8 }} />
-            <GameDesc ns="char_Sigrid_gen" key18="ability.desc.2" />
+            <AbilityBodyText characterKey={key}>
+              <GameDescSlice
+                ns={ns}
+                key18="ability.desc.2"
+                from="DMG increases by"
+                to="Contamination"
+              />
+            </AbilityBodyText>
           </>
         ),
         metadata: cond.contaminationActive,
@@ -88,11 +181,13 @@ const sheet = createBaseSheet(key, {
     {
       type: 'fields',
       header: { icon: null, text: ch('m1_atk_') },
+      description: <M1AtkDescription />,
       fields: [fieldForBuff(buff.m1_atk_)],
     },
     {
       type: 'fields',
       header: { icon: null, text: ch('m1_dmg_') },
+      description: <M1AdditionalDmgDescription />,
       fields: [
         {
           title: (
@@ -109,6 +204,7 @@ const sheet = createBaseSheet(key, {
     {
       type: 'fields',
       header: { icon: null, text: ch('m2_header') },
+      description: <M2Description />,
       fields: [
         {
           title: (
@@ -199,7 +295,7 @@ const sheet = createBaseSheet(key, {
       conditional: {
         label: ch('patrolActiveM4Cond'),
         description: (
-          <GameDesc ns="char_Sigrid_gen" key18="mindscapes.4.desc" />
+          <GameDesc ns={ns} key18="mindscapes.4.desc" />
         ),
         metadata: cond.patrolActiveM4,
         fields: [fieldForBuff(buff.m4_dmg_)],
@@ -211,6 +307,7 @@ const sheet = createBaseSheet(key, {
     {
       type: 'fields',
       header: { icon: null, text: ch('m6_header') },
+      description: <M6Description />,
       fields: [
         {
           title: (
