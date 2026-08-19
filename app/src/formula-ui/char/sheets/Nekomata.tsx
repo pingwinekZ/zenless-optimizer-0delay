@@ -33,6 +33,18 @@ const sheet = createBaseSheet(key, {
       },
     },
   ],
+  potential: [
+    {
+      type: 'conditional',
+      conditional: {
+        label: ch('potentialCond'),
+        description:
+          'Increases CRIT DMG while Nekomata is in the Pawpad Ambush state.',
+        metadata: cond.pawpad_ambush,
+        fields: [fieldForBuff(buff.potential_crit_dmg_)],
+      },
+    },
+  ],
   m1: [
     {
       type: 'conditional',

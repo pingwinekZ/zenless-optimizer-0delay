@@ -53,6 +53,9 @@ const dm = {
     physical_anomBuildup_: data_gen.abilityParams[0],
     additional_physical_anomBuildup_: data_gen.abilityParams[1],
   },
+  potential: {
+    assault_crit_dmg_: data_gen.potentialParams[0],
+  },
   m1: {
     physical_anomBuildup_: data_gen.mindscapeParams[0][0],
     anomProf_step: data_gen.mindscapeParams[0][1],

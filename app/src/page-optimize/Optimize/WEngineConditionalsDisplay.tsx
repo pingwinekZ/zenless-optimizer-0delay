@@ -601,12 +601,6 @@ const SeveredInnocenceCondDesc = fromMarkerDesc(
   'When the equipper lands'
 )
 
-/** Conditional portion of SpectralGaze's phase description (from "When this effect is triggered" to end). */
-const SpectralGazeSpiritLockDesc = fromMarkerDesc(
-  'wengine_SpectralGaze_gen',
-  'When this effect is triggered'
-)
-
 /** Ice DMG portion of DeepSeaVisitor's phase description (first sentence). */
 const DeepSeaVisitorIceDmgDesc = firstSentenceDesc('wengine_DeepSeaVisitor_gen')
 
@@ -1487,8 +1481,6 @@ export function WEngineConditionalsDisplay({
               ) : wengineKey === 'SpectralGaze' &&
                 condName === 'hit_aftershock_electric' ? (
                 <SpectralGazeDefRedDesc phase={phase} />
-              ) : wengineKey === 'SpectralGaze' && condName === 'spiritLock' ? (
-                <SpectralGazeSpiritLockDesc phase={phase} />
               ) : wengineKey === 'HellfireGears' && condName === 'offField' ? (
                 <HellfireGearsOffFieldDesc phase={phase} />
               ) : wengineKey === 'HellfireGears' &&

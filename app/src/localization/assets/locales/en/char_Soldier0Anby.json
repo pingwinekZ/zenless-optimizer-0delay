@@ -1,8 +1,10 @@
 {
-  "potential_header": "Aftershock DMG",
-  "markedWithSilverStarCond": "Silver Star · DMG & CD & RES Ignore",
-  "ability_header": "CR & DMG",
+  "potential_header": "Chain / Ultimate · Aftershock",
+  "markedWithSilverStarCond": "Silver Star · DMG & CD",
+  "ability_header": "CR",
   "m2_header": "CR",
   "m6_header": "Additional DMG",
-  "m6_dmg": "White Thunder Additional DMG"
+  "m6_dmg": "White Thunder Additional DMG",
+  "abilityAftershockCond": "Silver Star · DMG",
+  "m4_electric_resIgn": "Silver Star · RES Ignore"
 }

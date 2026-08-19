@@ -1,10 +1,12 @@
 import { ColorText, ImgIcon } from '@zenless-optimizer/common/ui'
 import { objKeyMap } from '@zenless-optimizer/common/util'
 import type { IFormulaData } from '@zenless-optimizer/game-opt/engine'
+import { CalcContext, TagContext } from '@zenless-optimizer/game-opt/formula-ui'
 import type {
   Document,
   UISheetElement,
 } from '@zenless-optimizer/game-opt/sheet-ui'
+import { read } from '@zenless-optimizer/pando/engine'
 import { createContext, type ReactNode, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { commonDefIcon, mindscapeDefIcon } from '../../assets'
@@ -12,7 +14,7 @@ import type { CharacterKey, SkillKey } from '../../consts'
 import { allSkillKeys } from '../../consts'
 import { useCharacter } from '../../db-ui'
 import type { Tag } from '../../formula'
-import { formulas, own } from '../../formula'
+import { buffs, formulas, own } from '../../formula'
 import { GameDesc, GameText, i18n } from '../../i18n'
 import { getCharStat, mappedStats } from '../../stats'
 import { TagDisplay } from '../components'
@@ -36,6 +38,104 @@ type AddlDocuments = {
   m4?: Document[]
   m5?: Document[]
   m6?: Document[]
+}
+
+export function hasPotential(characterKey: CharacterKey) {
+  return getCharStat(characterKey).potentialParams.length > 0
+}
+
+function swapDescToPotential(key18: string) {
+  return key18.replace(/\.(desc|params)((?:\.\d+)*)$/, '.$1Potential$2')
+}
+
+/**
+ * Swaps a trailing `.desc`/`.params` locale key segment to its
+ * `.descPotential`/`.paramsPotential` variant when the character has a
+ * potential level selected and the variant key exists, e.g.
+ * `core.desc.6` → `core.descPotential.6` for potential 1+.
+ */
+function potentialDescKey(
+  characterKey: CharacterKey,
+  ns: string,
+  key18: string,
+  potential: number
+) {
+  if (potential <= 0 || !hasPotential(characterKey)) return key18
+  const swapped = swapDescToPotential(key18)
+  if (swapped === key18) return key18
+  return i18n.exists(`${ns}:${swapped}`) ? swapped : key18
+}
+
+function usePotentialDescKey(
+  characterKey: CharacterKey,
+  ns: string,
+  key18: string
+) {
+  const char = useCharacter(characterKey)
+  return potentialDescKey(characterKey, ns, key18, char?.potential ?? 0)
+}
+
+export { usePotentialDescKey }
+
+/**
+ * Ability description body text, dimmed when the ability trigger condition
+ * is not met. Uses `useCharacter` for the potential-desc-key swap so it
+ * works as a plain ReactNode (no calc callback needed).
+ */
+function AbilityDescBody({
+  charKey,
+  abilityParagraph,
+}: {
+  charKey: CharacterKey
+  abilityParagraph?: number
+}) {
+  const [chg] = trans('char', charKey)
+  const key18 = usePotentialDescKey(
+    charKey,
+    `char_${charKey}_gen`,
+    `ability.desc${abilityParagraph !== undefined ? `.${abilityParagraph}` : ''}`
+  )
+  return <AbilityBodyText characterKey={charKey}>{chg(key18)}</AbilityBodyText>
+}
+
+/**
+ * Whether the character's Additional Ability trigger condition is currently
+ * met, determined by checking if any `ability_*` buff is non-zero.
+ */
+export function useAbilityActive(characterKey: CharacterKey): boolean {
+  const calc = useContext(CalcContext)
+  const contextTag = useContext(TagContext)
+  return useMemo(() => {
+    if (!calc) return true
+    const charBuffs = (buffs as any)[characterKey] as
+      | Record<string, { tag?: Tag }>
+      | undefined
+    if (!charBuffs) return true
+    const tag = { ...contextTag, src: characterKey } as Tag
+    return Object.entries(charBuffs)
+      .filter(([name]) => name.startsWith('ability_'))
+      .some(([, b]) => {
+        const t = b?.tag
+        if (!t) return false
+        return calc.withTag(tag).compute(read(t)).val > 0
+      })
+  }, [calc, contextTag, characterKey])
+}
+
+/** Renders Additional Ability body text, dimmed while the ability is inactive. */
+export function AbilityBodyText({
+  characterKey,
+  children,
+}: {
+  characterKey: CharacterKey
+  children: ReactNode
+}) {
+  const active = useAbilityActive(characterKey)
+  return (
+    <div style={{ marginTop: 8, opacity: active ? undefined : 0.5 }}>
+      {children}
+    </div>
+  )
 }
 
 // Creates the base sheet for a character, including all skill dmg, daze and anom values
@@ -90,6 +190,26 @@ function fieldForSkillFormula(
   }
 }
 
+// Renders a skill ability description with the potential variant when the
+// character has a potential level selected
+function SkillAbilityDesc({
+  characterKey,
+  skill,
+  ability,
+}: {
+  characterKey: CharacterKey
+  skill: SkillKey
+  ability: string
+}) {
+  const ns = `char_${characterKey}_gen`
+  const key18 = usePotentialDescKey(
+    characterKey,
+    ns,
+    `${skill}.${ability}.desc`
+  )
+  return <GameDesc ns={ns} key18={key18} />
+}
+
 function createSkillsSheets(
   charKey: CharacterKey,
   addlDocumentsPerSkillAbility?: AddlDocumentsPerSkillAbility
@@ -117,7 +237,13 @@ function createSkillsSheets(
             icon: <ImgIcon src={commonDefIcon(`${skill}Flat`)} size={1.5} />,
             text: chg(`${skill}.${ability}.name`),
           },
-          text: chg(`${skill}.${ability}.desc`),
+          text: (
+            <SkillAbilityDesc
+              characterKey={charKey}
+              skill={skill}
+              ability={ability}
+            />
+          ),
         },
         {
           type: 'fields',
@@ -200,12 +326,19 @@ function createCoreAndAbilitySheet(
           icon: <ImgIcon src={commonDefIcon('coreFlat')} size={1.5} />,
           text: chg('core.name'),
         },
-        text: (calc) =>
-          coreParagraph !== undefined
-            ? chg(
-                `core.desc.${calc.compute(own.char.core).val}.${coreParagraph}`
-              )
-            : chg(`core.desc.${calc.compute(own.char.core).val}`),
+        text: (calc) => {
+          const coreKey = `core.desc.${calc.compute(own.char.core).val}${
+            coreParagraph !== undefined ? `.${coreParagraph}` : ''
+          }`
+          return chg(
+            potentialDescKey(
+              charKey,
+              `char_${charKey}_gen`,
+              coreKey,
+              calc.compute(own.char.potential).val
+            )
+          )
+        },
       },
       ...addlCoreDocuments,
       {
@@ -214,10 +347,12 @@ function createCoreAndAbilitySheet(
           icon: <ImgIcon src={commonDefIcon('coreFlat')} size={1.5} />,
           text: chg('ability.name'),
         },
-        text:
-          abilityParagraph !== undefined
-            ? chg(`ability.desc.${abilityParagraph}`)
-            : chg('ability.desc'),
+        text: (
+          <AbilityDescBody
+            charKey={charKey}
+            abilityParagraph={abilityParagraph}
+          />
+        ),
       },
       ...addlAbilityDocuments,
     ],
@@ -333,12 +468,13 @@ export function CoreGameDesc({
   const char = useCharacter(characterKey)
   const coreLevel = char?.core ?? 0
   const suffix = paragraph !== undefined ? `.${paragraph}` : ''
-  return (
-    <GameDesc
-      ns={`char_${characterKey}_gen`}
-      key18={`core.desc.${coreLevel}${suffix}`}
-    />
+  const ns = `char_${characterKey}_gen`
+  const key18 = usePotentialDescKey(
+    characterKey,
+    ns,
+    `core.desc.${coreLevel}${suffix}`
   )
+  return <GameDesc ns={ns} key18={key18} />
 }
 
 /**
@@ -349,12 +485,15 @@ export function SkillGameDesc({
   characterKey,
   ns,
   key18,
+  paragraph,
 }: {
   characterKey: CharacterKey
   ns: string
   key18: string
+  paragraph?: number
 }) {
   const char = useCharacter(characterKey)
+  const key18Potential = usePotentialDescKey(characterKey, ns, key18)
   const skillLevels = useMemo(() => {
     const base = {
       basic: char?.basic ?? 1,
@@ -389,7 +528,7 @@ export function SkillGameDesc({
     char?.mindscape,
   ])
   const { t } = useTranslation(ns)
-  const textKey = `${ns}:${key18}`
+  const textKey = `${ns}:${key18Potential}`
   const obj = t(textKey, { returnObjects: true })
   const processedStr = useMemo(
     () =>
@@ -400,14 +539,20 @@ export function SkillGameDesc({
   const paragraphs = Object.values(obj as Record<string, string>).filter(
     (v): v is string => typeof v === 'string'
   )
+  const filteredParagraphs =
+    paragraph !== undefined
+      ? paragraphs.slice(paragraph, paragraph + 1)
+      : paragraphs
   return (
     <>
-      {paragraphs.map((para, i) => {
+      {filteredParagraphs.map((para, i) => {
         const processed = processCalcTokens(para, skillLevels)
         return (
           <div
             key={i}
-            style={{ marginBottom: i < paragraphs.length - 1 ? 8 : 0 }}
+            style={{
+              marginBottom: i < filteredParagraphs.length - 1 ? 8 : 0,
+            }}
           >
             <GameText text={processed} />
           </div>

@@ -42,6 +42,7 @@ const {
   m2_gnawed: 2,
   assault_or_disorder_triggered: 4,
 })
+const { potential_assault_triggered } = allBoolConditionals(key)
 
 const sheet = register(
   key,
@@ -153,6 +154,16 @@ const sheet = register(
     ownBuff.combat.crit_dmg_.add(
       cmpGE(char.mindscape, 6, m6_passion.ifOn(dm.m6.crit_dmg_))
     )
+  ),
+  registerBuff(
+    'potential_assault_crit_dmg_',
+    teamBuff.combat.anom_crit_dmg_.physical.add(
+      potential_assault_triggered.ifOn(
+        subscript(char.potential, dm.potential.assault_crit_dmg_)
+      )
+    ),
+    undefined,
+    true
   )
 )
 export default sheet

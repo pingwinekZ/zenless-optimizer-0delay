@@ -1,7 +1,7 @@
 import { Box } from '@mantine/core'
-import type { Document } from '@zenless-optimizer/game-opt/sheet-ui'
+import type { Document, Field } from '@zenless-optimizer/game-opt/sheet-ui'
 import { DocumentDisplay } from '@zenless-optimizer/game-opt/sheet-ui'
-import { useCharacterContext } from '../db-ui'
+import { useCharacter, useCharacterContext } from '../db-ui'
 import {
   Banyue,
   Manato,
@@ -12,8 +12,28 @@ import {
 } from '../formula'
 import { charSheets, TagDisplay } from '../formula-ui'
 
+function filterDocFields(doc: Document, potential: number): Document {
+  const filter = (f: Field) =>
+    !('minPotential' in f) || (f.minPotential ?? 0) <= potential
+  if (doc.type === 'fields') {
+    return { ...doc, fields: doc.fields.filter(filter) }
+  }
+  if (doc.type === 'conditional' && doc.conditional?.fields) {
+    return {
+      ...doc,
+      conditional: {
+        ...doc.conditional,
+        fields: doc.conditional.fields.filter(filter),
+      },
+    }
+  }
+  return doc
+}
+
 export function CharSheetSection() {
   const { key: characterKey } = useCharacterContext()!
+  const char = useCharacter(characterKey)
+  const potential = char?.potential ?? 0
   return (
     <Box>
       {characterKey === 'Yixuan' && <MinimalYixuanSheet />}
@@ -26,7 +46,7 @@ export function CharSheetSection() {
         sheet.documents.map((doc, index2) => (
           <DocumentDisplay
             key={`${index1}_${index2}`}
-            document={doc}
+            document={filterDocFields(doc, potential)}
             collapse
           />
         ))

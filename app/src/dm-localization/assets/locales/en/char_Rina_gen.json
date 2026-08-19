@@ -14,6 +14,17 @@
         "2nd-Hit ",
         "3rd-Hit ",
         "4th-Hit "
+      ],
+      "descPotential": {
+        "0": "Press <IconNormal /> to activate:",
+        "1": "Order Drusilla and Anastella to attack up to 4 times, dealing <ct color=#F0D12B>Physical DMG</ct> and <ct color=#2EB6FF>Electric DMG</ct>.",
+        "2": "Performing other actions with Rina during Drusilla and Anastella's attacks will not interrupt Rina's <ct color=#FFFFFF>Basic Attack</ct> combo count."
+      },
+      "paramsPotential": [
+        "1st-Hit ",
+        "2nd-Hit ",
+        "3rd-Hit ",
+        "4th-Hit "
       ]
     },
     "BasicAttackShooTheFool": {
@@ -25,12 +36,20 @@
       },
       "params": [
         " "
+      ],
+      "descPotential": {
+        "0": "Hold <IconNormal /> or <IconSpecial /> to activate:",
+        "1": "Calls back Drusilla and Anastella to swing them around for a ranged attack, dealing <ct color=#2EB6FF>Electric DMG</ct>.",
+        "2": "Anti-Interrupt level is increased while using this skill."
+      },
+      "paramsPotential": [
+        " "
       ]
     },
     "BasicAttackMorningCleanup": {
       "name": "Basic Attack: Morning Cleanup",
-      "desc": "After Rina uses an <ct color=#FFFFFF>EX Special Attack</ct>, <ct color=#FFFFFF>Chain Attack</ct>, or <ct color=#FFFFFF>Ultimate</ct>, she enters the <ct color=#FFFFFF>Spotless</ct> state for 13s. During this time, Drusilla or Anastella attacks an enemy once every 2.5s, dealing <ct color=#F0D12B>Physical DMG</ct> and <ct color=#2EB6FF>Electric DMG</ct>, and grants 1 stack of <ct color=#FFFFFF>Fright</ct>, up to a maximum of 6 stacks. After using the skill, Drusilla and Anastella's exit timer resets.",
-      "params": [
+      "descPotential": "After Rina uses an <ct color=#FFFFFF>EX Special Attack</ct>, <ct color=#FFFFFF>Chain Attack</ct>, or <ct color=#FFFFFF>Ultimate</ct>, she enters the <ct color=#FFFFFF>Spotless</ct> state for 13s. During this time, Drusilla or Anastella attacks an enemy once every 2.5s, dealing <ct color=#F0D12B>Physical DMG</ct> and <ct color=#2EB6FF>Electric DMG</ct>, and grants 1 stack of <ct color=#FFFFFF>Fright</ct>, up to a maximum of 6 stacks. After using the skill, Drusilla and Anastella's exit timer resets.",
+      "paramsPotential": [
         "1st-Hit ",
         "2nd-Hit ",
         "3rd-Hit "
@@ -38,8 +57,8 @@
     },
     "BasicAttackMidnightCleanup": {
       "name": "Basic Attack: Midnight Cleanup",
-      "desc": "When <ct color=#FFFFFF>Fright</ct> reaches 6 stacks, the next <ct color=#FFFFFF>Basic Attack: Morning Cleanup</ct> performed by Drusilla or Anastella consumes all <ct color=#FFFFFF>Fright</ct> stacks and is replaced with <ct color=#FFFFFF>Basic Attack: Midnight Cleanup</ct>, dealing <ct color=#2EB6FF>Electric DMG</ct>. After using the skill, Drusilla and Anastella's exit timer resets.",
-      "params": [
+      "descPotential": "When <ct color=#FFFFFF>Fright</ct> reaches 6 stacks, the next <ct color=#FFFFFF>Basic Attack: Morning Cleanup</ct> performed by Drusilla or Anastella consumes all <ct color=#FFFFFF>Fright</ct> stacks and is replaced with <ct color=#FFFFFF>Basic Attack: Midnight Cleanup</ct>, dealing <ct color=#2EB6FF>Electric DMG</ct>. After using the skill, Drusilla and Anastella's exit timer resets.",
+      "paramsPotential": [
         " "
       ]
     }
@@ -52,7 +71,13 @@
         "1": "A quick dash dodge.",
         "2": "Character is invulnerable while using this skill."
       },
-      "params": []
+      "params": [],
+      "descPotential": {
+        "0": "Press <IconEvade /> to activate:",
+        "1": "A quick dash dodge.",
+        "2": "Character is invulnerable while using this skill."
+      },
+      "paramsPotential": []
     },
     "DashAttackSuddenSurprise": {
       "name": "Dash Attack: Sudden Surprise",
@@ -61,6 +86,13 @@
         "1": "Order Drusilla and Anastella to execute a piercing attack, dealing <ct color=#F0D12B>Physical DMG</ct>."
       },
       "params": [
+        " "
+      ],
+      "descPotential": {
+        "0": "Press <IconNormal /> during a dodge to activate:",
+        "1": "Order Drusilla and Anastella to execute a piercing attack, dealing <ct color=#F0D12B>Physical DMG</ct>."
+      },
+      "paramsPotential": [
         " "
       ]
     },
@@ -72,6 +104,14 @@
         "2": "Character is invulnerable while using this skill."
       },
       "params": [
+        " "
+      ],
+      "descPotential": {
+        "0": "Press <IconNormal /> during a <ct color=#FFFFFF>Perfect Dodge</ct> to activate:",
+        "1": "Order Drusilla and Anastella to spin forward and trigger an explosion, dealing <ct color=#2EB6FF>Electric DMG</ct>.",
+        "2": "Character is invulnerable while using this skill."
+      },
+      "paramsPotential": [
         " "
       ]
     }
@@ -86,6 +126,14 @@
       },
       "params": [
         " "
+      ],
+      "descPotential": {
+        "0": "Press <IconSpecial /> to activate:",
+        "1": "Order Anastella to execute a downward smash, dealing <ct color=#2EB6FF>Electric DMG</ct>",
+        "2": "Anti-Interrupt level is increased while using this skill."
+      },
+      "paramsPotential": [
+        " "
       ]
     },
     "EXSpecialAttackDimwitDisappearingTrick": {
@@ -97,6 +145,16 @@
         "3": "After using this skill, a <ct color=#FFFFFF>Quick Assist</ct> is triggered."
       },
       "params": [
+        " ",
+        "Energy Cost "
+      ],
+      "descPotential": {
+        "0": "With enough Energy, press <IconSpecialReady /> to activate:",
+        "1": "Commands Drusilla and Anastella to unleash a continuous downward smash attack, dealing massive <ct color=#2EB6FF>Electric DMG</ct>.",
+        "2": "Character is invulnerable while using this skill.",
+        "3": "After using this skill, a <ct color=#FFFFFF>Quick Assist</ct> is triggered."
+      },
+      "paramsPotential": [
         " ",
         "Energy Cost "
       ]
@@ -114,6 +172,16 @@
       },
       "params": [
         " "
+      ],
+      "descPotential": {
+        "0": "When a <ct color=#FFFFFF>Chain Attack</ct> is triggered, select the character to activate:",
+        "1": "Order Drusilla and Anastella to push forward and generate a ball-shaped electrical field that deals massive <ct color=#2EB6FF>Electric DMG</ct>.",
+        "2": "During this skill, Drusilla and Anastella are unable to perform <ct color=#FFFFFF>Basic Attacks</ct>, <ct color=#FFFFFF>Dash Attacks</ct>, <ct color=#FFFFFF>Special Attacks</ct>, and <ct color=#FFFFFF>EX Special Attacks</ct>, but can be recalled to Rina's side through <ct color=#FFFFFF>Basic Attack: Shoo the Fool</ct>.",
+        "3": "Character is invulnerable while using this skill.",
+        "4": "A <ct color=#FFFFFF>Quick Assist</ct> is triggered when this skill hits an enemy."
+      },
+      "paramsPotential": [
+        " "
       ]
     },
     "UltimateTheQueensAttendants": {
@@ -128,6 +196,17 @@
       },
       "params": [
         " "
+      ],
+      "descPotential": {
+        "0": "When Decibel Rating is at <ct color=#FFFFFF>Maximum</ct>, press <IconUltimateReady /> to activate:",
+        "1": "Commands Drusilla and Anastella to spin forward, dealing massive <ct color=#2EB6FF>Electric DMG</ct>.",
+        "2": "During this skill, Drusilla and Anastella are unable to respond to <ct color=#FFFFFF>Basic Attack</ct>, <ct color=#FFFFFF>Dash Attack</ct>, <ct color=#FFFFFF>Special Attack</ct>, or <ct color=#FFFFFF>EX Special Attack</ct> commands, but can be recalled to Rina's side through <ct color=#FFFFFF>Basic Attack: Shoo the Fool</ct>.",
+        "3": "Upon activating this skill, other squad members recover 10 Energy. The next character to switch in recovers an additional 20 Energy.",
+        "4": "Character is invulnerable while using this skill.",
+        "5": "After using this skill, a <ct color=#FFFFFF>Quick Assist</ct> is triggered."
+      },
+      "paramsPotential": [
+        " "
       ]
     }
   },
@@ -141,6 +220,14 @@
       },
       "params": [
         " "
+      ],
+      "descPotential": {
+        "0": "When the active character is launched, press <IconSwitch /> to activate:",
+        "1": "Order Drusilla and Anastella to spin forward and trigger an explosion, dealing <ct color=#2EB6FF>Electric DMG</ct>.",
+        "2": "Character is invulnerable while using this skill."
+      },
+      "paramsPotential": [
+        " "
       ]
     },
     "EvasiveAssistTripleMeterCourante": {
@@ -150,7 +237,13 @@
         "1": "Dodges the enemy's attack and activates <ct color=#FFFFFF>Vital View</ct>.",
         "2": "Character is invulnerable while using this skill."
       },
-      "params": []
+      "params": [],
+      "descPotential": {
+        "0": "When the character on field is about to be attacked, press <IconSwitch /> to activate:",
+        "1": "Dodges the enemy's attack and activates <ct color=#FFFFFF>Vital View</ct>.",
+        "2": "Character is invulnerable while using this skill."
+      },
+      "paramsPotential": []
     },
     "AssistFollowUpQuadrupleMeterGavotte": {
       "name": "Assist Follow-Up: Quadruple Meter Gavotte",
@@ -161,6 +254,15 @@
         "3": "Character is invulnerable while using this skill."
       },
       "params": [
+        " "
+      ],
+      "descPotential": {
+        "0": "Press <IconNormal /> after an <ct color=#FFFFFF>Evasive Assist</ct> to activate:",
+        "1": "Commands Drusilla and Anastella to continuously advance while generating a vortex of electricity, dealing <ct color=#2EB6FF>Electric DMG</ct>.",
+        "2": "While using this skill, Rina can quickly chain into <ct color=#FFFFFF>EX Special Attack: Dimwit Disappearing Trick</ct>.",
+        "3": "Character is invulnerable while using this skill."
+      },
+      "paramsPotential": [
         " "
       ]
     }
@@ -175,11 +277,24 @@
       "When ordering Drusilla or Anastella to attack, other squad members' PEN Ratio increases together with Rina's, by 25% of Rina's PEN Ratio + <ct color=#2BAD00>10.8%</ct>, up to 30%. The effect ends when both Drusilla and Anastella return to Rina.",
       "When ordering Drusilla or Anastella to attack, other squad members' PEN Ratio increases together with Rina's, by 25% of Rina's PEN Ratio + <ct color=#2BAD00>11.4%</ct>, up to 30%. The effect ends when both Drusilla and Anastella return to Rina.",
       "When ordering Drusilla or Anastella to attack, other squad members' PEN Ratio increases together with Rina's, by 25% of Rina's PEN Ratio + <ct color=#2BAD00>12%</ct>, up to 30%. The effect ends when both Drusilla and Anastella return to Rina."
+    ],
+    "descPotential": [
+      "When ordering Drusilla or Anastella to attack, other squad members' PEN Ratio increases together with Rina's, by 25% of Rina's PEN Ratio + <ct color=#2BAD00>6%</ct>, up to 30%. The effect ends when both Drusilla and Anastella return to Rina.",
+      "When ordering Drusilla or Anastella to attack, other squad members' PEN Ratio increases together with Rina's, by 25% of Rina's PEN Ratio + <ct color=#2BAD00>7.5%</ct>, up to 30%. The effect ends when both Drusilla and Anastella return to Rina.",
+      "When ordering Drusilla or Anastella to attack, other squad members' PEN Ratio increases together with Rina's, by 25% of Rina's PEN Ratio + <ct color=#2BAD00>9%</ct>, up to 30%. The effect ends when both Drusilla and Anastella return to Rina.",
+      "When ordering Drusilla or Anastella to attack, other squad members' PEN Ratio increases together with Rina's, by 25% of Rina's PEN Ratio + <ct color=#2BAD00>10.2%</ct>, up to 30%. The effect ends when both Drusilla and Anastella return to Rina.",
+      "When ordering Drusilla or Anastella to attack, other squad members' PEN Ratio increases together with Rina's, by 25% of Rina's PEN Ratio + <ct color=#2BAD00>10.8%</ct>, up to 30%. The effect ends when both Drusilla and Anastella return to Rina.",
+      "When ordering Drusilla or Anastella to attack, other squad members' PEN Ratio increases together with Rina's, by 25% of Rina's PEN Ratio + <ct color=#2BAD00>11.4%</ct>, up to 30%. The effect ends when both Drusilla and Anastella return to Rina.",
+      "When ordering Drusilla or Anastella to attack, other squad members' PEN Ratio increases together with Rina's, by 25% of Rina's PEN Ratio + <ct color=#2BAD00>12%</ct>, up to 30%. The effect ends when both Drusilla and Anastella return to Rina."
     ]
   },
   "ability": {
     "name": "Additional Ability: Banquet of Perfection",
     "desc": {
+      "0": "When another character in your squad shares the same Attribute or Faction:",
+      "1": "Increases the duration of <ct color=#2EB6FF>Shock</ct> inflicted on enemies by any character by 3s. When <ct color=#2EB6FF>Shocked</ct> enemies are on the field, all squad members' <ct color=#2EB6FF>Electric DMG</ct> increases by 10%."
+    },
+    "descPotential": {
       "0": "When another character in your squad shares the same Attribute or Faction:",
       "1": "Increases the duration of <ct color=#2EB6FF>Shock</ct> inflicted on enemies by any character by 3s. When <ct color=#2EB6FF>Shocked</ct> enemies are on the field, all squad members' <ct color=#2EB6FF>Electric DMG</ct> increases by 10%."
     }

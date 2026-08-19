@@ -32,6 +32,7 @@ const { enemy_anomaly, electro_blitz, haOtoNoYa } = allBoolConditionals(
   undefined,
   { electro_blitz: 2, haOtoNoYa: 6 }
 )
+const { exSpecial_chain_ult_activated } = allBoolConditionals(key)
 const { gleaming_edge } = allNumConditionals(key, true, 0, dm.core.max_stacks)
 
 const core_dash_crit_ = ownBuff.combat.crit_.addWithDmgType(
@@ -41,6 +42,32 @@ const core_dash_crit_ = ownBuff.combat.crit_.addWithDmgType(
 const core_dash_crit_dmg_ = ownBuff.combat.crit_dmg_.addWithDmgType(
   'dash',
   prod(gleaming_edge, percent(subscript(char.core, dm.core.crit_dmg_)))
+)
+// The potential-augmented Core Passive extends the Gleaming Edge CRIT Rate and
+// CRIT DMG to Chasing Thunder and the Ultimate
+const core_chasing_thunder_crit_ = ownBuff.combat.crit_.addWithDmgType(
+  'dash',
+  cmpGE(char.potential, 1, percent(subscript(char.core, dm.core.crit_)))
+)
+const core_chasing_thunder_crit_dmg_ = ownBuff.combat.crit_dmg_.addWithDmgType(
+  'dash',
+  cmpGE(
+    char.potential,
+    1,
+    prod(gleaming_edge, percent(subscript(char.core, dm.core.crit_dmg_)))
+  )
+)
+const core_ult_crit_ = ownBuff.combat.crit_.addWithDmgType(
+  'ult',
+  cmpGE(char.potential, 1, percent(subscript(char.core, dm.core.crit_)))
+)
+const core_ult_crit_dmg_ = ownBuff.combat.crit_dmg_.addWithDmgType(
+  'ult',
+  cmpGE(
+    char.potential,
+    1,
+    prod(gleaming_edge, percent(subscript(char.core, dm.core.crit_dmg_)))
+  )
 )
 const m2_dash_dmg_ = ownBuff.combat.dmg_.addWithDmgType(
   'dash',
@@ -144,26 +171,31 @@ const sheet = register(
       { ...baseTag, damageType1: 'dash' },
       'atk',
       undefined,
-      ...core_dash_crit_,
-      ...core_dash_crit_dmg_
+      ...core_chasing_thunder_crit_,
+      ...core_chasing_thunder_crit_dmg_
     )
   ),
 
   ...customDmg(
     'm6_dmg',
     { ...baseTag, damageType1: 'elemental' },
-    prod(own.final.atk, percent(dm.m6.dmg))
+    cmpGE(char.mindscape, 6, prod(own.final.atk, percent(dm.m6.dmg)))
+  ),
+  registerBuff(
+    'm6_dmg',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'elemental',
+      cmpGE(char.mindscape, 6, percent(dm.m6.dmg))
+    ),
+    undefined,
+    undefined,
+    false
   ),
 
   // Buffs
   registerBuff('core_dash_crit_', core_dash_crit_, undefined, undefined, false),
-  registerBuff(
-    'core_ult_crit_',
-    ownBuff.combat.crit_.addWithDmgType(
-      'ult',
-      percent(subscript(char.core, dm.core.crit_))
-    )
-  ),
+  registerBuff('core_chasing_thunder_crit_', core_chasing_thunder_crit_),
+  registerBuff('core_ult_crit_', core_ult_crit_),
   registerBuff(
     'core_dash_crit_dmg_',
     core_dash_crit_dmg_,
@@ -172,12 +204,13 @@ const sheet = register(
     false
   ),
   registerBuff(
-    'core_ult_crit_dmg_',
-    ownBuff.combat.crit_dmg_.addWithDmgType(
-      'ult',
-      prod(gleaming_edge, percent(subscript(char.core, dm.core.crit_dmg_)))
-    )
+    'core_chasing_thunder_crit_dmg_',
+    core_chasing_thunder_crit_dmg_,
+    undefined,
+    undefined,
+    false
   ),
+  registerBuff('core_ult_crit_dmg_', core_ult_crit_dmg_),
   registerBuff(
     'ability_common_dmg_',
     ownBuff.combat.common_dmg_.add(
@@ -200,6 +233,32 @@ const sheet = register(
     'm6_electric_resIgn_',
     ownBuff.combat.resIgn_.electric.add(
       cmpGE(char.mindscape, 6, haOtoNoYa.ifOn(percent(dm.m6.electric_resIgn_)))
+    )
+  ),
+  registerBuff(
+    'potential_atk_',
+    ownBuff.combat.atk_.add(
+      exSpecial_chain_ult_activated.ifOn(
+        subscript(char.potential, dm.potential.atk_)
+      )
+    )
+  ),
+  registerBuff(
+    'potential_dash_electric_resIgn_',
+    ownBuff.combat.resIgn_.electric.addWithDmgType(
+      'dash',
+      exSpecial_chain_ult_activated.ifOn(
+        percent(subscript(char.potential, dm.potential.electric_resIgn_))
+      )
+    )
+  ),
+  registerBuff(
+    'potential_chasing_thunder_electric_resIgn_',
+    ownBuff.combat.resIgn_.electric.addWithDmgType(
+      'dash',
+      exSpecial_chain_ult_activated.ifOn(
+        percent(subscript(char.potential, dm.potential.electric_resIgn_))
+      )
     )
   )
 )

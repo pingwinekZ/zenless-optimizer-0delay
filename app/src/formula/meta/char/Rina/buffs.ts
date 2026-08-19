@@ -62,4 +62,40 @@ export const buffs = {
     },
     team: true,
   },
+  potential_pen_: {
+    sheet: 'Rina',
+    name: 'potential_pen_',
+    tag: {
+      et: 'display',
+      qt: 'final',
+      q: 'pen_',
+      sheet: 'Rina',
+      name: 'potential_pen_',
+    },
+    team: false,
+  },
+  potential_atk_: {
+    sheet: 'Rina',
+    name: 'potential_atk_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'atk',
+      sheet: 'Rina',
+      name: 'potential_atk_',
+    },
+    team: true,
+  },
+  potential_def_: {
+    sheet: 'Rina',
+    name: 'potential_def_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'def',
+      sheet: 'Rina',
+      name: 'potential_def_',
+    },
+    team: true,
+  },
 } as const

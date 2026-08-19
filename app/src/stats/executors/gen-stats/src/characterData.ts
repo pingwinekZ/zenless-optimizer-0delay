@@ -199,7 +199,12 @@ function extractPotentialParams(potential: CharacterData['potential']) {
   const data = Object.values(potential)
     .filter((_, i) => i > 0)
     .map(({ Desc }) =>
-      extractParamsFromString(Desc.replaceAll('Soldier 0 - Anby', 'Anby'))
+      extractParamsFromString(
+        Desc.replaceAll('Soldier 0 - Anby', 'Anby')
+          // Jane's L5 text renders "%" outside the color tag ("25</color>%"),
+          // which would extract 25 (flat) instead of 0.25
+          .replaceAll('</color>%', '%')
+      )
     )
   // Potential 0 (none) and tier 1 (AP unlock) have no stat values; keep the
   // array indexed by tier so `subscript(char.potential, ...)` works directly

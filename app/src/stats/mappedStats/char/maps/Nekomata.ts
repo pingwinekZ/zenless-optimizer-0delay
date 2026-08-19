@@ -42,6 +42,9 @@ const dm = {
     exSpecial_dmg_: data_gen.abilityParams[0],
     stacks: data_gen.abilityParams[1],
   },
+  potential: {
+    crit_dmg_: data_gen.potentialParams[0],
+  },
   m1: {
     physical_resIgn_: data_gen.mindscapeParams[0][0],
   },

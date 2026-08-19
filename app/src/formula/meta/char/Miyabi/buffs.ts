@@ -1,5 +1,18 @@
 // WARNING: Generated file, do not modify
 export const buffs = {
+  core_frostburnBreak_dmg: {
+    sheet: 'Miyabi',
+    name: 'core_frostburnBreak_dmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Miyabi',
+      damageType1: 'anomaly',
+      name: 'core_frostburnBreak_dmg',
+    },
+    team: false,
+  },
   ult_ice_dmg_: {
     sheet: 'Miyabi',
     name: 'ult_ice_dmg_',
@@ -19,8 +32,9 @@ export const buffs = {
     tag: {
       et: 'display',
       qt: 'combat',
-      q: 'common_dmg_',
+      q: 'dmg_',
       sheet: 'Miyabi',
+      damageType1: 'basic',
       name: 'ability_dmg_',
     },
     team: false,
@@ -34,6 +48,7 @@ export const buffs = {
       q: 'resIgn_',
       sheet: 'Miyabi',
       attribute: 'ice',
+      damageType1: 'basic',
       name: 'ability_ice_resIgn_',
     },
     team: false,
@@ -46,6 +61,7 @@ export const buffs = {
       qt: 'combat',
       q: 'defIgn_',
       sheet: 'Miyabi',
+      damageType1: 'basic',
       name: 'm1_defIgn_',
     },
     team: false,
@@ -56,8 +72,9 @@ export const buffs = {
     tag: {
       et: 'display',
       qt: 'combat',
-      q: 'common_dmg_',
+      q: 'dmg_',
       sheet: 'Miyabi',
+      damageType1: 'basic',
       name: 'm2_dmg_',
     },
     team: false,
@@ -87,26 +104,15 @@ export const buffs = {
     },
     team: false,
   },
-  m4_frostburnBreak_dmg_: {
-    sheet: 'Miyabi',
-    name: 'm4_frostburnBreak_dmg_',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'common_dmg_',
-      sheet: 'Miyabi',
-      name: 'm4_frostburnBreak_dmg_',
-    },
-    team: false,
-  },
   m6_dmg_: {
     sheet: 'Miyabi',
     name: 'm6_dmg_',
     tag: {
       et: 'display',
       qt: 'combat',
-      q: 'common_dmg_',
+      q: 'dmg_',
       sheet: 'Miyabi',
+      damageType1: 'basic',
       name: 'm6_dmg_',
     },
     team: false,

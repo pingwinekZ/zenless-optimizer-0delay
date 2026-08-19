@@ -4,5 +4,6 @@
   "abilityCond": "When Lycaon hits a Stunned enemy",
   "m1_dazeInc_": "EX Special Attack: Thrill of the Hunt Daze Increase",
   "m1_fullCharge_dazeInc_": "EX Special Attack: Thrill of the Hunt Charged Attack Daze Increase",
-  "m6Cond": "When a charged attack hits an enemy"
+  "m6Cond": "When a charged attack hits an enemy",
+  "potentialCond": "While Encircle Prey is active"
 }

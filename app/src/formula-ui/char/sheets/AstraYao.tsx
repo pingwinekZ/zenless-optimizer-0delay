@@ -1,23 +1,40 @@
-import { ImgIcon } from '@zenless-optimizer/common/ui'
-import { mindscapeDefIcon } from '../../../assets'
+import { ColorText } from '@zenless-optimizer/common/ui'
 import type { CharacterKey } from '../../../consts'
 import { AstraYao } from '../../../formula'
-import { GameDesc } from '../../../i18n'
-import { mappedStats } from '../../../stats'
+import { GameDescSlice } from '../../../i18n'
 import { trans } from '../../util'
 import {
   CoreGameDesc,
   createBaseSheet,
   fieldForBuff,
+  PrefixedLine,
   SkillGameDesc,
+  useEffectiveMindscape,
 } from '../sheetUtil'
+import { getVariant } from '../util'
 
 const key: CharacterKey = 'AstraYao'
 const [, ch] = trans('char', key)
 const cond = AstraYao.conditionals
 const buff = AstraYao.buffs
 const formula = AstraYao.formulas
-const dm = mappedStats.char[key]
+
+function CoreDescription() {
+  const mindscape = useEffectiveMindscape(key)
+  return (
+    <>
+      <CoreGameDesc characterKey={key} />
+      <PrefixedLine prefix="M2" dimmed={mindscape < 2}>
+        <GameDescSlice
+          ns="char_AstraYao_gen"
+          key18="mindscapes.2.desc"
+          from="The ATK buff"
+          to="maximum of 400"
+        />
+      </PrefixedLine>
+    </>
+  )
+}
 
 const sheet = createBaseSheet(key, {
   perSkillAbility: {
@@ -32,6 +49,7 @@ const sheet = createBaseSheet(key, {
                 characterKey={key}
                 ns="char_AstraYao_gen"
                 key18="special.IdyllicCadenza.desc"
+                paragraph={0}
               />
             ),
             metadata: cond.idyllic_cadenza,
@@ -39,6 +57,7 @@ const sheet = createBaseSheet(key, {
               fieldForBuff(buff.common_dmg_),
               fieldForBuff(buff.crit_dmg_),
             ],
+            linked: ['m6_cadenza', 'm4_cadenza'],
           },
         },
       ],
@@ -59,7 +78,7 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('coreCond'),
-        description: <CoreGameDesc characterKey={key} />,
+        description: <CoreDescription />,
         metadata: cond.core_atk_cond,
         fields: [fieldForBuff(buff.core_atk)],
       },
@@ -71,76 +90,123 @@ const sheet = createBaseSheet(key, {
       conditional: {
         label: ch('m1Cond'),
         description: (
-          <GameDesc ns="char_AstraYao_gen" key18="mindscapes.1.desc" />
+          <GameDescSlice
+            ns="char_AstraYao_gen"
+            key18="mindscapes.1.desc"
+            from="When Astra Yao's attack hits"
+            to="Repeated triggers reset the duration"
+          />
         ),
         metadata: cond.attack_hits,
         fields: [fieldForBuff(buff.m1_resRed_)],
       },
     },
   ],
-  m2: [
-    {
-      type: 'fields',
-      header: {
-        icon: <ImgIcon src={mindscapeDefIcon(2)} size={1.5} />,
-        text: ch('m2_header'),
-      },
-      fields: [
-        {
-          title: ch('m2_atkBuffInc_'),
-          fieldValue: dm.m2.atk_ * 100,
-          unit: '%',
-        },
-        {
-          title: ch('m2_maxIncrease'),
-          fieldValue: dm.m2.max_increase,
-        },
-      ],
-    },
-  ],
   m4: [
     {
-      type: 'fields',
-      fields: [
-        {
-          title: ch('m4_dmg'),
-          fieldRef: buff.m4_attack_quickAssist_extraDmg.tag,
-          team: true,
-        },
-      ],
+      type: 'conditional',
+      conditional: {
+        label: ch('m4CadenzaCond'),
+        description: (
+          <GameDescSlice
+            ns="char_AstraYao_gen"
+            key18="mindscapes.4.desc"
+            from="While in the "
+            to="50% increased Daze"
+          />
+        ),
+        metadata: cond.m4_cadenza,
+        fields: [
+          {
+            title: (
+              <ColorText
+                color={getVariant(buff.m4_attack_quickAssist_extraDmg.tag)}
+              >
+                {ch('m4_attack_dmg')}
+              </ColorText>
+            ),
+            fieldRef: buff.m4_attack_quickAssist_extraDmg.tag,
+          },
+          {
+            title: (
+              <ColorText
+                color={getVariant(buff.m4_anomaly_quickAssist_anomBuildup_.tag)}
+              >
+                {ch('m4_anomaly_anomBuildup_')}
+              </ColorText>
+            ),
+            fieldRef: buff.m4_anomaly_quickAssist_anomBuildup_.tag,
+          },
+          {
+            title: (
+              <ColorText
+                color={getVariant(buff.m4_stun_quickAssist_dazeInc_.tag)}
+              >
+                {ch('m4_stun_dazeInc_')}
+              </ColorText>
+            ),
+            fieldRef: buff.m4_stun_quickAssist_dazeInc_.tag,
+          },
+        ],
+        linked: ['idyllic_cadenza', 'm6_cadenza'],
+      },
     },
   ],
   m6: [
     {
-      type: 'fields',
-      header: {
-        icon: <ImgIcon src={mindscapeDefIcon(6)} size={1.5} />,
-        text: ch('m6_header'),
+      type: 'conditional',
+      conditional: {
+        label: ch('m6CadenzaCond'),
+        description: (
+          <GameDescSlice
+            ns="char_AstraYao_gen"
+            key18="mindscapes.6.desc"
+            from="While in the "
+            to="CRIT Rate is increased by 80%"
+          />
+        ),
+        metadata: cond.m6_cadenza,
+        fields: [
+          {
+            title: (
+              <ColorText color={getVariant(buff.m6_mv_mult_.tag)}>
+                {ch('m6_mv_mult_')}
+              </ColorText>
+            ),
+            fieldRef: buff.m6_mv_mult_.tag,
+          },
+          {
+            title: (
+              <ColorText color={getVariant(buff.m6_crit_.tag)}>
+                {ch('m6_crit_')}
+              </ColorText>
+            ),
+            fieldRef: buff.m6_crit_.tag,
+          },
+        ],
+        linked: ['idyllic_cadenza', 'm4_cadenza'],
       },
-      fields: [
-        {
-          title: ch('m6_mv_mult_'),
-          fieldValue: dm.m6.tremolo_tone_clusters_mv_mult * 100,
-          unit: '%',
-        },
-        {
-          title: ch('m6_crit_'),
-          fieldValue: dm.m6.crit_ * 100,
-          unit: '%',
-        },
-      ],
     },
     {
       type: 'conditional',
       conditional: {
         label: ch('m6Cond'),
         description: (
-          <GameDesc ns="char_AstraYao_gen" key18="mindscapes.6.desc" />
+          <GameDescSlice
+            ns="char_AstraYao_gen"
+            key18="mindscapes.6.desc"
+            from="When triggering a "
+            to="trigger once every 10s"
+          />
         ),
         metadata: cond.precise_assist_triggered,
         fields: [
           {
-            title: ch('m6_capriccio_crit_'),
+            title: (
+              <ColorText color={getVariant(buff.m6_capriccio_crit_.tag)}>
+                {ch('m6_capriccio_crit_')}
+              </ColorText>
+            ),
             fieldRef: buff.m6_capriccio_crit_.tag,
           },
         ],

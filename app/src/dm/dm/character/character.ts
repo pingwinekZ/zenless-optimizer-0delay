@@ -313,3 +313,6 @@ export const charactersDetailedJSONData = Object.fromEntries(
 export function filterUnbuffedKits({ Potential }: { Potential: number[] }) {
   return Potential.length === 0 || !Potential.includes(0)
 }
+export function filterOriginalKits({ Potential }: { Potential: number[] }) {
+  return Potential.length === 0 || Potential.includes(0)
+}

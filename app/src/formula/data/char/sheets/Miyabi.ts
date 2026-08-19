@@ -55,22 +55,24 @@ const ability_check = (node: NumNode | number) =>
     3,
     node
   )
-const ability_dmg_ = ownBuff.combat.common_dmg_.add(
+const ability_dmg_ = ownBuff.combat.dmg_.addWithDmgType(
+  'basic',
   ability_check(dm.ability.dmg_)
 )
-const ability_ice_resIgn_ = ownBuff.combat.resIgn_.ice.add(
+const ability_ice_resIgn_ = ownBuff.combat.resIgn_.ice.addWithDmgType(
+  'basic',
   ability_check(disorder_triggered.ifOn(dm.ability.ice_resIgn_))
 )
-const m1_defIgn_ = ownBuff.combat.defIgn_.add(
+const m1_defIgn_ = ownBuff.combat.defIgn_.addWithDmgType(
+  'basic',
   cmpGE(char.mindscape, 1, prod(fallen_frost, percent(dm.m1.defIgn_)))
 )
-const m2_dmg_ = ownBuff.combat.common_dmg_.add(
+const m2_dmg_ = ownBuff.combat.dmg_.addWithDmgType(
+  'basic',
   cmpGE(char.mindscape, 2, dm.m2.dmg_)
 )
-const m4_frostburnBreak_dmg_ = ownBuff.combat.common_dmg_.add(
-  cmpGE(char.mindscape, 4, dm.m4.frostburn_dmg_)
-)
-const m6_dmg_ = ownBuff.combat.common_dmg_.add(
+const m6_dmg_ = ownBuff.combat.dmg_.addWithDmgType(
+  'basic',
   cmpGE(char.mindscape, 6, polar.ifOn(dm.m6.dmg_))
 )
 
@@ -114,7 +116,7 @@ const sheet = register(
       { damageType1: 'basic' },
       'atk',
       undefined,
-      m2_dmg_
+      ...m2_dmg_
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -124,7 +126,7 @@ const sheet = register(
       { damageType1: 'basic' },
       'atk',
       undefined,
-      m2_dmg_
+      ...m2_dmg_
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -134,7 +136,7 @@ const sheet = register(
       { ...baseTag, damageType1: 'basic' },
       'atk',
       undefined,
-      m2_dmg_
+      ...m2_dmg_
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -144,7 +146,7 @@ const sheet = register(
       { ...baseTag, damageType1: 'basic' },
       'atk',
       undefined,
-      m2_dmg_
+      ...m2_dmg_
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -154,7 +156,7 @@ const sheet = register(
       { ...baseTag, damageType1: 'basic' },
       'atk',
       undefined,
-      m2_dmg_
+      ...m2_dmg_
     ),
     // Dash Attack is physical
     dmgDazeAndAnomOverride(
@@ -174,10 +176,10 @@ const sheet = register(
       { ...baseTag, damageType1: 'basic' },
       'atk',
       undefined,
-      ability_dmg_,
-      ability_ice_resIgn_,
-      m1_defIgn_,
-      m6_dmg_
+      ...ability_dmg_,
+      ...ability_ice_resIgn_,
+      ...m1_defIgn_,
+      ...m6_dmg_
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -187,10 +189,10 @@ const sheet = register(
       { ...baseTag, damageType1: 'basic' },
       'atk',
       undefined,
-      ability_dmg_,
-      ability_ice_resIgn_,
-      m1_defIgn_,
-      m6_dmg_
+      ...ability_dmg_,
+      ...ability_ice_resIgn_,
+      ...m1_defIgn_,
+      ...m6_dmg_
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -200,19 +202,32 @@ const sheet = register(
       { ...baseTag, damageType1: 'basic' },
       'atk',
       undefined,
-      ability_dmg_,
-      ability_ice_resIgn_,
-      m1_defIgn_,
-      m6_dmg_
+      ...ability_dmg_,
+      ...ability_ice_resIgn_,
+      ...m1_defIgn_,
+      ...m6_dmg_
     )
   ),
 
+  // Core Passive Frostburn - Break, M4 merged in (guide 3.10)
   ...customDmg(
     'core_frostburnBreak_dmg',
     { ...baseTag, damageType1: 'anomaly' },
-    prod(own.final.atk, subscript(char.core, dm.core.dmg)),
+    prod(
+      own.final.atk,
+      subscript(char.core, dm.core.dmg),
+      sum(percent(1), cmpGE(char.mindscape, 4, dm.m4.frostburn_dmg_))
+    )
+  ),
+  registerBuff(
+    'core_frostburnBreak_dmg',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'anomaly',
+      cmpGE(char.mindscape, 4, dm.m4.frostburn_dmg_)
+    ),
     undefined,
-    m4_frostburnBreak_dmg_
+    undefined,
+    false
   ),
 
   // Buffs
@@ -242,13 +257,6 @@ const sheet = register(
   registerBuff(
     'm2_crit_',
     ownBuff.combat.crit_.add(cmpGE(char.mindscape, 2, dm.m2.crit_))
-  ),
-  registerBuff(
-    'm4_frostburnBreak_dmg_',
-    m4_frostburnBreak_dmg_,
-    undefined,
-    undefined,
-    false
   ),
   registerBuff('m6_dmg_', m6_dmg_, undefined, undefined, false)
 )

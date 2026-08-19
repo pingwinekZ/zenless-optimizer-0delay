@@ -34,8 +34,17 @@ const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
-const { idyllic_cadenza, precise_assist_triggered, core_atk_cond } =
-  allBoolConditionals(key, undefined, { precise_assist_triggered: 6 })
+const {
+  idyllic_cadenza,
+  precise_assist_triggered,
+  m6_cadenza,
+  m4_cadenza,
+  core_atk_cond,
+} = allBoolConditionals(key, undefined, {
+  precise_assist_triggered: 6,
+  m6_cadenza: 6,
+  m4_cadenza: 4,
+})
 const { attack_hits } = allNumConditionals(
   key,
   true,
@@ -49,11 +58,11 @@ const m6_mv_mult = ownBuff.dmg.mv_mult_.add(
   cmpGE(
     char.mindscape,
     6,
-    idyllic_cadenza.ifOn(dm.m6.tremolo_tone_clusters_mv_mult, percent(1))
+    m6_cadenza.ifOn(dm.m6.tremolo_tone_clusters_mv_mult, percent(1))
   )
 )
 const m6_crit_ = ownBuff.combat.crit_.add(
-  cmpGE(char.mindscape, 6, idyllic_cadenza.ifOn(dm.m6.crit_))
+  cmpGE(char.mindscape, 6, m6_cadenza.ifOn(dm.m6.crit_))
 )
 const m6_capriccio_crit_ = ownBuff.combat.crit_.add(
   cmpGE(char.mindscape, 6, precise_assist_triggered.ifOn(dm.m6.capriccio_crit_))
@@ -197,7 +206,9 @@ const sheet = register(
     'm1_resRed_',
     enemyDebuff.common.resRed_.add(
       cmpGE(char.mindscape, 1, prod(attack_hits, percent(dm.m1.resRed_)))
-    )
+    ),
+    undefined,
+    true
   ),
   // TODO: check if this actually works
   registerBuff(
@@ -209,7 +220,7 @@ const sheet = register(
         cmpGE(
           char.mindscape,
           4,
-          idyllic_cadenza.ifOn(prod(own.final.atk, percent(dm.m4.attack)))
+          m4_cadenza.ifOn(prod(own.final.atk, percent(dm.m4.attack)))
         )
       ),
     undefined,
@@ -221,7 +232,7 @@ const sheet = register(
       .withTag({ specialty: 'anomaly' })
       .addWithDmgType(
         'quickAssist',
-        cmpGE(char.mindscape, 4, idyllic_cadenza.ifOn(dm.m4.anomaly))
+        cmpGE(char.mindscape, 4, m4_cadenza.ifOn(dm.m4.anomaly))
       ),
     undefined,
     true
@@ -232,7 +243,7 @@ const sheet = register(
       .withTag({ specialty: 'stun' })
       .addWithDmgType(
         'quickAssist',
-        cmpGE(char.mindscape, 4, idyllic_cadenza.ifOn(dm.m4.stun))
+        cmpGE(char.mindscape, 4, m4_cadenza.ifOn(dm.m4.stun))
       ),
     undefined,
     true

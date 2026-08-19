@@ -1,5 +1,6 @@
 import {
   cmpGE,
+  constant,
   min,
   prod,
   subscript,
@@ -147,6 +148,46 @@ const sheet = register(
         char.mindscape,
         6,
         exSpecial_chain_ult_hit.ifOn(percent(dm.m6.electric_dmg_))
+      )
+    ),
+    undefined,
+    true
+  ),
+  registerBuff(
+    'potential_pen_',
+    ownBuff.final.pen_.add(
+      percent(subscript(char.potential, dm.potential.pen_ratio_))
+    )
+  ),
+  registerBuff(
+    'potential_atk_',
+    teamBuff.combat.atk.add(
+      minions_onField.ifOn(
+        min(
+          prod(
+            own.final.pen_,
+            constant(100),
+            subscript(char.potential, dm.potential.atk_per_pen)
+          ),
+          subscript(char.potential, dm.potential.max_atk)
+        )
+      )
+    ),
+    undefined,
+    true
+  ),
+  registerBuff(
+    'potential_def_',
+    teamBuff.combat.def.add(
+      minions_onField.ifOn(
+        min(
+          prod(
+            own.final.pen_,
+            constant(100),
+            subscript(char.potential, dm.potential.def_per_pen)
+          ),
+          subscript(char.potential, dm.potential.max_def)
+        )
       )
     ),
     undefined,

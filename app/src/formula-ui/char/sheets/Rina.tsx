@@ -35,6 +35,22 @@ const sheet = createBaseSheet(key, {
       },
     },
   ],
+  potential: [
+    {
+      type: 'conditional',
+      conditional: {
+        label: ch('potentialCond'),
+        description:
+          "Increases PEN Ratio. While the Core Passive buff is active, the squad gains ATK and DEF for every 1% of Rina's PEN Ratio.",
+        metadata: cond.minions_onField,
+        fields: [
+          fieldForBuff(buff.potential_pen_),
+          fieldForBuff(buff.potential_atk_),
+          fieldForBuff(buff.potential_def_),
+        ],
+      },
+    },
+  ],
   m1: [
     {
       type: 'conditional',

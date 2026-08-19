@@ -27,7 +27,12 @@ const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
-const { markedWithSilverStar } = allBoolConditionals(key, undefined)
+const { markedWithSilverStar, abilityAftershock, m4_electric_resIgn } =
+  allBoolConditionals(key, undefined, {
+    markedWithSilverStar: 0,
+    abilityAftershock: 0,
+    m4_electric_resIgn: 4,
+  })
 
 const stunOrSupport = sum(
   team.common.count.withSpecialty('stun'),
@@ -155,12 +160,14 @@ const sheet = register(
       cmpGE(
         stunOrSupport,
         1,
-        markedWithSilverStar.ifOn(
-          cmpGE(
-            char.potential,
-            2,
-            subscript(char.potential, dm.potential.aftershock_dmg_),
-            dm.ability.aftershock_dmg_
+        abilityAftershock.ifOn(
+          markedWithSilverStar.ifOn(
+            cmpGE(
+              char.potential,
+              2,
+              subscript(char.potential, dm.potential.aftershock_dmg_),
+              dm.ability.aftershock_dmg_
+            )
           )
         )
       )
@@ -175,11 +182,7 @@ const sheet = register(
   registerBuff(
     'm4_electric_resIgn_',
     ownBuff.combat.resIgn_.electric.add(
-      cmpGE(
-        char.mindscape,
-        4,
-        markedWithSilverStar.ifOn(dm.m4.electric_resIgn_)
-      )
+      cmpGE(char.mindscape, 4, m4_electric_resIgn.ifOn(dm.m4.electric_resIgn_))
     )
   )
 )
