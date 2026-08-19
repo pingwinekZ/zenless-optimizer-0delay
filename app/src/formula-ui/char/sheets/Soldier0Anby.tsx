@@ -9,7 +9,6 @@ import {
   createBaseSheet,
   fieldForBuff,
   PrefixedLine,
-
   useAbilityActive,
   usePotentialDescKey,
 } from '../sheetUtil'
@@ -50,7 +49,6 @@ function CoreDescription() {
           to="Soldier 0 - Anby's CRIT DMG"
         />
       </PrefixedLine>
-
     </>
   )
 }
@@ -99,11 +97,9 @@ function PotentialDescription() {
   const potential = useCharacter(key)?.potential ?? 0
   const ns = 'char_Soldier0Anby_gen'
   return (
-    <>
-      <PrefixedLine prefix="P1" dimmed={potential < 1}>
-        <GameDesc ns={ns} key18="ability.descPotential.2" />
-      </PrefixedLine>
-    </>
+    <PrefixedLine prefix="P1" dimmed={potential < 1}>
+      <GameDesc ns={ns} key18="ability.descPotential.2" />
+    </PrefixedLine>
   )
 }
 

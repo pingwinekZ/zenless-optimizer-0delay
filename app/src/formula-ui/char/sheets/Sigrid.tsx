@@ -6,11 +6,7 @@ import { useCharacter } from '../../../db-ui'
 import { Sigrid } from '../../../formula'
 import { GameDesc, GameDescSlice, GameText } from '../../../i18n'
 import { trans } from '../../util'
-import {
-  AbilityBodyText,
-  createBaseSheet,
-  fieldForBuff,
-} from '../sheetUtil'
+import { AbilityBodyText, createBaseSheet, fieldForBuff } from '../sheetUtil'
 import { getVariant } from '../util'
 
 const key: CharacterKey = 'Sigrid'
@@ -294,9 +290,7 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('patrolActiveM4Cond'),
-        description: (
-          <GameDesc ns={ns} key18="mindscapes.4.desc" />
-        ),
+        description: <GameDesc ns={ns} key18="mindscapes.4.desc" />,
         metadata: cond.patrolActiveM4,
         fields: [fieldForBuff(buff.m4_dmg_)],
         linked: 'patrolActive',

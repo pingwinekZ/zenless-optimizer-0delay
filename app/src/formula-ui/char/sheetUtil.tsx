@@ -95,11 +95,7 @@ function AbilityDescBody({
     `char_${charKey}_gen`,
     `ability.desc${abilityParagraph !== undefined ? `.${abilityParagraph}` : ''}`
   )
-  return (
-    <AbilityBodyText characterKey={charKey}>
-      {chg(key18)}
-    </AbilityBodyText>
-  )
+  return <AbilityBodyText characterKey={charKey}>{chg(key18)}</AbilityBodyText>
 }
 
 /**
@@ -352,7 +348,10 @@ function createCoreAndAbilitySheet(
           text: chg('ability.name'),
         },
         text: (
-          <AbilityDescBody charKey={charKey} abilityParagraph={abilityParagraph} />
+          <AbilityDescBody
+            charKey={charKey}
+            abilityParagraph={abilityParagraph}
+          />
         ),
       },
       ...addlAbilityDocuments,

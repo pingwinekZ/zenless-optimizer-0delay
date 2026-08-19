@@ -911,6 +911,11 @@ const PassiveFieldRow = memo(function PassiveFieldRow({
     descKeyOverride,
   ])
   const ns = `char_${characterKey}_gen`
+  const abilityPotentialDescKey = usePotentialDescKey(
+    characterKey,
+    ns,
+    'ability.desc.0'
+  )
   const displayTitle = groupTitle ?? fields[0]?.title
   return (
     <HoverCard
@@ -961,14 +966,7 @@ const PassiveFieldRow = memo(function PassiveFieldRow({
               {firstFieldRef?.name?.startsWith('ability_') ? (
                 <>
                   <div style={{ marginBottom: 8 }}>
-                    <GameDesc
-                      ns={ns}
-                      key18={usePotentialDescKey(
-                        characterKey,
-                        ns,
-                        'ability.desc.0'
-                      )}
-                    />
+                    <GameDesc ns={ns} key18={abilityPotentialDescKey} />
                   </div>
                   <SkillGameDesc
                     characterKey={characterKey}

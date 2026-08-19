@@ -182,11 +182,7 @@ const sheet = register(
   registerBuff(
     'm4_electric_resIgn_',
     ownBuff.combat.resIgn_.electric.add(
-      cmpGE(
-        char.mindscape,
-        4,
-        m4_electric_resIgn.ifOn(dm.m4.electric_resIgn_)
-      )
+      cmpGE(char.mindscape, 4, m4_electric_resIgn.ifOn(dm.m4.electric_resIgn_))
     )
   )
 )

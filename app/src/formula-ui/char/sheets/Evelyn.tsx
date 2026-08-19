@@ -4,11 +4,7 @@ import { useCharacter } from '../../../db-ui'
 import { Evelyn } from '../../../formula'
 import { GameDesc, GameDescSlice } from '../../../i18n'
 import { trans } from '../../util'
-import {
-  AbilityBodyText,
-  createBaseSheet,
-  fieldForBuff,
-} from '../sheetUtil'
+import { AbilityBodyText, createBaseSheet, fieldForBuff } from '../sheetUtil'
 import { getVariant } from '../util'
 
 const key: CharacterKey = 'Evelyn'
