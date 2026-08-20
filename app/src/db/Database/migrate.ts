@@ -78,10 +78,16 @@ export function migrateZOOD(
     if (chars) {
       for (const char of chars) {
         // 'equippedWengine' was a string ID; we can't resolve key from ID
-        // so we clear it and let user re-select
-        delete (char as any).equippedWengine
-        char.wengineKey = ''
-        char.wenginePhase = 1
+        // so we clear it. Exporters may already provide wengineKey/wenginePhase
+        // (e.g. zzz_packet_capture) - keep those. If a character has neither,
+        // leave the fields absent so replace-semantics imports preserve the
+        // previously imported value instead of wiping it (the capturer omits
+        // them when the engines category is disabled in its export settings).
+        if ('equippedWengine' in char) {
+          delete (char as any).equippedWengine
+          char.wengineKey ??= ''
+          char.wenginePhase ??= 1
+        }
       }
     }
     // Remove old wengine instances (they become catalog entries)
