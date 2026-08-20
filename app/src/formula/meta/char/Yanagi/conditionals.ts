@@ -1,5 +1,6 @@
 // WARNING: Generated file, do not modify
 export const conditionals = {
+  ability_active: { sheet: 'Yanagi', name: 'ability_active', type: 'bool' },
   clarity: {
     sheet: 'Yanagi',
     name: 'clarity',
@@ -25,5 +26,10 @@ export const conditionals = {
     mindscapeRequirement: 0,
   },
   polarityDisorder: { sheet: 'Yanagi', name: 'polarityDisorder', type: 'bool' },
-  shinrabanshou: { sheet: 'Yanagi', name: 'shinrabanshou', type: 'bool' },
+  shinrabanshou: {
+    sheet: 'Yanagi',
+    name: 'shinrabanshou',
+    type: 'bool',
+    mindscapeRequirement: 6,
+  },
 } as const
