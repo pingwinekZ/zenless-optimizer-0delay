@@ -12,7 +12,7 @@ const links = [
   {
     title: 'zzz_packet_capture',
     icon: <IconCapture />,
-    url: 'https://github.com/AleXu224/zzz_packet_capture/releases/latest',
+    url: 'https://github.com/pingwinekZ/zzz_packet_capture_0delay/releases/latest',
   },
 ] as const
 
