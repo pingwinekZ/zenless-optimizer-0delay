@@ -23,7 +23,7 @@ export const buffs = {
       attribute: 'ice',
       name: 'core_ice_resRed_',
     },
-    team: false,
+    team: true,
   },
   core_fire_resRed_: {
     sheet: 'Lighter',
@@ -36,7 +36,7 @@ export const buffs = {
       attribute: 'fire',
       name: 'core_fire_resRed_',
     },
-    team: false,
+    team: true,
   },
   ability_ice_dmg_: {
     sheet: 'Lighter',
@@ -64,6 +64,19 @@ export const buffs = {
     },
     team: true,
   },
+  ability_active: {
+    sheet: 'Lighter',
+    name: 'ability_active',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Lighter',
+      attribute: 'ice',
+      name: 'ability_active',
+    },
+    team: false,
+  },
   m1_ice_resRed_: {
     sheet: 'Lighter',
     name: 'm1_ice_resRed_',
@@ -75,7 +88,7 @@ export const buffs = {
       attribute: 'ice',
       name: 'm1_ice_resRed_',
     },
-    team: false,
+    team: true,
   },
   m1_fire_resRed_: {
     sheet: 'Lighter',
@@ -88,7 +101,7 @@ export const buffs = {
       attribute: 'fire',
       name: 'm1_fire_resRed_',
     },
-    team: false,
+    team: true,
   },
   m1_finishing_move_dmg_: {
     sheet: 'Lighter',
@@ -112,18 +125,19 @@ export const buffs = {
       sheet: 'Lighter',
       name: 'm2_stun_',
     },
-    team: false,
+    team: true,
   },
-  m4_enerRegen_: {
+  m6_blazing_impact_dmg: {
     sheet: 'Lighter',
-    name: 'm4_enerRegen_',
+    name: 'm6_blazing_impact_dmg',
     tag: {
       et: 'display',
       qt: 'combat',
-      q: 'enerRegen_',
+      q: 'dmg_',
       sheet: 'Lighter',
-      name: 'm4_enerRegen_',
+      attribute: 'fire',
+      name: 'm6_blazing_impact_dmg',
     },
-    team: true,
+    team: false,
   },
 } as const

@@ -1,7 +1,6 @@
 import { cmpGE, prod, subscript, sum } from '@zenless-optimizer/pando/engine'
 import { type CharacterKey } from '../../../../consts'
 import { allStats, mappedStats } from '../../../../stats'
-import { isStunned } from '../../common/enemy'
 import {
   allBoolConditionals,
   allNumConditionals,
@@ -220,11 +219,7 @@ const sheet = register(
           team.common.count.withSpecialty('anomaly')
         ),
         1,
-        cmpGE(
-          sum(isStunned.ifOn(1), enemy_anomaly.ifOn(1)),
-          1,
-          percent(dm.ability.common_dmg_)
-        )
+        enemy_anomaly.ifOn(percent(dm.ability.common_dmg_))
       )
     )
   ),

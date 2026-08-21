@@ -1,10 +1,17 @@
 import { ColorText } from '@zenless-optimizer/common/ui'
 import type { CharacterKey } from '../../../consts'
+import { useCharacter } from '../../../db-ui'
 import { Lighter } from '../../../formula'
-import { GameDesc } from '../../../i18n'
-import { mappedStats } from '../../../stats'
+import { GameDesc, GameDescSlice } from '../../../i18n'
 import { trans } from '../../util'
-import { CoreGameDesc, createBaseSheet, fieldForBuff } from '../sheetUtil'
+import {
+  AbilityBodyText,
+  CoreGameDesc,
+  createBaseSheet,
+  fieldForBuff,
+  PrefixedLine,
+  useEffectiveMindscape,
+} from '../sheetUtil'
 import { getVariant } from '../util'
 
 const key: CharacterKey = 'Lighter'
@@ -12,16 +19,49 @@ const [, ch] = trans('char', key)
 const cond = Lighter.conditionals
 const buff = Lighter.buffs
 const formula = Lighter.formulas
-const dm = mappedStats.char[key]
+
+function CoreImpactDescription() {
+  const char = useCharacter(key)
+  const coreLevel = char?.core ?? 0
+  return (
+    <GameDescSlice
+      ns="char_Lighter_gen"
+      key18={`core.desc.${coreLevel}.0`}
+      from="Lighter automatically gains"
+      to="and lasting 6s"
+    />
+  )
+}
+
+function AbilityDescription() {
+  const ns = 'char_Lighter_gen'
+  const mindscape = useEffectiveMindscape(key)
+  return (
+    <>
+      <GameDesc ns={ns} key18="ability.desc.0" />
+      <AbilityBodyText characterKey={key}>
+        <GameDesc ns={ns} key18="ability.desc.1" />
+        <GameDesc ns={ns} key18="ability.desc.2" />
+      </AbilityBodyText>
+      <PrefixedLine prefix="M2" dimmed={mindscape < 2}>
+        <GameDescSlice
+          ns={ns}
+          key18="mindscapes.2.desc"
+          from="The increase to"
+          to="120% of the original"
+        />
+      </PrefixedLine>
+    </>
+  )
+}
 
 const sheet = createBaseSheet(key, {
   core: [
     {
       type: 'conditional',
-      header: { icon: null, text: ch('core_header') },
       conditional: {
         label: ch('morale_consumedCond'),
-        description: <CoreGameDesc characterKey={key} paragraph={0} />,
+        description: <CoreImpactDescription />,
         metadata: cond.morale_consumed,
         fields: [fieldForBuff(buff.core_impact_)],
       },
@@ -42,10 +82,9 @@ const sheet = createBaseSheet(key, {
   ability: [
     {
       type: 'conditional',
-      header: { icon: null, text: ch('ability_header') },
       conditional: {
         label: ch('elationCond'),
-        description: <GameDesc ns="char_Lighter_gen" key18="ability.desc" />,
+        description: <AbilityDescription />,
         metadata: cond.elation,
         fields: [
           fieldForBuff(buff.ability_ice_dmg_),
@@ -57,11 +96,15 @@ const sheet = createBaseSheet(key, {
   m1: [
     {
       type: 'conditional',
-      header: { icon: null, text: ch('m1_header') },
       conditional: {
         label: ch('m1CollapseCond'),
         description: (
-          <GameDesc ns="char_Lighter_gen" key18="mindscapes.1.desc" />
+          <GameDescSlice
+            ns="char_Lighter_gen"
+            key18="mindscapes.1.desc"
+            from="Among the debuffs imposed"
+            to="by 10%"
+          />
         ),
         metadata: cond.m1_collapse,
         linked: ['m2_collapse'],
@@ -73,6 +116,15 @@ const sheet = createBaseSheet(key, {
     },
     {
       type: 'fields',
+      header: { icon: null, text: ch('m1_finishing_move_header') },
+      description: (
+        <GameDescSlice
+          ns="char_Lighter_gen"
+          key18="mindscapes.1.desc"
+          from="The more powerful Finishing Move"
+          to="increased DMG"
+        />
+      ),
       fields: [
         {
           title: (
@@ -88,39 +140,34 @@ const sheet = createBaseSheet(key, {
   m2: [
     {
       type: 'conditional',
-      header: { icon: null, text: ch('m2_header') },
       conditional: {
         label: ch('m2CollapseCond'),
         description: (
-          <GameDesc ns="char_Lighter_gen" key18="mindscapes.2.desc" />
+          <GameDescSlice
+            ns="char_Lighter_gen"
+            key18="mindscapes.2.desc"
+            from="When applying"
+            to="increases by 25%"
+          />
         ),
         metadata: cond.m2_collapse,
         linked: ['m1_collapse'],
         fields: [fieldForBuff(buff.m2_stun_)],
       },
     },
-    {
-      type: 'fields',
-      fields: [
-        {
-          title: ch('m2_elation_inc_'),
-          fieldValue: dm.m2.ability_buff_inc_ * 100,
-          unit: '%',
-        },
-      ],
-    },
-  ],
-  m4: [
-    {
-      type: 'fields',
-      header: { icon: null, text: ch('m4_header') },
-      fields: [fieldForBuff(buff.m4_enerRegen_)],
-    },
   ],
   m6: [
     {
       type: 'fields',
       header: { icon: null, text: ch('m6_header') },
+      description: (
+        <GameDescSlice
+          ns="char_Lighter_gen"
+          key18="mindscapes.6.desc"
+          from="When Lighter lands a heavy strike"
+          to="maximum increase of 500%"
+        />
+      ),
       fields: [
         {
           title: (
