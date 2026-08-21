@@ -1000,4 +1000,30 @@ export const formulas = {
       name: 'AssistFollowUpWeepingWillowStab_0_anomBuildup',
     },
   },
+  polarity_dmg_chain: {
+    sheet: 'Yanagi',
+    name: 'polarity_dmg_chain',
+    tag: {
+      et: 'own',
+      qt: 'formula',
+      q: 'anomalyDmg',
+      sheet: 'Yanagi',
+      attribute: 'electric',
+      damageType1: 'disorder',
+      name: 'polarity_dmg_chain',
+    },
+  },
+  polarity_dmg: {
+    sheet: 'Yanagi',
+    name: 'polarity_dmg',
+    tag: {
+      et: 'own',
+      qt: 'formula',
+      q: 'anomalyDmg',
+      sheet: 'Yanagi',
+      attribute: 'electric',
+      damageType1: 'disorder',
+      name: 'polarity_dmg',
+    },
+  },
 } as const

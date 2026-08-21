@@ -1,5 +1,31 @@
 // WARNING: Generated file, do not modify
 export const buffs = {
+  polarity_dmg_chain: {
+    sheet: 'Yanagi',
+    name: 'polarity_dmg_chain',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anom_base_',
+      sheet: 'Yanagi',
+      damageType1: 'disorder',
+      name: 'polarity_dmg_chain',
+    },
+    team: false,
+  },
+  polarity_dmg: {
+    sheet: 'Yanagi',
+    name: 'polarity_dmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anom_base_',
+      sheet: 'Yanagi',
+      damageType1: 'disorder',
+      name: 'polarity_dmg',
+    },
+    team: false,
+  },
   basic_electric_dmg_: {
     sheet: 'Yanagi',
     name: 'basic_electric_dmg_',
@@ -22,19 +48,6 @@ export const buffs = {
       q: 'pen_',
       sheet: 'Yanagi',
       name: 'basic_pen_',
-    },
-    team: false,
-  },
-  polarity_anom_base_: {
-    sheet: 'Yanagi',
-    name: 'polarity_anom_base_',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'anom_base_',
-      sheet: 'Yanagi',
-      damageType1: 'disorder',
-      name: 'polarity_anom_base_',
     },
     team: false,
   },
@@ -110,6 +123,19 @@ export const buffs = {
       sheet: 'Yanagi',
       damageType1: 'exSpecial',
       name: 'm6_exSpecial_dmg_',
+    },
+    team: false,
+  },
+  ability_electric_anomBuildup_: {
+    sheet: 'Yanagi',
+    name: 'ability_electric_anomBuildup_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anomBuildup_',
+      sheet: 'Yanagi',
+      attribute: 'electric',
+      name: 'ability_electric_anomBuildup_',
     },
     team: false,
   },

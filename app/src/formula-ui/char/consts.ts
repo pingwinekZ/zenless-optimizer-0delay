@@ -2,6 +2,7 @@ import type { UISheet } from '@zenless-optimizer/game-opt/sheet-ui'
 import { allSkillKeys } from '../../consts'
 
 export const allTalentSheetElementKey = [
+  'unique',
   ...allSkillKeys,
   'core',
   'potential',

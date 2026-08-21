@@ -27,6 +27,7 @@ type AddlDocumentsPerSkillAbility = Partial<
 >
 type AddlDocuments = {
   perSkillAbility?: AddlDocumentsPerSkillAbility
+  unique?: Document[]
   core?: Document[]
   coreParagraph?: number
   ability?: Document[]
@@ -146,6 +147,9 @@ export function createBaseSheet(
   const hasPotential = getCharStat(key).potentialParams.length > 0
 
   return {
+    ...(addlDocuments?.unique
+      ? { unique: { title: 'unique', documents: addlDocuments.unique } }
+      : {}),
     ...createSkillsSheets(key, addlDocuments?.perSkillAbility),
     core: createCoreAndAbilitySheet(
       key,

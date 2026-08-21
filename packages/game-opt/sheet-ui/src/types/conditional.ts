@@ -16,4 +16,12 @@ export type Conditional = {
   targeted?: boolean
   /** When set, toggling this conditional also toggles the linked conditional(s) */
   linked?: string | string[]
+  /**
+   * For num conditionals: maps a mindscape threshold to the conditional's max
+   * value (e.g. `{ 2: 2, 6: 4 }`). Mindscapes below the lowest threshold clamp
+   * the max to the conditional's base min.
+   */
+  maxByMindscape?: Record<number, number>
+  /** When true, fields are not dimmed when the conditional value is 0 (e.g. a passive base effect still applies) */
+  noDimWhenZero?: boolean
 }

@@ -1040,28 +1040,45 @@ function OptimizeWrapper() {
       optConfig.generatedBuildListId ?? ''
     ) || undefined
 
-  // Clear selected build when builds change (new optimization run) — reset to equipped
-  // or first generated build in theoretical max mode
-  useEffect(() => {
-    const builds = generatedBuildList?.builds ?? []
-    if (useTheoreticalMax && builds.length > 0) {
-      setSelectedBuild(builds[0])
-    } else {
-      setSelectedBuild(equippedBuild)
-    }
-  }, [
-    optConfig.generatedBuildListId,
-    generatedBuildList?.buildDate,
-    generatedBuildList?.builds,
-    equippedBuild,
-    useTheoreticalMax,
-  ])
-
   // Generated builds only (used as main grid rows)
   const allBuilds = useMemo(
     () => generatedBuildList?.builds ?? [],
     [generatedBuildList?.builds]
   )
+
+  // Reset the selected build only when a genuinely new result set arrives
+  // (new optimizer run or different build list). Unrelated DB updates must
+  // keep the current selection so the grid stays on the user's chosen row.
+  const resultIdentity = `${optConfig.generatedBuildListId}:${generatedBuildList?.buildDate ?? ''}`
+  const lastResultIdentityRef = useRef(resultIdentity)
+  useEffect(() => {
+    const isNewResultSet = lastResultIdentityRef.current !== resultIdentity
+    lastResultIdentityRef.current = resultIdentity
+    if (isNewResultSet) {
+      const builds = generatedBuildList?.builds ?? []
+      setSelectedBuild(
+        useTheoreticalMax && builds.length > 0 ? builds[0] : equippedBuild
+      )
+      return
+    }
+    // Same result set: keep the selection if the build still exists,
+    // otherwise fall back to the equipped build.
+    setSelectedBuild((current) => {
+      if (
+        current &&
+        allBuilds.some((b) => buildRowId(b) === buildRowId(current))
+      ) {
+        return current
+      }
+      return equippedBuild
+    })
+  }, [
+    resultIdentity,
+    generatedBuildList?.builds,
+    allBuilds,
+    equippedBuild,
+    useTheoreticalMax,
+  ])
 
   // Re-apply stat filters to existing results — narrows the build list
   // without re-running the search (only the INITIAL/FINAL filter sections)
@@ -1238,26 +1255,10 @@ function OptimizeWrapper() {
             setUseTheoreticalMax={setUseTheoreticalMax}
           />
 
-          {/* Results Grid */}
+          {/* Results Grid — kept mounted while stats recompute (overlay
+              loader instead of unmount) so selection/scroll survive DB updates */}
           <DeferCreate>
-            {isComputingStats ? (
-              <Flex
-                align="center"
-                justify="center"
-                style={{
-                  width: '100%',
-                  height: 300,
-                  backgroundColor: 'var(--layer-2)',
-                  borderRadius: 6,
-                  gap: 8,
-                }}
-              >
-                <Loader size="sm" />
-                <Text size="sm" c="dimmed">
-                  {t('grid.computingStats', 'Computing build stats...')}
-                </Text>
-              </Flex>
-            ) : (
+            <div style={{ position: 'relative' }}>
               <OptimizerGrid
                 builds={allBuilds}
                 enrichedBuilds={enrichedBuilds}
@@ -1266,11 +1267,34 @@ function OptimizeWrapper() {
                 sortByKey={sortByKey}
                 sortTrigger={sortTrigger}
                 specialityKey={getCharStat(characterKey).specialty}
+                selectedBuildId={
+                  selectedBuild ? buildRowId(selectedBuild) : undefined
+                }
                 onBuildSelect={(build) => {
                   setSelectedBuild(build)
                 }}
               />
-            )}
+              {isComputingStats && (
+                <Flex
+                  align="center"
+                  justify="center"
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+                    borderRadius: 6,
+                    zIndex: 10,
+                    gap: 8,
+                    pointerEvents: 'none',
+                  }}
+                >
+                  <Loader size="sm" />
+                  <Text size="sm" c="dimmed">
+                    {t('grid.computingStats', 'Computing build stats...')}
+                  </Text>
+                </Flex>
+              )}
+            </div>
           </DeferCreate>
 
           {/* Selected build preview — show recipe summary in theoretical mode, otherwise disc cards */}

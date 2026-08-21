@@ -7,7 +7,7 @@ import type {
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import { AgGridReact } from 'ag-grid-react'
 
-import { useCallback, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SpecialityKey } from '../../consts'
 import type { GeneratedBuild } from '../../db'
@@ -273,6 +273,7 @@ export function OptimizerGrid({
   statDisplay,
   sortByKey,
   specialityKey,
+  selectedBuildId,
   onBuildSelect,
 }: {
   builds?: GeneratedBuild[]
@@ -282,11 +283,36 @@ export function OptimizerGrid({
   sortByKey?: string
   sortTrigger?: number
   specialityKey?: SpecialityKey
+  selectedBuildId?: string | undefined
   onBuildSelect?: (build: GeneratedBuild) => void
 }) {
   const { t } = useTranslation('page_optimize')
   const gridRef = useRef<AgGridReact>(null)
   const pinnedBuilds = useOptimizerDisplayStore((s) => s.pinnedBuilds)
+
+  // Re-apply the app-level selection after data refreshes/remounts so the
+  // highlighted row survives DB updates. Also brings the selected row into
+  // view (jumping to its pagination page if needed).
+  const applySelection = useCallback(() => {
+    const api = gridRef.current?.api
+    if (!api || !selectedBuildId) return
+    const node = api.getRowNode(selectedBuildId)
+    if (!node || node.isSelected()) return
+    node.setSelected(true)
+    // Pinned top rows are always visible; only scroll for regular rows.
+    // (Pinned top rows have negative row indexes.)
+    const rowIndex = node.rowIndex
+    if (rowIndex == null || rowIndex < 0) return
+    const pageSize = api.paginationGetPageSize()
+    if (pageSize > 0 && api.paginationGetTotalPages() > 0) {
+      api.paginationGoToPage(Math.floor(rowIndex / pageSize))
+    }
+    api.ensureIndexVisible(rowIndex, 'middle')
+  }, [selectedBuildId])
+
+  useEffect(() => {
+    applySelection()
+  }, [applySelection])
 
   // Sort when optimizer finishes and new row data is applied
   const onRowDataUpdated = useCallback(() => {
@@ -324,7 +350,9 @@ export function OptimizerGrid({
         defaultState: { sort: null },
       })
     }
-  }, [sortByKey])
+
+    applySelection()
+  }, [sortByKey, applySelection])
 
   // Pinned top rows: equipped build first, then user-pinned builds
   // Each is matched to its enriched build data for real stat values
@@ -485,6 +513,7 @@ export function OptimizerGrid({
         }}
         headerHeight={36}
         onCellClicked={onCellClicked}
+        onGridReady={applySelection}
         onRowDataUpdated={onRowDataUpdated}
         pinnedTopRowData={pinnedTopRowData}
         ref={gridRef}

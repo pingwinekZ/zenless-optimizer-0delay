@@ -15,7 +15,7 @@ export function valueString(
   if (unit === '%') value *= 100
   if (Number.isInteger(value)) fixed = 0
   else if (fixed === -1) {
-    if (unit === '%') fixed = 1
+    if (unit === '%') fixed = 2
     else
       fixed =
         Math.abs(value) < 10

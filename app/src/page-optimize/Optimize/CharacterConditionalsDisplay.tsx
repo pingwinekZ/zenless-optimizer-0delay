@@ -45,6 +45,7 @@ import {
 } from './conditionalUtils'
 
 const SECTION_ORDER = [
+  'unique',
   'basic',
   'dodge',
   'assist',
@@ -65,6 +66,7 @@ const LUMIFLUX_TEXT_COLOR = '#FFA9DD'
 const FLUX_TEXT_COLOR = '#D9A600'
 
 const SECTION_DISPLAY_NAMES: Record<string, string> = {
+  unique: 'Unique',
   basic: 'Basic Attack',
   dodge: 'Dodge',
   assist: 'Assist',
@@ -98,6 +100,8 @@ type SectionConditional = {
   description?: ReactNode
   label?: ReactNode
   linked?: string | string[]
+  maxByMindscape?: Record<number, number>
+  noDimWhenZero?: boolean
 }
 
 type SectionGroup = {
@@ -281,6 +285,38 @@ function extractCharConditionalLabels(
   return Object.keys(result).length > 0 ? result : undefined
 }
 
+function extractCharConditionalUiOptions(
+  characterKey: CharacterKey
+):
+  | Record<
+      string,
+      { maxByMindscape?: Record<number, number>; noDimWhenZero?: boolean }
+    >
+  | undefined {
+  const sheet = charSheets[characterKey]
+  if (!sheet) return undefined
+  const result: Record<
+    string,
+    { maxByMindscape?: Record<number, number>; noDimWhenZero?: boolean }
+  > = {}
+  Object.values(sheet).forEach((section) => {
+    section.documents.forEach((doc) => {
+      if (doc.type === 'conditional' && doc.conditional) {
+        const condName = doc.conditional.metadata.name
+        const { maxByMindscape, noDimWhenZero } = doc.conditional
+        if (maxByMindscape || noDimWhenZero) {
+          result[condName] = {
+            ...result[condName],
+            ...(maxByMindscape ? { maxByMindscape } : {}),
+            ...(noDimWhenZero ? { noDimWhenZero } : {}),
+          }
+        }
+      }
+    })
+  })
+  return Object.keys(result).length > 0 ? result : undefined
+}
+
 function extractCharPassiveFields(
   characterKey: CharacterKey,
   teammateKey: CharacterKey | undefined,
@@ -437,6 +473,10 @@ export function CharacterConditionalsDisplay({
     () => extractCharConditionalLabels(characterKey),
     [characterKey]
   )
+  const conditionalUiOptions = useMemo(
+    () => extractCharConditionalUiOptions(characterKey),
+    [characterKey]
+  )
   const visiblePassives = useMemo(
     () => extractCharPassiveFields(characterKey, teammateKey, potential),
     [characterKey, teammateKey, potential]
@@ -527,6 +567,7 @@ export function CharacterConditionalsDisplay({
           description: conditionalDescriptions?.[condName],
           label: conditionalLabels?.[condName],
           linked: conditionalLinkedMap[condName],
+          ...conditionalUiOptions?.[condName],
         })
       }
 
@@ -561,6 +602,7 @@ export function CharacterConditionalsDisplay({
     conditionalLabels,
     conditionalSectionMap,
     conditionalLinkedMap,
+    conditionalUiOptions,
     visiblePassives,
     showPassives,
     teammateKey,
@@ -639,6 +681,8 @@ export function CharacterConditionalsDisplay({
                   label={c.label}
                   showZeroFields={showZeroFields}
                   linked={c.linked}
+                  maxByMindscape={c.maxByMindscape}
+                  noDimWhenZero={c.noDimWhenZero}
                 />
               ))}
             </Flex>
@@ -663,6 +707,8 @@ const CharacterConditionalRow = memo(function CharacterConditionalRow({
   label: labelProp,
   showZeroFields = false,
   linked,
+  maxByMindscape,
+  noDimWhenZero,
 }: {
   characterKey: CharacterKey
   condName: string
@@ -677,6 +723,8 @@ const CharacterConditionalRow = memo(function CharacterConditionalRow({
   label?: ReactNode
   showZeroFields?: boolean
   linked?: string | string[]
+  maxByMindscape?: Record<number, number>
+  noDimWhenZero?: boolean
 }) {
   const outerTag = useContext(TagContext)
   const tagForFields = useMemo(() => ({ ...outerTag, src }), [outerTag, src])
@@ -692,6 +740,20 @@ const CharacterConditionalRow = memo(function CharacterConditionalRow({
 
   const displayValue = currentValue
 
+  const effectiveMax = useMemo(() => {
+    if (condData.type !== 'num') return 10
+    if (!maxByMindscape) return condData.max ?? 10
+    const levels = Object.keys(maxByMindscape)
+      .map(Number)
+      .sort((a, b) => b - a)
+    for (const level of levels) {
+      if (mindscape >= level) return maxByMindscape[level]
+    }
+    return condData.min ?? 0
+  }, [condData, maxByMindscape, mindscape])
+
+  const displayMax = effectiveMax
+
   const setValue = (condValue: number) => {
     if (isMindscapeDisabled) return
     const linkedNames = linked
@@ -706,7 +768,7 @@ const CharacterConditionalRow = memo(function CharacterConditionalRow({
       condName,
       src as any,
       null,
-      condValue
+      Math.min(condValue, effectiveMax)
     )
     for (const linkName of linkedNames) {
       database.teams.setFrameConditional(
@@ -744,9 +806,9 @@ const CharacterConditionalRow = memo(function CharacterConditionalRow({
       {condData.type === 'num' && (
         <NumConditionalRow
           label={label}
-          value={displayValue}
+          value={Math.min(displayValue, displayMax)}
           min={condData.min ?? 0}
-          max={condData.max ?? 10}
+          max={displayMax}
           step={condData.int_only ? 1 : 0.1}
           onChange={setValue}
           disabled={isMindscapeDisabled}
@@ -824,7 +886,9 @@ const CharacterConditionalRow = memo(function CharacterConditionalRow({
         {fields && fields.length > 0 && (
           <Box
             opacity={
-              isMindscapeDisabled || displayValue === 0 ? 0.5 : undefined
+              isMindscapeDisabled || (displayValue === 0 && !noDimWhenZero)
+                ? 0.5
+                : undefined
             }
           >
             {(isMindscapeDisabled || displayValue > 0) && <hr />}

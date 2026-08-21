@@ -13,7 +13,6 @@ import {
   allNumConditionals,
   customDmg,
   enemyDebuff,
-  notOwnBuff,
   own,
   ownBuff,
   percent,
@@ -47,6 +46,17 @@ const { morale_burst_hit, m1_collapse, m2_collapse } = allBoolConditionals(
 const { morale_consumed } = allNumConditionals(key, true, 0, dm.core.max_morale)
 const { elation } = allNumConditionals(key, true, 0, dm.ability.stacks)
 
+// Additional Ability trigger: another squad member is an Attack character or
+// shares the faction. Display-only marker so the sheet can dim the ability
+// description on the trigger alone, independent of Elation stack count.
+const ability_trigger_met = cmpGE(
+  sum(
+    team.common.count.withSpecialty('attack'),
+    team.common.count.withFaction('SonsOfCalydon')
+  ),
+  2,
+  1
+)
 const ability_ice_fire_dmg_check = cmpGE(
   sum(
     team.common.count.withSpecialty('attack'),
@@ -170,13 +180,17 @@ const sheet = register(
     'core_ice_resRed_',
     enemyDebuff.common.resRed_.ice.add(
       morale_burst_hit.ifOn(dm.core.ice_fire_resRed_)
-    )
+    ),
+    undefined,
+    true
   ),
   registerBuff(
     'core_fire_resRed_',
     enemyDebuff.common.resRed_.fire.add(
       morale_burst_hit.ifOn(dm.core.ice_fire_resRed_)
-    )
+    ),
+    undefined,
+    true
   ),
   registerBuff(
     'ability_ice_dmg_',
@@ -191,14 +205,27 @@ const sheet = register(
     true
   ),
   registerBuff(
+    'ability_active',
+    teamBuff.combat.dmg_.ice.add(ability_trigger_met),
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff(
     'm1_ice_resRed_',
-    enemyDebuff.common.resRed_.ice.add(m1_collapse.ifOn(dm.m1.ice_fire_resRed_))
+    enemyDebuff.common.resRed_.ice.add(
+      m1_collapse.ifOn(dm.m1.ice_fire_resRed_)
+    ),
+    undefined,
+    true
   ),
   registerBuff(
     'm1_fire_resRed_',
     enemyDebuff.common.resRed_.fire.add(
       m1_collapse.ifOn(dm.m1.ice_fire_resRed_)
-    )
+    ),
+    undefined,
+    true
   ),
   registerBuff(
     'm1_finishing_move_dmg_',
@@ -209,15 +236,37 @@ const sheet = register(
   ),
   registerBuff(
     'm2_stun_',
-    enemyDebuff.common.stun_.add(m2_collapse.ifOn(percent(dm.m2.stun_)))
-  ),
-  registerBuff(
-    'm4_enerRegen_',
-    notOwnBuff.combat.enerRegen_.add(
-      cmpGE(char.mindscape, 4, percent(dm.m4.enerRegen_))
-    ),
+    enemyDebuff.common.stun_.add(m2_collapse.ifOn(percent(dm.m2.stun_))),
     undefined,
     true
+  ),
+  registerBuff(
+    'm6_blazing_impact_dmg',
+    ownBuff.combat.dmg_.fire.add(
+      cmpGE(
+        char.mindscape,
+        6,
+        prod(
+          own.final.atk,
+          sum(
+            percent(dm.m6.dmg),
+            min(
+              percent(dm.m6.max_dmg_mult_inc_),
+              max(
+                0,
+                prod(
+                  sum(own.final.impact, -dm.m6.impact_threshold),
+                  percent(dm.m6.dmg_mult_inc_)
+                )
+              )
+            )
+          )
+        )
+      )
+    ),
+    undefined,
+    undefined,
+    false
   )
 )
 export default sheet
