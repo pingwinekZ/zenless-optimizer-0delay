@@ -368,6 +368,7 @@ export function compileWgsl(
       case 'lookup':
         throw unsupported('lookup (dynamic string key)')
       case 'custom':
+        if (n.ex === 'floor') return `floor(${childStr(x[0])})`
         throw unsupported(`custom '${n.ex}'`)
       default:
         throw unsupported((n as unknown as { op: string }).op)

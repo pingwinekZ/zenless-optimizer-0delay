@@ -27,3 +27,10 @@ export type CustomInfo = {
 
 // This needs to be set only once at the beginning of the program.
 export const customOps: Record<string, CustomInfo> = {}
+
+customOps.floor = {
+  range: ([r]) => ({ min: Math.floor(r.min), max: Math.floor(r.max) }),
+  monotonicity: () => [{ inc: true, dec: false }],
+  calc: ([x]) => Math.floor(x as number),
+  diff: () => 0,
+} as const satisfies CustomInfo

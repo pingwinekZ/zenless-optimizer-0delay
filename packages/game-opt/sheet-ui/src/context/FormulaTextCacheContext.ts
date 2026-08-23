@@ -10,5 +10,5 @@ import type { FormulaText } from '../types'
  * Cleared when `calc` changes so tooltips stay in sync with equipment/opt.
  */
 export const FormulaTextCacheContext = createContext<
-  Map<CalcResult<number, CalcMeta<Tag, never>>, FormulaText>
+  Map<CalcResult<number, CalcMeta<Tag, string>>, FormulaText>
 >(new Map())

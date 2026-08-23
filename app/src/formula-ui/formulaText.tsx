@@ -1,5 +1,4 @@
 import {
-  assertUnreachable,
   getUnitStr,
   objFilter,
   valueString,
@@ -13,7 +12,7 @@ import type { Tag } from '../formula'
 import { TagDisplay } from './components'
 import { getTagLabel } from './util'
 
-type Output = CalcMeta<Tag, never>
+type Output = CalcMeta<Tag, string>
 
 export function formulaText(
   data: CalcResult<number, Output>,
@@ -89,8 +88,22 @@ export function formulaText(
       prec = details.prod.prec
       break
     }
-    default:
-      assertUnreachable(op)
+    default: {
+      // Custom ops (e.g. `floor`) render as `Name(arg, ...)`
+      prec = Infinity
+      formula = (
+        <span>
+          {`${op[0]?.toUpperCase() ?? ''}${op.slice(1)}(`}
+          {getString(ops, Infinity).map((x, i) => (
+            <Fragment key={i}>
+              {x}
+              {i < ops.length - 1 && ', '}
+            </Fragment>
+          ))}
+          )
+        </span>
+      )
+    }
   }
   let name: ReactNode, sheet: string | undefined
   if (usedTag) {

@@ -47,7 +47,7 @@ hsr-optimizer
 *.db
 *.db-wal
 *.db-shm
-
+.opencode/
 # yarn cache (project uses bun)
 .yarn/
 

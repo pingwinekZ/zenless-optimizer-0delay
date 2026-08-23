@@ -99,6 +99,11 @@ describe('optimization', () => {
       expect(runCompile(custom('foo', 1, 2, 3, 4))).toEqual(7)
       expect(runCompile(custom('bar', 'a', 'b', 'c', 'd'))).toEqual('d/c/b/a')
     })
+    test('floor computation', () => {
+      expect(runCompile(custom('floor', 3.7))).toEqual(3)
+      expect(runCompile(custom('floor', -3.2))).toEqual(-4)
+      expect(runCompile(custom('floor', sum(1.5, 2.5)))).toEqual(4)
+    })
   })
   describe('compileDiff computation', () => {
     const [v0, v1, v2] = [10, 20, 1]
@@ -144,6 +149,10 @@ describe('optimization', () => {
     })
     test('custom computation', () => {
       expect(runDiff(custom('foo', read0, 2, read1, 4))).toEqual([1, 0])
+    })
+    test('floor computation', () => {
+      expect(runDiff(custom('floor', read0))).toEqual([0, 0])
+      expect(runDiff(custom('floor', sum(read0, 1.7)))).toEqual([0, 0])
     })
   })
 })

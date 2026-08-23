@@ -1,4 +1,11 @@
-import { cmpEq, max, min, prod, sum } from '@zenless-optimizer/pando/engine'
+import {
+  cmpEq,
+  custom,
+  max,
+  min,
+  prod,
+  sum,
+} from '@zenless-optimizer/pando/engine'
 import type { TagMapNodeEntries } from '../util'
 import {
   flatAndPercentStats,
@@ -39,10 +46,10 @@ const data: TagMapNodeEntries = [
   reader.sheet('agg').reread(reader.sheet('disc')),
 
   // For stats with a flat and percent variant
-  // initial x += base x * initial x%
+  // initial x += floor(base x) * initial x%
   ...flatAndPercentStats.map((s) =>
     ownBuff.initial[s].add(
-      prod(own.base[s], sum(percent(1), own.initial[`${s}_`]))
+      prod(custom('floor', own.base[s]), sum(percent(1), own.initial[`${s}_`]))
     )
   ),
 
