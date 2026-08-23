@@ -365,7 +365,6 @@ const sheet = register(
   ...luminizeFleetingGrace,
   ...luminizeUltimate,
   ...luminizeFlowerFeather, // Self-buffs
-  ownBuff.combat.atk.add(abilityAtkBuff),
 
   // Buffs
   registerBuff('special_teamDmg_', specialTeamDmg_, undefined, true),
