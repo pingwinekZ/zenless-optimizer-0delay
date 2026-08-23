@@ -4,8 +4,8 @@ import { createContext } from 'react'
 import type { FormulaText } from '../types'
 
 export type FormulaTextFunc = (
-  _data: CalcResult<number, CalcMeta<Tag, never>>,
-  _cache: Map<CalcResult<number, CalcMeta<Tag, never>>, FormulaText>
+  _data: CalcResult<number, CalcMeta<Tag, string>>,
+  _cache: Map<CalcResult<number, CalcMeta<Tag, string>>, FormulaText>
 ) => FormulaText
 
 export const FormulaTextContext = createContext<FormulaTextFunc>(() => ({

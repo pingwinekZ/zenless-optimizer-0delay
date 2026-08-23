@@ -5,7 +5,11 @@ import {
   type CardBackgroundColor,
   ColorText,
 } from '@zenless-optimizer/common/ui'
-import { getUnitStr, valueString } from '@zenless-optimizer/common/util'
+import {
+  getUnitStr,
+  truncateToFixed,
+  valueString,
+} from '@zenless-optimizer/common/util'
 import type { CalcMeta, Read, Tag } from '@zenless-optimizer/game-opt/engine'
 import {
   CalcContext,
@@ -102,7 +106,7 @@ export function TextFieldDisplay({
       </Text>
       <Text span>
         {typeof fieldValue === 'number' && toFixed !== undefined
-          ? fieldValue.toFixed?.(toFixed)
+          ? truncateToFixed(fieldValue, toFixed)
           : fieldValue}
         {unit}
       </Text>

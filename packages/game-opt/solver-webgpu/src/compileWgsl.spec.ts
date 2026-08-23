@@ -3,6 +3,7 @@ import {
   cmpGE,
   compile,
   constant,
+  custom,
   max,
   min,
   type NumTagFree,
@@ -84,6 +85,7 @@ const min = Math.min, max = Math.max;
 const select = (f, t, c) => (c ? t : f);
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 const u32 = (v) => Math.floor(v);
+const floor = Math.floor;
 ${fN}
 ${idxN}
 ${jsPrelude}
@@ -352,6 +354,14 @@ describe('compileWgsl', () => {
     }
     expect(() => compileWgsl([strSubscript as any], opts)).toThrow(
       /unsupported/
+    )
+  })
+
+  test('emits WGSL floor for the floor custom op', () => {
+    const nodes = [custom('floor', read({ q: 'atk_' }))]
+    const generated = compileWgsl(nodes, opts)
+    expect(generated.evalObjective).toContain(
+      `${generated.names.get(nodes[0])} = floor(${generated.names.get((nodes[0] as any).x[0])});`
     )
   })
 })

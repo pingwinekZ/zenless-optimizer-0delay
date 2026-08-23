@@ -139,7 +139,7 @@ function ZzzSheetUiProviders({
   formulaTextCache,
 }: {
   children: ReactNode
-  formulaTextCache: Map<CalcResult<number, CalcMeta<Tag, never>>, FormulaText>
+  formulaTextCache: Map<CalcResult<number, CalcMeta<Tag, string>>, FormulaText>
 }) {
   return (
     <FormulaTextCacheContext.Provider value={formulaTextCache}>

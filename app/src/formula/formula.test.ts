@@ -50,12 +50,12 @@ describe('read test', () => {
 describe('character test', () => {
   it.each([
     [1, 0, 0, 95, 49, 603, 118, 94, 93],
-    [10, 0, 0, 143.807, 109.1938, 1339.5834, 118, 94, 93],
-    [10, 1, 0, 177.807, 143.1938, 1753.5834, 118, 94, 93],
-    [20, 2, 0, 266.037, 244.0758, 2986.0094, 118, 94, 93],
-    [60, 5, 0, 583.957, 612.6038, 7500.7134, 118, 94, 93],
-    [60, 5, 3, 608.957, 612.6038, 7500.7134, 130, 94, 93],
-    [60, 5, 6, 658.957, 612.6038, 7500.7134, 136, 94, 93],
+    [10, 0, 0, 143, 109, 1339, 118, 94, 93],
+    [10, 1, 0, 177, 143, 1753, 118, 94, 93],
+    [20, 2, 0, 266, 244, 2986, 118, 94, 93],
+    [60, 5, 0, 583, 612, 7500, 118, 94, 93],
+    [60, 5, 3, 608, 612, 7500, 130, 94, 93],
+    [60, 5, 6, 658, 612, 7500, 136, 94, 93],
   ])(
     'Calculate character base stats for lvl %i, promo %i, core %i',
     (lvl, promotion, core, atk, def, hp, impact, anomMas, anomProf) => {
@@ -201,15 +201,15 @@ describe('char+wengine test', () => {
     const calc = new Calculator(keys, values, compileTagMapValues(keys, data))
     const anby = convert(ownTag, { et: 'own', src: 'Anby' })
     expect(calc.compute(anby.base.atk).val).toBeCloseTo(1134.797)
-    expect(calc.compute(anby.final.atk).val).toBeCloseTo(1597.696912)
+    expect(calc.compute(anby.final.atk).val).toBeCloseTo(1596.664)
   })
   it.each([
-    [false, 'avg', 4464.061816750043, 14880.20606],
-    [false, 'crit', 5261.586, 14880.20606],
-    [false, 'nonCrit', 2071.49, 14880.20606],
-    [true, 'avg', 6696.092725125065, 22320.30908],
-    [true, 'crit', 7892.378, 22320.30908],
-    [true, 'nonCrit', 3107.236, 22320.30908],
+    [false, 'avg', 4461.175798141238, 14870.585993804125],
+    [false, 'crit', 5258.184003377608, 14870.585993804125],
+    [false, 'nonCrit', 2070.151182432129, 14870.585993804125],
+    [true, 'avg', 6691.763697211858, 22305.878990706187],
+    [true, 'crit', 7887.276005066412, 22305.878990706187],
+    [true, 'nonCrit', 3105.2267736481936, 22305.878990706187],
   ])(
     'calculate standard+anomaly damage, stunned: %o, critMode: %s',
     (isStunned, critMode, expectedStandardDmg, expectedAnomalyDmg) => {
@@ -265,7 +265,7 @@ describe('char+wengine test', () => {
       const calc = new Calculator(keys, values, compileTagMapValues(keys, data))
       const anby = convert(ownTag, { et: 'own', src: 'Anby' })
       expect(calc.compute(anby.base.atk).val).toBeCloseTo(1134.797)
-      expect(calc.compute(anby.final.atk).val).toBeCloseTo(1597.696912)
+      expect(calc.compute(anby.final.atk).val).toBeCloseTo(1596.664)
 
       expect(
         calc
