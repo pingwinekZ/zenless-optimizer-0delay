@@ -489,16 +489,19 @@ export function CharacterConditionalsDisplay({
     const linkedResult: Record<string, string | string[]> = {}
     Object.entries(sheet).forEach(([sectionKey, section]) => {
       section.documents.forEach((doc) => {
-        if (doc.type === 'conditional' && doc.conditional) {
-          const condName = doc.conditional.metadata.name
-          if (sectionKey === 'core') {
-            const isAbility = doc.conditional.fields?.some(
-              (f) => 'fieldRef' in f && f.fieldRef?.name?.startsWith('ability_')
-            )
-            const sec = isAbility ? 'ability' : 'core'
-            const arr = (sectionResult[condName] ??= [])
-            arr.push(sec)
-          } else {
+         if (doc.type === 'conditional' && doc.conditional) {
+           const condName = doc.conditional.metadata.name
+           if (doc.conditional.section) {
+             const arr = (sectionResult[condName] ??= [])
+             arr.push(doc.conditional.section)
+           } else if (sectionKey === 'core') {
+             const isAbility = doc.conditional.fields?.some(
+               (f) => 'fieldRef' in f && f.fieldRef?.name?.startsWith('ability_')
+             )
+             const sec = isAbility ? 'ability' : 'core'
+             const arr = (sectionResult[condName] ??= [])
+             arr.push(sec)
+           } else {
             const arr = (sectionResult[condName] ??= [])
             arr.push(sectionKey)
           }

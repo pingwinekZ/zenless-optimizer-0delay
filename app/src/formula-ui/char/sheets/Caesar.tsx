@@ -126,14 +126,20 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
+        label: ch('abilityTeamCond'),
+        description: <GameDesc ns="char_Caesar_gen" key18="ability.desc.0" />,
+        metadata: cond.can_defensive_assist,
+        section: 'ability',
+      },
+    },
+    {
+      type: 'conditional',
+      conditional: {
         label: ch('abilityCond'),
         description: (
-          <>
-            <GameDesc ns="char_Caesar_gen" key18="ability.desc.0" />
-            <AbilityBodyText characterKey={key}>
-              <GameDesc ns="char_Caesar_gen" key18="ability.desc.1" />
-            </AbilityBodyText>
-          </>
+          <AbilityBodyText characterKey={key}>
+            <GameDesc ns="char_Caesar_gen" key18="ability.desc.1" />
+          </AbilityBodyText>
         ),
         metadata: cond.ability_debuff,
         fields: [fieldForBuff(buff.ability_dmgInc_)],
