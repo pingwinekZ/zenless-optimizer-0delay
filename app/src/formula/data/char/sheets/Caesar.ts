@@ -40,10 +40,16 @@ const {
   exSpecial_assistFollowup_used: 6,
 })
 
-const m6_exSpecial_assistFollowup_crit_ = ownBuff.combat.crit_.add(
+const m6_exSpecial_crit_ = ownBuff.combat.crit_.add(
   cmpGE(char.mindscape, 6, percent(1))
 )
-const m6_dmg_ = ownBuff.combat.common_dmg_.add(
+const m6_assistFollowup_crit_ = ownBuff.combat.crit_.add(
+  cmpGE(char.mindscape, 6, percent(1))
+)
+const m6_exSpecial_dmg_ = ownBuff.combat.common_dmg_.add(
+  cmpGE(char.mindscape, 6, dm.m6.dmg_)
+)
+const m6_assistFollowup_dmg_ = ownBuff.combat.common_dmg_.add(
   cmpGE(char.mindscape, 6, dm.m6.dmg_)
 )
 
@@ -65,8 +71,8 @@ const sheet = register(
       { damageType1: 'exSpecial' },
       'atk',
       undefined,
-      m6_exSpecial_assistFollowup_crit_,
-      m6_dmg_
+      m6_exSpecial_crit_,
+      m6_exSpecial_dmg_
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -76,8 +82,8 @@ const sheet = register(
       { damageType1: 'assistFollowUp' },
       'atk',
       undefined,
-      m6_exSpecial_assistFollowup_crit_,
-      m6_dmg_
+      m6_assistFollowup_crit_,
+      m6_assistFollowup_dmg_
     )
   ),
 
@@ -100,7 +106,7 @@ const sheet = register(
     'ult_dazeInc_',
     ownBuff.combat.dazeInc_.addWithDmgType(
       'ult',
-      enemy_shielded.ifOn(sum(percent(0.4), prod(char.chain, percent(0.05))))
+      enemy_shielded.ifOn(prod(percent(0.01), sum(40, prod(char.chain, 5))))
     )
   ),
   registerBuff(
@@ -149,13 +155,33 @@ const sheet = register(
     ownBuff.combat.enerRegen_.add(m2_radiant_aegis.ifOn(dm.m2.enerRegen_))
   ),
   registerBuff(
-    'm6_exSpecial_assistFollowup_crit_',
-    m6_exSpecial_assistFollowup_crit_,
+    'm6_exSpecial_crit_',
+    m6_exSpecial_crit_,
     undefined,
     undefined,
     false
   ),
-  registerBuff('m6_dmg_', m6_dmg_, undefined, undefined, false),
+  registerBuff(
+    'm6_assistFollowup_crit_',
+    m6_assistFollowup_crit_,
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff(
+    'm6_exSpecial_dmg_',
+    m6_exSpecial_dmg_,
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff(
+    'm6_assistFollowup_dmg_',
+    m6_assistFollowup_dmg_,
+    undefined,
+    undefined,
+    false
+  ),
   registerBuff(
     'm6_crit_',
     ownBuff.combat.crit_.add(

@@ -73,27 +73,51 @@ export const buffs = {
     },
     team: false,
   },
-  m6_exSpecial_assistFollowup_crit_: {
+  m6_exSpecial_crit_: {
     sheet: 'Caesar',
-    name: 'm6_exSpecial_assistFollowup_crit_',
+    name: 'm6_exSpecial_crit_',
     tag: {
       et: 'display',
       qt: 'combat',
       q: 'crit_',
       sheet: 'Caesar',
-      name: 'm6_exSpecial_assistFollowup_crit_',
+      name: 'm6_exSpecial_crit_',
     },
     team: false,
   },
-  m6_dmg_: {
+  m6_assistFollowup_crit_: {
     sheet: 'Caesar',
-    name: 'm6_dmg_',
+    name: 'm6_assistFollowup_crit_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'crit_',
+      sheet: 'Caesar',
+      name: 'm6_assistFollowup_crit_',
+    },
+    team: false,
+  },
+  m6_exSpecial_dmg_: {
+    sheet: 'Caesar',
+    name: 'm6_exSpecial_dmg_',
     tag: {
       et: 'display',
       qt: 'combat',
       q: 'common_dmg_',
       sheet: 'Caesar',
-      name: 'm6_dmg_',
+      name: 'm6_exSpecial_dmg_',
+    },
+    team: false,
+  },
+  m6_assistFollowup_dmg_: {
+    sheet: 'Caesar',
+    name: 'm6_assistFollowup_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'common_dmg_',
+      sheet: 'Caesar',
+      name: 'm6_assistFollowup_dmg_',
     },
     team: false,
   },
