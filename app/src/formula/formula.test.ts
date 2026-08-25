@@ -50,12 +50,12 @@ describe('read test', () => {
 describe('character test', () => {
   it.each([
     [1, 0, 0, 95, 49, 603, 118, 94, 93],
-    [10, 0, 0, 143, 109, 1339, 118, 94, 93],
-    [10, 1, 0, 177, 143, 1753, 118, 94, 93],
-    [20, 2, 0, 266, 244, 2986, 118, 94, 93],
-    [60, 5, 0, 583, 612, 7500, 118, 94, 93],
-    [60, 5, 3, 608, 612, 7500, 130, 94, 93],
-    [60, 5, 6, 658, 612, 7500, 136, 94, 93],
+    [10, 0, 0, 143, 109, 1339.5834, 118, 94, 93],
+    [10, 1, 0, 177, 143, 1753.5834, 118, 94, 93],
+    [20, 2, 0, 266, 244, 2986.0094, 118, 94, 93],
+    [60, 5, 0, 583, 612, 7500.7134, 118, 94, 93],
+    [60, 5, 3, 608, 612, 7500.7134, 130, 94, 93],
+    [60, 5, 6, 658, 612, 7500.7134, 136, 94, 93],
   ])(
     'Calculate character base stats for lvl %i, promo %i, core %i',
     (lvl, promotion, core, atk, def, hp, impact, anomMas, anomProf) => {
@@ -95,9 +95,9 @@ describe('character test', () => {
 describe('wengine test', () => {
   it.each([
     [0, 0, 40, 0.2],
-    [10, 0, 102.728, 0.2],
-    [10, 1, 138.416, 0.26],
-    [60, 5, 594.8, 0.5],
+    [10, 0, 102, 0.2],
+    [10, 1, 138, 0.26],
+    [60, 5, 594, 0.5],
   ])(
     'Calculate wengine base stats for lvl %i, mod %i',
     (lvl, modification, atk, substat) => {
@@ -200,16 +200,16 @@ describe('char+wengine test', () => {
     ]
     const calc = new Calculator(keys, values, compileTagMapValues(keys, data))
     const anby = convert(ownTag, { et: 'own', src: 'Anby' })
-    expect(calc.compute(anby.base.atk).val).toBeCloseTo(1134.797)
-    expect(calc.compute(anby.final.atk).val).toBeCloseTo(1596.664)
+    expect(calc.compute(anby.base.atk).val).toBeCloseTo(1133)
+    expect(calc.compute(anby.final.atk).val).toBeCloseTo(1595.368)
   })
   it.each([
-    [false, 'avg', 4461.175798141238, 14870.585993804125],
-    [false, 'crit', 5258.184003377608, 14870.585993804125],
-    [false, 'nonCrit', 2070.151182432129, 14870.585993804125],
-    [true, 'avg', 6691.763697211858, 22305.878990706187],
-    [true, 'crit', 7887.276005066412, 22305.878990706187],
-    [true, 'nonCrit', 3105.2267736481936, 22305.878990706187],
+    [false, 'avg', 4457.554695746249, 14858.5156524875],
+    [false, 'crit', 5253.9159754967395, 14858.5156524875],
+    [false, 'nonCrit', 2068.470856494779, 14858.5156524875],
+    [true, 'avg', 6686.332043619374, 22287.773478731247],
+    [true, 'crit', 7880.87396324511, 22287.773478731247],
+    [true, 'nonCrit', 3102.7062847421685, 22287.773478731247],
   ])(
     'calculate standard+anomaly damage, stunned: %o, critMode: %s',
     (isStunned, critMode, expectedStandardDmg, expectedAnomalyDmg) => {
@@ -264,8 +264,8 @@ describe('char+wengine test', () => {
       ]
       const calc = new Calculator(keys, values, compileTagMapValues(keys, data))
       const anby = convert(ownTag, { et: 'own', src: 'Anby' })
-      expect(calc.compute(anby.base.atk).val).toBeCloseTo(1134.797)
-      expect(calc.compute(anby.final.atk).val).toBeCloseTo(1596.664)
+      expect(calc.compute(anby.base.atk).val).toBeCloseTo(1133)
+      expect(calc.compute(anby.final.atk).val).toBeCloseTo(1595.368)
 
       expect(
         calc
