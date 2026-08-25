@@ -491,7 +491,10 @@ export function CharacterConditionalsDisplay({
       section.documents.forEach((doc) => {
         if (doc.type === 'conditional' && doc.conditional) {
           const condName = doc.conditional.metadata.name
-          if (sectionKey === 'core') {
+          if (doc.conditional.section) {
+            const arr = (sectionResult[condName] ??= [])
+            arr.push(doc.conditional.section)
+          } else if (sectionKey === 'core') {
             const isAbility = doc.conditional.fields?.some(
               (f) => 'fieldRef' in f && f.fieldRef?.name?.startsWith('ability_')
             )

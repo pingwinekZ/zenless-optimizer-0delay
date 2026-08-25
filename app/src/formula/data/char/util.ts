@@ -4,6 +4,7 @@ import {
   cmpGE,
   cmpNE,
   constant,
+  custom,
   max,
   prod,
   subscript,
@@ -399,15 +400,18 @@ export function entriesForChar(data_gen: CharacterDatum): TagMapNodeEntries {
     // team member. Adding them here would cause them to match every member
     // (unset src matches any src) and inflate team counts.
     ownBuff.char.faction.add(data_gen.faction),
-    // Base + promotion stats
+    // Base + promotion + growth stats. The game floors base ATK and base DEF
+    // to integers before applying % bonuses, but keeps the base HP fractional
+    // (game parity, proven in velina-parity.spec)
     ...(['hp', 'atk', 'def'] as const).map((sk) => {
       const addPerPromo = data_gen.promotionStats.map((p) => p[sk])
+      const statSum = sum(
+        data_gen.stats[`${sk}_base`],
+        subscript(promotion, addPerPromo),
+        prod(readLvl, data_gen.stats[`${sk}_growth`])
+      )
       return ownBuff.base[sk].add(
-        sum(
-          data_gen.stats[`${sk}_base`],
-          subscript(promotion, addPerPromo),
-          prod(readLvl, data_gen.stats[`${sk}_growth`])
-        )
+        sk === 'hp' ? statSum : custom('floor', statSum)
       )
     }),
     // Other base stats

@@ -14,6 +14,14 @@ export type Conditional = {
   header?: Header
   fields?: Field[]
   targeted?: boolean
+  /**
+   * Explicit display section for this conditional in the optimizer's conditionals
+   * list. Only needed when a conditional lives in the merged `core` sheet section
+   * but belongs to a different category (e.g. an Additional Ability toggle that
+   * has no `ability_`-prefixed field, so the field-name heuristic can't classify
+   * it). Overrides the default core/ability classification.
+   */
+  section?: 'core' | 'ability'
   /** When set, toggling this conditional also toggles the linked conditional(s) */
   linked?: string | string[]
   /**

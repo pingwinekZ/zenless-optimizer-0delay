@@ -1,15 +1,17 @@
 {
   "stanceSwitchCond": "Stance Switch · Impact",
-  "ultCond": "Ult vs Shielded · Daze Inc",
+  "ultCond": "Enemy Shielded · Daze",
   "coreCond": "Radiant Aegis · ATK",
-  "m1RadiantAegisCond": "Radiant Aegis · RES Red",
-  "m2RadiantAegisCond": "Radiant Aegis · Energy Regen & ATK Boost Increase",
+  "m1RadiantAegisCond": "Radiant Aegis · RES Reduction",
+  "m2RadiantAegisCond": "Radiant Aegis · ER",
   "abilityTeamCond": "Defensive Assist Activation",
-  "abilityCond": "Debuff · DMG Inc",
+  "abilityCond": "Perfect Block / Retaliation / Defensive Assist / Dead End Activated · DMG",
   "core_shield_header": "Radiant Aegis Shield",
   "m2_atkInc_": "ATK Boost Increase",
-  "m6_header": "EX Special & Assist Follow-Up",
-  "m6_exSpecial_assistFollowup_crit_": "EX Special Attack: Overpowered Shield Bash and Assist Follow-Up: Aiding Blade CRIT Rate",
-  "m6_dmg_": "EX Special Attack: Overpowered Shield Bash and Assist Follow-Up: Aiding Blade DMG",
-  "m6Cond": "EX Special / Assist Follow-Up Used · CRIT Rate & CRIT DMG"
+  "m6_header": "CR & DMG",
+  "m6_exSpecial_crit_": "Overpowered Shield Bash CRIT Rate",
+  "m6_assistFollowup_crit_": "Aiding Blade CRIT Rate",
+  "m6_exSpecial_dmg_": "Overpowered Shield Bash DMG",
+  "m6_assistFollowup_dmg_": "Aiding Blade DMG",
+  "m6Cond": "Overpowered Shield Bash  / Aiding Blade Used · CR & CD"
 }

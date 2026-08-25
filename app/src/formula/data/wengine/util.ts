@@ -3,6 +3,7 @@ import type { NumNode } from '@zenless-optimizer/pando/engine'
 import {
   cmpEq,
   cmpGE,
+  custom,
   prod,
   subscript,
   sum,
@@ -34,15 +35,18 @@ export function entriesForWengine(key: WengineKey): TagMapNodeEntries {
   const { atk_base, second_statkey, second_statvalue } = allStats.wengine[key]
   const wengineCount = own.common.count.sheet(key)
   return [
-    // Main stat (Base ATK)
+    // Main stat (Base ATK), floored to match game parity
     // atk_base * 1 + atk_multiplier[level] + 0.8922 * modification
     ownBuff.base.atk.add(
       cmpGE(
         wengineCount,
         1,
-        prod(
-          atk_base,
-          sum(1, subscript(lvl, atk_multiplier), prod(0.8922, modification))
+        custom(
+          'floor',
+          prod(
+            atk_base,
+            sum(1, subscript(lvl, atk_multiplier), prod(0.8922, modification))
+          )
         )
       )
     ),

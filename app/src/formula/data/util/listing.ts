@@ -59,6 +59,15 @@ export const flatAndPercentStats = [
   'anomMas',
   'enerRegen',
 ] as const
+/**
+ * Stats whose base value the game turns into an integer before applying %
+ * bonuses (game parity). ATK floors per-source (character + wengine) and DEF
+ * floors its single source; HP keeps its fractional base. Energy Regen is
+ * exempt — it is displayed with decimals in-game (e.g. 1.56).
+ */
+export const flooredBaseStats: readonly (typeof flatAndPercentStats)[number][] =
+  ['atk', 'def']
+
 export const nonFlatAndPercentStats = stats.filter(
   (stat) =>
     !flatAndPercentStats.flatMap((stat) => [stat, `${stat}_`]).includes(stat)
@@ -88,6 +97,7 @@ export const damageTypes = [
   'luminize',
   'vortex',
   'windswept',
+  'burn',
 ] as const
 
 export const skillTypes = [

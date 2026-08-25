@@ -258,6 +258,12 @@ export class Read extends BaseRead<Tag> {
       super.with('damageType2', 'abloom'),
     ]
   }
+  get burn(): Read[] {
+    return [
+      super.with('damageType1', 'burn'),
+      super.with('damageType2', 'burn'),
+    ]
+  }
   get luminize(): Read[] {
     return [
       super.with('damageType1', 'luminize'),

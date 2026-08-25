@@ -50,4 +50,30 @@ describe('sliceBetween', () => {
       undefined
     )
   })
+
+  it('isolates a mid-sentence clause with exact mode, closing with a period', () => {
+    const text =
+      'While Radiant Aegis from Core Passive is active, Caesar Energy increases by 10%, and the ATK boost is increased to 150%.'
+    expect(
+      sliceBetween(text, 'While Radiant Aegis from', 'increases by 10%', {
+        exact: true,
+      })
+    ).toBe(
+      'While Radiant Aegis from Core Passive is active, Caesar Energy increases by 10%.'
+    )
+  })
+
+  it('does not add a duplicate period in exact mode', () => {
+    const text = 'A clause ending with a period.'
+    expect(sliceBetween(text, 'A clause', 'period.', { exact: true })).toBe(
+      'A clause ending with a period.'
+    )
+  })
+
+  it('exact mode falls back to default when exact is false', () => {
+    const text = 'First clause, second clause.'
+    expect(sliceBetween(text, 'First', 'clause', { exact: false })).toBe(
+      'First clause, second clause.'
+    )
+  })
 })

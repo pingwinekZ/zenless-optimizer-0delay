@@ -89,6 +89,15 @@ export function GameDesc({ ns, key18 }: { ns: string; key18: string }) {
  *   from="The Stun DMG Multiplier"
  *   to="Soul-Searching Gaze"
  * />
+ *
+ * @example isolate a mid-sentence clause (slice ends at the `to` marker)
+ * <GameDescSlice
+ *   ns="char_Caesar_gen"
+ *   key18="mindscapes.2.desc"
+ *   from="While <ct color=#FFFFFF>Radiant Aegis</ct> from"
+ *   to="increases by 10%"
+ *   toExact
+ * />
  */
 export function GameDescSlice({
   ns,
@@ -96,6 +105,7 @@ export function GameDescSlice({
   from,
   to,
   capitalize = false,
+  toExact = false,
 }: {
   ns: string
   key18: string
@@ -103,16 +113,18 @@ export function GameDescSlice({
   to: string
   /** Capitalizes the first letter of the sliced text (e.g. when the slice starts mid-sentence) */
   capitalize?: boolean
+  /** End the slice at the `to` marker instead of the end of its sentence, to isolate a mid-sentence clause */
+  toExact?: boolean
 }) {
   const { t } = useTranslation(ns)
   const text = t(`${ns}:${key18}`)
   const slice = useMemo(() => {
     if (typeof text !== 'string') return undefined
-    const sliced = sliceBetween(text, from, to)
+    const sliced = sliceBetween(text, from, to, { exact: toExact })
     if (sliced === undefined) return undefined
     if (!capitalize || sliced.length === 0) return sliced
     return sliced.charAt(0).toUpperCase() + sliced.slice(1)
-  }, [text, from, to, capitalize])
+  }, [text, from, to, capitalize, toExact])
 
   if (slice === undefined) {
     console.warn(
