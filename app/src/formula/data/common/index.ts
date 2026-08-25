@@ -9,6 +9,7 @@ import {
 import type { TagMapNodeEntries } from '../util'
 import {
   flatAndPercentStats,
+  flooredBaseStats,
   nonFlatAndPercentStats,
   own,
   ownBuff,
@@ -45,13 +46,24 @@ const data: TagMapNodeEntries = [
   // convert sheet:disc to sheet:agg for accumulation
   reader.sheet('agg').reread(reader.sheet('disc')),
 
-  // For stats with a flat and percent variant
+  // For stats with a flat and percent variant whose base value the game
+  // truncates to an integer (Energy Regen is exempt — displayed with decimals)
   // initial x += floor(base x) * initial x%
-  ...flatAndPercentStats.map((s) =>
+  ...flooredBaseStats.map((s) =>
     ownBuff.initial[s].add(
       prod(custom('floor', own.base[s]), sum(percent(1), own.initial[`${s}_`]))
     )
   ),
+
+  // For the remaining flat-and-percent stats, keep the fractional base value
+  // initial x += base x * initial x%
+  ...flatAndPercentStats
+    .filter((s) => !flooredBaseStats.includes(s))
+    .map((s) =>
+      ownBuff.initial[s].add(
+        prod(own.base[s], sum(percent(1), own.initial[`${s}_`]))
+      )
+    ),
 
   // For stats with a flat and percent variant
   // final x += initial X * combat X% + combat X

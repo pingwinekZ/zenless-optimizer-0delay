@@ -1,7 +1,7 @@
 import type { CharacterKey } from '../../../consts'
+import { useCharacter } from '../../../db-ui'
 import { Caesar } from '../../../formula'
 import { GameDesc, GameDescSlice } from '../../../i18n'
-import { useCharacter } from '../../../db-ui'
 import { mappedStats } from '../../../stats'
 import { st, trans } from '../../util'
 import {

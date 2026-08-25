@@ -1,10 +1,18 @@
-import { ColorText } from '@zenless-optimizer/common/ui'
+import { ColorText, ImgIcon } from '@zenless-optimizer/common/ui'
+import { read } from '@zenless-optimizer/pando/engine'
+import { commonDefIcon, mindscapeDefIcon } from '../../../assets'
 import type { CharacterKey } from '../../../consts'
+import { useCharacter } from '../../../db-ui'
 import { Burnice } from '../../../formula'
-import { GameDesc } from '../../../i18n'
-import { mappedStats } from '../../../stats'
+import { GameDesc, GameDescSlice } from '../../../i18n'
 import { trans } from '../../util'
-import { createBaseSheet, fieldForBuff, SkillGameDesc } from '../sheetUtil'
+import {
+  CoreGameDesc,
+  createBaseSheet,
+  fieldForBuff,
+  PrefixedLine,
+  useEffectiveMindscape,
+} from '../sheetUtil'
 import { getVariant } from '../util'
 
 const key: CharacterKey = 'Burnice'
@@ -12,32 +20,104 @@ const [, ch] = trans('char', key)
 const cond = Burnice.conditionals
 const buff = Burnice.buffs
 const formula = Burnice.formulas
-const dm = mappedStats.char[key]
+
+function CoreDescription() {
+  const mindscape = useEffectiveMindscape(key)
+  return (
+    <>
+      <CoreGameDesc characterKey={key} />
+      <PrefixedLine prefix="M1" dimmed={mindscape < 1}>
+        <GameDesc ns="char_Burnice_gen" key18="mindscapes.1.desc" />
+      </PrefixedLine>
+    </>
+  )
+}
+
+function PotentialDescription() {
+  const char = useCharacter(key)
+  const potential = char?.potential ?? 0
+  return (
+    <PrefixedLine prefix="P2+" dimmed={potential < 2}>
+      <GameDesc
+        ns="char_Burnice_gen"
+        key18={`potential.desc.${Math.max(potential, 2)}`}
+      />
+    </PrefixedLine>
+  )
+}
 
 const sheet = createBaseSheet(key, {
   perSkillAbility: {
     special: {
       EXSpecialAttackIntenseHeatTossingMethod: [
         {
-          type: 'conditional',
-          conditional: {
-            label: ch('abloom'),
-            description: (
-              <SkillGameDesc
-                characterKey={key}
-                ns="char_Burnice_gen"
-                key18="special.EXSpecialAttackIntenseHeatTossingMethod.desc"
-              />
-            ),
-            metadata: cond.abloom,
-            fields: [
-              fieldForBuff(buff.exSpecial_ether_anom_mv_mult_),
-              fieldForBuff(buff.exSpecial_electric_anom_mv_mult_),
-              fieldForBuff(buff.exSpecial_fire_anom_mv_mult_),
-              fieldForBuff(buff.exSpecial_physical_anom_mv_mult_),
-              fieldForBuff(buff.exSpecial_ice_anom_mv_mult_),
-            ],
+          type: 'fields',
+          header: {
+            icon: <ImgIcon src={commonDefIcon('specialFlat')} size={1.5} />,
+            text: ch('abloom'),
           },
+          fields: [
+            {
+              title: (
+                <ColorText
+                  color={getVariant(formula.exSpecial_ether_abloomDmg.tag)}
+                >
+                  {ch('exSpecial_ether_abloomDmg')}
+                </ColorText>
+              ),
+              fieldRef: formula.exSpecial_ether_abloomDmg.tag,
+            },
+            {
+              title: (
+                <ColorText
+                  color={getVariant(formula.exSpecial_electric_abloomDmg.tag)}
+                >
+                  {ch('exSpecial_electric_abloomDmg')}
+                </ColorText>
+              ),
+              fieldRef: formula.exSpecial_electric_abloomDmg.tag,
+            },
+            {
+              title: (
+                <ColorText
+                  color={getVariant(formula.exSpecial_fire_abloomDmg.tag)}
+                >
+                  {ch('exSpecial_fire_abloomDmg')}
+                </ColorText>
+              ),
+              fieldRef: formula.exSpecial_fire_abloomDmg.tag,
+            },
+            {
+              title: (
+                <ColorText
+                  color={getVariant(formula.exSpecial_physical_abloomDmg.tag)}
+                >
+                  {ch('exSpecial_physical_abloomDmg')}
+                </ColorText>
+              ),
+              fieldRef: formula.exSpecial_physical_abloomDmg.tag,
+            },
+            {
+              title: (
+                <ColorText
+                  color={getVariant(formula.exSpecial_ice_abloomDmg.tag)}
+                >
+                  {ch('exSpecial_ice_abloomDmg')}
+                </ColorText>
+              ),
+              fieldRef: formula.exSpecial_ice_abloomDmg.tag,
+            },
+            {
+              title: (
+                <ColorText
+                  color={getVariant(formula.exSpecial_wind_abloomDmg.tag)}
+                >
+                  {ch('exSpecial_wind_abloomDmg')}
+                </ColorText>
+              ),
+              fieldRef: formula.exSpecial_wind_abloomDmg.tag,
+            },
+          ],
         },
       ],
     },
@@ -45,7 +125,11 @@ const sheet = createBaseSheet(key, {
   core: [
     {
       type: 'fields',
-      header: { icon: null, text: ch('core_header') },
+      header: {
+        icon: <ImgIcon src={commonDefIcon('coreFlat')} size={1.5} />,
+        text: ch('core_header'),
+      },
+      description: <CoreDescription />,
       fields: [
         {
           title: (
@@ -59,37 +143,28 @@ const sheet = createBaseSheet(key, {
           title: ch('core_afterburn_anomBuildup'),
           fieldRef: formula.core_afterburn_anomBuildup.tag,
         },
-        {
-          title: (
-            <ColorText color={getVariant(buff.core_afterburn_dmg_.tag)}>
-              {ch('core_afterburn_dmg_')}
-            </ColorText>
-          ),
-          fieldRef: buff.core_afterburn_dmg_.tag,
-        },
       ],
+    },
+    {
+      type: 'text',
+      header: {
+        icon: <ImgIcon src={mindscapeDefIcon(1)} size={1.5} />,
+        text: ch('m1_header'),
+      },
+      text: <GameDesc ns="char_Burnice_gen" key18="mindscapes.1.desc" />,
     },
   ],
   potential: [
     {
       type: 'fields',
-      header: { icon: null, text: ch('potential_header') },
+      header: {
+        icon: <ImgIcon src={commonDefIcon('coreFlat')} size={1.5} />,
+        text: ch('potential_header'),
+      },
+      description: <PotentialDescription />,
       fields: [
-        fieldForBuff(buff.potential_anomMas),
-        fieldForBuff(buff.potential_common_dmg_),
-      ],
-    },
-  ],
-  m1: [
-    {
-      type: 'fields',
-      header: { icon: null, text: ch('m1_header') },
-      fields: [
-        {
-          title: ch('m1_afterburn_mv_mult'),
-          fieldValue: dm.m1.afterburn_dmg * 100,
-          unit: '%',
-        },
+        { ...fieldForBuff(buff.potential_anomMas), minPotential: 2 },
+        { ...fieldForBuff(buff.potential_common_dmg_), minPotential: 2 },
       ],
     },
   ],
@@ -109,7 +184,11 @@ const sheet = createBaseSheet(key, {
   m4: [
     {
       type: 'fields',
-      header: { icon: null, text: ch('m4_header') },
+      header: {
+        icon: <ImgIcon src={mindscapeDefIcon(4)} size={1.5} />,
+        text: ch('m4_header'),
+      },
+      description: <GameDesc ns="char_Burnice_gen" key18="mindscapes.4.desc" />,
       fields: [
         {
           title: ch('m4_exSpecial_crit_'),
@@ -124,8 +203,41 @@ const sheet = createBaseSheet(key, {
   ],
   m6: [
     {
+      type: 'conditional',
+      conditional: {
+        label: ch('m6Cond'),
+        description: (
+          <GameDescSlice
+            ns="char_Burnice_gen"
+            key18="mindscapes.6.desc"
+            from="After hitting an enemy"
+            to="will ignore 25%"
+          />
+        ),
+        metadata: cond.exSpecial_active,
+        fields: [
+          fieldForBuff(buff.m6_burn_fire_resIgn_),
+          {
+            title: ch('m6_fire_resIgn'),
+            fieldRef: buff.m6_burn_fire_resIgn_.tag,
+          },
+        ],
+      },
+    },
+    {
       type: 'fields',
-      header: { icon: null, text: ch('m6_header') },
+      header: {
+        icon: <ImgIcon src={mindscapeDefIcon(6)} size={1.5} />,
+        text: ch('m6_additional_afterburn_header'),
+      },
+      description: (
+        <GameDescSlice
+          ns="char_Burnice_gen"
+          key18="mindscapes.6.desc"
+          from="When Burnice hits an enemy"
+          to="does not consume"
+        />
+      ),
       fields: [
         {
           title: (
@@ -140,31 +252,42 @@ const sheet = createBaseSheet(key, {
       ],
     },
     {
-      type: 'conditional',
-      conditional: {
-        label: ch('m6Cond'),
-        description: (
-          <GameDesc ns="char_Burnice_gen" key18="mindscapes.6.desc" />
-        ),
-        metadata: cond.exSpecial_active,
-        fields: [
-          fieldForBuff(buff.m6_burn_fire_resIgn_),
-          {
-            title: ch('m6_fire_resIgn'),
-            fieldRef: buff.m6_fire_resIgn_.tag,
-          },
-        ],
+      type: 'fields',
+      header: {
+        icon: <ImgIcon src={mindscapeDefIcon(6)} size={1.5} />,
+        text: ch('m6_burn_header'),
       },
+      description: (
+        <GameDescSlice
+          ns="char_Burnice_gen"
+          key18="mindscapes.6.desc"
+          from="fire blast hits an enemy"
+          to="once every 20s"
+          capitalize={true}
+        />
+      ),
+      fields: [
+        {
+          title: (
+            <ColorText color={getVariant(formula.m6_burn_dmg.tag)}>
+              {ch('m6_burn_dmg')}
+            </ColorText>
+          ),
+          fieldRef: formula.m6_burn_dmg.tag,
+        },
+      ],
     },
     {
-      type: 'conditional',
-      conditional: {
-        label: ch('m6CondBurn'),
-        description: (
-          <GameDesc ns="char_Burnice_gen" key18="mindscapes.6.desc" />
-        ),
-        metadata: cond.additional_burn,
-        fields: [fieldForBuff(buff.m6_fire_anom_mv_mult_)],
+      type: 'text',
+      text: (calc) => {
+        const val = calc.compute(read(formula.m6_burn_dmg.tag)).val ?? 0
+        const dps = val * 2
+        return (
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span>{ch('m6_burn_dmg')} (DPS)</span>
+            <span>{dps.toFixed(0)}</span>
+          </div>
+        )
       },
     },
   ],
