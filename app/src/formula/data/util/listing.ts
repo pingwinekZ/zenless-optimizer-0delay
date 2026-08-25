@@ -60,13 +60,13 @@ export const flatAndPercentStats = [
   'enerRegen',
 ] as const
 /**
- * Stats whose base value the game truncates to an integer before applying %
- * bonuses (game parity). Energy Regen is excluded — it is displayed with
- * decimals in-game (e.g. 1.56), so flooring it would destroy its base value.
+ * Stats whose base value the game turns into an integer before applying %
+ * bonuses (game parity). ATK floors per-source (character + wengine) and DEF
+ * floors its single source; HP keeps its fractional base. Energy Regen is
+ * exempt — it is displayed with decimals in-game (e.g. 1.56).
  */
-export const flooredBaseStats = flatAndPercentStats.filter(
-  (stat) => stat !== 'enerRegen'
-)
+export const flooredBaseStats: readonly (typeof flatAndPercentStats)[number][] =
+  ['atk', 'def']
 
 export const nonFlatAndPercentStats = stats.filter(
   (stat) =>
