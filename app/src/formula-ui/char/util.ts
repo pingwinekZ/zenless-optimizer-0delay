@@ -44,4 +44,5 @@ export const damageTypeKeysMap: Record<DamageType, string> = {
   luminize: 'Luminize',
   vortex: 'Vortex',
   windswept: 'Windswept',
+  burn: 'Burn',
 }

@@ -19,7 +19,10 @@ const charKey: CharacterKey = 'Remielle'
 //   atk = 124 + 222 + 59 * 6.8214 + core 75 = 823.4626
 //   hp = 602 + 2064 + 59 * 81.6391 = 7482.7069
 //   def = 48 + 166 + 59 * 6.5524 = 600.5916
-function setupCalc(extra: TagMapNodeEntries = []): Calculator {
+function setupCalc(
+  extra: TagMapNodeEntries = [],
+  charKey: CharacterKey = 'Remielle'
+): Calculator {
   const data: TagMapNodeEntries = [
     ...teamData([charKey]),
     ...withMember(
@@ -46,7 +49,10 @@ function setupCalc(extra: TagMapNodeEntries = []): Calculator {
   })
 }
 
-function computeStat(calc: Calculator, stat: 'atk' | 'hp' | 'def'): number {
+function computeStat(
+  calc: Calculator,
+  stat: 'atk' | 'hp' | 'def' | 'enerRegen'
+): number {
   return calc.compute(read(own.initial[stat].tag)).val as number
 }
 
@@ -65,6 +71,13 @@ describe('initial stat flooring (game parity)', () => {
       ownBuff.initial.atk.add(25),
     ])
     expect(computeStat(calc, 'atk')).toBeCloseTo(1259.5, 6)
+  })
+
+  it('does not floor Energy Regen since the game displays it with decimals', () => {
+    // Burnice lvl 60, core 6: base 1.2 + coreStats 0.36 = 1.56
+    const calc = setupCalc([], 'Burnice')
+    expect(computeStat(calc, 'enerRegen')).toBeCloseTo(1.56, 6)
+    expect(calc.compute(read(own.final.enerRegen.tag)).val).toBeCloseTo(1.56, 6)
   })
 
   it('matches the game for the Remielle regression build (3998 vs 4000)', () => {
