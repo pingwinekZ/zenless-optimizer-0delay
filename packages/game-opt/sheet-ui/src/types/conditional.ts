@@ -32,4 +32,6 @@ export type Conditional = {
   maxByMindscape?: Record<number, number>
   /** When true, fields are not dimmed when the conditional value is 0 (e.g. a passive base effect still applies) */
   noDimWhenZero?: boolean
+  /** Show this conditional in the teammate view even when it has no fields (e.g. a self-state toggle gating team-wide effects) */
+  showInTeammateView?: boolean
 }

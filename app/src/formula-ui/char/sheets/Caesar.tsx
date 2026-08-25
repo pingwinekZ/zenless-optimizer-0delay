@@ -130,6 +130,7 @@ const sheet = createBaseSheet(key, {
         description: <GameDesc ns="char_Caesar_gen" key18="ability.desc.0" />,
         metadata: cond.can_defensive_assist,
         section: 'ability',
+        showInTeammateView: true,
       },
     },
     {

@@ -174,7 +174,8 @@ function extractCharConditionalFields(
             }
             return false
           })
-          if (teamFields.length === 0) return
+          if (teamFields.length === 0 && !doc.conditional.showInTeammateView)
+            return
           if (!result[condName]) result[condName] = []
           const seenKeys = new Set(
             result[condName]
