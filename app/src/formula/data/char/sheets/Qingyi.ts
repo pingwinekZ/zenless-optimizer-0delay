@@ -1,6 +1,5 @@
 import type { NumNode } from '@zenless-optimizer/pando/engine'
 import {
-  cmpEq,
   cmpGE,
   max,
   min,
@@ -36,24 +35,18 @@ const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
-const { moonlit_blossoms_hit } = allBoolConditionals(key, undefined, {
-  moonlit_blossoms_hit: 6,
-})
-const { flash_connect_consumed } = allNumConditionals(
+const { moonlit_blossoms_hit, m1_flash_max, m2_subjugation_max } =
+  allBoolConditionals(key, undefined, {
+    moonlit_blossoms_hit: 6,
+    m1_flash_max: 1,
+    m2_subjugation_max: 2,
+  })
+const { flash_connect_consumed } = allNumConditionals(key, true, 0, 25)
+const { subjugation, chain_subjugation } = allNumConditionals(
   key,
   true,
   0,
-  25,
-  undefined,
-  { flash_connect_consumed: 1 }
-)
-const { subjugation } = allNumConditionals(
-  key,
-  true,
-  0,
-  dm.core.max_stacks,
-  undefined,
-  { subjugation: 2 }
+  dm.core.max_stacks
 )
 
 const flash_connect_dmg_ = ownBuff.combat.common_dmg_.add(
@@ -63,7 +56,7 @@ const flash_connect_dazeInc_ = ownBuff.combat.dazeInc_.add(
   prod(flash_connect_consumed, percent(0.005))
 )
 const chain_dmg_ = ownBuff.combat.common_dmg_.add(
-  prod(subjugation, percent(0.03))
+  prod(chain_subjugation, percent(0.03))
 )
 const ability_check = (node: NumNode) =>
   cmpGE(
@@ -217,23 +210,19 @@ const sheet = register(
   registerBuff(
     'm1_defRed_',
     enemyDebuff.common.defRed_.add(
-      cmpGE(char.mindscape, 1, cmpEq(flash_connect_consumed, 25, dm.m1.defRed_))
+      cmpGE(char.mindscape, 1, m1_flash_max.ifOn(dm.m1.defRed_))
     )
   ),
   registerBuff(
     'm1_crit_',
     ownBuff.combat.crit_.add(
-      cmpGE(char.mindscape, 1, cmpEq(flash_connect_consumed, 25, dm.m1.crit_))
+      cmpGE(char.mindscape, 1, m1_flash_max.ifOn(dm.m1.crit_))
     )
   ),
   registerBuff(
     'm2_dazeInc_',
     ownBuff.combat.dazeInc_.add(
-      cmpGE(
-        char.mindscape,
-        2,
-        cmpGE(subjugation, dm.core.max_stacks, dm.m2.dazeInc_)
-      )
+      cmpGE(char.mindscape, 2, m2_subjugation_max.ifOn(dm.m2.dazeInc_))
     )
   ),
   registerBuff(

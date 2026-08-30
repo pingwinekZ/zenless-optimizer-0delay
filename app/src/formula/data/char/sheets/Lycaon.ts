@@ -316,11 +316,7 @@ const sheet = register(
   registerBuff(
     'potential_impact_',
     ownBuff.combat.impact_.add(
-      cmpGT(
-        durationLeft,
-        0,
-        percent(subscript(char.potential, dm.potential.impact_))
-      )
+      cmpGT(durationLeft, 0, percent(dm.potential.impact_[6]))
     )
   )
 )

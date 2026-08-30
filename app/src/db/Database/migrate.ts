@@ -14,7 +14,7 @@ import type {
   IZZZDatabase,
 } from '../Interfaces'
 
-export const currentDBVersion = 3
+export const currentDBVersion = 4
 
 export function migrateZOOD(
   zood: IZenlessObjectDescription & IZZZDatabase
@@ -92,6 +92,16 @@ export function migrateZOOD(
     }
     // Remove old wengine instances (they become catalog entries)
     delete zood['wengines']
+  })
+
+  // Remove character potential (always max, no longer stored)
+  migrateVersion(4, () => {
+    const chars = zood['characters'] as (ICharacter & { potential?: number })[]
+    if (chars) {
+      for (const char of chars) {
+        if ('potential' in char) delete (char as any).potential
+      }
+    }
   })
 
   zood.dbVersion = currentDBVersion
@@ -187,6 +197,19 @@ export function migrateStorage(storage: DBStorage) {
       // Remove old wengine entries (they become catalog)
       if (key.startsWith('zzz_wengine_')) {
         storage.remove(key)
+      }
+    }
+  })
+
+  migrateVersion(4, () => {
+    const keys = storage.keys
+    for (const key of keys) {
+      if (key.startsWith('zzz_character_')) {
+        const char = storage.get(key)
+        if (char && 'potential' in char) {
+          delete char.potential
+          storage.set(key, char)
+        }
       }
     }
   })

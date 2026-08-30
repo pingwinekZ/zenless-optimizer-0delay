@@ -51,7 +51,6 @@ export type CharBufferInput = {
   assist: number
   core: number
   mindscape: number
-  potential: number
 }
 
 /**
@@ -69,7 +68,6 @@ export const DEFAULT_TEAMMATE_CHAR = {
   assist: 11,
   core: 6,
   mindscape: 0,
-  potential: 6,
 } as const satisfies Omit<CharBufferInput, 'key'>
 
 export function charTagMapNodeEntries(
@@ -85,7 +83,6 @@ export function charTagMapNodeEntries(
     assist,
     core,
     mindscape,
-    potential,
   } = own.char
   const { char, iso, [data.key]: sheet } = reader.withAll('sheet', [])
 
@@ -102,7 +99,6 @@ export function charTagMapNodeEntries(
     core.add(data.core),
     promotion.add(data.promotion),
     mindscape.add(data.mindscape),
-    potential.add(data.potential),
 
     // Default char
     ownBuff.base.crit_.add(0.05),

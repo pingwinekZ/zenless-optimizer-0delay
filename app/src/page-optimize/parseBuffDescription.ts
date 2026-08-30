@@ -202,7 +202,7 @@ function extractTypedIgnore(
   // Captures: (1) prefix conjunction, (2) first value, (3) optional second value,
   //           (4) attribute name before RES, (5) RES or DEF
   const ignoreRe =
-    /(\s(?:,?\s*and\s+|,\s*|as\s+well\s+as\s+|or\s+))?ignor(?:e[sd]?|ing)\s+(\d+)(?:%\/(\d+))?%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)|target)'?s?\s+(?:(\w+)\s+)?(?:all[- ]?(?:DMG|attribute)\s+)?(RES|DEF)\b/i
+    /(\s(?:,?\s*and\s+|,\s*|as\s+well\s+as\s+|or\s+))?ignor(?:e[sd]?|ing)\s+(\d+)(?:%\/(\d+))?%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)|target|their)'?s?\s+(?:(\w+)\s+)?(?:all[- ]?(?:DMG|attribute)\s+)?(RES|DEF)\b/i
 
   const match = sentence.match(ignoreRe)
   if (!match) return sentence
@@ -220,7 +220,7 @@ function extractTypedIgnore(
   const dmgTypes = extractDamageTypes(beforeIgnore)
   const attrs: (AttributeKey | undefined)[] = [attr]
 
-  // Check for "and <Attr> RES/DEF" after the first match
+  // Check for "and <Attr> RES/DEF" after the first match (same value, different attribute)
   const afterMatch = sentence.substring(ignoreStart + match[0].length)
   const extraAttrRe = /and\s+(\w+)\s+(?:RES|DEF)\b/i
   let extraAttrMatch: RegExpExecArray | null
@@ -249,10 +249,50 @@ function extractTypedIgnore(
         }
       }
     }
-    // Remove the ignore clause from the sentence to avoid double-processing
+    // Handle additional ignores that share the same damage type context but
+    // appear as "and N% of their DEF/RES" without repeating the "ignore" verb
+    // (e.g. "ignore 10% of their All-Attribute RES and 10% of their DEF").
+    let fullRemovedLen = match[0].length
+    let extraTail = afterMatch
+    // Loop to handle one or more bare "and N% of ... RES/DEF" clauses
+    while (true) {
+      const extraNumRe =
+        /^\s*(?:,?\s*and\s+)(\d+)(?:%\/(\d+))?%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)|target|their)?'?s?\s*(?:(\w+)\s+)?(?:all[- ]?(?:DMG|attribute)\s+)?(RES|DEF)\b/i
+      const extraNumMatch = extraTail.match(extraNumRe)
+      if (!extraNumMatch) break
+      const extraValues = extraNumMatch[2]
+        ? [Number(extraNumMatch[1]), Number(extraNumMatch[2])]
+        : [Number(extraNumMatch[1])]
+      const extraStatType: BonusStatTag['q'] =
+        extraNumMatch[4].toUpperCase() === 'RES' ? 'resIgn_' : 'defIgn_'
+      const extraAttr2 = extraNumMatch[3]
+        ? matchAttribute(extraNumMatch[3])
+        : undefined
+      for (const ev of extraValues) {
+        for (const dmgType of dmgTypes) {
+          bonusStats.push({
+            tag: {
+              q: extraStatType,
+              qt: 'combat',
+              ...(extraAttr2 && { attribute: extraAttr2 }),
+              damageType1: dmgType as BonusStatTag['damageType1'],
+            },
+            value: ev,
+            ...(conditional || extraValues.length > 1
+              ? { conditional: true }
+              : {}),
+            ...(specialty && { specialty }),
+          })
+        }
+      }
+      fullRemovedLen += extraNumMatch[0].length
+      extraTail = extraTail.substring(extraNumMatch[0].length)
+      // Continue loop in case there are more (e.g. three parts)
+    }
+    // Remove the ignore clause(s) from the sentence to avoid double-processing
     return (
       sentence.substring(0, ignoreStart) +
-      sentence.substring(ignoreStart + match[0].length)
+      sentence.substring(ignoreStart + fullRemovedLen)
     )
   }
 
@@ -377,10 +417,14 @@ function extractTypedDmgIncrease(
       : extractDamageTypes(betweenText)
 
     // Fallback: if betweenText is empty and beforeDmg has content,
-    // check beforeDmg for damage types in shared-construct patterns
-    // (e.g., "Ultimate and Chain Attack DMG" where DMG applies to both)
+    // check the clause directly preceding DMG for shared-construct patterns
+    // (e.g., "Ultimate and Chain Attack DMG" where DMG applies to both).
+    // Only scan the last clause (after the final comma) to avoid picking
+    // up conditional trigger types like "uses an EX Special Attack" that
+    // appear earlier in the sentence.
     if (dmgTypes.length === 0 && beforeDmg && !betweenText) {
-      dmgTypes = extractDamageTypes(beforeDmg)
+      const lastClause = beforeDmg.split(/[,;]/).pop()?.trim() ?? ''
+      dmgTypes = extractDamageTypes(lastClause)
     }
 
     if (dmgTypes.length > 0) {
@@ -479,12 +523,25 @@ export function parseBuffDescription(desc: string): BuffConfig {
       const bonusStatsBefore = bonusStats.length
       const enemyStatsBefore = enemyStats.length
 
+      const sentenceConditional = isConditional(sentence)
+
       // Pre-pass: extract damage-type-qualified ignore patterns before
       // comma/and splitting destroys the damage type list context
       let processedSentence = extractTypedIgnore(
         sentence,
         bonusStats,
-        false,
+        sentenceConditional,
+        effectiveSpecialty
+      )
+
+      // Pre-pass: extract <Attribute> DMG lists (e.g. "Electric DMG and Physical DMG increase by 20%")
+      // Must run BEFORE typed DMG increase so attribute-qualified DMG like
+      // "Ice DMG increases by 30%" is not mis-identified as a damage-type-qualified
+      // buff due to a conditional trigger earlier in the sentence (e.g. "uses EX Special Attack").
+      processedSentence = extractAttrDmgList(
+        processedSentence,
+        bonusStats,
+        sentenceConditional,
         effectiveSpecialty
       )
 
@@ -492,15 +549,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
       processedSentence = extractTypedDmgIncrease(
         processedSentence,
         bonusStats,
-        false,
-        effectiveSpecialty
-      )
-
-      // Pre-pass: extract <Attribute> DMG lists (e.g. "Electric DMG and Physical DMG increase by 20%")
-      processedSentence = extractAttrDmgList(
-        processedSentence,
-        bonusStats,
-        false,
+        sentenceConditional,
         effectiveSpecialty
       )
 
@@ -518,7 +567,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
         // Skip Anomaly Buildup Rate — not mappable as a standalone stat
         if (/Anomaly Buildup Rate/i.test(seg)) continue
 
-        const conditional = isConditional(seg)
+        const conditional = isConditional(seg) || sentenceConditional
 
         // Detect specialty condition from "For Agents with/of X specialty" or "Agents with X specialty" patterns
         const specialtyMatch = seg.match(
@@ -534,7 +583,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
         // Handle split percentage values like "5%/15%" in ignore clauses
         // (conditional buffs with different values based on e.g. number of Anomaly agents)
         const splitIgnoreMatch = seg.match(
-          /ignor(?:e[sd]?|ing)\s+(\d+)%\/(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)|target)'?s?\s+(?:all[- ]?(?:DMG|attribute)\s+)?RES/i
+          /ignor(?:e[sd]?|ing)\s+(\d+)%\/(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)|target|their)'?s?\s+(?:all[- ]?(?:DMG|attribute)\s+)?RES/i
         )
         if (splitIgnoreMatch) {
           for (const value of [
@@ -553,7 +602,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
 
         // --- Defense/RES ignore (must check before generic stat patterns) ---
         const defIgnMatch = seg.match(
-          /ignor(?:e|ing)\s+(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)'?s?\s+)?(?:all[- ]?(?:DMG|attribute)\s+)?DEF/i
+          /ignor(?:e|ing)\s+(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)|target|their)'?s?\s+(?:all[- ]?(?:DMG|attribute)\s+)?DEF/i
         )
         if (defIgnMatch) {
           bonusStats.push({
@@ -566,7 +615,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
         }
 
         const resIgnMatch = seg.match(
-          /ignor(?:e|ing)\s+(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)|target)'?s?\s+(?:all[- ]?(?:DMG|attribute)\s+)?RES/i
+          /ignor(?:e|ing)\s+(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)|target|their)'?s?\s+(?:all[- ]?(?:DMG|attribute)\s+)?RES/i
         )
         if (resIgnMatch) {
           const attr = matchAttribute(seg)
@@ -599,7 +648,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
 
         // --- Check for "ignore N% of enemy [Attribute] RES" ---
         const attrResIgnMatch = seg.match(
-          /ignor(?:e[sd]?|ing)\s+(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)|target)'?s?\s+(\w+)\s+RES/i
+          /ignor(?:e[sd]?|ing)\s+(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)|target|their)'?s?\s+(\w+)\s+RES/i
         )
         if (attrResIgnMatch) {
           const attr = matchAttribute(attrResIgnMatch[2])
@@ -622,7 +671,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
 
         // --- Passive voice: "N% of the enemy's All-Attribute RES is ignored" ---
         const passiveResIgnMatch = seg.match(
-          /(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)|target)'?s?\s+(?:All[- ]Attribute\s+)?RES\s+is\s+ignored/i
+          /(\d+)%\s+of\s+(?:the\s+)?(?:enem(?:y|ies)|target|their)'?s?\s+(?:All[- ]Attribute\s+)?RES\s+is\s+ignored/i
         )
         if (passiveResIgnMatch) {
           bonusStats.push({
@@ -725,6 +774,54 @@ export function parseBuffDescription(desc: string): BuffConfig {
         if (reducedMatch) {
           const enemyStatName = reducedMatch[1]
           const value = Number(reducedMatch[2])
+
+          if (
+            /All[- ]?Attribute\s+RES/i.test(enemyStatName) ||
+            /All[- ]?DMG\s+RES/i.test(enemyStatName)
+          ) {
+            enemyStats.push({
+              tag: { q: 'resRed_' },
+              value,
+              ...(conditional && { conditional: true }),
+              ...(specialty && { specialty }),
+            })
+            continue
+          }
+
+          const redAttr = matchAttribute(enemyStatName)
+          if (redAttr && /RES/i.test(enemyStatName)) {
+            enemyStats.push({
+              tag: { q: 'resRed_', attribute: redAttr },
+              value,
+              ...(conditional && { conditional: true }),
+              ...(specialty && { specialty }),
+            })
+            continue
+          }
+
+          if (/DEF/i.test(enemyStatName)) {
+            enemyStats.push({
+              tag: { q: 'defRed_' },
+              value,
+              ...(conditional && { conditional: true }),
+              ...(specialty && { specialty }),
+            })
+            continue
+          }
+        }
+
+        // --- Bare "All-Attribute RES is reduced by N%" without enemy/their prefix ---
+        // Handles cases after comma/and split where the subject is omitted,
+        // e.g. "their DEF is reduced by 15%, and All-Attribute RES is reduced by 15%"
+        // -> second segment "All-Attribute RES is reduced by 15%" has no prefix.
+        const bareReducedMatch = seg.match(
+          /^\s*(?:and\s+)?(.+?)\s+is\s+(?:\w+\s+)*reduced\s+by\s+(\d+)%/i
+        )
+        if (bareReducedMatch && /RES|DEF/i.test(bareReducedMatch[1])) {
+          const enemyStatName = bareReducedMatch[1]
+            .replace(/^(?:and|or)\s+/i, '')
+            .trim()
+          const value = Number(bareReducedMatch[2])
 
           if (
             /All[- ]?Attribute\s+RES/i.test(enemyStatName) ||

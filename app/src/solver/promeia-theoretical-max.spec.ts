@@ -59,7 +59,6 @@ describe('Promeia theoretical max', () => {
             chain: 11,
             assist: 11,
             mindscape: 0,
-            potential: 5,
           }),
           ...wengineTagMapNodeEntries({
             key: wengineKey,

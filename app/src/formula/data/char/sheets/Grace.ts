@@ -156,9 +156,7 @@ const sheet = register(
   registerBuff(
     'potential_electric_dmg_',
     ownBuff.combat.dmg_.electric.add(
-      zapConsumed.ifOn(
-        percent(subscript(char.potential, dm.potential.electric_dmg_))
-      )
+      zapConsumed.ifOn(percent(dm.potential.electric_dmg_[6]))
     )
   ),
   registerBuff(

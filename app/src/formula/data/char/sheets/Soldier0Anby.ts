@@ -13,7 +13,6 @@ import {
   teamBuff,
 } from '../../util'
 import {
-  dmgDazeAndAnom,
   dmgDazeAndAnomOverride,
   entriesForChar,
   getBaseTag,
@@ -38,11 +37,7 @@ const stunOrSupport = sum(
   team.common.count.withSpecialty('stun'),
   team.common.count.withSpecialty('support')
 )
-const potential_on = cmpGE(char.potential, 1, 1, 0)
-// Additional Ability "Voltage Surge (AP)" (tier 1+) grants the aftershock tag
-// to Chain Attack and Ultimate
-const ability_ap_on = cmpGE(sum(stunOrSupport, potential_on), 2, 'infer', '')
-const ability_ap_off = cmpGE(sum(stunOrSupport, potential_on), 2, '', 'infer')
+// Potential always max (P6) — Chain Attack and Ultimate are always treated as Aftershock DMG
 
 const sheet = register(
   key,
@@ -58,9 +53,13 @@ const sheet = register(
       'chain',
       'ChainAttackLeapingThunderstrike',
       0,
-      { ...baseTag, damageType1: 'chain', skillType1: 'chainSkill' },
-      'atk',
-      { cond: ability_ap_off }
+      {
+        ...baseTag,
+        damageType1: 'chain',
+        damageType2: 'aftershock',
+        skillType1: 'chainSkill',
+      },
+      'atk'
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -70,39 +69,11 @@ const sheet = register(
       {
         ...baseTag,
         damageType1: 'ult',
+        damageType2: 'aftershock',
         skillType1: 'chainSkill',
       },
-      'atk',
-      { cond: ability_ap_off }
+      'atk'
     )
-  ),
-
-  // TODO: Technically causes wrong order in the meta file, probably won't matter?
-  ...dmgDazeAndAnom(
-    dm.chain.ChainAttackLeapingThunderstrike[0],
-    'ChainAttackLeapingThunderstrike_aftershock0',
-    {
-      ...baseTag,
-      damageType1: 'chain',
-      damageType2: 'aftershock',
-      skillType1: 'chainSkill',
-    },
-    'atk',
-    'chain',
-    { cond: ability_ap_on }
-  ),
-  ...dmgDazeAndAnom(
-    dm.chain.UltimateVoidstrike[0],
-    'UltimateVoidstrike_aftershock0',
-    {
-      ...baseTag,
-      damageType1: 'ult',
-      damageType2: 'aftershock',
-      skillType1: 'chainSkill',
-    },
-    'atk',
-    'chain',
-    { cond: ability_ap_on }
   ),
 
   ...customDmg(
@@ -136,11 +107,7 @@ const sheet = register(
         prod(
           sum(own.initial.crit_dmg_, own.combat.crit_dmg_),
           sum(
-            cmpGE(
-              char.potential,
-              1,
-              percent(dm.core.bonus_aftershock_crit_dmg_scaling_)
-            ),
+            percent(dm.core.bonus_aftershock_crit_dmg_scaling_),
             percent(subscript(char.core, dm.core.aftershock_crit_dmg_scaling_))
           )
         )
@@ -161,14 +128,7 @@ const sheet = register(
         stunOrSupport,
         1,
         abilityAftershock.ifOn(
-          markedWithSilverStar.ifOn(
-            cmpGE(
-              char.potential,
-              2,
-              subscript(char.potential, dm.potential.aftershock_dmg_),
-              dm.ability.aftershock_dmg_
-            )
-          )
+          markedWithSilverStar.ifOn(dm.potential.aftershock_dmg_[6])
         )
       )
     ),

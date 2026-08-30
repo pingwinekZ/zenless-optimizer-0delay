@@ -426,8 +426,6 @@ export function buildCalculatorEntries(
             assist: teammateChar?.assist ?? DEFAULT_TEAMMATE_CHAR.assist,
             core: teammateChar?.core ?? DEFAULT_TEAMMATE_CHAR.core,
             mindscape,
-            potential:
-              teammateChar?.potential ?? DEFAULT_TEAMMATE_CHAR.potential,
           }),
           ...wengineTagMapNodeEntries(
             wengineKey
@@ -469,7 +467,6 @@ export function buildCalculatorEntries(
         assist: character.assist,
         core: character.core,
         mindscape: character.mindscape,
-        potential: character.potential,
       }),
       ...wengineTagMapNodeEntries(
         character.wengineKey

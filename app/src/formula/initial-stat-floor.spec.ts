@@ -36,7 +36,6 @@ function setupCalc(
         assist: 11,
         core: 6,
         mindscape: 0,
-        potential: 0,
       })
     ),
     ...extra,

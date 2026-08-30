@@ -6,22 +6,10 @@
       "name": "Basic Attack: Kitty Slash",
       "desc": {
         "0": "Press <IconNormal /> to activate:",
-        "1": "Unleashes up to 5 slashes, dealing <ct color=#F0D12B>Physical DMG</ct>.",
-        "2": "On the last hit, there is a 33.33% chance to repeat this hit 3 times."
-      },
-      "params": [
-        "1st-Hit ",
-        "2nd-Hit ",
-        "3rd-Hit ",
-        "4th-Hit ",
-        "5th-Hit "
-      ],
-      "descPotential": {
-        "0": "Press <IconNormal /> to activate:",
         "1": "Unleashes up to five slashes, dealing <ct color=#F0D12B>Physical DMG</ct>.",
         "2": "When the final slash lands on a Stunned enemy, it repeats three additional times."
       },
-      "paramsPotential": [
+      "params": [
         "1st-Hit ",
         "2nd-Hit ",
         "3rd-Hit ",
@@ -32,19 +20,11 @@
     "BasicAttackCrimsonBlade": {
       "name": "Basic Attack: Crimson Blade",
       "desc": {
-        "0": "Hold <IconNormal /> during the first 3 hits of Nekomata's <ct color=#FFFFFF>Basic Attack</ct> to activate:",
-        "1": "Slashes enemies in front and passes through them, dealing <ct color=#F0D12B>Physical DMG</ct>.",
-        "2": "Upon activation, there is a 33.33% chance to repeat this attack 3 times."
-      },
-      "params": [
-        " "
-      ],
-      "descPotential": {
         "0": "Hold <IconNormal /> during the first three hits of Nekomata's <ct color=#FFFFFF>Basic Attack</ct> to activate:",
         "1": "Slashes enemies in front and passes through them, dealing <ct color=#F0D12B>Physical DMG</ct>.",
         "2": "If this skill hits a Stunned enemy, it repeats three additional times."
       },
-      "paramsPotential": [
+      "params": [
         " "
       ]
     }
@@ -57,13 +37,16 @@
         "1": "A quick dash dodge.",
         "2": "Character is invulnerable while using this skill."
       },
-      "params": [],
-      "descPotential": {
-        "0": "Press <IconEvade /> to activate:",
-        "1": "A quick dash dodge.",
-        "2": "Character is invulnerable while using this skill."
+      "params": []
+    },
+    "DodgeDisappearingTail": {
+      "name": "Dodge: Disappearing Tail",
+      "desc": {
+        "0": "With at least 40 Purr Energy and after triggering a <ct color=#FFFFFF>Perfect Dodge</ct>, press <IconEvade /> and consume 30 Purr Energy to activate:",
+        "1": "Nekomata enters Vital View and swiftly moves behind the enemy.",
+        "2": "Character is invulnerable while using this skill. This skill does not consume dodge uses."
       },
-      "paramsPotential": []
+      "params": []
     },
     "DashAttackOverHere": {
       "name": "Dash Attack: Over Here!",
@@ -72,13 +55,6 @@
         "1": "Slashes enemies in front, dealing <ct color=#F0D12B>Physical DMG</ct>."
       },
       "params": [
-        " "
-      ],
-      "descPotential": {
-        "0": "Press <IconNormal /> during a dodge to activate:",
-        "1": "Slashes enemies in front, dealing <ct color=#F0D12B>Physical DMG</ct>."
-      },
-      "paramsPotential": [
         " "
       ]
     },
@@ -91,33 +67,16 @@
       },
       "params": [
         " "
-      ],
-      "descPotential": {
-        "0": "Press <IconNormal /> during a <ct color=#FFFFFF>Perfect Dodge</ct> to activate:",
-        "1": "Slashes enemies in front, dealing <ct color=#F0D12B>Physical DMG</ct>.",
-        "2": "Character is invulnerable while using this skill."
-      },
-      "paramsPotential": [
-        " "
       ]
-    },
-    "DodgeDisappearingTail": {
-      "name": "Dodge: Disappearing Tail",
-      "descPotential": {
-        "0": "With at least 40 Purr Energy and after triggering a <ct color=#FFFFFF>Perfect Dodge</ct>, press <IconEvade /> and consume 30 Purr Energy to activate:",
-        "1": "Nekomata enters Vital View and swiftly moves behind the enemy.",
-        "2": "Character is invulnerable while using this skill. This skill does not consume dodge uses."
-      },
-      "paramsPotential": []
     },
     "DodgeCounterFluffyPiercingClaw": {
       "name": "Dodge Counter: Fluffy Piercing Claw",
-      "descPotential": {
+      "desc": {
         "0": "Press <IconNormal /> after using <ct color=#FFFFFF>Dodge: Disappearing Tail</ct>, or hold <IconNormal /> with at least 40 Purr Energy to activate:",
         "1": "Unleashes a powerful slash at enemies in a large area ahead, dealing massive <ct color=#F0D12B>Physical DMG</ct>.",
         "2": "Character is invulnerable while using this skill."
       },
-      "paramsPotential": [
+      "params": [
         " ",
         "Purr Energy Cost "
       ]
@@ -129,18 +88,10 @@
       "desc": {
         "0": "Press <IconSpecial /> to activate:",
         "1": "Unleashes a downward strike, dealing <ct color=#F0D12B>Physical DMG</ct>.",
-        "2": "Anti-Interrupt level is increased while using this skill."
-      },
-      "params": [
-        " "
-      ],
-      "descPotential": {
-        "0": "Press <IconSpecial /> to activate:",
-        "1": "Unleashes a downward strike, dealing <ct color=#F0D12B>Physical DMG</ct>.",
         "2": "Anti-Interrupt level is increased while using this skill.",
         "3": "This skill's pursuit effect is enhanced."
       },
-      "paramsPotential": [
+      "params": [
         " "
       ]
     },
@@ -148,20 +99,11 @@
       "name": "EX Special Attack: Super Surprise Attack!",
       "desc": {
         "0": "With enough Energy, press <IconSpecialReady /> to activate:",
-        "1": "Unleashes a powerful falling slash that deals massive <ct color=#F0D12B>Physical DMG</ct>.",
-        "2": "Character is invulnerable while using this skill."
-      },
-      "params": [
-        " ",
-        "Energy Cost "
-      ],
-      "descPotential": {
-        "0": "With enough Energy, press <IconSpecialReady /> to activate:",
         "1": "Unleashes a powerful falling slash, dealing massive <ct color=#F0D12B>Physical DMG</ct>.",
         "2": "Character is invulnerable while using this skill.",
         "3": "This skill's pursuit effect is enhanced."
       },
-      "paramsPotential": [
+      "params": [
         " ",
         "Energy Cost "
       ]
@@ -177,14 +119,6 @@
       },
       "params": [
         " "
-      ],
-      "descPotential": {
-        "0": "When a <ct color=#FFFFFF>Chain Attack</ct> is triggered, select the character to activate:",
-        "1": "Unleashes a powerful slash at enemies ahead in a large area, dealing massive <ct color=#F0D12B>Physical DMG</ct>.",
-        "2": "Character is invulnerable while using this skill."
-      },
-      "paramsPotential": [
-        " "
       ]
     },
     "UltimateClawSmash": {
@@ -195,14 +129,6 @@
         "2": "Character is invulnerable while using this skill."
       },
       "params": [
-        " "
-      ],
-      "descPotential": {
-        "0": "When Decibel Rating is at <ct color=#FFFFFF>Maximum</ct>, press <IconUltimateReady /> to activate:",
-        "1": "Unleashes powerful slashes at enemies ahead in a large area, dealing massive <ct color=#F0D12B>Physical DMG</ct>.",
-        "2": "Character is invulnerable while using this skill."
-      },
-      "paramsPotential": [
         " "
       ]
     }
@@ -217,14 +143,6 @@
       },
       "params": [
         " "
-      ],
-      "descPotential": {
-        "0": "When the active character is launched, press <IconSwitch /> to activate:",
-        "1": "Slashes enemies in front, dealing <ct color=#F0D12B>Physical DMG</ct>.",
-        "2": "Character is invulnerable while using this skill."
-      },
-      "paramsPotential": [
-        " "
       ]
     },
     "DefensiveAssistDesperateDefense": {
@@ -235,16 +153,6 @@
         "2": "Character is invulnerable while using this skill."
       },
       "params": [
-        "Light Defensive ",
-        "Heavy Defensive ",
-        "Chain Defensive "
-      ],
-      "descPotential": {
-        "0": "When the character on field is about to be attacked, press <IconSwitch /> to activate:",
-        "1": "Parries the enemy's attack, dealing massive Daze.",
-        "2": "Character is invulnerable while using this skill."
-      },
-      "paramsPotential": [
         "Light Defensive ",
         "Heavy Defensive ",
         "Chain Defensive "
@@ -259,29 +167,12 @@
       },
       "params": [
         " "
-      ],
-      "descPotential": {
-        "0": "Press <IconNormal /> after a <ct color=#FFFFFF>Defensive Assist</ct> to activate:",
-        "1": "Charge and slash enemies in front, dealing <ct color=#F0D12B>Physical DMG</ct>.",
-        "2": "Character is invulnerable while using this skill."
-      },
-      "paramsPotential": [
-        " "
       ]
     }
   },
   "core": {
     "name": "Core Passive: Stealthy Paws",
     "desc": [
-      "When Nekomata's <ct color=#FFFFFF>Dodge Counter</ct> or <ct color=#FFFFFF>Quick Assist</ct> hits an enemy, her DMG increases by <ct color=#2BAD00>30%</ct> for 6s.",
-      "When Nekomata's <ct color=#FFFFFF>Dodge Counter</ct> or <ct color=#FFFFFF>Quick Assist</ct> hits an enemy, her DMG increases by <ct color=#2BAD00>35%</ct> for 6s.",
-      "When Nekomata's <ct color=#FFFFFF>Dodge Counter</ct> or <ct color=#FFFFFF>Quick Assist</ct> hits an enemy, her DMG increases by <ct color=#2BAD00>40%</ct> for 6s.",
-      "When Nekomata's <ct color=#FFFFFF>Dodge Counter</ct> or <ct color=#FFFFFF>Quick Assist</ct> hits an enemy, her DMG increases by <ct color=#2BAD00>45%</ct> for 6s.",
-      "When Nekomata's <ct color=#FFFFFF>Dodge Counter</ct> or <ct color=#FFFFFF>Quick Assist</ct> hits an enemy, her DMG increases by <ct color=#2BAD00>50%</ct> for 6s.",
-      "When Nekomata's <ct color=#FFFFFF>Dodge Counter</ct> or <ct color=#FFFFFF>Quick Assist</ct> hits an enemy, her DMG increases by <ct color=#2BAD00>55%</ct> for 6s.",
-      "When Nekomata's <ct color=#FFFFFF>Dodge Counter</ct> or <ct color=#FFFFFF>Quick Assist</ct> hits an enemy, her DMG increases by <ct color=#2BAD00>60%</ct> for 6s."
-    ],
-    "descPotential": [
       {
         "0": "When Nekomata's <ct color=#FFFFFF>Dodge Counter</ct> or <ct color=#FFFFFF>Quick Assist</ct> hits an enemy, her DMG increases by <ct color=#2BAD00>30%</ct> for 40s. Repeated triggers reset the duration.",
         "1": "Nekomata gains 40 Purr Energy upon entering the battlefield. In Investigation Zone mode, this effect can trigger once every 180s.",
@@ -357,10 +248,6 @@
   "ability": {
     "name": "Additional Ability: Catwalk",
     "desc": {
-      "0": "When another character in your squad shares the same Attribute or Faction:",
-      "1": "After any character inflicts <ct color=#F0D12B>Assault</ct>, increases the DMG of Nekomata's next <ct color=#FFFFFF>EX Special Attack</ct> by 35%, stacking up to 2 times."
-    },
-    "descPotential": {
       "0": "When another character in your squad is a Support character, or shares the same attribute or Faction:",
       "1": "After Nekomata uses <ct color=#FFFFFF>Dodge: Disappearing Tail</ct>, or after any squad member inflicts <ct color=#F0D12B>Assault</ct> on an enemy, Nekomata's <ct color=#FFFFFF>EX Special Attack</ct> and <ct color=#FFFFFF>Dodge Counter</ct> deal 35% more DMG on hit. This effect stacks up to 2 times and lasts 30s. Repeated triggers reset the duration."
     }

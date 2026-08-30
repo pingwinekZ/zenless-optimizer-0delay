@@ -2,11 +2,7 @@ import { dumpFile } from '@zenless-optimizer/common/pipeline'
 import { nameToKey } from '@zenless-optimizer/common/util'
 import type { CharacterKey } from '../../../../consts'
 import type { CharacterData } from '../../../../dm'
-import {
-  charactersDetailedJSONData,
-  filterOriginalKits,
-  filterUnbuffedKits,
-} from '../../../../dm'
+import { charactersDetailedJSONData, filterUnbuffedKits } from '../../../../dm'
 import { processText } from './util'
 
 export function dumpChars(fileDir: string) {
@@ -14,14 +10,13 @@ export function dumpChars(fileDir: string) {
 
   Object.entries(charactersDetailedJSONData).forEach(([charKey, charData]) => {
     charNames[charKey] = charData.name
-    const hasPotential = Object.keys(charData.potential).length > 0
 
     dumpFile(`${fileDir}/char_${charKey}_gen.json`, {
       name: charData.name,
       fullName: charData.fullname,
-      ...getSkillStrings(charData.skills, hasPotential),
-      core: getCoreStrings(charData.cores, hasPotential),
-      ability: getAbilityStrings(charData.cores, hasPotential),
+      ...getSkillStrings(charData.skills),
+      core: getCoreStrings(charData.cores),
+      ability: getAbilityStrings(charData.cores),
       mindscapes: getMindscapeStrings(charData.mindscapes),
       potential: getPotentialStrings(charData.potential),
     })
@@ -42,14 +37,11 @@ const skillExceptions = new Set([
   'BasicAttackConvergingSpear3rdStage',
 ])
 
-function getSkillStrings(data: CharacterData['skills'], hasPotential: boolean) {
+function getSkillStrings(data: CharacterData['skills']) {
   return Object.fromEntries(
     Object.entries(data).map(([key, skill]) => [
       `${key.charAt(0).toLowerCase()}${key.slice(1)}`,
-      mergeSkillVariants(
-        buildSkillVariant(skill, filterOriginalKits, false),
-        hasPotential ? buildSkillVariant(skill, filterUnbuffedKits, true) : {}
-      ),
+      buildSkillVariant(skill, filterUnbuffedKits),
     ])
   )
 }
@@ -58,8 +50,7 @@ type SkillData = CharacterData['skills'][keyof CharacterData['skills']]
 
 function buildSkillVariant(
   skill: SkillData,
-  filter: (ability: { Potential: number[] }) => boolean,
-  potentialVariant: boolean
+  filter: (ability: { Potential: number[] }) => boolean
 ) {
   const descriptions = skill.Description.filter(filter)
   return Object.fromEntries(
@@ -82,36 +73,13 @@ function buildSkillVariant(
           ])
         return [
           nameToKey(abilityName),
-          potentialVariant
-            ? {
-                name: abilityName,
-                descPotential: processText(ability.Desc || ''),
-                paramsPotential: params,
-              }
-            : {
-                name: abilityName,
-                desc: processText(ability.Desc || ''),
-                params,
-              },
+          {
+            name: abilityName,
+            desc: processText(ability.Desc || ''),
+            params,
+          },
         ]
       })
-  )
-}
-
-function mergeSkillVariants(
-  original: Record<string, object>,
-  potential: Record<string, object>
-) {
-  return Object.fromEntries(
-    [...new Set([...Object.keys(original), ...Object.keys(potential)])].map(
-      (key) => [
-        key,
-        {
-          ...(original[key] ?? {}),
-          ...(potential[key] ?? {}),
-        },
-      ]
-    )
   )
 }
 
@@ -119,38 +87,21 @@ function processParamText(text: string) {
   return text.replace(/\s*(DMG Multiplier|Daze Multiplier)/, '').trim() + ' '
 }
 
-function getCoreStrings(data: CharacterData['cores'], hasPotential: boolean) {
+function getCoreStrings(data: CharacterData['cores']) {
   return {
     name: Object.values(data.Level).filter(filterUnbuffedKits)[1].Name[0],
     desc: Object.values(data.Level)
-      .filter(filterOriginalKits)
+      .filter(filterUnbuffedKits)
       .map((level) => processText(level.Desc[0])),
-    ...(hasPotential
-      ? {
-          descPotential: Object.values(data.Level)
-            .filter(filterUnbuffedKits)
-            .map((level) => processText(level.Desc[0])),
-        }
-      : {}),
   }
 }
 
-function getAbilityStrings(
-  data: CharacterData['cores'],
-  hasPotential: boolean
-) {
+function getAbilityStrings(data: CharacterData['cores']) {
   return {
     name: Object.values(data.Level).filter(filterUnbuffedKits)[1].Name[1],
     desc: processText(
-      Object.values(data.Level).filter(filterOriginalKits)[1].Desc[1]
+      Object.values(data.Level).filter(filterUnbuffedKits)[1].Desc[1]
     ),
-    ...(hasPotential
-      ? {
-          descPotential: processText(
-            Object.values(data.Level).filter(filterUnbuffedKits)[1].Desc[1]
-          ),
-        }
-      : {}),
   }
 }
 

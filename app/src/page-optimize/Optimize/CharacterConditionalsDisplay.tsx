@@ -460,11 +460,10 @@ export function CharacterConditionalsDisplay({
     | Record<string, IConditionalData>
     | undefined
 
-  const char = useCharacter(characterKey)
-  const potential = char?.potential ?? 0
+  const potential = 6
   const conditionalFields = useMemo(
     () => extractCharConditionalFields(characterKey, teammateKey, potential),
-    [characterKey, teammateKey, potential]
+    [characterKey, teammateKey]
   )
   const conditionalDescriptions = useMemo(
     () => extractCharConditionalDescriptions(characterKey),
@@ -480,7 +479,7 @@ export function CharacterConditionalsDisplay({
   )
   const visiblePassives = useMemo(
     () => extractCharPassiveFields(characterKey, teammateKey, potential),
-    [characterKey, teammateKey, potential]
+    [characterKey, teammateKey]
   )
 
   const [conditionalSectionMap, conditionalLinkedMap] = useMemo(() => {
@@ -954,7 +953,7 @@ const PassiveFieldRow = memo(function PassiveFieldRow({
   )
   const char = useCharacter(characterKey)
   const coreLevel = char?.core ?? 0
-  const potential = char?.potential ?? 0
+  const potential = 6
   const firstFieldRef =
     fields.length > 0 && 'fieldRef' in fields[0] ? fields[0].fieldRef : null
   const descKey = useMemo(() => {
@@ -970,14 +969,7 @@ const PassiveFieldRow = memo(function PassiveFieldRow({
     )
     if (paragraph !== undefined && baseKey) return `${baseKey}.${paragraph}`
     return baseKey
-  }, [
-    sectionKey,
-    firstFieldRef?.name,
-    paragraph,
-    coreLevel,
-    potential,
-    descKeyOverride,
-  ])
+  }, [sectionKey, firstFieldRef?.name, paragraph, coreLevel, descKeyOverride])
   const ns = `char_${characterKey}_gen`
   const abilityPotentialDescKey = usePotentialDescKey(
     characterKey,

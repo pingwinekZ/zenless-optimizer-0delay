@@ -70,7 +70,6 @@ describe('Zhao HP debug', () => {
           chain: 0,
           assist: 0,
           mindscape: 0,
-          potential: 0,
         })
       ),
       own.common.critMode.add('avg'),
@@ -112,7 +111,6 @@ describe('Zhao HP debug', () => {
           chain: 11,
           assist: 11,
           mindscape: 0,
-          potential: 5,
         }),
         ...wengineTagMapNodeEntries({
           key: wengineKey,
@@ -189,7 +187,6 @@ describe('Zhao HP debug', () => {
           chain: 11,
           assist: 11,
           mindscape: 0,
-          potential: 5,
         }),
         ...wengineTagMapNodeEntries({
           key: wengineKey,
@@ -371,7 +368,6 @@ describe('Zhao HP debug', () => {
               chain: 11,
               assist: 11,
               mindscape: 0,
-              potential: 5,
             }),
             ...wengineTagMapNodeEntries({
               key: wengineKey,
@@ -434,7 +430,6 @@ describe('Zhao HP debug', () => {
           chain: 11,
           assist: 11,
           mindscape: 0,
-          potential: 5,
         }),
         ...wengineTagMapNodeEntries({
           key: wengineKey,
@@ -506,7 +501,6 @@ describe('Zhao HP debug', () => {
           chain: 11,
           assist: 11,
           mindscape: 0,
-          potential: 5,
         }),
         ...wengineTagMapNodeEntries({
           key: wengineKey,
@@ -685,7 +679,6 @@ describe('Zhao HP debug', () => {
           chain: 11,
           assist: 11,
           mindscape: 0,
-          potential: 5,
         }),
         ...wengineTagMapNodeEntries({
           key: wengineKey,

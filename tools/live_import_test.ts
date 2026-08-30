@@ -89,7 +89,6 @@ const makeChar = (wengineKey: string, wenginePhase: number) => ({
   chain: 11,
   special: 11,
   assist: 11,
-  potential: 6,
   wengineKey,
   wenginePhase,
 })

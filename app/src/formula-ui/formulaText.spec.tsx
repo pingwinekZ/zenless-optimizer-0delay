@@ -28,7 +28,6 @@ describe('formulaText', () => {
           assist: 0,
           core: 6,
           mindscape: 0,
-          potential: 0,
         })
       ),
     ]

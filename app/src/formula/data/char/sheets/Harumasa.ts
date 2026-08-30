@@ -43,30 +43,22 @@ const core_dash_crit_dmg_ = ownBuff.combat.crit_dmg_.addWithDmgType(
   prod(gleaming_edge, percent(subscript(char.core, dm.core.crit_dmg_)))
 )
 // The potential-augmented Core Passive extends the Gleaming Edge CRIT Rate and
-// CRIT DMG to Chasing Thunder and the Ultimate
+// CRIT DMG to Chasing Thunder and the Ultimate (always enabled, max potential)
 const core_chasing_thunder_crit_ = ownBuff.combat.crit_.addWithDmgType(
   'dash',
-  cmpGE(char.potential, 1, percent(subscript(char.core, dm.core.crit_)))
+  percent(subscript(char.core, dm.core.crit_))
 )
 const core_chasing_thunder_crit_dmg_ = ownBuff.combat.crit_dmg_.addWithDmgType(
   'dash',
-  cmpGE(
-    char.potential,
-    1,
-    prod(gleaming_edge, percent(subscript(char.core, dm.core.crit_dmg_)))
-  )
+  prod(gleaming_edge, percent(subscript(char.core, dm.core.crit_dmg_)))
 )
 const core_ult_crit_ = ownBuff.combat.crit_.addWithDmgType(
   'ult',
-  cmpGE(char.potential, 1, percent(subscript(char.core, dm.core.crit_)))
+  percent(subscript(char.core, dm.core.crit_))
 )
 const core_ult_crit_dmg_ = ownBuff.combat.crit_dmg_.addWithDmgType(
   'ult',
-  cmpGE(
-    char.potential,
-    1,
-    prod(gleaming_edge, percent(subscript(char.core, dm.core.crit_dmg_)))
-  )
+  prod(gleaming_edge, percent(subscript(char.core, dm.core.crit_dmg_)))
 )
 const m2_dash_dmg_ = ownBuff.combat.dmg_.addWithDmgType(
   'dash',
@@ -233,9 +225,7 @@ const sheet = register(
   registerBuff(
     'potential_atk_',
     ownBuff.combat.atk_.add(
-      exSpecial_chain_ult_activated.ifOn(
-        subscript(char.potential, dm.potential.atk_)
-      )
+      exSpecial_chain_ult_activated.ifOn(dm.potential.atk_[6])
     )
   ),
   registerBuff(
@@ -243,7 +233,7 @@ const sheet = register(
     ownBuff.combat.resIgn_.electric.addWithDmgType(
       'dash',
       exSpecial_chain_ult_activated.ifOn(
-        percent(subscript(char.potential, dm.potential.electric_resIgn_))
+        percent(dm.potential.electric_resIgn_[6])
       )
     )
   ),
@@ -252,7 +242,7 @@ const sheet = register(
     ownBuff.combat.resIgn_.electric.addWithDmgType(
       'dash',
       exSpecial_chain_ult_activated.ifOn(
-        percent(subscript(char.potential, dm.potential.electric_resIgn_))
+        percent(dm.potential.electric_resIgn_[6])
       )
     )
   )

@@ -1,13 +1,16 @@
 {
   "chain_header": "Chain Attack Bonus",
-  "flashConnectCond": "Flash Connect consumed over 75%",
-  "subjugationCond": "Subjugation Stacks",
-  "ability_header": "Additional Ability",
+  "chainCond": "Tranquil Serenade · DMG",
+  "flashConnectCond": "Flash Connect Voltage · DMG & Daze",
+  "subjugationCond": "Subjugation · Stun DMG",
+  "ability_header": "Daze & ATK",
   "m1_header": "Mindscape 1",
+  "m1Cond": "Flash Connect Voltage · DEF Reduction & CR",
   "m2_stun_": "Stun DMG Multiplier Increase",
   "m2_header": "Mindscape 2",
+  "m2DazeCond": "Subjugation · Daze",
   "m4_shield": "Shield Strength",
   "m4_header": "Mindscape 4",
-  "m6_header": "Mindscape 6",
-  "m6Cond": "When Qingyi hits an enemy with her Basic Attack: Enchanted Moonlit Blossoms"
+  "m6_header": "CD",
+  "m6Cond": "Enchanted Moonlit Blossoms Hit · RES Reduction"
 }

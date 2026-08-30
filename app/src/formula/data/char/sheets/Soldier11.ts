@@ -218,7 +218,7 @@ const sheet = register(
   registerBuff(
     'ability_crit_dmg_',
     ownBuff.combat.crit_dmg_.add(
-      ability_check(percent(subscript(char.potential, dm.potential.crit_dmg_)))
+      ability_check(percent(dm.potential.crit_dmg_[6]))
     )
   ),
   registerBuff('m2_common_dmg_', m2_common_dmg_, undefined, undefined, false),

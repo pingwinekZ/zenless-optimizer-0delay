@@ -45,35 +45,26 @@ export function hasPotential(characterKey: CharacterKey) {
   return getCharStat(characterKey).potentialParams.length > 0
 }
 
-function swapDescToPotential(key18: string) {
-  return key18.replace(/\.(desc|params)((?:\.\d+)*)$/, '.$1Potential$2')
-}
-
 /**
- * Swaps a trailing `.desc`/`.params` locale key segment to its
- * `.descPotential`/`.paramsPotential` variant when the character has a
- * potential level selected and the variant key exists, e.g.
- * `core.desc.6` → `core.descPotential.6` for potential 1+.
+ * Potential is always max (P6). Descriptions are now generated directly as
+ * `desc` (no `descPotential` variant), so this is identity. Kept for API
+ * compatibility with existing sheets.
  */
 function potentialDescKey(
-  characterKey: CharacterKey,
-  ns: string,
+  _characterKey: CharacterKey,
+  _ns: string,
   key18: string,
-  potential: number
+  _potential = 6
 ) {
-  if (potential <= 0 || !hasPotential(characterKey)) return key18
-  const swapped = swapDescToPotential(key18)
-  if (swapped === key18) return key18
-  return i18n.exists(`${ns}:${swapped}`) ? swapped : key18
+  return key18
 }
 
 function usePotentialDescKey(
-  characterKey: CharacterKey,
-  ns: string,
+  _characterKey: CharacterKey,
+  _ns: string,
   key18: string
 ) {
-  const char = useCharacter(characterKey)
-  return potentialDescKey(characterKey, ns, key18, char?.potential ?? 0)
+  return key18
 }
 
 export { usePotentialDescKey }
@@ -335,12 +326,7 @@ function createCoreAndAbilitySheet(
             coreParagraph !== undefined ? `.${coreParagraph}` : ''
           }`
           return chg(
-            potentialDescKey(
-              charKey,
-              `char_${charKey}_gen`,
-              coreKey,
-              calc.compute(own.char.potential).val
-            )
+            potentialDescKey(charKey, `char_${charKey}_gen`, coreKey, 6)
           )
         },
       },
@@ -406,8 +392,7 @@ function createPotentialSheet(
           icon: <ImgIcon src={commonDefIcon('coreFlat')} size={1.5} />,
           text: chg(`potential.name`),
         },
-        text: (calc) =>
-          chg(`potential.desc.${calc.compute(own.char.potential).val}`),
+        text: () => chg(`potential.desc.6`),
       },
       ...addlPotentialDocuments,
     ],
