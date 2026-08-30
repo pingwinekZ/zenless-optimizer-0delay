@@ -1,5 +1,6 @@
 import type { SvgIconProps } from '@zenless-optimizer/common/svgicons'
 import type { AttributeKey } from '../../consts'
+import lumifluxIcon from './IconLumiflux.webp'
 
 const elementUrls: Record<string, string> = {
   fire: 'https://static.nanoka.cc/assets/zzz/IconFire.webp',
@@ -9,8 +10,7 @@ const elementUrls: Record<string, string> = {
   physical: 'https://static.nanoka.cc/assets/zzz/IconPhysical.webp',
   ether: 'https://static.nanoka.cc/assets/zzz/IconEther.webp',
   wind: 'https://static.nanoka.cc/assets/zzz/IconWind.webp',
-  lumiflux:
-    'https://img.gachabase.net/conv/zzz/assets/1ed527ad8b2d3f7015071c429a92c3ae.png?q=50&sig=8d0f242d679ee55316987d290f487b31c062b346a9c65a348eb2110f6177de1c',
+  lumiflux: lumifluxIcon,
 }
 
 export function ElementIcon({

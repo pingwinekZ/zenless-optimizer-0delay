@@ -14,6 +14,7 @@ export function CharacterStatSummary({
   zebra?: boolean
 }) {
   const dmgDisplayKey = attribute ? `${attribute}_dmg_` : 'dmg_'
+  const showDmgRow = attribute !== 'lumiflux'
   return (
     <StatText className={classes.statSummary}>
       <div
@@ -31,7 +32,9 @@ export function CharacterStatSummary({
         <CharacterStatRow statKey="anomProf" value={stats?.anomProf ?? 0} />
         <CharacterStatRow statKey="anomMas" value={stats?.anomMas ?? 0} />
         <CharacterStatRow statKey="enerRegen" value={stats?.enerRegen ?? 0} />
-        <CharacterStatRow statKey={dmgDisplayKey} value={stats?.dmg_ ?? 0} />
+        {showDmgRow && (
+          <CharacterStatRow statKey={dmgDisplayKey} value={stats?.dmg_ ?? 0} />
+        )}
       </div>
     </StatText>
   )
