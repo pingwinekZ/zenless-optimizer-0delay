@@ -1,5 +1,18 @@
 // WARNING: Generated file, do not modify
 export const buffs = {
+  m6_additional_dmg: {
+    sheet: 'Jane',
+    name: 'm6_additional_dmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Jane',
+      damageType1: 'elemental',
+      name: 'm6_additional_dmg',
+    },
+    team: false,
+  },
   passion_atk: {
     sheet: 'Jane',
     name: 'passion_atk',
@@ -9,6 +22,32 @@ export const buffs = {
       q: 'atk',
       sheet: 'Jane',
       name: 'passion_atk',
+    },
+    team: false,
+  },
+  ability_physical_anomBuildup_: {
+    sheet: 'Jane',
+    name: 'ability_physical_anomBuildup_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anomBuildup_',
+      sheet: 'Jane',
+      attribute: 'physical',
+      name: 'ability_physical_anomBuildup_',
+    },
+    team: false,
+  },
+  ability_additional_physical_anomBuildup_: {
+    sheet: 'Jane',
+    name: 'ability_additional_physical_anomBuildup_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anomBuildup_',
+      sheet: 'Jane',
+      attribute: 'physical',
+      name: 'ability_additional_physical_anomBuildup_',
     },
     team: false,
   },
@@ -37,6 +76,19 @@ export const buffs = {
       name: 'core_assault_crit_dmg_',
     },
     team: true,
+  },
+  m1_physical_anomBuildup_: {
+    sheet: 'Jane',
+    name: 'm1_physical_anomBuildup_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anomBuildup_',
+      sheet: 'Jane',
+      attribute: 'physical',
+      name: 'm1_physical_anomBuildup_',
+    },
+    team: false,
   },
   m1_common_dmg_: {
     sheet: 'Jane',
@@ -76,19 +128,6 @@ export const buffs = {
     },
     team: true,
   },
-  m2_assault_crit_dmg_: {
-    sheet: 'Jane',
-    name: 'm2_assault_crit_dmg_',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'anom_crit_dmg_',
-      sheet: 'Jane',
-      attribute: 'physical',
-      name: 'm2_assault_crit_dmg_',
-    },
-    team: true,
-  },
   m4_anomaly_dmg_: {
     sheet: 'Jane',
     name: 'm4_anomaly_dmg_',
@@ -100,7 +139,7 @@ export const buffs = {
       damageType1: 'anomaly',
       name: 'm4_anomaly_dmg_',
     },
-    team: false,
+    team: true,
   },
   m6_crit_: {
     sheet: 'Jane',

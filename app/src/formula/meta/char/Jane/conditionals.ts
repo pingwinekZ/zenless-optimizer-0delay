@@ -7,6 +7,7 @@ export const conditionals = {
     mindscapeRequirement: 4,
   },
   core_gnawed: { sheet: 'Jane', name: 'core_gnawed', type: 'bool' },
+  enemy_anomaly: { sheet: 'Jane', name: 'enemy_anomaly', type: 'bool' },
   m1_passion: {
     sheet: 'Jane',
     name: 'm1_passion',
@@ -26,9 +27,4 @@ export const conditionals = {
     mindscapeRequirement: 6,
   },
   passion: { sheet: 'Jane', name: 'passion', type: 'bool' },
-  potential_assault_triggered: {
-    sheet: 'Jane',
-    name: 'potential_assault_triggered',
-    type: 'bool',
-  },
 } as const

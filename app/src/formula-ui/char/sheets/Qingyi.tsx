@@ -1,20 +1,133 @@
 import type { CharacterKey } from '../../../consts'
+import { useCharacter } from '../../../db-ui'
 import { Qingyi } from '../../../formula'
-import { mappedStats } from '../../../stats'
+import { GameDesc, GameDescSlice } from '../../../i18n'
 import { trans } from '../../util'
 import {
-  CoreGameDesc,
+  AbilityBodyText,
   createBaseSheet,
   fieldForBuff,
+  PrefixedLine,
   SkillGameDesc,
+  useEffectiveMindscape,
 } from '../sheetUtil'
 
 const key: CharacterKey = 'Qingyi'
 const [, ch] = trans('char', key)
 const cond = Qingyi.conditionals
 const buff = Qingyi.buffs
-const formula = Qingyi.formulas
-const dm = mappedStats.char[key]
+
+function CoreDescription() {
+  const char = useCharacter(key)
+  const coreLevel = char?.core ?? 0
+  const mindscape = useEffectiveMindscape(key)
+  return (
+    <>
+      <SkillGameDesc
+        characterKey={key}
+        ns="char_Qingyi_gen"
+        key18={`core.desc.${coreLevel}`}
+      />
+      <PrefixedLine prefix="M2" dimmed={mindscape < 2}>
+        <GameDescSlice
+          ns="char_Qingyi_gen"
+          key18="mindscapes.2.desc"
+          from="The Stun DMG Multiplier increase provided by each stack of"
+          to="135% of its original value."
+        />
+      </PrefixedLine>
+    </>
+  )
+}
+
+function AbilityDescription() {
+  return (
+    <>
+      <GameDesc ns="char_Qingyi_gen" key18="ability.desc.0" />
+      <AbilityBodyText characterKey={key}>
+        <GameDescSlice
+          ns="char_Qingyi_gen"
+          key18="ability.desc.1"
+          from="<ct color=#FFFFFF>Basic Attacks</ct> deal"
+          to="20% increased Daze."
+        />
+        <div style={{ marginTop: 8 }}>
+          <GameDescSlice
+            ns="char_Qingyi_gen"
+            key18="ability.desc.1"
+            from="If Qingyi's Impact is greater than 120"
+            to="maximum of 600."
+          />
+        </div>
+      </AbilityBodyText>
+    </>
+  )
+}
+
+function FlashConnectDescription() {
+  return <GameDesc ns="char_Qingyi_gen" key18="basic.FlashConnect.desc" />
+}
+
+function ChainDescription() {
+  return (
+    <>
+      <GameDesc
+        ns="char_Qingyi_gen"
+        key18="chain.ChainAttackTranquilSerenade.desc.1"
+      />
+      <div style={{ marginTop: 8 }}>
+        <GameDesc
+          ns="char_Qingyi_gen"
+          key18="chain.ChainAttackTranquilSerenade.desc.2"
+        />
+      </div>
+    </>
+  )
+}
+
+function M1Description() {
+  return (
+    <GameDescSlice
+      ns="char_Qingyi_gen"
+      key18="mindscapes.1.desc"
+      from="When using her <ct color=#FFFFFF>Basic Attack: Enchanted Moonlit Blossoms</ct>, if <ct color=#FFFFFF>Flash Connect Voltage</ct> is at its maximum"
+      to="20% for 15s."
+    />
+  )
+}
+
+function M2DazeDescription() {
+  return (
+    <GameDescSlice
+      ns="char_Qingyi_gen"
+      key18="mindscapes.2.desc"
+      from="When Qingyi's attack hits an enemy and the stacks of"
+      to="15%."
+    />
+  )
+}
+
+function M6CritDescription() {
+  return (
+    <GameDescSlice
+      ns="char_Qingyi_gen"
+      key18="mindscapes.6.desc"
+      from="The Interrupt Level of <ct color=#FFFFFF>Basic Attack: Enchanted Moonlit Blossoms</ct> is greatly increased"
+      to="100%."
+    />
+  )
+}
+
+function M6ResDescription() {
+  return (
+    <GameDescSlice
+      ns="char_Qingyi_gen"
+      key18="mindscapes.6.desc"
+      from="When Qingyi hits an enemy with her <ct color=#FFFFFF>Basic Attack: Enchanted Moonlit Blossoms</ct>"
+      to="20% for 15s."
+    />
+  )
+}
 
 const sheet = createBaseSheet(key, {
   perSkillAbility: {
@@ -24,13 +137,7 @@ const sheet = createBaseSheet(key, {
           type: 'conditional',
           conditional: {
             label: ch('flashConnectCond'),
-            description: (
-              <SkillGameDesc
-                characterKey={key}
-                ns="char_Qingyi_gen"
-                key18="basic.FlashConnect.desc"
-              />
-            ),
+            description: <FlashConnectDescription />,
             metadata: cond.flash_connect_consumed,
             fields: [
               fieldForBuff(buff.flash_connect_dmg_),
@@ -43,9 +150,14 @@ const sheet = createBaseSheet(key, {
     chain: {
       ChainAttackTranquilSerenade: [
         {
-          type: 'fields',
-          header: { icon: null, text: ch('chain_header') },
-          fields: [fieldForBuff(buff.chain_dmg_)],
+          type: 'conditional',
+          conditional: {
+            label: ch('chainCond'),
+            description: <ChainDescription />,
+            metadata: cond.chain_subjugation,
+            fields: [fieldForBuff(buff.chain_dmg_)],
+            linked: ['subjugation'],
+          },
         },
       ],
     },
@@ -55,9 +167,10 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('subjugationCond'),
-        description: <CoreGameDesc characterKey={key} />,
+        description: <CoreDescription />,
         metadata: cond.subjugation,
         fields: [fieldForBuff(buff.core_stun_)],
+        linked: ['chain_subjugation'],
       },
     },
   ],
@@ -65,6 +178,7 @@ const sheet = createBaseSheet(key, {
     {
       type: 'fields',
       header: { icon: null, text: ch('ability_header') },
+      description: <AbilityDescription />,
       fields: [
         fieldForBuff(buff.ability_basic_dazeInc_),
         fieldForBuff(buff.ability_atk),
@@ -73,54 +187,38 @@ const sheet = createBaseSheet(key, {
   ],
   m1: [
     {
-      type: 'fields',
-      header: { icon: null, text: ch('m1_header') },
-      fields: [fieldForBuff(buff.m1_defRed_), fieldForBuff(buff.m1_crit_)],
+      type: 'conditional',
+      conditional: {
+        label: ch('m1Cond'),
+        description: <M1Description />,
+        metadata: cond.m1_flash_max,
+        fields: [fieldForBuff(buff.m1_defRed_), fieldForBuff(buff.m1_crit_)],
+      },
     },
   ],
   m2: [
     {
-      type: 'fields',
-      header: { icon: null, text: ch('m2_header') },
-      fields: [
-        {
-          title: ch('m2_stun_'),
-          fieldValue: dm.m2.stun_mult_ * 100,
-          unit: '%',
-        },
-        fieldForBuff(buff.m2_dazeInc_),
-      ],
-    },
-  ],
-  m4: [
-    {
-      type: 'fields',
-      header: { icon: null, text: ch('m4_header') },
-      fields: [
-        {
-          title: ch('m4_shield'),
-          fieldRef: formula.m4_shield.tag,
-        },
-      ],
+      type: 'conditional',
+      conditional: {
+        label: ch('m2DazeCond'),
+        description: <M2DazeDescription />,
+        metadata: cond.m2_subjugation_max,
+        fields: [fieldForBuff(buff.m2_dazeInc_)],
+      },
     },
   ],
   m6: [
     {
       type: 'fields',
       header: { icon: null, text: ch('m6_header') },
+      description: <M6CritDescription />,
       fields: [fieldForBuff(buff.m6_crit_dmg_)],
     },
     {
       type: 'conditional',
       conditional: {
         label: ch('m6Cond'),
-        description: (
-          <SkillGameDesc
-            characterKey={key}
-            ns="char_Qingyi_gen"
-            key18="mindscapes.6.desc"
-          />
-        ),
+        description: <M6ResDescription />,
         metadata: cond.moonlit_blossoms_hit,
         fields: [fieldForBuff(buff.m6_resRed_)],
       },

@@ -3,6 +3,7 @@ import {
   constant,
   max,
   min,
+  type NumNode,
   prod,
   subscript,
   sum,
@@ -18,6 +19,7 @@ import {
   percent,
   register,
   registerBuff,
+  team,
   teamBuff,
 } from '../../util'
 import { entriesForChar, getBaseTag, registerAllDmgDazeAndAnom } from '../util'
@@ -42,7 +44,17 @@ const {
   m2_gnawed: 2,
   assault_or_disorder_triggered: 4,
 })
-const { potential_assault_triggered } = allBoolConditionals(key)
+const { enemy_anomaly } = allBoolConditionals(key)
+
+const abilityCheck = (node: number | NumNode) =>
+  cmpGE(
+    sum(
+      team.common.count.withSpecialty('anomaly'),
+      team.common.count.withFaction('CriminalInvestigationSpecialResponseTeam')
+    ),
+    3,
+    node
+  )
 
 const sheet = register(
   key,
@@ -57,6 +69,16 @@ const sheet = register(
     { ...baseTag, damageType1: 'elemental' },
     cmpGE(char.mindscape, 6, prod(own.final.anomProf, percent(dm.m6.dmg)))
   ),
+  registerBuff(
+    'm6_additional_dmg',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'elemental',
+      cmpGE(char.mindscape, 6, percent(dm.m6.dmg))
+    ),
+    undefined,
+    undefined,
+    false
+  ),
 
   // Buffs
   registerBuff(
@@ -68,6 +90,20 @@ const sheet = register(
           constant(600)
         )
       ) // No data in dm
+    )
+  ),
+  registerBuff(
+    'ability_physical_anomBuildup_',
+    ownBuff.combat.anomBuildup_.physical.add(
+      abilityCheck(percent(dm.ability.physical_anomBuildup_))
+    )
+  ),
+  registerBuff(
+    'ability_additional_physical_anomBuildup_',
+    ownBuff.combat.anomBuildup_.physical.add(
+      abilityCheck(
+        enemy_anomaly.ifOn(percent(dm.ability.additional_physical_anomBuildup_))
+      )
     )
   ),
   registerBuff(
@@ -89,10 +125,25 @@ const sheet = register(
   registerBuff(
     'core_assault_crit_dmg_',
     teamBuff.combat.anom_crit_dmg_.physical.add(
-      core_gnawed.ifOn(subscript(char.core, dm.core.assault_crit_dmg_))
+      core_gnawed.ifOn(
+        sum(
+          subscript(char.core, dm.core.assault_crit_dmg_),
+          cmpGE(char.mindscape, 2, dm.m2.assault_crit_dmg_)
+        )
+      )
     ),
     undefined,
     true
+  ),
+  registerBuff(
+    'm1_physical_anomBuildup_',
+    ownBuff.combat.anomBuildup_.physical.add(
+      cmpGE(
+        char.mindscape,
+        1,
+        m1_passion.ifOn(percent(dm.m1.physical_anomBuildup_))
+      )
+    )
   ),
   registerBuff(
     'm1_common_dmg_',
@@ -125,14 +176,6 @@ const sheet = register(
     true
   ),
   registerBuff(
-    'm2_assault_crit_dmg_',
-    teamBuff.combat.anom_crit_dmg_.physical.add(
-      cmpGE(char.mindscape, 2, m2_gnawed.ifOn(dm.m2.assault_crit_dmg_))
-    ),
-    undefined,
-    true
-  ),
-  registerBuff(
     'm4_anomaly_dmg_',
     teamBuff.combat.buff_.addWithDmgType(
       'anomaly',
@@ -141,7 +184,9 @@ const sheet = register(
         4,
         assault_or_disorder_triggered.ifOn(dm.m4.anomaly_dmg_)
       )
-    )
+    ),
+    undefined,
+    true
   ),
   registerBuff(
     'm6_crit_',
@@ -158,7 +203,7 @@ const sheet = register(
   registerBuff(
     'potential_assault_crit_dmg_',
     teamBuff.combat.anom_crit_dmg_.physical.add(
-      potential_assault_triggered.ifOn(dm.potential.assault_crit_dmg_[6])
+      dm.potential.assault_crit_dmg_[6]
     ),
     undefined,
     true
