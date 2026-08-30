@@ -99,9 +99,7 @@ const sheet = register(
   registerBuff(
     'potential_crit_dmg_',
     ownBuff.combat.crit_dmg_.add(
-      pawpad_ambush.ifOn(
-        percent(subscript(char.potential, dm.potential.crit_dmg_))
-      )
+      pawpad_ambush.ifOn(percent(dm.potential.crit_dmg_[6]))
     )
   ),
   registerBuff(

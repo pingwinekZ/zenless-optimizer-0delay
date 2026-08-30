@@ -33,7 +33,6 @@ function teammateEntries(teammates: CharacterKey[]): TagMapNodeEntries {
         assist: 11,
         core: 6,
         mindscape: 0,
-        potential: 5,
       })
     )
   )
@@ -60,7 +59,6 @@ function setupRemielleCalc(
         promotion: 5,
         key: charKey,
         mindscape,
-        potential: 5,
         basic: 11,
         dodge: 11,
         special: 11,

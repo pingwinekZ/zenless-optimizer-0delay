@@ -13,11 +13,11 @@
 - Uses raw string summaries as descriptions
 - No conditional dimming of trigger text
 
-**New style** (Soldier0Anby, Miyabi, Trigger, Evelyn, Harumasa):
+**New style** (Soldier0Anby, Miyabi, Trigger, Evelyn, Harumasa, Burnice):
 - Slices descriptions with `GameDescSlice` to show only the relevant portion
 - Wraps trigger/conditional text in `<AbilityBodyText>` for dimming
-- Uses `<PrefixedLine>` for mindscape/potential-gated lines
-- Swaps to potential variant descriptions when the character has potential
+- Uses `<PrefixedLine>` for mindscape-gated lines (and generic `P` lines for potential buffs; Chain/Ultimate · Aftershock has no prefix and is always enabled)
+- Potential is always max (P6) — locale contains only `desc` (no `descPotential` variant) and data uses `dm.potential.*[6]` directly
 
 ---
 
@@ -59,25 +59,41 @@ checking whether any `ability_*` buff has a non-zero computed value.
 
 ### `PrefixedLine`
 
-Renders a line with a prefix label (e.g. `"P1"`, `"M4"`, `"P2+"`) that is
-dimmed when the required gate is not met.
+Renders a line with a prefix label (e.g. `"P"`, `"M4"`) that is
+dimmed when the required gate is not met. For potential buffs the prefix is
+always the generic `"P"` (no number); the Chain/Ultimate · Aftershock buff has
+no prefix at all and is always enabled.
 
 ```tsx
-<PrefixedLine prefix="P1" dimmed={potential < 1}>
-  <GameDescSlice ns="char_Soldier0Anby_gen" key18="..." from="..." to="..." />
+// Generic potential buff (always max, dimmed only by gameplay, not potential level):
+<PrefixedLine prefix="P" dimmed={false}>
+  <GameDescSlice ns="char_Soldier0Anby_gen" key18="core.desc.6.1" from="The Aftershock CRIT DMG bonus" to="..." />
 </PrefixedLine>
+
+// Ability-linked potential buff:
+<PrefixedLine prefix="P" dimmed={!active}>
+  <GameDesc ns="char_Soldier0Anby_gen" key18="potential.desc.6" />
+</PrefixedLine>
+
+// Chain/Ultimate · Aftershock (always enabled, no prefix):
+<GameDesc ns="char_Soldier0Anby_gen" key18="ability.desc.2" />
 ```
 
-### `usePotentialDescKey(characterKey, ns, key18)`
+### `usePotentialDescKey` / `potentialDescKey` (deprecated, identity)
 
-Returns the locale key with `.desc` → `.descPotential` (and `.params` →
-`.paramsPotential`) swapped when the character has a potential level > 0 **and**
-the potential variant key exists in the namespace.
+Previously returned the locale key with `.desc` → `.descPotential` swapped when
+potential > 0. Now that potential is **always max (P6)** the locale generator
+emits only `desc` (no `descPotential` variant) and data uses `dm.potential.*[6]`
+directly. Both helpers are kept for API compatibility and now simply return
+the input key unchanged.
 
 ```tsx
-const key18 = usePotentialDescKey(key, 'char_Soldier0Anby_gen', 'ability.desc.1')
-// → 'ability.descPotential.1' if potential > 0 and key exists
+const key18 = usePotentialDescKey(key, 'char_Harumasa_gen', 'ability.desc.1')
+// → 'ability.desc.1' (identity, always)
 ```
+
+New code should use plain keys directly, e.g. `"ability.desc.2"` or
+`"potential.desc.6"`, without calling this helper.
 
 ### `useAbilityActive(characterKey)`
 
@@ -108,26 +124,23 @@ const active = useAbilityActive(key)
 }
 ```
 
-**After** (Soldier0Anby):
+**After** (Soldier0Anby — potential always max):
 ```tsx
 function CoreDescription() {
   const char = useCharacter(key)
   const coreLevel = char?.core ?? 0
-  const potential = char?.potential ?? 0
   const ns = 'char_Soldier0Anby_gen'
-  const coreKey = usePotentialDescKey(
-    key, ns, `core.desc.${coreLevel}${potential > 0 ? '.0' : ''}`
-  )
-  const coreKey1 = `core.descPotential.${coreLevel}.1`
+  const coreKey = `core.desc.${coreLevel}.0`
+  const coreKey1 = `core.desc.${coreLevel}.1`
   return (
     <>
       <GameDescSlice
         ns={ns}
         key18={coreKey}
-        from={potential > 0 ? 'Soldier 0 - Anby deals' : "Soldier 0 - Anby's DMG"}
+        from="Soldier 0 - Anby deals"
         to="of Soldier 0 - Anby's CRIT DMG"
       />
-      <PrefixedLine prefix="P1" dimmed={potential < 1}>
+      <PrefixedLine prefix="P" dimmed={false}>
         <GameDescSlice
           ns={ns}
           key18={coreKey1}
@@ -139,6 +152,11 @@ function CoreDescription() {
   )
 }
 ```
+
+The core uses `core.desc.<level>.0` (base) and `core.desc.<level>.1`
+(potential) directly — no `descPotential` variant. The `P` line is always
+enabled (`dimmed={false}`); generic `P` prefix is used for all potential
+lines except Chain/Ultimate · Aftershock which has no prefix at all.
 
 ### 2. Ability Description (trigger dimming)
 
@@ -189,22 +207,21 @@ The pattern is:
 3. Use `GameDescSlice` to extract just the relevant stat-bonus part from
    `ability.desc.1` (or similar)
 
-### 3. Ability Description with Potential Variant
+### 3. Ability Description (potential always max)
 
-**Before**: No potential awareness.
+**Before**: No dimming.
 
-**After** (Soldier0Anby):
+**After** (Soldier0Anby / Harumasa — potential always max):
 ```tsx
 function AbilityDescription() {
   const ns = 'char_Soldier0Anby_gen'
-  const desc1 = usePotentialDescKey(key, ns, 'ability.desc.1')
   return (
     <>
       <GameDesc ns={ns} key18="ability.desc.0" />
       <AbilityBodyText characterKey={key}>
         <GameDescSlice
           ns={ns}
-          key18={desc1}
+          key18="ability.desc.1"
           from="Soldier 0 - Anby's CRIT Rate increases by"
           to="10%"
         />
@@ -214,7 +231,8 @@ function AbilityDescription() {
 }
 ```
 
-Use `usePotentialDescKey` for the key to get the potential variant automatically.
+No `usePotentialDescKey` call — the key is plain `ability.desc.1`. The locale
+now contains the max-potential text directly (no `descPotential` branch).
 
 ### 4. Mindscape Description Slicing
 
@@ -280,34 +298,43 @@ function CoreDescription() {
 }
 ```
 
-### 6. Passive + Ability with Linked Gates
+### 6. Passive + Ability with Linked Gates (potential always max)
 
 **Before**: Single full description.
 
 **After** (Soldier0Anby):
 ```tsx
 function AbilityConditionalDescription() {
-  const potential = useCharacter(key)?.potential ?? 0
   const active = useAbilityActive(key)
   const ns = 'char_Soldier0Anby_gen'
-  const desc1 = usePotentialDescKey(key, ns, 'ability.desc.1')
-  const from =
-    potential > 0
-      ? 'When the current active character is Soldier 0 - Anby'
-      : 'When Soldier 0 - Anby is the active character'
+  const desc1 = 'ability.desc.1'
+  const from = 'When the current active character is Soldier 0 - Anby'
   return (
     <>
       <GameDesc ns={ns} key18="ability.desc.0" />
       <AbilityBodyText characterKey={key}>
         <GameDescSlice ns={ns} key18={desc1} from={from} to="Silver Star" />
       </AbilityBodyText>
-      <PrefixedLine prefix="P2+" dimmed={!active || potential < 2}>
-        <GameDesc ns={ns} key18={`potential.desc.${Math.max(potential, 2)}`} />
+      <PrefixedLine prefix="P" dimmed={!active}>
+        <GameDesc ns={ns} key18="potential.desc.6" />
       </PrefixedLine>
     </>
   )
 }
+
+function PotentialDescription() {
+  const ns = 'char_Soldier0Anby_gen'
+  return <GameDesc ns={ns} key18="ability.desc.2" />
+}
 ```
+
+The ability-linked `P` line is gated only by `!active` (gameplay), not by
+potential level — it always uses `potential.desc.6` (max). The Chain/Ultimate
+· Aftershock buff (`ability.desc.2`) has no `PrefixedLine` at all and is
+always enabled. Harumasa and Burnice follow the same pattern: Burnice's
+potential description is `<PrefixedLine prefix="P" dimmed={false}>` with
+`potential.desc.6` and no `minPotential` gates on its fields; Harumasa's
+core `minPotential: 1` gates are removed.
 
 ---
 
@@ -329,19 +356,24 @@ function AbilityConditionalDescription() {
      `<AbilityBodyText>` for dimming.
    - **Slice descriptions** to show only the part relevant to the
      buff/conditional, removing boilerplate.
-   - **Use `usePotentialDescKey`** for any key that may have a potential
-     variant.
-   - **Use `<PrefixedLine>`** for mindscape- or potential-gated sub-lines
-     within a description, with the correct `dimmed` condition.
+   - **Potential is always max** — use plain keys (`ability.desc.2`,
+     `potential.desc.6`, `core.desc.<level>.1`) directly; `usePotentialDescKey`
+     is deprecated (identity).
+     - No `minPotential` gates on fields; `PrefixedLine` for potential uses
+       generic `prefix="P"` (or no prefix for Chain/Ultimate · Aftershock).
+   - **Use `<PrefixedLine>`** for mindscape-gated sub-lines (`prefix="M1"`…
+     `M6`) and for generic `P` lines (`prefix="P"`), with the correct `dimmed`
+     condition (`dimmed={mindscape < N}` or `dimmed={!active}`).
    - **Use `useEffectiveMindscape`** for mindscape-gated dimming (works with
      teammate overrides).
 
 4. **Update imports**: Add any new components (`AbilityBodyText`,
-   `PrefixedLine`, `usePotentialDescKey`, `useAbilityActive`,
-   `GameDescSlice`, etc.) to the import statement.
+   `PrefixedLine`, `useAbilityActive`, `GameDescSlice`, etc.) to the import
+   statement. Do **not** add `usePotentialDescKey` for new code — it is
+   deprecated.
 
-5. **Test**: Verify that descriptions display correctly, dim when gates are
-   not met, and swap to potential variants when expected.
+5. **Test**: Verify that descriptions display correctly and dim when gates are
+   not met. No swapping to potential variants is expected (always max).
 
 ---
 
@@ -353,11 +385,14 @@ function AbilityConditionalDescription() {
   rendered, just with `opacity: 0.5` when inactive.
 - **`PrefixedLine` uses `opacity: 0.5`** for dimming, same as
   `AbilityBodyText`. Both set opacity on a wrapper div.
-- **`usePotentialDescKey` returns the original key** if no potential variant
-  exists or potential is 0. It does not change the key if the variant key
-  is missing.
+- **`usePotentialDescKey` / `potentialDescKey` are deprecated identity helpers**
+  — they now always return the input key. Previously they swapped `.desc` →
+  `.descPotential` when potential > 0; now potential is always max (P6) and
+  the locale contains only `desc`/`potential.desc.6` (no `descPotential`).
 - **`GameDescSlice` logs a warning** and returns `null` if the slice markers
   are not found. Check the console during development.
 - **The `potential` section** in the sheet (`addlDocuments.potential`) is
   auto-created by `createBaseSheet` when the character has potential params.
   Only add custom content there when the auto-generated sheet is insufficient.
+  Potential is always displayed at max — e.g. `potential.desc.6`,
+  `ability.desc.2` with no `PrefixedLine` number, or generic `prefix="P"`.

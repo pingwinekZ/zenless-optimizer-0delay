@@ -23,7 +23,6 @@ import {
   type CharacterKey,
   coreByLevel,
   type PhaseKey,
-  potentialLimits,
   type SkillKey,
   skillByLevel,
   type WengineKey,
@@ -48,7 +47,6 @@ type CharacterEditForm = {
   special: number
   chain: number
   core: number
-  potential: number
 }
 
 export function CharacterEditModal({
@@ -73,7 +71,6 @@ export function CharacterEditModal({
     special: 1,
     chain: 1,
     core: 0,
-    potential: 0,
   })
   const [initialForm, setInitialForm] = useState<CharacterEditForm | null>(null)
 
@@ -95,7 +92,6 @@ export function CharacterEditModal({
       special: char.special,
       chain: char.chain,
       core: char.core,
-      potential: char.potential,
     }
     setForm(f)
     setInitialForm(f)
@@ -112,16 +108,11 @@ export function CharacterEditModal({
       initialForm.assist !== form.assist ||
       initialForm.special !== form.special ||
       initialForm.chain !== form.chain ||
-      initialForm.core !== form.core ||
-      initialForm.potential !== form.potential
+      initialForm.core !== form.core
     )
   }, [initialForm, form])
 
   const charStat = characterKey ? getCharStat(characterKey) : null
-  const hasPotential = useMemo(
-    () => (charStat?.potentialParams.length ?? 0) > 0,
-    [charStat]
-  )
 
   const onSave = () => {
     if (!characterKey) return
@@ -136,7 +127,6 @@ export function CharacterEditModal({
       special: form.special,
       chain: form.chain,
       core: form.core,
-      potential: form.potential,
     })
 
     useCharacterTabStore.getState().setFocusCharacter(characterKey)
@@ -190,27 +180,6 @@ export function CharacterEditModal({
             />
           </Box>
 
-          {hasPotential && (
-            <>
-              <Text fw={600} mb="xs">
-                {t('potential')}
-              </Text>
-              <Box mb="md">
-                <SegmentedControl
-                  data={potentialLimits.map((p) => ({
-                    value: String(p),
-                    label: `P${p}`,
-                  }))}
-                  value={String(form.potential)}
-                  onChange={(v) =>
-                    setForm((f) => ({ ...f, potential: Number(v) }))
-                  }
-                  fullWidth
-                  size="xs"
-                />
-              </Box>
-            </>
-          )}
           <Text fw={600} mb={4}>
             {t('editCharacter.skillLevels')}
           </Text>

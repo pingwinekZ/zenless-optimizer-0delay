@@ -158,9 +158,7 @@ const sheet = register(
   registerBuff(
     'potential_assault_crit_dmg_',
     teamBuff.combat.anom_crit_dmg_.physical.add(
-      potential_assault_triggered.ifOn(
-        subscript(char.potential, dm.potential.assault_crit_dmg_)
-      )
+      potential_assault_triggered.ifOn(dm.potential.assault_crit_dmg_[6])
     ),
     undefined,
     true

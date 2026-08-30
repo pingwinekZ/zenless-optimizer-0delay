@@ -1,7 +1,7 @@
 import { Box } from '@mantine/core'
 import type { Document, Field } from '@zenless-optimizer/game-opt/sheet-ui'
 import { DocumentDisplay } from '@zenless-optimizer/game-opt/sheet-ui'
-import { useCharacter, useCharacterContext } from '../db-ui'
+import { useCharacterContext } from '../db-ui'
 import {
   Banyue,
   Manato,
@@ -32,8 +32,7 @@ function filterDocFields(doc: Document, potential: number): Document {
 
 export function CharSheetSection() {
   const { key: characterKey } = useCharacterContext()!
-  const char = useCharacter(characterKey)
-  const potential = char?.potential ?? 0
+  const potential = 6
   return (
     <Box>
       {characterKey === 'Yixuan' && <MinimalYixuanSheet />}

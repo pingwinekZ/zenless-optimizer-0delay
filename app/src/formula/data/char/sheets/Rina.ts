@@ -155,21 +155,15 @@ const sheet = register(
   ),
   registerBuff(
     'potential_pen_',
-    ownBuff.final.pen_.add(
-      percent(subscript(char.potential, dm.potential.pen_ratio_))
-    )
+    ownBuff.final.pen_.add(percent(dm.potential.pen_ratio_[6]))
   ),
   registerBuff(
     'potential_atk_',
     teamBuff.combat.atk.add(
       minions_onField.ifOn(
         min(
-          prod(
-            own.final.pen_,
-            constant(100),
-            subscript(char.potential, dm.potential.atk_per_pen)
-          ),
-          subscript(char.potential, dm.potential.max_atk)
+          prod(own.final.pen_, constant(100), dm.potential.atk_per_pen[6]),
+          dm.potential.max_atk[6]
         )
       )
     ),
@@ -181,12 +175,8 @@ const sheet = register(
     teamBuff.combat.def.add(
       minions_onField.ifOn(
         min(
-          prod(
-            own.final.pen_,
-            constant(100),
-            subscript(char.potential, dm.potential.def_per_pen)
-          ),
-          subscript(char.potential, dm.potential.max_def)
+          prod(own.final.pen_, constant(100), dm.potential.def_per_pen[6]),
+          dm.potential.max_def[6]
         )
       )
     ),

@@ -11,7 +11,6 @@ import {
   createBaseSheet,
   fieldForBuff,
   SkillGameDesc,
-  usePotentialDescKey,
 } from '../sheetUtil'
 import { getVariant } from '../util'
 
@@ -24,20 +23,11 @@ const formula = Harumasa.formulas
 function CoreCritRateDescription() {
   const char = useCharacter(key)
   const coreLevel = char?.core ?? 0
-  const hasPotential = (char?.potential ?? 0) > 0
   const { t } = useTranslation('char_Harumasa_gen')
   const text = useMemo(() => {
-    const desc = t(
-      hasPotential
-        ? `core.descPotential.${coreLevel}`
-        : `core.desc.${coreLevel}`
-    )
+    const desc = t(`core.desc.${coreLevel}`)
     if (typeof desc !== 'string') return undefined
-    const slice = sliceBetween(
-      desc,
-      'The CRIT Rate of',
-      hasPotential ? 'increase by' : 'increases by'
-    )
+    const slice = sliceBetween(desc, 'The CRIT Rate of', 'increase by')
     if (slice === undefined) return undefined
     // The P0 sentence continues with ", and when Harumasa's ..." — cut the
     // slice at the first tagged number and close the clause with a period.
@@ -45,7 +35,7 @@ function CoreCritRateDescription() {
     const tagEnd = pct >= 0 ? slice.indexOf('</ct>', pct) : -1
     if (tagEnd >= 0) return slice.slice(0, tagEnd + 5) + '.'
     return slice
-  }, [t, coreLevel, hasPotential])
+  }, [t, coreLevel])
   if (text === undefined) return null
   return <GameText text={text} />
 }
@@ -53,35 +43,22 @@ function CoreCritRateDescription() {
 function GleamingEdgeDescription() {
   const char = useCharacter(key)
   const coreLevel = char?.core ?? 0
-  const hasPotential = (char?.potential ?? 0) > 0
   return (
     <GameDescSlice
       ns="char_Harumasa_gen"
-      key18={
-        hasPotential
-          ? `core.descPotential.${coreLevel}`
-          : `core.desc.${coreLevel}`
-      }
-      from={hasPotential ? "When Harumasa's" : "when Harumasa's"}
-      to={hasPotential ? 'Ultimate by' : 'increases the CRIT DMG of'}
+      key18={`core.desc.${coreLevel}`}
+      from="When Harumasa's"
+      to="Ultimate by"
       capitalize
     />
   )
 }
 
 function PotentialDescription() {
-  const char = useCharacter(key)
-  const potential = char?.potential ?? 0
-  return (
-    <GameDesc
-      ns="char_Harumasa_gen"
-      key18={`potential.desc.${Math.max(potential, 2)}`}
-    />
-  )
+  return <GameDesc ns="char_Harumasa_gen" key18="potential.desc.6" />
 }
 
 function AbilityDamageDescription() {
-  const key18 = usePotentialDescKey(key, 'char_Harumasa_gen', 'ability.desc.1')
   return (
     <>
       <SkillGameDesc
@@ -92,7 +69,7 @@ function AbilityDamageDescription() {
       <AbilityBodyText characterKey={key}>
         <GameDescSlice
           ns="char_Harumasa_gen"
-          key18={key18}
+          key18="ability.desc.1"
           from="When Harumasa's attacks"
           to="his DMG increases by"
         />
@@ -123,7 +100,6 @@ const sheet = createBaseSheet(key, {
             </ColorText>
           ),
           fieldRef: buff.core_chasing_thunder_crit_.tag,
-          minPotential: 1,
         },
         {
           title: (
@@ -132,7 +108,6 @@ const sheet = createBaseSheet(key, {
             </ColorText>
           ),
           fieldRef: buff.core_ult_crit_.tag,
-          minPotential: 1,
         },
       ],
     },
@@ -160,7 +135,6 @@ const sheet = createBaseSheet(key, {
               </ColorText>
             ),
             fieldRef: buff.core_chasing_thunder_crit_dmg_.tag,
-            minPotential: 1,
           },
           {
             title: (
@@ -169,7 +143,6 @@ const sheet = createBaseSheet(key, {
               </ColorText>
             ),
             fieldRef: buff.core_ult_crit_dmg_.tag,
-            minPotential: 1,
           },
         ],
       },

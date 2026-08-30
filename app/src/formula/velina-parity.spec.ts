@@ -89,7 +89,6 @@ function setup(): Calculator {
         assist: 11,
         core: 6,
         mindscape: 0,
-        potential: 0,
       }),
       ...wengineTagMapNodeEntries({
         key: 'TheVault',
@@ -122,7 +121,6 @@ function setupRemielleHp(): Calculator {
         assist: 11,
         core: 6,
         mindscape: 0,
-        potential: 0,
       }),
       ownBuff.initial.hp.add(2424),
       ownBuff.initial.hp_.add(0.03),

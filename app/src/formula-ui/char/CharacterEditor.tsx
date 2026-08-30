@@ -1,7 +1,7 @@
 import { ActionIcon, Box, Button, Grid, Skeleton } from '@mantine/core'
 import { IconTrash, IconX } from '@tabler/icons-react'
 import { CardThemed, ModalWrapper } from '@zenless-optimizer/common/ui'
-import { Suspense, useCallback, useMemo } from 'react'
+import { Suspense, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { allSkillKeys, type CharacterKey } from '../../consts'
 import {
@@ -10,14 +10,12 @@ import {
   useCharacterContext,
   useDatabaseContext,
 } from '../../db-ui'
-import { getCharStat } from '../../stats'
 import {
   CharacterCard,
   CharacterCompactMindscapeSelector,
   CoreDropdown,
   EquippedGrid,
   LevelSelect,
-  PotentialSelect,
   SkillDropdown,
 } from '../../ui'
 
@@ -84,10 +82,6 @@ export function Content({ onClose }: { onClose?: () => void }) {
     database.chars.remove(characterKey)
     onClose?.()
   }, [database, characterKey, t, onClose])
-  const hasPotential = useMemo(() => {
-    return getCharStat(characterKey).potentialParams.length > 0
-  }, [characterKey])
-
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
       <Box style={{ display: 'flex', gap: '0.25rem' }}>
@@ -129,18 +123,7 @@ export function Content({ onClose }: { onClose?: () => void }) {
                   }
                 />
               </Box>
-              <Box px="xs">
-                {hasPotential && (
-                  <PotentialSelect
-                    potential={character.potential}
-                    setPotential={(potential) =>
-                      database.chars.set(characterKey, {
-                        potential,
-                      })
-                    }
-                  />
-                )}
-              </Box>
+
               <CharacterCompactMindscapeSelector
                 mindscape={character.mindscape}
                 setMindscape={(mindscape) =>

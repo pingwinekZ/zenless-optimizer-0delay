@@ -43,7 +43,6 @@ describe('Yixuan sheerForce HP scaling', () => {
           chain: 11,
           core: 6,
           mindscape: 0,
-          potential: 5,
         })
       ),
       ...discTagMapNodeEntries({ atk: 316, def: 184 }, {}), // slot 2 + 3 main stats

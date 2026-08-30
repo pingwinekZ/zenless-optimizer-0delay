@@ -25,7 +25,6 @@ function setup(mindscape: number) {
         promotion: 5,
         key: charKey,
         mindscape,
-        potential: 5,
         basic: 11,
         dodge: 11,
         special: 11,

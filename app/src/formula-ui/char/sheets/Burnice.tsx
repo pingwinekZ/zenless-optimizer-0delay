@@ -2,7 +2,6 @@ import { ColorText, ImgIcon } from '@zenless-optimizer/common/ui'
 import { read } from '@zenless-optimizer/pando/engine'
 import { commonDefIcon, mindscapeDefIcon } from '../../../assets'
 import type { CharacterKey } from '../../../consts'
-import { useCharacter } from '../../../db-ui'
 import { Burnice } from '../../../formula'
 import { GameDesc, GameDescSlice } from '../../../i18n'
 import { trans } from '../../util'
@@ -34,16 +33,7 @@ function CoreDescription() {
 }
 
 function PotentialDescription() {
-  const char = useCharacter(key)
-  const potential = char?.potential ?? 0
-  return (
-    <PrefixedLine prefix="P2+" dimmed={potential < 2}>
-      <GameDesc
-        ns="char_Burnice_gen"
-        key18={`potential.desc.${Math.max(potential, 2)}`}
-      />
-    </PrefixedLine>
-  )
+  return <GameDesc ns="char_Burnice_gen" key18="potential.desc.6" />
 }
 
 const sheet = createBaseSheet(key, {
@@ -163,8 +153,8 @@ const sheet = createBaseSheet(key, {
       },
       description: <PotentialDescription />,
       fields: [
-        { ...fieldForBuff(buff.potential_anomMas), minPotential: 2 },
-        { ...fieldForBuff(buff.potential_common_dmg_), minPotential: 2 },
+        fieldForBuff(buff.potential_anomMas),
+        fieldForBuff(buff.potential_common_dmg_),
       ],
     },
   ],

@@ -252,10 +252,7 @@ const sheet = register(
     'ability_crit_dmg_',
     ownBuff.combat.crit_dmg_.add(
       ability_check(
-        prod(
-          potential_ice_attacks,
-          percent(subscript(char.potential, dm.potential.crit_dmg_))
-        )
+        prod(potential_ice_attacks, percent(dm.potential.crit_dmg_[6]))
       )
     )
   ),
@@ -266,7 +263,7 @@ const sheet = register(
         cmpGE(
           potential_ice_attacks,
           dm.potential.stackThreshold,
-          percent(subscript(char.potential, dm.potential.ice_resIgn_))
+          percent(dm.potential.ice_resIgn_[6])
         )
       )
     )

@@ -240,7 +240,7 @@ const sheet = register(
         dm.potential.max_anomMas,
         prod(
           max(0, sum(own.initial.enerRegen, -dm.potential.initial_enerRegen)),
-          subscript(char.potential, dm.potential.anomMas),
+          dm.potential.anomMas[6],
           percent(1 / dm.potential.enerRegenStep)
         )
       )
@@ -253,7 +253,7 @@ const sheet = register(
         percent(dm.potential.max_common_dmg_),
         prod(
           max(0, sum(own.initial.enerRegen, -dm.potential.initial_enerRegen)),
-          subscript(char.potential, dm.potential.common_dmg_),
+          dm.potential.common_dmg_[6],
           percent(1 / dm.potential.enerRegenStep)
         )
       )

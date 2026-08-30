@@ -23,25 +23,18 @@ const formula = Soldier0Anby.formulas
 function CoreDescription() {
   const char = useCharacter(key)
   const coreLevel = char?.core ?? 0
-  const potential = char?.potential ?? 0
   const ns = 'char_Soldier0Anby_gen'
-  const coreKey = usePotentialDescKey(
-    key,
-    ns,
-    `core.desc.${coreLevel}${potential > 0 ? '.0' : ''}`
-  )
-  const coreKey1 = `core.descPotential.${coreLevel}.1`
+  const coreKey = `core.desc.${coreLevel}.0`
+  const coreKey1 = `core.desc.${coreLevel}.1`
   return (
     <>
       <GameDescSlice
         ns={ns}
         key18={coreKey}
-        from={
-          potential > 0 ? 'Soldier 0 - Anby deals' : "Soldier 0 - Anby's DMG"
-        }
+        from="Soldier 0 - Anby deals"
         to="of Soldier 0 - Anby's CRIT DMG"
       />
-      <PrefixedLine prefix="P1" dimmed={potential < 1}>
+      <PrefixedLine prefix="P" dimmed={false}>
         <GameDescSlice
           ns={ns}
           key18={coreKey1}
@@ -72,35 +65,26 @@ function AbilityDescription() {
 }
 
 function AbilityConditionalDescription() {
-  const potential = useCharacter(key)?.potential ?? 0
   const active = useAbilityActive(key)
   const ns = 'char_Soldier0Anby_gen'
-  const desc1 = usePotentialDescKey(key, ns, 'ability.desc.1')
-  const from =
-    potential > 0
-      ? 'When the current active character is Soldier 0 - Anby'
-      : 'When Soldier 0 - Anby is the active character'
+  const desc1 = 'ability.desc.1'
+  const from = 'When the current active character is Soldier 0 - Anby'
   return (
     <>
       <GameDesc ns={ns} key18="ability.desc.0" />
       <AbilityBodyText characterKey={key}>
         <GameDescSlice ns={ns} key18={desc1} from={from} to="Silver Star" />
       </AbilityBodyText>
-      <PrefixedLine prefix="P2+" dimmed={!active || potential < 2}>
-        <GameDesc ns={ns} key18={`potential.desc.${Math.max(potential, 2)}`} />
+      <PrefixedLine prefix="P" dimmed={!active}>
+        <GameDesc ns={ns} key18="potential.desc.6" />
       </PrefixedLine>
     </>
   )
 }
 
 function PotentialDescription() {
-  const potential = useCharacter(key)?.potential ?? 0
   const ns = 'char_Soldier0Anby_gen'
-  return (
-    <PrefixedLine prefix="P1" dimmed={potential < 1}>
-      <GameDesc ns={ns} key18="ability.descPotential.2" />
-    </PrefixedLine>
-  )
+  return <GameDesc ns={ns} key18="ability.desc.2" />
 }
 
 const sheet = createBaseSheet(key, {

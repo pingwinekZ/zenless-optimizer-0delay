@@ -222,6 +222,69 @@ dmgDazeAndAnomOverride(
 ),
 ```
 
+### 1.8 Potential — always max (P6)
+
+Potential is **always enabled at max level** — there is no `char.potential` field
+anymore (removed from `common.ts`, `CharacterDataManager.ts`, and migrated
+away in `migrate.ts`). The UI no longer stores or gates on potential.
+
+* **Formula data** — use the max entry directly, no `cmpGE(char.potential, ...)`:
+  ```ts
+  // Burnice: uses max Anomaly Mastery / common DMG
+  registerBuff(
+    'potential_anomMas',
+    ownBuff.combat.anomMas.add(
+      min(
+        dm.potential.max_anomMas,
+        prod(
+          max(0, sum(own.initial.enerRegen, -dm.potential.initial_enerRegen)),
+          dm.potential.anomMas[6], // ← [6], not subscript(char.potential, ...)
+          percent(1 / dm.potential.enerRegenStep)
+        )
+      )
+    )
+  )
+
+  // Soldier0Anby: Chain/Ultimate always gain the Aftershock tag
+  ...registerAllDmgDazeAndAnom(
+    key,
+    dm,
+    dmgDazeAndAnomOverride(dm, 'chain', 'ChainAttackLeapingThunderstrike', 0,
+      { ...baseTag, damageType1: 'chain', damageType2: 'aftershock', skillType1: 'chainSkill' }, 'atk'),
+    dmgDazeAndAnomOverride(dm, 'chain', 'UltimateVoidstrike', 0,
+      { ...baseTag, damageType1: 'ult', damageType2: 'aftershock', skillType1: 'chainSkill' }, 'atk')
+  )
+  // Harumasa: potential-augmented core is unconditional
+  const core_chasing_thunder_crit_ = ownBuff.combat.crit_.addWithDmgType(
+    'dash', percent(subscript(char.core, dm.core.crit_))
+  )
+  ```
+  Do **not** use `cmpGE(char.potential, ...)`, `subscript(char.potential, ...)`,
+  or `minPotential` gates. The locale generator (`dumpChars.ts`) now always
+  emits the max text via `filterUnbuffedKits`, so keys are plain
+  `ability.desc.2` / `potential.desc.6` / `core.desc.<level>.1` (no
+  `descPotential`).
+
+* **UI sheet** — generic `"P"` prefix, no level number; Chain/Ultimate has no
+  prefix at all (see `doc/character-sheet-description-guide.md` §6):
+  ```tsx
+  // Core / ability-linked potential line
+  <PrefixedLine prefix="P" dimmed={false}>
+    <GameDescSlice ns="char_Soldier0Anby_gen" key18="core.desc.6.1" from="..." to="..." />
+  </PrefixedLine>
+  <PrefixedLine prefix="P" dimmed={!active}>
+    <GameDesc ns="char_Soldier0Anby_gen" key18="potential.desc.6" />
+  </PrefixedLine>
+  // Chain/Ultimate · Aftershock (always enabled)
+  <GameDesc ns="char_Soldier0Anby_gen" key18="ability.desc.2" />
+
+  // Burnice / Harumasa: no minPotential gates
+  fieldForBuff(buff.potential_anomMas) // not { ...fieldForBuff(...), minPotential: 2 }
+  fieldForBuff(buff.core_chasing_thunder_crit_) // not minPotential: 1
+  ```
+  `usePotentialDescKey` / `potentialDescKey` are deprecated identity helpers kept
+  for compatibility — new code should use plain keys.
+
 ---
 
 ## Part 2 — Meta files (generated)
@@ -559,9 +622,9 @@ Never edit `char_<Key>_gen.json` — that comes from the datamine.
 
 ## Part 5 — Checklist
 
-- [ ] **1. Formula data** — add conditionals (`allBoolConditionals` with mindscape requirements, `allNumConditionals` for sliders); `addWithDmgType` + `dmgDazeAndAnomOverride` extras + `includeOriginalEntry: false` for skill-scoped buffs; `notOwnBuff` + `team: true` for teammate buffs; `customDmg` paired with a matching `registerBuff`; `cmpGE(char.mindscape, N, cond.ifOn(...))` for toggleable M effects; per-hit element/damage-type overrides.
+- [ ] **1. Formula data** — add conditionals (`allBoolConditionals` with mindscape requirements, `allNumConditionals` for sliders); `addWithDmgType` + `dmgDazeAndAnomOverride` extras + `includeOriginalEntry: false` for skill-scoped buffs; `notOwnBuff` + `team: true` for teammate buffs; `customDmg` paired with a matching `registerBuff`; `cmpGE(char.mindscape, N, cond.ifOn(...))` for toggleable M effects; per-hit element/damage-type overrides; **potential always max** — use `dm.potential.*[6]` directly, no `char.potential` gates (see 1.8).
 - [ ] **2. Run `bun nx run-many -t gen-file`** to regenerate `buffs.ts` / `conditionals.ts` / `formulas.ts`.
-- [ ] **3. UI sheet** — group documents by effect (3.1); wire `metadata: cond.<name>`; add `linked` arrays for effects split across sections; `targeted: true` for teammate conditionals; `fieldForBuff` for generic titles, custom `ColorText` fields for per-skill names; headers on all `fields` docs; descriptions via `CoreGameDesc`/`GameDesc`/`SkillGameDesc`/`GameDescSlice` (3.8, 3.10).
+- [ ] **3. UI sheet** — group documents by effect (3.1); wire `metadata: cond.<name>`; add `linked` arrays for effects split across sections; `targeted: true` for teammate conditionals; `fieldForBuff` for generic titles, custom `ColorText` fields for per-skill names; headers on all `fields` docs; descriptions via `CoreGameDesc`/`GameDesc`/`SkillGameDesc`/`GameDescSlice` (3.8, 3.10); **potential always max** — plain keys (`potential.desc.6`), generic `P` prefix or no prefix for Chain/Ultimate, no `minPotential` (see 1.8 and `doc/character-sheet-description-guide.md` §6).
 - [ ] **4. Localization** — add `Cond` keys, header keys, and field title keys to `char_<Key>.json`.
 - [ ] **5. Format** — `bun biome check --write --formatter-enabled=true --linter-enabled=false --assist-enabled=true`
 - [ ] **6. Typecheck** — `npx nx run-many --target=typecheck`
@@ -572,6 +635,11 @@ Never edit `char_<Key>_gen.json` — that comes from the datamine.
 
 ## Part 6 — Common pitfalls
 
+- **Potential gated on `char.potential` or `minPotential`** — potential is always
+  max (P6). Do not use `cmpGE(char.potential, ...)`, `subscript(char.potential,
+  ...)`, `minPotential`, or `usePotentialDescKey` with `descPotential` keys in
+  new code; use `dm.potential.*[6]` and plain `potential.desc.6` / `ability.desc.2`
+  with generic `prefix="P"` (or no prefix for Chain/Ultimate).
 - **`customDmg` without a matching `registerBuff`** — the formula exists as an opt target but the field never renders, because the sheet display filter looks up `buffs[name]`. Always pair them (1.6).
 - **Forgotten `includeOriginalEntry: false`** — skill-scoped buffs applied only via `dmgDazeAndAnomOverride` extras must set the 5th `registerBuff` param to `false`, or the buff also applies globally and over-buffs every hit of that damage type (1.3).
 - **`team` mismatch** — `notOwnBuff`/`teamBuff` buffs must be registered with `team: true`; plain `ownBuff` self-buffs keep `team: false`. The generated `buffs.ts` reflects this.

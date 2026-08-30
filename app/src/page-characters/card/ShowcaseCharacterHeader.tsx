@@ -50,8 +50,7 @@ export function ShowcaseCharacterHeader({
         Lv.{character.level}/{milestoneMaxLevel[character.promotion]}
         {' · M'}
         {character.mindscape} · C{character.core}
-        {getCharStat(characterKey).potentialParams.length > 0 &&
-          ` · P${character.potential}`}
+        {getCharStat(characterKey).potentialParams.length > 0 && ` · P6`}
       </StatText>
       <Flex gap={2} mt={2} justify="center">
         {onEdit && (

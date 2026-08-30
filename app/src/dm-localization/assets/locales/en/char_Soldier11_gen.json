@@ -13,41 +13,18 @@
         "2nd-Hit ",
         "3rd-Hit ",
         "4th-Hit "
-      ],
-      "descPotential": {
-        "0": "Press <IconNormal /> to activate:",
-        "1": "Unleashes up to 4 slashes, dealing <ct color=#F0D12B>Physical DMG</ct>."
-      },
-      "paramsPotential": [
-        "1st-Hit ",
-        "2nd-Hit ",
-        "3rd-Hit ",
-        "4th-Hit "
       ]
     },
     "BasicAttackFireSuppression": {
       "name": "Basic Attack: Fire Suppression",
       "desc": {
         "0": "Press <IconNormal /> at the right moment to activate:",
-        "1": "Unleashes a set of more powerful slashes, dealing <ct color=#FF5521>Fire DMG</ct>."
-      },
-      "params": [
-        "1st-Hit ",
-        "2nd-Hit ",
-        "3rd-Hit ",
-        "4th-Hit ",
-        "5th-Hit ",
-        "Enhanced Basic Attack 5th-Hit ",
-        "Enhanced Basic Attack 5th-Hit Additional "
-      ],
-      "descPotential": {
-        "0": "Press <IconNormal /> at the right moment to activate:",
         "1": "Launches a stronger slash, dealing <ct color=#FF5521>Fire DMG</ct>.",
         "2": "When <ct color=#FFFFFF>Fire Suppression</ct> is guaranteed to trigger, pressing <IconNormal /> when the attack is about to end speeds up the transition into the next hit of <ct color=#FFFFFF>Basic Attack</ct>.",
         "3": "When <ct color=#FFFFFF>Fire Suppression</ct> is guaranteed to trigger, the 5th hit of the <ct color=#FFFFFF>Basic Attack</ct> string unlocks. Activating a <ct color=#FFFFFF>Chain Attack</ct> or <ct color=#FFFFFF>Ultimate</ct> powers up her next <ct color=#FFFFFF>Basic Attack</ct> 5th hit. A strengthened <ct color=#FFFFFF>Basic Attack</ct> 5th hit will consume all remaining guaranteed <ct color=#FFFFFF>Fire Suppression</ct> activations to deal additional <ct color=#FF5521>Fire DMG</ct> per activation spent.",
         "4": "After triggering a <ct color=#FFFFFF>Perfect Dodge</ct>, the current Basic Attack hit count is retained for 5s. After performing a <ct color=#FFFFFF>Dodge Counter</ct>, pressing <IconNormal /> resumes the <ct color=#FFFFFF>Basic Attack</ct> from the retained hit count."
       },
-      "paramsPotential": [
+      "params": [
         "1st-Hit ",
         "2nd-Hit ",
         "3rd-Hit ",
@@ -59,13 +36,13 @@
     },
     "BasicAttackFireAssault": {
       "name": "Basic Attack: Fire Assault",
-      "descPotential": {
+      "desc": {
         "0": "Hold <IconNormal /> to activate: <ct color=#FFFFFF>Basic Attack: Fire Charge</ct>",
         "1": "Release <IconNormal /> while Basic Attack: Fire Charge is activated to launch <ct color=#FFFFFF>Basic Attack: Fire Assault</ct>.",
         "2": "If attacked by an enemy during <ct color=#FFFFFF>Basic Attack: Fire Assault</ct> or the moment <ct color=#FFFFFF>Basic Attack: Fire Charge</ct> is activated, a Block Counter can be triggered, negating that instance of DMG and granting 3 guaranteed triggers of <ct color=#FFFFFF>Fire Suppression</ct>. Press <IconNormal /> to follow up with the 3rd hit of a <ct color=#FFFFFF>Basic Attack</ct>, up to 8 times.",
         "3": "While charging, tilting the {LAYOUT_CONSOLECONTROLLER#stick}{LAYOUT_FALLBACK#joystick} launches <ct color=#FFFFFF>Basic Attack: Blazing Rush</ct>."
       },
-      "paramsPotential": [
+      "params": [
         "Basic Attack: Fire Assault "
       ]
     }
@@ -78,13 +55,7 @@
         "1": "A quick dash dodge.",
         "2": "Character is invulnerable while using this skill."
       },
-      "params": [],
-      "descPotential": {
-        "0": "Press <IconEvade /> to activate:",
-        "1": "A quick dash dodge.",
-        "2": "Character is invulnerable while using this skill."
-      },
-      "paramsPotential": []
+      "params": []
     },
     "DashAttackBlazingFire": {
       "name": "Dash Attack: Blazing Fire",
@@ -93,13 +64,6 @@
         "1": "Slashes enemies in front, dealing <ct color=#F0D12B>Physical DMG</ct>."
       },
       "params": [
-        " "
-      ],
-      "descPotential": {
-        "0": "Press <IconNormal /> during a dodge to activate:",
-        "1": "Slashes enemies in front, dealing <ct color=#F0D12B>Physical DMG</ct>."
-      },
-      "paramsPotential": [
         " "
       ]
     },
@@ -111,13 +75,6 @@
       },
       "params": [
         " "
-      ],
-      "descPotential": {
-        "0": "Press <IconNormal /> during a dodge to activate:",
-        "1": "Slashes enemies in front, dealing <ct color=#FF5521>Fire DMG</ct>."
-      },
-      "paramsPotential": [
-        " "
       ]
     },
     "DodgeCounterBackdraft": {
@@ -128,14 +85,6 @@
         "2": "Character is invulnerable while using this skill."
       },
       "params": [
-        " "
-      ],
-      "descPotential": {
-        "0": "Press <IconNormal /> during a <ct color=#FFFFFF>Perfect Dodge</ct> to activate:",
-        "1": "Executes a powerful slash against enemies in front, dealing massive <ct color=#FF5521>Fire DMG</ct>.",
-        "2": "Character is invulnerable while using this skill."
-      },
-      "paramsPotential": [
         " "
       ]
     }
@@ -150,29 +99,11 @@
       },
       "params": [
         " "
-      ],
-      "descPotential": {
-        "0": "Press <IconSpecial /> to activate:",
-        "1": "Slashes enemies nearby, dealing <ct color=#FF5521>Fire DMG</ct>.",
-        "2": "Anti-Interrupt level is increased while using this skill."
-      },
-      "paramsPotential": [
-        " "
       ]
     },
     "EXSpecialAttackFerventFire": {
       "name": "EX Special Attack: Fervent Fire",
       "desc": {
-        "0": "With enough Energy, press <IconSpecialReady /> to activate:",
-        "1": "Slashes enemies nearby, dealing massive <ct color=#FF5521>Fire DMG</ct>.",
-        "2": "Character is invulnerable while using this skill.",
-        "3": "After using this skill, Soldier 11's <ct color=#FFFFFF>Basic Attacks</ct> and <ct color=#FFFFFF>Dash Attacks</ct> will trigger <ct color=#FFFFFF>Fire Suppression</ct> for up to 30s or 8 times."
-      },
-      "params": [
-        " ",
-        "Energy Cost "
-      ],
-      "descPotential": {
         "0": "With enough Energy, press <IconSpecialReady /> to activate:",
         "1": "Executes a powerful slash against enemies nearby, dealing massive <ct color=#FF5521>Fire DMG</ct>.",
         "2": "Character is invulnerable while using this skill.",
@@ -180,7 +111,7 @@
         "4": "After using this skill, press <IconNormal /> to immediately follow up with the 4th hit of a <ct color=#FFFFFF>Basic Attack</ct>.",
         "5": "Soldier 11 enters the <ct color=#FFFFFF>Alert Stance</ct> after using this skill. While in <ct color=#FFFFFF>Alert Stance</ct>, if hit during a <ct color=#FFFFFF>Basic Attack</ct>, triggers <ct color=#FFFFFF>Basic Attack: Fire Charge</ct> to block the attack, followed by <ct color=#FFFFFF>Basic Attack: Fire Assault</ct>. After <ct color=#FFFFFF>Basic Attack: Fire Assault</ct> is performed, press <IconNormal /> to resume <ct color=#FFFFFF>Basic Attack</ct> from the retained Basic Attack hit count."
       },
-      "paramsPotential": [
+      "params": [
         " ",
         "Energy Cost "
       ]
@@ -191,22 +122,13 @@
       "name": "Chain Attack: Uplifting Flame",
       "desc": {
         "0": "When a <ct color=#FFFFFF>Chain Attack</ct> is triggered, select the character to activate:",
-        "1": "Unleashes a powerful upward slash at enemies in a small area, dealing massive <ct color=#FF5521>Fire DMG</ct>.",
-        "2": "Character is invulnerable while using this skill.",
-        "3": "After using this skill, Soldier 11's <ct color=#FFFFFF>Basic Attacks</ct> and <ct color=#FFFFFF>Dash Attacks</ct> trigger <ct color=#FFFFFF>Fire Suppression</ct> for the next 30s, up to 8 times."
-      },
-      "params": [
-        " "
-      ],
-      "descPotential": {
-        "0": "When a <ct color=#FFFFFF>Chain Attack</ct> is triggered, select the character to activate:",
         "1": "Slashes enemies in a small area ahead, then executes a powerful upwards slash, dealing massive <ct color=#FF5521>Fire DMG</ct>.",
         "2": "Character is invulnerable while using this skill.",
         "3": "After using this skill, Soldier 11's <ct color=#FFFFFF>Basic Attacks</ct> and <ct color=#FFFFFF>Dash Attacks</ct> are guaranteed to trigger <ct color=#FFFFFF>Fire Suppression</ct> for up to 30s or 8 times.",
         "4": "After using this skill, press <IconNormal /> to immediately follow up with the 4th hit of a <ct color=#FFFFFF>Basic Attack</ct>.",
         "5": "Soldier 11 enters the <ct color=#FFFFFF>Alert Stance</ct> after using this skill. While in <ct color=#FFFFFF>Alert Stance</ct>, if hit during a <ct color=#FFFFFF>Basic Attack</ct>, triggers <ct color=#FFFFFF>Basic Attack: Fire Charge</ct> to block the attack, followed by <ct color=#FFFFFF>Basic Attack: Fire Assault</ct>. After <ct color=#FFFFFF>Basic Attack: Fire Assault</ct> is performed, press <IconNormal /> to resume <ct color=#FFFFFF>Basic Attack</ct> from the retained Basic Attack hit count."
       },
-      "paramsPotential": [
+      "params": [
         " "
       ]
     },
@@ -214,22 +136,13 @@
       "name": "Ultimate: Bellowing Flame",
       "desc": {
         "0": "When Decibel Rating is at <ct color=#FFFFFF>Maximum</ct>, press <IconUltimateReady /> to activate:",
-        "1": "Unleashes a powerful upward slash at enemies in a small area, dealing massive <ct color=#FF5521>Fire DMG</ct>.",
-        "2": "Character is invulnerable while using this skill.",
-        "3": "After using this skill, Soldier 11's <ct color=#FFFFFF>Basic Attacks</ct> and <ct color=#FFFFFF>Dash Attacks</ct> trigger <ct color=#FFFFFF>Fire Suppression</ct> for the next 30s, up to 8 times."
-      },
-      "params": [
-        " "
-      ],
-      "descPotential": {
-        "0": "When Decibel Rating is at <ct color=#FFFFFF>Maximum</ct>, press <IconUltimateReady /> to activate:",
         "1": "Slashes enemies nearby, dealing massive <ct color=#FF5521>Fire DMG</ct>.",
         "2": "Character is invulnerable while using this skill.",
         "3": "After using this skill, Soldier 11's <ct color=#FFFFFF>Basic Attacks</ct> and <ct color=#FFFFFF>Dash Attacks</ct> are guaranteed to trigger <ct color=#FFFFFF>Fire Suppression</ct> for up to 30s or 8 times.",
         "4": "After using this skill, press <IconNormal /> to immediately follow up with the 4th hit of a <ct color=#FFFFFF>Basic Attack</ct>.",
         "5": "Soldier 11 enters the <ct color=#FFFFFF>Alert Stance</ct> after using this skill. While in <ct color=#FFFFFF>Alert Stance</ct>, if hit during a <ct color=#FFFFFF>Basic Attack</ct>, triggers <ct color=#FFFFFF>Basic Attack: Fire Charge</ct> to block the attack, followed by <ct color=#FFFFFF>Basic Attack: Fire Assault</ct>. After <ct color=#FFFFFF>Basic Attack: Fire Assault</ct> is performed, press <IconNormal /> to resume <ct color=#FFFFFF>Basic Attack</ct> from the retained Basic Attack hit count."
       },
-      "paramsPotential": [
+      "params": [
         " "
       ]
     }
@@ -244,14 +157,6 @@
       },
       "params": [
         " "
-      ],
-      "descPotential": {
-        "0": "When the active character is launched, press <IconSwitch /> to activate:",
-        "1": "Slashes enemies in front, dealing <ct color=#FF5521>Fire DMG</ct>.",
-        "2": "Character is invulnerable while using this skill."
-      },
-      "paramsPotential": [
-        " "
       ]
     },
     "DefensiveAssistHoldTheLine": {
@@ -262,16 +167,6 @@
         "2": "Character is invulnerable while using this skill."
       },
       "params": [
-        "Light Defensive ",
-        "Heavy Defensive ",
-        "Chain Defensive "
-      ],
-      "descPotential": {
-        "0": "When the character on field is about to be attacked, press <IconSwitch /> to activate:",
-        "1": "Parries the enemy's attack, dealing massive Daze.",
-        "2": "Character is invulnerable while using this skill."
-      },
-      "paramsPotential": [
         "Light Defensive ",
         "Heavy Defensive ",
         "Chain Defensive "
@@ -286,14 +181,6 @@
       },
       "params": [
         " "
-      ],
-      "descPotential": {
-        "0": "Press <IconNormal /> after a <ct color=#FFFFFF>Defensive Assist</ct> to activate:",
-        "1": "Charge and cross slash enemies in front, dealing <ct color=#FF5521>Fire DMG</ct>.",
-        "2": "Character is invulnerable while using this skill."
-      },
-      "paramsPotential": [
-        " "
       ]
     }
   },
@@ -307,24 +194,11 @@
       "When triggering <ct color=#FFFFFF>Fire Suppression</ct> during a <ct color=#FFFFFF>Basic Attack</ct> or <ct color=#FFFFFF>Dash Attack</ct>, increase that attack's DMG by <ct color=#2BAD00>58.3%</ct>.",
       "When triggering <ct color=#FFFFFF>Fire Suppression</ct> during a <ct color=#FFFFFF>Basic Attack</ct> or <ct color=#FFFFFF>Dash Attack</ct>, increase that attack's DMG by <ct color=#2BAD00>64.1%</ct>.",
       "When triggering <ct color=#FFFFFF>Fire Suppression</ct> during a <ct color=#FFFFFF>Basic Attack</ct> or <ct color=#FFFFFF>Dash Attack</ct>, increase that attack's DMG by <ct color=#2BAD00>70%</ct>."
-    ],
-    "descPotential": [
-      "When triggering <ct color=#FFFFFF>Fire Suppression</ct> during a <ct color=#FFFFFF>Basic Attack</ct> or <ct color=#FFFFFF>Dash Attack</ct>, increase that attack's DMG by <ct color=#2BAD00>35%</ct>.",
-      "When triggering <ct color=#FFFFFF>Fire Suppression</ct> during a <ct color=#FFFFFF>Basic Attack</ct> or <ct color=#FFFFFF>Dash Attack</ct>, increase that attack's DMG by <ct color=#2BAD00>40.8%</ct>.",
-      "When triggering <ct color=#FFFFFF>Fire Suppression</ct> during a <ct color=#FFFFFF>Basic Attack</ct> or <ct color=#FFFFFF>Dash Attack</ct>, increase that attack's DMG by <ct color=#2BAD00>46.6%</ct>.",
-      "When triggering <ct color=#FFFFFF>Fire Suppression</ct> during a <ct color=#FFFFFF>Basic Attack</ct> or <ct color=#FFFFFF>Dash Attack</ct>, increase that attack's DMG by <ct color=#2BAD00>52.5%</ct>.",
-      "When triggering <ct color=#FFFFFF>Fire Suppression</ct> during a <ct color=#FFFFFF>Basic Attack</ct> or <ct color=#FFFFFF>Dash Attack</ct>, increase that attack's DMG by <ct color=#2BAD00>58.3%</ct>.",
-      "When triggering <ct color=#FFFFFF>Fire Suppression</ct> during a <ct color=#FFFFFF>Basic Attack</ct> or <ct color=#FFFFFF>Dash Attack</ct>, increase that attack's DMG by <ct color=#2BAD00>64.1%</ct>.",
-      "When triggering <ct color=#FFFFFF>Fire Suppression</ct> during a <ct color=#FFFFFF>Basic Attack</ct> or <ct color=#FFFFFF>Dash Attack</ct>, increase that attack's DMG by <ct color=#2BAD00>70%</ct>."
     ]
   },
   "ability": {
     "name": "Additional Ability: Fields of Fire",
     "desc": {
-      "0": "When another character in your squad shares the same Attribute or Faction:",
-      "1": "Soldier 11 deals 10% more <ct color=#FF5521>Fire DMG</ct>. When attacking Stunned enemies, this effect is further enhanced by an additional 22.5%."
-    },
-    "descPotential": {
       "0": "When another character in your squad shares the same Attribute or Faction:",
       "1": "Soldier 11 deals 10% more <ct color=#FF5521>Fire DMG</ct>. When attacking Stunned enemies, this effect is further enhanced by an additional 22.5%."
     }
