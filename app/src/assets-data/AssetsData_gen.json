@@ -587,6 +587,20 @@
       "general": "IconRoleGeneral66.png",
       "select": "IconRoleSelect66.png",
       "interknot": "IconInterKnotRole0066.png"
+    },
+    "Claret": {
+      "full": "IconRole11.png",
+      "circle": "IconRoleCircle11.png",
+      "general": "IconRoleGeneral11.png",
+      "select": "IconRoleSelect11.png",
+      "interknot": "IconInterKnotRole0011.png"
+    },
+    "Roxy": {
+      "full": "IconRole68.png",
+      "circle": "IconRoleCircle68.png",
+      "general": "IconRoleGeneral68.png",
+      "select": "IconRoleSelect68.png",
+      "interknot": "IconInterKnotRole0068.png"
     }
   },
   "wengines": {
@@ -634,6 +648,9 @@
     },
     "CinderCobalt": {
       "big": "Weapon_B_Common_15Big.png"
+    },
+    "LunarSemiluna": {
+      "big": "Weapon_B_Common_16Big.png"
     },
     "StreetSuperstar": {
       "big": "Weapon_A_Common_01Big.png"
@@ -683,6 +700,9 @@
     "ReelProjector": {
       "big": "Weapon_A_Common_16Big.png"
     },
+    "CattyLuck": {
+      "big": "Weapon_A_Common_17Big.png"
+    },
     "BoisterousEchoes": {
       "big": "Weapon_A_Common_18Big.png"
     },
@@ -691,6 +711,9 @@
     },
     "TheSimmeringPot": {
       "big": "Weapon_A_Common_20Big.png"
+    },
+    "BloodmarrowCoffer": {
+      "big": "Weapon_A_Common_21Big.png"
     },
     "DemaraBatteryMarkII": {
       "big": "Weapon_A_1011Big.png"
@@ -874,6 +897,12 @@
     },
     "KnightsExtolment": {
       "big": "Weapon_S_1591Big.png"
+    },
+    "CrimsonThirst": {
+      "big": "Weapon_S_1611Big.png"
+    },
+    "CrimsonMoonCasket": {
+      "big": "Weapon_S_1621Big.png"
     }
   }
 }

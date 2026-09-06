@@ -12,6 +12,7 @@ import Billy from './Billy'
 import Burnice from './Burnice'
 import Caesar from './Caesar'
 import Cissia from './Cissia'
+import Claret from './Claret'
 import Corin from './Corin'
 import Dialyn from './Dialyn'
 import Ellen from './Ellen'
@@ -35,19 +36,20 @@ import Norma from './Norma'
 import OrphieMagus from './OrphieMagus'
 import PanYinhu from './PanYinhu'
 import Piper from './Piper'
-import Promeia from './Promeia'
 import Pulchra from './Pulchra'
+import Promeia from './Promeia'
 import Pyrois from './Pyrois'
 import Qingyi from './Qingyi'
 import Remielle from './Remielle'
+import StarlightBilly from './StarlightBilly'
 import Rina from './Rina'
+import Roxy from './Roxy'
 import Seed from './Seed'
 import Seth from './Seth'
 import Sigrid from './Sigrid'
 import Soldier0Anby from './Soldier0Anby'
 import Soldier11 from './Soldier11'
 import Soukaku from './Soukaku'
-import StarlightBilly from './StarlightBilly'
 import Sunna from './Sunna'
 import Trigger from './Trigger'
 import Velina from './Velina'
@@ -72,6 +74,7 @@ export const charSheets: Record<CharacterKey, CharUISheet> = {
   Burnice,
   Caesar,
   Cissia,
+  Claret,
   Corin,
   Dialyn,
   Ellen,
@@ -95,19 +98,20 @@ export const charSheets: Record<CharacterKey, CharUISheet> = {
   OrphieMagus,
   PanYinhu,
   Piper,
-  Promeia,
   Pulchra,
+  Promeia,
   Pyrois,
   Qingyi,
   Remielle,
+  StarlightBilly,
   Rina,
+  Roxy,
   Seed,
   Seth,
   Sigrid,
   Soldier0Anby,
   Soldier11,
   Soukaku,
-  StarlightBilly,
   Sunna,
   Trigger,
   Velina,
@@ -118,5 +122,5 @@ export const charSheets: Record<CharacterKey, CharUISheet> = {
   Yixuan,
   Yuzuha,
   Zhao,
-  ZhuYuan,
+  ZhuYuan
 } as const

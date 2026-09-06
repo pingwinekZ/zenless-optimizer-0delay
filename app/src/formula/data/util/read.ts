@@ -222,6 +222,12 @@ export class Read extends BaseRead<Tag> {
       super.with('damageType2', 'assistFollowUp'),
     ]
   }
+  get counterAssist(): Read[] {
+    return [
+      super.with('damageType1', 'counterAssist'),
+      super.with('damageType2', 'counterAssist'),
+    ]
+  }
   get anomaly(): Read[] {
     return [
       super.with('damageType1', 'anomaly'),

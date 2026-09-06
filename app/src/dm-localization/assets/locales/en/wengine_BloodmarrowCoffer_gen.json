@@ -1,0 +1,14 @@
+{
+  "name": "Bloodmarrow Coffer",
+  "desc": "...",
+  "desc2": "Equip to increase Armorer Agents' combat capabilities",
+  "desc3": "...",
+  "phase": "Moment of Unsealing",
+  "phaseDescs": [
+    "When the equipper's CRIT Rate exceeds <ct color=#2BAD00>100%</ct>, each 1% of CRIT Rate above 100% increases DMG dealt by <ct color=#2BAD00>0.48%</ct>, up to a maximum increase of<ct color=#2BAD00>24%</ct>.",
+    "When the equipper's CRIT Rate exceeds <ct color=#2BAD00>100%</ct>, each 1% of CRIT Rate above 100% increases DMG dealt by <ct color=#2BAD00>0.56%</ct>, up to a maximum increase of<ct color=#2BAD00>28%</ct>.",
+    "When the equipper's CRIT Rate exceeds <ct color=#2BAD00>100%</ct>, each 1% of CRIT Rate above 100% increases DMG dealt by <ct color=#2BAD00>0.64%</ct>, up to a maximum increase of<ct color=#2BAD00>32%</ct>.",
+    "When the equipper's CRIT Rate exceeds <ct color=#2BAD00>100%</ct>, each 1% of CRIT Rate above 100% increases DMG dealt by <ct color=#2BAD00>0.72%</ct>, up to a maximum increase of<ct color=#2BAD00>36%</ct>.",
+    "When the equipper's CRIT Rate exceeds <ct color=#2BAD00>100%</ct>, each 1% of CRIT Rate above 100% increases DMG dealt by <ct color=#2BAD00>0.8%</ct>, up to a maximum increase of<ct color=#2BAD00>40%</ct>."
+  ]
+}

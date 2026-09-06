@@ -1,0 +1,14 @@
+{
+  "name": "Catty Luck",
+  "desc": "...",
+  "desc2": "Equip to increase Armorer Agents' combat capabilities",
+  "desc3": "...",
+  "phase": "Lucky Pawpad",
+  "phaseDescs": [
+    "DEF increases by <ct color=#2BAD00>8%</ct>. When using <ct color=#FFFFFF>EX Special Attack</ct>, DEF increases by an additional <ct color=#2BAD00>8%</ct> for 40s. Repeated triggers refresh the duration.",
+    "DEF increases by <ct color=#2BAD00>9%</ct>. When using <ct color=#FFFFFF>EX Special Attack</ct>, DEF increases by an additional <ct color=#2BAD00>9%</ct> for 40s. Repeated triggers refresh the duration.",
+    "DEF increases by <ct color=#2BAD00>10%</ct>. When using <ct color=#FFFFFF>EX Special Attack</ct>, DEF increases by an additional <ct color=#2BAD00>10%</ct> for 40s. Repeated triggers refresh the duration.",
+    "DEF increases by <ct color=#2BAD00>11%</ct>. When using <ct color=#FFFFFF>EX Special Attack</ct>, DEF increases by an additional <ct color=#2BAD00>11%</ct> for 40s. Repeated triggers refresh the duration.",
+    "DEF increases by <ct color=#2BAD00>12%</ct>. When using <ct color=#FFFFFF>EX Special Attack</ct>, DEF increases by an additional <ct color=#2BAD00>12%</ct> for 40s. Repeated triggers refresh the duration."
+  ]
+}

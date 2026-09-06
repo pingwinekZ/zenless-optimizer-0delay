@@ -59,4 +59,6 @@ export const characterKeyToWengineKey: Record<CharacterKey, WengineKey> = {
   Velina: 'JoyauDore',
   Remielle: 'OdeOfResurrectedWings',
   Sigrid: 'KnightsExtolment',
+  Claret: 'CrimsonThirst',
+  Roxy: 'CrimsonMoonCasket',
 }

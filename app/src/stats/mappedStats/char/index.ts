@@ -10,6 +10,7 @@ import Billy from './maps/Billy'
 import Burnice from './maps/Burnice'
 import Caesar from './maps/Caesar'
 import Cissia from './maps/Cissia'
+import Claret from './maps/Claret'
 import Corin from './maps/Corin'
 import Dialyn from './maps/Dialyn'
 import Ellen from './maps/Ellen'
@@ -33,19 +34,20 @@ import Norma from './maps/Norma'
 import OrphieMagus from './maps/OrphieMagus'
 import PanYinhu from './maps/PanYinhu'
 import Piper from './maps/Piper'
-import Promeia from './maps/Promeia'
 import Pulchra from './maps/Pulchra'
+import Promeia from './maps/Promeia'
 import Pyrois from './maps/Pyrois'
 import Qingyi from './maps/Qingyi'
 import Remielle from './maps/Remielle'
+import StarlightBilly from './maps/StarlightBilly'
 import Rina from './maps/Rina'
+import Roxy from './maps/Roxy'
 import Seed from './maps/Seed'
 import Seth from './maps/Seth'
 import Sigrid from './maps/Sigrid'
 import Soldier0Anby from './maps/Soldier0Anby'
 import Soldier11 from './maps/Soldier11'
 import Soukaku from './maps/Soukaku'
-import StarlightBilly from './maps/StarlightBilly'
 import Sunna from './maps/Sunna'
 import Trigger from './maps/Trigger'
 import Velina from './maps/Velina'
@@ -70,6 +72,7 @@ const maps = {
   Burnice,
   Caesar,
   Cissia,
+  Claret,
   Corin,
   Dialyn,
   Ellen,
@@ -100,6 +103,7 @@ const maps = {
   Remielle,
   StarlightBilly,
   Rina,
+  Roxy,
   Seed,
   Seth,
   Sigrid,

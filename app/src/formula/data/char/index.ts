@@ -11,6 +11,7 @@ import Billy from './sheets/Billy'
 import Burnice from './sheets/Burnice'
 import Caesar from './sheets/Caesar'
 import Cissia from './sheets/Cissia'
+import Claret from './sheets/Claret'
 import Corin from './sheets/Corin'
 import Dialyn from './sheets/Dialyn'
 import Ellen from './sheets/Ellen'
@@ -34,19 +35,20 @@ import Norma from './sheets/Norma'
 import OrphieMagus from './sheets/OrphieMagus'
 import PanYinhu from './sheets/PanYinhu'
 import Piper from './sheets/Piper'
-import Promeia from './sheets/Promeia'
 import Pulchra from './sheets/Pulchra'
+import Promeia from './sheets/Promeia'
 import Pyrois from './sheets/Pyrois'
 import Qingyi from './sheets/Qingyi'
 import Remielle from './sheets/Remielle'
+import StarlightBilly from './sheets/StarlightBilly'
 import Rina from './sheets/Rina'
+import Roxy from './sheets/Roxy'
 import Seed from './sheets/Seed'
 import Seth from './sheets/Seth'
 import Sigrid from './sheets/Sigrid'
 import Soldier0Anby from './sheets/Soldier0Anby'
 import Soldier11 from './sheets/Soldier11'
 import Soukaku from './sheets/Soukaku'
-import StarlightBilly from './sheets/StarlightBilly'
 import Sunna from './sheets/Sunna'
 import Trigger from './sheets/Trigger'
 import Velina from './sheets/Velina'
@@ -71,6 +73,7 @@ const data: TagMapNodeEntries[] = [
   Burnice,
   Caesar,
   Cissia,
+  Claret,
   Corin,
   Dialyn,
   Ellen,
@@ -101,6 +104,7 @@ const data: TagMapNodeEntries[] = [
   Remielle,
   StarlightBilly,
   Rina,
+  Roxy,
   Seed,
   Seth,
   Sigrid,
