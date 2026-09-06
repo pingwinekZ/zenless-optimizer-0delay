@@ -32,19 +32,22 @@ export function registerWengine(
 
 export function entriesForWengine(key: WengineKey): TagMapNodeEntries {
   const { lvl, modification } = own.wengine
-  const { atk_base, second_statkey, second_statvalue } = allStats.wengine[key]
+  const { baseStatkey, baseStatvalue, second_statkey, second_statvalue } =
+    allStats.wengine[key]
   const wengineCount = own.common.count.sheet(key)
+  // W-engine main stat is ATK for most types, DEF for Armorer; floored to
+  // match game parity
+  // baseStatvalue * 1 + atk_multiplier[level] + 0.8922 * modification
+  const baseStat = baseStatkey === 'def_base' ? 'def' : 'atk'
   return [
-    // Main stat (Base ATK), floored to match game parity
-    // atk_base * 1 + atk_multiplier[level] + 0.8922 * modification
-    ownBuff.base.atk.add(
+    ownBuff.base[baseStat].add(
       cmpGE(
         wengineCount,
         1,
         custom(
           'floor',
           prod(
-            atk_base,
+            baseStatvalue,
             sum(1, subscript(lvl, atk_multiplier), prod(0.8922, modification))
           )
         )

@@ -26,6 +26,9 @@ const statKeywords: Record<string, string> = {
   HP: 'hp_',
   'Max HP': 'hp_',
   'Sheer DMG': 'sheer_dmg_',
+  'Sharp DMG': 'sharp_dmg_',
+  'Laceration DMG': 'laceration_dmg_',
+  Laceration: 'laceration_dmg_',
   'Anomaly Proficiency': 'anomProf',
   Impact: 'impact_',
   'Daze dealt': 'dazeInc_',
@@ -57,6 +60,8 @@ const percentageStats = new Set([
   'hp_',
   'dmg_',
   'sheer_dmg_',
+  'sharp_dmg_',
+  'laceration_dmg_',
   'impact_',
   'dazeInc_',
   'anomMas_',
@@ -101,6 +106,7 @@ const specialtyKeywords: Record<string, SpecialityKey> = {
   Support: 'support',
   Defense: 'defense',
   Rupture: 'rupture',
+  Armorer: 'armorer',
 }
 
 function matchAttribute(text: string): AttributeKey | undefined {

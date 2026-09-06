@@ -14,6 +14,7 @@ import {
   getDiscMainStatVal,
   getDiscSubStatBaseVal,
 } from '../consts'
+import { allStats } from '../stats'
 import {
   getCharacterEffectiveMainStats,
   getCharacterEffectiveStats,
@@ -198,8 +199,11 @@ export function generateTheoreticalDiscs(
           candidate[set2] = 2
         }
 
+        const isArmorerForCap =
+          allStats.char[characterKey]?.specialty === 'armorer'
+        const critCap = isArmorerForCap ? 1.95 : 0.95
         if (typeof candidate.crit_ === 'number') {
-          candidate.crit_ = Math.min(candidate.crit_, 0.95)
+          candidate.crit_ = Math.min(candidate.crit_, critCap)
         }
 
         const id = `recipe_${recipeIndex}`

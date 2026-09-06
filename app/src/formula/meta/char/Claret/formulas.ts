@@ -1,67 +1,29 @@
 // WARNING: Generated file, do not modify
 export const formulas = {
-  standardDmgInst: {
+  sharpDmgInst: {
     sheet: 'Claret',
-    name: 'standardDmgInst',
+    name: 'sharpDmgInst',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
-      name: 'standardDmgInst',
+      damageType1: 'sharp',
+      name: 'sharpDmgInst',
     },
   },
-  anomalyDmgInst: {
+  gashBuildupInst: {
     sheet: 'Claret',
-    name: 'anomalyDmgInst',
+    name: 'gashBuildupInst',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomalyDmg',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
-      damageType1: 'anomaly',
-      name: 'anomalyDmgInst',
-    },
-  },
-  disorderDmgInst_electric: {
-    sheet: 'Claret',
-    name: 'disorderDmgInst_electric',
-    tag: {
-      et: 'own',
-      qt: 'formula',
-      q: 'anomalyDmg',
-      sheet: 'Claret',
-      attribute: 'electric',
-      damageType1: 'disorder',
-      name: 'disorderDmgInst_electric',
-    },
-  },
-  abloomDmgInst: {
-    sheet: 'Claret',
-    name: 'abloomDmgInst',
-    tag: {
-      et: 'own',
-      qt: 'formula',
-      q: 'anomalyDmg',
-      sheet: 'Claret',
-      attribute: 'electric',
-      damageType1: 'anomaly',
-      damageType2: 'abloom',
-      name: 'abloomDmgInst',
-    },
-  },
-  anomalyBuildupInst: {
-    sheet: 'Claret',
-    name: 'anomalyBuildupInst',
-    tag: {
-      et: 'own',
-      qt: 'formula',
-      q: 'anomBuildup',
-      sheet: 'Claret',
-      attribute: 'electric',
-      name: 'anomalyBuildupInst',
+      damageType1: 'gash',
+      name: 'gashBuildupInst',
     },
   },
   dazeInst: {
@@ -82,7 +44,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'basic',
@@ -104,18 +66,18 @@ export const formulas = {
       name: 'BasicAttackBloodforgingFourForms_0_daze',
     },
   },
-  BasicAttackBloodforgingFourForms_0_anomBuildup: {
+  BasicAttackBloodforgingFourForms_0_gashBuildup: {
     sheet: 'Claret',
-    name: 'BasicAttackBloodforgingFourForms_0_anomBuildup',
+    name: 'BasicAttackBloodforgingFourForms_0_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'basic',
       skillType1: 'basicSkill',
-      name: 'BasicAttackBloodforgingFourForms_0_anomBuildup',
+      name: 'BasicAttackBloodforgingFourForms_0_gashBuildup',
     },
   },
   BasicAttackBloodforgingFourForms_1_dmg: {
@@ -124,7 +86,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'basic',
@@ -146,18 +108,18 @@ export const formulas = {
       name: 'BasicAttackBloodforgingFourForms_1_daze',
     },
   },
-  BasicAttackBloodforgingFourForms_1_anomBuildup: {
+  BasicAttackBloodforgingFourForms_1_gashBuildup: {
     sheet: 'Claret',
-    name: 'BasicAttackBloodforgingFourForms_1_anomBuildup',
+    name: 'BasicAttackBloodforgingFourForms_1_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'basic',
       skillType1: 'basicSkill',
-      name: 'BasicAttackBloodforgingFourForms_1_anomBuildup',
+      name: 'BasicAttackBloodforgingFourForms_1_gashBuildup',
     },
   },
   BasicAttackBloodforgingFourForms_2_dmg: {
@@ -166,7 +128,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'basic',
@@ -188,18 +150,18 @@ export const formulas = {
       name: 'BasicAttackBloodforgingFourForms_2_daze',
     },
   },
-  BasicAttackBloodforgingFourForms_2_anomBuildup: {
+  BasicAttackBloodforgingFourForms_2_gashBuildup: {
     sheet: 'Claret',
-    name: 'BasicAttackBloodforgingFourForms_2_anomBuildup',
+    name: 'BasicAttackBloodforgingFourForms_2_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'basic',
       skillType1: 'basicSkill',
-      name: 'BasicAttackBloodforgingFourForms_2_anomBuildup',
+      name: 'BasicAttackBloodforgingFourForms_2_gashBuildup',
     },
   },
   BasicAttackBloodforgingFourForms_3_dmg: {
@@ -208,7 +170,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'basic',
@@ -230,18 +192,18 @@ export const formulas = {
       name: 'BasicAttackBloodforgingFourForms_3_daze',
     },
   },
-  BasicAttackBloodforgingFourForms_3_anomBuildup: {
+  BasicAttackBloodforgingFourForms_3_gashBuildup: {
     sheet: 'Claret',
-    name: 'BasicAttackBloodforgingFourForms_3_anomBuildup',
+    name: 'BasicAttackBloodforgingFourForms_3_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'basic',
       skillType1: 'basicSkill',
-      name: 'BasicAttackBloodforgingFourForms_3_anomBuildup',
+      name: 'BasicAttackBloodforgingFourForms_3_gashBuildup',
     },
   },
   BasicAttackBloodbloomOathStarforging_0_dmg: {
@@ -250,7 +212,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'basic',
@@ -272,18 +234,18 @@ export const formulas = {
       name: 'BasicAttackBloodbloomOathStarforging_0_daze',
     },
   },
-  BasicAttackBloodbloomOathStarforging_0_anomBuildup: {
+  BasicAttackBloodbloomOathStarforging_0_gashBuildup: {
     sheet: 'Claret',
-    name: 'BasicAttackBloodbloomOathStarforging_0_anomBuildup',
+    name: 'BasicAttackBloodbloomOathStarforging_0_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'basic',
       skillType1: 'basicSkill',
-      name: 'BasicAttackBloodbloomOathStarforging_0_anomBuildup',
+      name: 'BasicAttackBloodbloomOathStarforging_0_gashBuildup',
     },
   },
   BasicAttackBloodbloomOathStarforging_1_dmg: {
@@ -292,7 +254,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'basic',
@@ -314,18 +276,18 @@ export const formulas = {
       name: 'BasicAttackBloodbloomOathStarforging_1_daze',
     },
   },
-  BasicAttackBloodbloomOathStarforging_1_anomBuildup: {
+  BasicAttackBloodbloomOathStarforging_1_gashBuildup: {
     sheet: 'Claret',
-    name: 'BasicAttackBloodbloomOathStarforging_1_anomBuildup',
+    name: 'BasicAttackBloodbloomOathStarforging_1_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'basic',
       skillType1: 'basicSkill',
-      name: 'BasicAttackBloodbloomOathStarforging_1_anomBuildup',
+      name: 'BasicAttackBloodbloomOathStarforging_1_gashBuildup',
     },
   },
   BasicAttackBloodbloomOathStarforging_2_dmg: {
@@ -334,7 +296,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'basic',
@@ -356,18 +318,18 @@ export const formulas = {
       name: 'BasicAttackBloodbloomOathStarforging_2_daze',
     },
   },
-  BasicAttackBloodbloomOathStarforging_2_anomBuildup: {
+  BasicAttackBloodbloomOathStarforging_2_gashBuildup: {
     sheet: 'Claret',
-    name: 'BasicAttackBloodbloomOathStarforging_2_anomBuildup',
+    name: 'BasicAttackBloodbloomOathStarforging_2_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'basic',
       skillType1: 'basicSkill',
-      name: 'BasicAttackBloodbloomOathStarforging_2_anomBuildup',
+      name: 'BasicAttackBloodbloomOathStarforging_2_gashBuildup',
     },
   },
   BasicAttackBloodbloomOathStarforging_3_dmg: {
@@ -376,7 +338,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'basic',
@@ -398,18 +360,18 @@ export const formulas = {
       name: 'BasicAttackBloodbloomOathStarforging_3_daze',
     },
   },
-  BasicAttackBloodbloomOathStarforging_3_anomBuildup: {
+  BasicAttackBloodbloomOathStarforging_3_gashBuildup: {
     sheet: 'Claret',
-    name: 'BasicAttackBloodbloomOathStarforging_3_anomBuildup',
+    name: 'BasicAttackBloodbloomOathStarforging_3_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'basic',
       skillType1: 'basicSkill',
-      name: 'BasicAttackBloodbloomOathStarforging_3_anomBuildup',
+      name: 'BasicAttackBloodbloomOathStarforging_3_gashBuildup',
     },
   },
   BasicAttackBloodbloomOathSubduingAxe_0_dmg: {
@@ -418,7 +380,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'basic',
@@ -440,18 +402,18 @@ export const formulas = {
       name: 'BasicAttackBloodbloomOathSubduingAxe_0_daze',
     },
   },
-  BasicAttackBloodbloomOathSubduingAxe_0_anomBuildup: {
+  BasicAttackBloodbloomOathSubduingAxe_0_gashBuildup: {
     sheet: 'Claret',
-    name: 'BasicAttackBloodbloomOathSubduingAxe_0_anomBuildup',
+    name: 'BasicAttackBloodbloomOathSubduingAxe_0_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'basic',
       skillType1: 'basicSkill',
-      name: 'BasicAttackBloodbloomOathSubduingAxe_0_anomBuildup',
+      name: 'BasicAttackBloodbloomOathSubduingAxe_0_gashBuildup',
     },
   },
   DashAttackTempering_0_dmg: {
@@ -460,7 +422,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'dash',
@@ -482,18 +444,18 @@ export const formulas = {
       name: 'DashAttackTempering_0_daze',
     },
   },
-  DashAttackTempering_0_anomBuildup: {
+  DashAttackTempering_0_gashBuildup: {
     sheet: 'Claret',
-    name: 'DashAttackTempering_0_anomBuildup',
+    name: 'DashAttackTempering_0_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'dash',
       skillType1: 'dodgeSkill',
-      name: 'DashAttackTempering_0_anomBuildup',
+      name: 'DashAttackTempering_0_gashBuildup',
     },
   },
   DodgeCounterReturningEdge_0_dmg: {
@@ -502,7 +464,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'dodgeCounter',
@@ -524,18 +486,18 @@ export const formulas = {
       name: 'DodgeCounterReturningEdge_0_daze',
     },
   },
-  DodgeCounterReturningEdge_0_anomBuildup: {
+  DodgeCounterReturningEdge_0_gashBuildup: {
     sheet: 'Claret',
-    name: 'DodgeCounterReturningEdge_0_anomBuildup',
+    name: 'DodgeCounterReturningEdge_0_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'dodgeCounter',
       skillType1: 'dodgeSkill',
-      name: 'DodgeCounterReturningEdge_0_anomBuildup',
+      name: 'DodgeCounterReturningEdge_0_gashBuildup',
     },
   },
   DodgeCounterBloodbloomOathReturningEdge_0_dmg: {
@@ -544,7 +506,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'dodgeCounter',
@@ -566,18 +528,18 @@ export const formulas = {
       name: 'DodgeCounterBloodbloomOathReturningEdge_0_daze',
     },
   },
-  DodgeCounterBloodbloomOathReturningEdge_0_anomBuildup: {
+  DodgeCounterBloodbloomOathReturningEdge_0_gashBuildup: {
     sheet: 'Claret',
-    name: 'DodgeCounterBloodbloomOathReturningEdge_0_anomBuildup',
+    name: 'DodgeCounterBloodbloomOathReturningEdge_0_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'dodgeCounter',
       skillType1: 'dodgeSkill',
-      name: 'DodgeCounterBloodbloomOathReturningEdge_0_anomBuildup',
+      name: 'DodgeCounterBloodbloomOathReturningEdge_0_gashBuildup',
     },
   },
   SpecialAttackPorcelumesFirstCall_0_dmg: {
@@ -586,7 +548,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'special',
@@ -608,18 +570,18 @@ export const formulas = {
       name: 'SpecialAttackPorcelumesFirstCall_0_daze',
     },
   },
-  SpecialAttackPorcelumesFirstCall_0_anomBuildup: {
+  SpecialAttackPorcelumesFirstCall_0_gashBuildup: {
     sheet: 'Claret',
-    name: 'SpecialAttackPorcelumesFirstCall_0_anomBuildup',
+    name: 'SpecialAttackPorcelumesFirstCall_0_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'special',
       skillType1: 'specialSkill',
-      name: 'SpecialAttackPorcelumesFirstCall_0_anomBuildup',
+      name: 'SpecialAttackPorcelumesFirstCall_0_gashBuildup',
     },
   },
   EXSpecialAttackBloodbloomOathSecretForgingTechniques_0_dmg: {
@@ -628,7 +590,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'exSpecial',
@@ -650,18 +612,18 @@ export const formulas = {
       name: 'EXSpecialAttackBloodbloomOathSecretForgingTechniques_0_daze',
     },
   },
-  EXSpecialAttackBloodbloomOathSecretForgingTechniques_0_anomBuildup: {
+  EXSpecialAttackBloodbloomOathSecretForgingTechniques_0_gashBuildup: {
     sheet: 'Claret',
-    name: 'EXSpecialAttackBloodbloomOathSecretForgingTechniques_0_anomBuildup',
+    name: 'EXSpecialAttackBloodbloomOathSecretForgingTechniques_0_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'exSpecial',
       skillType1: 'specialSkill',
-      name: 'EXSpecialAttackBloodbloomOathSecretForgingTechniques_0_anomBuildup',
+      name: 'EXSpecialAttackBloodbloomOathSecretForgingTechniques_0_gashBuildup',
     },
   },
   SpecialAttackBloodbloomOathCleavingGoldAndIron_0_dmg: {
@@ -670,7 +632,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'special',
@@ -692,18 +654,18 @@ export const formulas = {
       name: 'SpecialAttackBloodbloomOathCleavingGoldAndIron_0_daze',
     },
   },
-  SpecialAttackBloodbloomOathCleavingGoldAndIron_0_anomBuildup: {
+  SpecialAttackBloodbloomOathCleavingGoldAndIron_0_gashBuildup: {
     sheet: 'Claret',
-    name: 'SpecialAttackBloodbloomOathCleavingGoldAndIron_0_anomBuildup',
+    name: 'SpecialAttackBloodbloomOathCleavingGoldAndIron_0_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'special',
       skillType1: 'specialSkill',
-      name: 'SpecialAttackBloodbloomOathCleavingGoldAndIron_0_anomBuildup',
+      name: 'SpecialAttackBloodbloomOathCleavingGoldAndIron_0_gashBuildup',
     },
   },
   SpecialAttackBloodbloomOathCleavingGoldAndIron_1_dmg: {
@@ -712,7 +674,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'special',
@@ -734,18 +696,18 @@ export const formulas = {
       name: 'SpecialAttackBloodbloomOathCleavingGoldAndIron_1_daze',
     },
   },
-  SpecialAttackBloodbloomOathCleavingGoldAndIron_1_anomBuildup: {
+  SpecialAttackBloodbloomOathCleavingGoldAndIron_1_gashBuildup: {
     sheet: 'Claret',
-    name: 'SpecialAttackBloodbloomOathCleavingGoldAndIron_1_anomBuildup',
+    name: 'SpecialAttackBloodbloomOathCleavingGoldAndIron_1_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'special',
       skillType1: 'specialSkill',
-      name: 'SpecialAttackBloodbloomOathCleavingGoldAndIron_1_anomBuildup',
+      name: 'SpecialAttackBloodbloomOathCleavingGoldAndIron_1_gashBuildup',
     },
   },
   SpecialAttackBloodbloomOathCleavingGoldAndIron_2_dmg: {
@@ -754,7 +716,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'special',
@@ -776,18 +738,18 @@ export const formulas = {
       name: 'SpecialAttackBloodbloomOathCleavingGoldAndIron_2_daze',
     },
   },
-  SpecialAttackBloodbloomOathCleavingGoldAndIron_2_anomBuildup: {
+  SpecialAttackBloodbloomOathCleavingGoldAndIron_2_gashBuildup: {
     sheet: 'Claret',
-    name: 'SpecialAttackBloodbloomOathCleavingGoldAndIron_2_anomBuildup',
+    name: 'SpecialAttackBloodbloomOathCleavingGoldAndIron_2_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'special',
       skillType1: 'specialSkill',
-      name: 'SpecialAttackBloodbloomOathCleavingGoldAndIron_2_anomBuildup',
+      name: 'SpecialAttackBloodbloomOathCleavingGoldAndIron_2_gashBuildup',
     },
   },
   SpecialAttackBloodbloomOathBloodBurialAssault_0_dmg: {
@@ -796,7 +758,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'special',
@@ -818,18 +780,18 @@ export const formulas = {
       name: 'SpecialAttackBloodbloomOathBloodBurialAssault_0_daze',
     },
   },
-  SpecialAttackBloodbloomOathBloodBurialAssault_0_anomBuildup: {
+  SpecialAttackBloodbloomOathBloodBurialAssault_0_gashBuildup: {
     sheet: 'Claret',
-    name: 'SpecialAttackBloodbloomOathBloodBurialAssault_0_anomBuildup',
+    name: 'SpecialAttackBloodbloomOathBloodBurialAssault_0_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'special',
       skillType1: 'specialSkill',
-      name: 'SpecialAttackBloodbloomOathBloodBurialAssault_0_anomBuildup',
+      name: 'SpecialAttackBloodbloomOathBloodBurialAssault_0_gashBuildup',
     },
   },
   ChainAttackBloodbloomOathResonantBloodPact_0_dmg: {
@@ -838,7 +800,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'chain',
@@ -860,18 +822,18 @@ export const formulas = {
       name: 'ChainAttackBloodbloomOathResonantBloodPact_0_daze',
     },
   },
-  ChainAttackBloodbloomOathResonantBloodPact_0_anomBuildup: {
+  ChainAttackBloodbloomOathResonantBloodPact_0_gashBuildup: {
     sheet: 'Claret',
-    name: 'ChainAttackBloodbloomOathResonantBloodPact_0_anomBuildup',
+    name: 'ChainAttackBloodbloomOathResonantBloodPact_0_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'chain',
       skillType1: 'chainSkill',
-      name: 'ChainAttackBloodbloomOathResonantBloodPact_0_anomBuildup',
+      name: 'ChainAttackBloodbloomOathResonantBloodPact_0_gashBuildup',
     },
   },
   UltimateBloodbloomOathTrialAfterTrial_0_dmg: {
@@ -880,10 +842,10 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
-      damageType1: 'ult',
+      damageType1: 'chain',
       skillType1: 'chainSkill',
       name: 'UltimateBloodbloomOathTrialAfterTrial_0_dmg',
     },
@@ -897,23 +859,23 @@ export const formulas = {
       q: 'dazeBuildup',
       sheet: 'Claret',
       attribute: 'electric',
-      damageType1: 'ult',
+      damageType1: 'chain',
       skillType1: 'chainSkill',
       name: 'UltimateBloodbloomOathTrialAfterTrial_0_daze',
     },
   },
-  UltimateBloodbloomOathTrialAfterTrial_0_anomBuildup: {
+  UltimateBloodbloomOathTrialAfterTrial_0_gashBuildup: {
     sheet: 'Claret',
-    name: 'UltimateBloodbloomOathTrialAfterTrial_0_anomBuildup',
+    name: 'UltimateBloodbloomOathTrialAfterTrial_0_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
-      damageType1: 'ult',
+      damageType1: 'chain',
       skillType1: 'chainSkill',
-      name: 'UltimateBloodbloomOathTrialAfterTrial_0_anomBuildup',
+      name: 'UltimateBloodbloomOathTrialAfterTrial_0_gashBuildup',
     },
   },
   QuickAssistReturnOfTheDireMoon_0_dmg: {
@@ -922,7 +884,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'quickAssist',
@@ -944,18 +906,18 @@ export const formulas = {
       name: 'QuickAssistReturnOfTheDireMoon_0_daze',
     },
   },
-  QuickAssistReturnOfTheDireMoon_0_anomBuildup: {
+  QuickAssistReturnOfTheDireMoon_0_gashBuildup: {
     sheet: 'Claret',
-    name: 'QuickAssistReturnOfTheDireMoon_0_anomBuildup',
+    name: 'QuickAssistReturnOfTheDireMoon_0_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'quickAssist',
       skillType1: 'assistSkill',
-      name: 'QuickAssistReturnOfTheDireMoon_0_anomBuildup',
+      name: 'QuickAssistReturnOfTheDireMoon_0_gashBuildup',
     },
   },
   QuickAssistBloodbloomOathReturnOfTheDireMoon_0_dmg: {
@@ -964,7 +926,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'quickAssist',
@@ -986,18 +948,18 @@ export const formulas = {
       name: 'QuickAssistBloodbloomOathReturnOfTheDireMoon_0_daze',
     },
   },
-  QuickAssistBloodbloomOathReturnOfTheDireMoon_0_anomBuildup: {
+  QuickAssistBloodbloomOathReturnOfTheDireMoon_0_gashBuildup: {
     sheet: 'Claret',
-    name: 'QuickAssistBloodbloomOathReturnOfTheDireMoon_0_anomBuildup',
+    name: 'QuickAssistBloodbloomOathReturnOfTheDireMoon_0_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'quickAssist',
       skillType1: 'assistSkill',
-      name: 'QuickAssistBloodbloomOathReturnOfTheDireMoon_0_anomBuildup',
+      name: 'QuickAssistBloodbloomOathReturnOfTheDireMoon_0_gashBuildup',
     },
   },
   DefensiveAssistUnyieldingHeartOfTheFurnace_0_dmg: {
@@ -1006,7 +968,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'defensiveAssist',
@@ -1028,18 +990,18 @@ export const formulas = {
       name: 'DefensiveAssistUnyieldingHeartOfTheFurnace_0_daze',
     },
   },
-  DefensiveAssistUnyieldingHeartOfTheFurnace_0_anomBuildup: {
+  DefensiveAssistUnyieldingHeartOfTheFurnace_0_gashBuildup: {
     sheet: 'Claret',
-    name: 'DefensiveAssistUnyieldingHeartOfTheFurnace_0_anomBuildup',
+    name: 'DefensiveAssistUnyieldingHeartOfTheFurnace_0_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'defensiveAssist',
       skillType1: 'assistSkill',
-      name: 'DefensiveAssistUnyieldingHeartOfTheFurnace_0_anomBuildup',
+      name: 'DefensiveAssistUnyieldingHeartOfTheFurnace_0_gashBuildup',
     },
   },
   DefensiveAssistUnyieldingHeartOfTheFurnace_1_dmg: {
@@ -1048,7 +1010,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'defensiveAssist',
@@ -1070,18 +1032,18 @@ export const formulas = {
       name: 'DefensiveAssistUnyieldingHeartOfTheFurnace_1_daze',
     },
   },
-  DefensiveAssistUnyieldingHeartOfTheFurnace_1_anomBuildup: {
+  DefensiveAssistUnyieldingHeartOfTheFurnace_1_gashBuildup: {
     sheet: 'Claret',
-    name: 'DefensiveAssistUnyieldingHeartOfTheFurnace_1_anomBuildup',
+    name: 'DefensiveAssistUnyieldingHeartOfTheFurnace_1_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'defensiveAssist',
       skillType1: 'assistSkill',
-      name: 'DefensiveAssistUnyieldingHeartOfTheFurnace_1_anomBuildup',
+      name: 'DefensiveAssistUnyieldingHeartOfTheFurnace_1_gashBuildup',
     },
   },
   DefensiveAssistUnyieldingHeartOfTheFurnace_2_dmg: {
@@ -1090,7 +1052,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'defensiveAssist',
@@ -1112,18 +1074,18 @@ export const formulas = {
       name: 'DefensiveAssistUnyieldingHeartOfTheFurnace_2_daze',
     },
   },
-  DefensiveAssistUnyieldingHeartOfTheFurnace_2_anomBuildup: {
+  DefensiveAssistUnyieldingHeartOfTheFurnace_2_gashBuildup: {
     sheet: 'Claret',
-    name: 'DefensiveAssistUnyieldingHeartOfTheFurnace_2_anomBuildup',
+    name: 'DefensiveAssistUnyieldingHeartOfTheFurnace_2_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'defensiveAssist',
       skillType1: 'assistSkill',
-      name: 'DefensiveAssistUnyieldingHeartOfTheFurnace_2_anomBuildup',
+      name: 'DefensiveAssistUnyieldingHeartOfTheFurnace_2_gashBuildup',
     },
   },
   AssistFollowUpBloodbloomOathPureforgedEdge_0_dmg: {
@@ -1132,7 +1094,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'assistFollowUp',
@@ -1154,18 +1116,18 @@ export const formulas = {
       name: 'AssistFollowUpBloodbloomOathPureforgedEdge_0_daze',
     },
   },
-  AssistFollowUpBloodbloomOathPureforgedEdge_0_anomBuildup: {
+  AssistFollowUpBloodbloomOathPureforgedEdge_0_gashBuildup: {
     sheet: 'Claret',
-    name: 'AssistFollowUpBloodbloomOathPureforgedEdge_0_anomBuildup',
+    name: 'AssistFollowUpBloodbloomOathPureforgedEdge_0_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'assistFollowUp',
       skillType1: 'assistSkill',
-      name: 'AssistFollowUpBloodbloomOathPureforgedEdge_0_anomBuildup',
+      name: 'AssistFollowUpBloodbloomOathPureforgedEdge_0_gashBuildup',
     },
   },
   CounterAssistGiveNotAnInchOfSteel_0_dmg: {
@@ -1174,7 +1136,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'counterAssist',
@@ -1196,18 +1158,18 @@ export const formulas = {
       name: 'CounterAssistGiveNotAnInchOfSteel_0_daze',
     },
   },
-  CounterAssistGiveNotAnInchOfSteel_0_anomBuildup: {
+  CounterAssistGiveNotAnInchOfSteel_0_gashBuildup: {
     sheet: 'Claret',
-    name: 'CounterAssistGiveNotAnInchOfSteel_0_anomBuildup',
+    name: 'CounterAssistGiveNotAnInchOfSteel_0_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'counterAssist',
       skillType1: 'assistSkill',
-      name: 'CounterAssistGiveNotAnInchOfSteel_0_anomBuildup',
+      name: 'CounterAssistGiveNotAnInchOfSteel_0_gashBuildup',
     },
   },
   AssistFollowUpBloodbloomOathHammerIntoShape_0_dmg: {
@@ -1216,7 +1178,7 @@ export const formulas = {
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'standardDmg',
+      q: 'sharpDmg',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'assistFollowUp',
@@ -1238,18 +1200,31 @@ export const formulas = {
       name: 'AssistFollowUpBloodbloomOathHammerIntoShape_0_daze',
     },
   },
-  AssistFollowUpBloodbloomOathHammerIntoShape_0_anomBuildup: {
+  AssistFollowUpBloodbloomOathHammerIntoShape_0_gashBuildup: {
     sheet: 'Claret',
-    name: 'AssistFollowUpBloodbloomOathHammerIntoShape_0_anomBuildup',
+    name: 'AssistFollowUpBloodbloomOathHammerIntoShape_0_gashBuildup',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'anomBuildup',
+      q: 'gashBuildup',
       sheet: 'Claret',
       attribute: 'electric',
       damageType1: 'assistFollowUp',
       skillType1: 'assistSkill',
-      name: 'AssistFollowUpBloodbloomOathHammerIntoShape_0_anomBuildup',
+      name: 'AssistFollowUpBloodbloomOathHammerIntoShape_0_gashBuildup',
+    },
+  },
+  m6_maim: {
+    sheet: 'Claret',
+    name: 'm6_maim',
+    tag: {
+      et: 'own',
+      qt: 'formula',
+      q: 'maimDmg',
+      sheet: 'Claret',
+      attribute: 'electric',
+      damageType1: 'chain',
+      name: 'm6_maim',
     },
   },
 } as const

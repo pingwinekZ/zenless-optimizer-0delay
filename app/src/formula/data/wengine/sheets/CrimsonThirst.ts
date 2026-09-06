@@ -3,14 +3,10 @@ import type { WengineKey } from '../../../../consts'
 import { mappedStats } from '../../../../stats'
 import {
   allBoolConditionals,
-  allListConditionals,
-  allNumConditionals,
-  enemyDebuff,
   own,
   ownBuff,
   percent,
   registerBuff,
-  teamBuff,
 } from '../../util'
 import {
   cmpSpecialtyAndEquipped,
@@ -23,39 +19,32 @@ const key: WengineKey = 'CrimsonThirst'
 const dm = mappedStats.wengine[key]
 const { phase } = own.wengine
 
-// TODO: Add conditionals
-const { boolConditional } = allBoolConditionals(key)
-const { listConditional } = allListConditionals(key, ['val1', 'val2'])
-const { numConditional } = allNumConditionals(key, true, 0, 2)
+const { exOrMaim } = allBoolConditionals(key)
 
 const sheet = registerWengine(
   key,
-  // Handles base stats and passive buffs
   entriesForWengine(key),
-
-  // TODO: Add formulas/buffs
-  // Conditional buffs
   registerBuff(
-    'cond_dmg_',
-    ownBuff.combat.common_dmg_.add(
+    'passive_crit_',
+    ownBuff.combat.crit_.add(
+      cmpSpecialtyAndEquipped(key, percent(subscript(phase, dm.crit_)))
+    ),
+    showSpecialtyAndEquipped(key)
+  ),
+  registerBuff(
+    'passive_electric_dmg_',
+    ownBuff.combat.dmg_.electric.add(
+      cmpSpecialtyAndEquipped(key, percent(subscript(phase, dm.electric_dmg_)))
+    ),
+    showSpecialtyAndEquipped(key)
+  ),
+  registerBuff(
+    'cond_electric_sharp_dmg_',
+    ownBuff.combat.sharp_dmg_.electric.add(
       cmpSpecialtyAndEquipped(
         key,
-        boolConditional.ifOn(percent(subscript(phase, dm.cond_dmg_)))
+        exOrMaim.ifOn(percent(subscript(phase, dm.electric_sharp_dmg_)))
       )
-    ),
-    showSpecialtyAndEquipped(key)
-  ),
-  registerBuff(
-    'team_dmg_',
-    teamBuff.combat.common_dmg_.add(
-      cmpSpecialtyAndEquipped(key, listConditional.map({ val1: 1, val2: 2 }))
-    ),
-    showSpecialtyAndEquipped(key)
-  ),
-  registerBuff(
-    'enemy_defIgn_',
-    enemyDebuff.common.dmgRed_.add(
-      cmpSpecialtyAndEquipped(key, numConditional)
     ),
     showSpecialtyAndEquipped(key)
   )

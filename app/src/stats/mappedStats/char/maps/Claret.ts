@@ -67,6 +67,36 @@ const dm = {
         'AssistFollowUpBloodbloomOathHammerIntoShape'
       ],
   },
+  core: {
+    gashMaxStacks: data_gen.coreParams[0][0],
+    gashConsumed: data_gen.coreParams[1][0],
+    critThreshold: data_gen.coreParams[2][0],
+    critDmgStep: data_gen.coreParams[3][0],
+    critPerCritDmg: data_gen.coreParams[4][0],
+    sharpnessGain: data_gen.coreParams[5][0],
+    investigationCooldown: data_gen.coreParams[6][0],
+    crimsonExtension: data_gen.coreParams[7][0],
+    crit_: data_gen.coreParams[8],
+    gashBuildup_: data_gen.coreParams[9],
+    perfectDodgeDmg_: data_gen.coreParams[10][0],
+  },
+  ability: {
+    decibels: data_gen.abilityParams[0],
+    cooldown: data_gen.abilityParams[1],
+    lacerationDmg_: data_gen.abilityParams[2],
+    duration: data_gen.abilityParams[3],
+  },
+  m1: {
+    gashBuildup_: data_gen.mindscapeParams[0][0],
+    maimMult_: data_gen.mindscapeParams[0][1],
+  },
+  m2: {
+    crimsonExtension: data_gen.mindscapeParams[1][0],
+    electric_resIgn_: data_gen.mindscapeParams[1][1],
+  },
+  m4: {
+    dmg_: data_gen.mindscapeParams[3][0],
+  },
 } as const
 
 export default dm

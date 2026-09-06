@@ -90,6 +90,8 @@ export function WengineCardObj({
     )
   const wengineStat = getWengineStat(key)
   const wengineStats = getWengineStats(key, level, phase, modification)
+  const baseStatKey = wengineStat.baseStatkey
+  const baseStat = baseStatKey === 'def_base' ? 'def' : 'atk'
 
   return (
     <Suspense fallback={<Skeleton width="100%" height={350} />}>
@@ -194,9 +196,9 @@ export function WengineCardObj({
                     fontWeight: 'bold',
                   }}
                 >
-                  <StatDisplay statKey={'atk'} />
+                  <StatDisplay statKey={baseStat} />
                 </Text>
-                <Text fw="bold">{wengineStats['atk_base'].toFixed()}</Text>
+                <Text fw="bold">{wengineStats[baseStatKey].toFixed()}</Text>
               </Box>
               <WengineSubstatDisplay
                 substatKey={wengineStat['second_statkey']}

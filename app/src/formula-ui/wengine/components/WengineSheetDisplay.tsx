@@ -24,9 +24,11 @@ export function WengineSheetDisplay({
 }) {
   const { key: wengineKey, level, phase, modification } = wengine
   const wengineSheet = wengineUiSheets[wengineKey]
+  const wengineStat = getWengineStat(wengineKey)
   const wengineStats = getWengineStats(wengineKey, level, phase, modification)
-  const mainStatKey = 'atk_base'
-  const substatKey = getWengineStat(wengineKey)['second_statkey']
+  const mainStatKey = wengineStat.baseStatkey
+  const mainStat = mainStatKey === 'def_base' ? 'def' : 'atk'
+  const substatKey = wengineStat.second_statkey
   if (!wengineSheet) return null
   return (
     <ZCard bgt="light" style={{ height: '100%' }}>
@@ -37,7 +39,7 @@ export function WengineSheetDisplay({
       </Group>
       <Box px="md" pb="xs">
         <Text style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <StatDisplay statKey={'atk'} />
+          <StatDisplay statKey={mainStat} />
           <span>
             {toPercent(wengineStats[mainStatKey], mainStatKey).toFixed(
               statKeyToFixed(mainStatKey)

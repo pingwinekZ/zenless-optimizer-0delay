@@ -22,6 +22,8 @@ export const otherStatKeys = [
   'dazeInc_', // Daze Increase
   'sheerForce',
   'sheer_dmg_',
+  'sharp_dmg_',
+  'laceration_dmg_',
   'refringeCoeff_',
 ] as const
 
@@ -138,6 +140,9 @@ export const statKeyTextMap: Partial<Record<string, string>> = {
   crit_: 'CRIT Rate',
   crit_dmg_: 'CRIT DMG',
   sheer_dmg_: 'Sheer DMG',
+  sharp_dmg_: 'Sharp DMG',
+  laceration_dmg_: 'Laceration DMG',
+  gashBuildup_: 'Gash Buildup Rate',
   refringeCoeff_: 'Refringe Coefficient',
   enerRegen_: 'Energy Regen',
   enerRegen: 'Energy Regen',
@@ -210,6 +215,9 @@ export const statKeyTextMap: Partial<Record<string, string>> = {
   res_: 'Resistance',
   resRed_: 'Resistance Reduction',
   sheer_mult_: 'Sheer DMG Multiplier',
+  sharp_mult_: 'Sharp DMG Multiplier',
+  laceration_mult_: 'Laceration Multiplier',
+  laceration_check_mult_: 'Laceration Check Multiplier',
   mv_mult_: 'DMG Multiplier Increase',
   buff_mult_: 'Buff Multiplier',
   anom_base_mult_: 'Anomaly Base DMG Multiplier',

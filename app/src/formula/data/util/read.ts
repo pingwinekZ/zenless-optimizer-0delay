@@ -258,6 +258,24 @@ export class Read extends BaseRead<Tag> {
       super.with('damageType2', 'sheer'),
     ]
   }
+  get sharp(): Read[] {
+    return [
+      super.with('damageType1', 'sharp'),
+      super.with('damageType2', 'sharp'),
+    ]
+  }
+  get gash(): Read[] {
+    return [
+      super.with('damageType1', 'gash'),
+      super.with('damageType2', 'gash'),
+    ]
+  }
+  get maim(): Read[] {
+    return [
+      super.with('damageType1', 'maim'),
+      super.with('damageType2', 'maim'),
+    ]
+  }
   get abloom(): Read[] {
     return [
       super.with('damageType1', 'abloom'),

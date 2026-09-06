@@ -112,6 +112,10 @@ const data: TagMapNodeEntries = [
   ownBuff.common.cappedCrit_.add(
     max(min(own.final.crit_, percent(1)), percent(0))
   ),
+  // Capped Crit Excess = Max(Min(Final CR - 1, 1), 0) for Armorer laceration check (100-200%)
+  ownBuff.common.cappedCritExcess_.add(
+    max(min(sum(own.final.crit_, -1), percent(1)), percent(0))
+  ),
   ownBuff.common.anom_cappedCrit_.add(
     max(min(own.final.anom_crit_, percent(1)), percent(0))
   ),

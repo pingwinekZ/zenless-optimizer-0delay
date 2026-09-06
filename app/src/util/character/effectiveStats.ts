@@ -771,20 +771,20 @@ const characterPlans: Record<CharacterKey, CharacterPlan> = {
     },
   },
 
-  // ═══ New characters ═══
+  // ═══ Armorer characters ═══
   Claret: {
-    effectiveStats: ['crit_', 'crit_dmg_', 'atk_', 'pen', 'atk'],
+    effectiveStats: ['crit_', 'def_', 'crit_dmg_', 'pen', 'def'],
     substatWeights: {
       crit_: 1.5,
-      crit_dmg_: 1.5,
-      atk_: 1.2,
+      def_: 1.4,
+      crit_dmg_: 1.3,
       pen: 1.0,
-      atk: 0.8,
+      def: 0.8,
     },
     mainStats: {
-      4: ['crit_', 'crit_dmg_'],
-      5: ['electric_dmg_', 'atk_'],
-      6: ['atk_'],
+      4: ['crit_', 'def_'],
+      5: ['pen_'],
+      6: ['def_'],
     },
   },
   Roxy: {

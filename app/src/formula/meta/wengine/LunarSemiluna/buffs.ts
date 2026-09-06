@@ -1,38 +1,15 @@
 // WARNING: Generated file, do not modify
 export const buffs = {
-  cond_dmg_: {
+  cond_basic_dmg_: {
     sheet: 'LunarSemiluna',
-    name: 'cond_dmg_',
+    name: 'cond_basic_dmg_',
     tag: {
       et: 'display',
       qt: 'combat',
-      q: 'common_dmg_',
+      q: 'dmg_',
       sheet: 'LunarSemiluna',
-      name: 'cond_dmg_',
-    },
-    team: false,
-  },
-  team_dmg_: {
-    sheet: 'LunarSemiluna',
-    name: 'team_dmg_',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'common_dmg_',
-      sheet: 'LunarSemiluna',
-      name: 'team_dmg_',
-    },
-    team: false,
-  },
-  enemy_defIgn_: {
-    sheet: 'LunarSemiluna',
-    name: 'enemy_defIgn_',
-    tag: {
-      et: 'display',
-      qt: 'common',
-      q: 'dmgRed_',
-      sheet: 'LunarSemiluna',
-      name: 'enemy_defIgn_',
+      damageType1: 'basic',
+      name: 'cond_basic_dmg_',
     },
     team: false,
   },

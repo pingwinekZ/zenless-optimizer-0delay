@@ -1,0 +1,20 @@
+{
+  "core_critPerCritDmg_header": "CRIT DMG to CRIT Rate",
+  "crimsonInscriptionCond": "Crimson Inscription · CRIT Rate",
+  "perfectDodgeCond": "Perfect Dodge · DMG",
+  "remnantEdgeCond": "Remnant Edge · Laceration DMG",
+  "m1_gashBuildup_header": "Gash Buildup Rate",
+  "m1_gashBuildup_title": "Gash Buildup Rate",
+  "m1_maim_header": "Maim DMG Multiplier",
+  "m1_maim_multiplier": "Maim DMG Multiplier",
+  "m1_maim": "Cleaving #3 - Maim DMG",
+  "m1_maim_bloodBurial": "Blood Burial - Maim DMG",
+  "m1Cond": "M1 · Gash Buildup & Maim DMG",
+  "m2Cond": "M2 · Crimson Inscription",
+  "m4_header": "3rd Hit DMG +20%",
+  "m4_starforging": "Starforging #3 DMG",
+  "m4_resonant": "Resonant Blood Pact DMG",
+  "m4_trial": "Trial After Trial DMG",
+  "m6_header": "M6 · Maim",
+  "m6_maim": "Maim Sharp DMG"
+}

@@ -54,6 +54,8 @@ export function CompactWengineCard({
     wengine.modification
   )
   const substatKey = wengineStat['second_statkey']
+  const baseStatKey = wengineStat.baseStatkey
+  const baseStat = baseStatKey === 'def_base' ? 'def' : 'atk'
 
   return (
     <ZCard bgt="dark">
@@ -102,7 +104,7 @@ export function CompactWengineCard({
                 }}
               >
                 <Text
-                  onMouseEnter={() => setStatHighlight('atk')}
+                  onMouseEnter={() => setStatHighlight(baseStat)}
                   onMouseLeave={() => setStatHighlight('')}
                   style={{
                     display: 'flex',
@@ -113,12 +115,12 @@ export function CompactWengineCard({
                     overflow: 'visible',
                   }}
                 >
-                  <StatIcon statKey={'atk'} />
+                  <StatIcon statKey={baseStat} />
                   <Box
                     component="span"
                     style={{ position: 'relative', zIndex: 1 }}
                   >
-                    {wengineStats['atk_base'].toFixed()}
+                    {wengineStats[baseStatKey].toFixed()}
                   </Box>
                   <Box
                     style={{
@@ -129,7 +131,7 @@ export function CompactWengineCard({
                       height: '150%',
                       borderRadius: 4,
                       backgroundColor: getHighlightRGBA(
-                        isHighlight(statHighlight, 'atk')
+                        isHighlight(statHighlight, baseStat)
                       ),
                       transition: 'background-color 0.3s ease-in-out',
                     }}
