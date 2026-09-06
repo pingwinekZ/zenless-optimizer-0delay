@@ -89,8 +89,40 @@ const data: TagMapNodeEntries = [
     })
   ),
 
+  // Sharp dmg Laceration Multiplier (first CRIT check, 0-100%)
+  ownBuff.dmg.laceration_mult_.add(
+    lookup(own.common.critMode, {
+      crit: sum(percent(1), own.final.laceration_dmg_),
+      nonCrit: percent(1),
+      avg: sum(
+        percent(1),
+        prod(own.common.cappedCrit_, own.final.laceration_dmg_)
+      ),
+    })
+  ),
+
+  // Sharp dmg Laceration Check Multiplier (second check, 100-200% excess)
+  ownBuff.dmg.laceration_check_mult_.add(
+    lookup(own.common.critMode, {
+      crit: cmpGT(
+        own.final.crit_,
+        1,
+        sum(percent(1), own.final.laceration_dmg_),
+        percent(1)
+      ),
+      nonCrit: percent(1),
+      avg: sum(
+        percent(1),
+        prod(own.common.cappedCritExcess_, own.final.laceration_dmg_)
+      ),
+    })
+  ),
+
   // Sheer dmg Sheer Multiplier
   ownBuff.dmg.sheer_mult_.add(sum(percent(1), own.final.sheer_dmg_)),
+
+  // Sharp dmg Sharp Multiplier
+  ownBuff.dmg.sharp_mult_.add(sum(percent(1), own.final.sharp_dmg_)),
 
   // Anomaly Base DMG Multiplier
   ownBuff.dmg.anom_base_mult_.add(sum(percent(1), own.final.anom_base_)),

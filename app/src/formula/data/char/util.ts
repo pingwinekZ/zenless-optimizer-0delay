@@ -24,7 +24,9 @@ import {
   customAnomalyDmg,
   customDaze,
   customDmg,
+  customGashBuildup,
   customHeal,
+  customSharpDmg,
   customSheerDmg,
   customShield,
   damageTypes,
@@ -96,10 +98,19 @@ export function dmgDazeAndAnom(
   return [
     stat === 'sheerForce'
       ? customSheerDmg(`${name}_dmg`, dmgTag, dmg, arg, ...extra)
-      : customDmg(`${name}_dmg`, dmgTag, dmg, arg, ...extra),
+      : stat === 'def'
+        ? customSharpDmg(`${name}_dmg`, dmgTag, dmg, arg, ...extra)
+        : customDmg(`${name}_dmg`, dmgTag, dmg, arg, ...extra),
     customDaze(`${name}_daze`, dmgTag, daze, arg, ...extra),
-    // TODO: No clue if this is right
-    customAnomalyBuildup(`${name}_anomBuildup`, dmgTag, anom, arg, ...extra),
+    stat === 'def'
+      ? customGashBuildup(`${name}_gashBuildup`, dmgTag, anom, arg, ...extra)
+      : customAnomalyBuildup(
+          `${name}_anomBuildup`,
+          dmgTag,
+          anom,
+          arg,
+          ...extra
+        ),
   ]
 }
 
@@ -147,18 +158,31 @@ export function dmgDazeAndAnomMerge(
   return [
     stat === 'sheerForce'
       ? customSheerDmg(`${name}_dmg`, dmgTag, dmgBase, arg, ...extra)
-      : customDmg(`${name}_dmg`, dmgTag, dmgBase, arg, ...extra),
+      : stat === 'def'
+        ? customSharpDmg(`${name}_dmg`, dmgTag, dmgBase, arg, ...extra)
+        : customDmg(`${name}_dmg`, dmgTag, dmgBase, arg, ...extra),
     customDaze(`${name}_daze`, dmgTag, dazeBase, arg, ...extra),
-    // TODO: No clue if this is right
-    customAnomalyBuildup(
-      `${name}_anomBuildup`,
-      dmgTag,
-      constant(
-        skillParam.reduce((acc, sp) => acc + sp.AttributeInfliction, 0) / 100
-      ),
-      arg,
-      ...extra
-    ),
+    stat === 'def'
+      ? customGashBuildup(
+          `${name}_gashBuildup`,
+          dmgTag,
+          constant(
+            skillParam.reduce((acc, sp) => acc + sp.AttributeInfliction, 0) /
+              100
+          ),
+          arg,
+          ...extra
+        )
+      : customAnomalyBuildup(
+          `${name}_anomBuildup`,
+          dmgTag,
+          constant(
+            skillParam.reduce((acc, sp) => acc + sp.AttributeInfliction, 0) /
+              100
+          ),
+          arg,
+          ...extra
+        ),
   ]
 }
 
@@ -246,7 +270,9 @@ export function registerAllDmgDazeAndAnom(
                 },
                 allStats.char[key].specialty === 'rupture'
                   ? 'sheerForce'
-                  : 'atk',
+                  : allStats.char[key].specialty === 'armorer'
+                    ? 'def'
+                    : 'atk',
                 sKey
               )
           )
@@ -284,6 +310,11 @@ function inferDamageType(key: CharacterKey, abilityName: string): DamageType {
       return 'quickAssist'
     if (key === 'Remielle' && abilityName === 'AssistFlowerFeatherDance')
       return 'assistFollowUp'
+    if (key === 'Claret' && abilityName === 'CounterAssistGiveNotAnInchOfSteel')
+      return 'counterAssist'
+    if (key === 'Roxy' && abilityName === 'StormsEye') return 'special'
+    if (key === 'Roxy' && abilityName === 'AssistMoreOvertime')
+      return 'quickAssist'
     throw new Error(
       `Failed to infer damage type for key:${key} abilityName:${abilityName}. Please add an overide in zzz/formula/src/data/char/util.ts::inferDamageType`
     )
@@ -431,7 +462,7 @@ export function entriesForChar(data_gen: CharacterDatum): TagMapNodeEntries {
       )
     ),
     // TODO: Remove this once we have character sheets for everyone
-    // Standard/Sheer DMG
+    // Standard/Sheer/Sharp DMG
     ...(data_gen.specialty === 'rupture'
       ? customSheerDmg(
           'sheerDmgInst',
@@ -441,17 +472,28 @@ export function entriesForChar(data_gen: CharacterDatum): TagMapNodeEntries {
           },
           prod(percent(1.5), own.final.sheerForce)
         )
-      : customDmg(
-          'standardDmgInst',
-          {
-            attribute: data_gen.attribute,
-          },
-          prod(percent(1.5), own.final.atk)
-        )),
+      : data_gen.specialty === 'armorer'
+        ? customSharpDmg(
+            'sharpDmgInst',
+            {
+              attribute: data_gen.attribute,
+              damageType1: 'sharp',
+            },
+            prod(percent(1.5), own.final.def)
+          )
+        : customDmg(
+            'standardDmgInst',
+            {
+              attribute: data_gen.attribute,
+            },
+            prod(percent(1.5), own.final.atk)
+          )),
+    // Armorer uses Gash/Maim instead of Anomaly
     // Anomaly DMG (Windswept for Wind characters)
     // Lumiflux characters don't deal Anomaly DMG — replaced by per-skill Luminize formulas
-    ...(data_gen.attribute !== 'lumiflux'
-      ? customAnomalyDmg(
+    ...((data_gen.specialty === 'armorer' || data_gen.attribute === 'lumiflux'
+      ? []
+      : customAnomalyDmg(
           'anomalyDmgInst',
           {
             attribute: data_gen.attribute,
@@ -465,11 +507,13 @@ export function entriesForChar(data_gen: CharacterDatum): TagMapNodeEntries {
             own.final.atk,
             sum(percent(1), own.final.anom_mv_mult_)
           )
-        )
-      : []),
+        )) as any),
+    // Armorer uses Gash/Maim instead of Anomaly/Disorder
     // Wind characters can't trigger Disorder — replaced by Vortex
     // Lumiflux characters can't trigger Disorder either
-    ...(data_gen.attribute === 'wind' || data_gen.attribute === 'lumiflux'
+    ...((data_gen.specialty === 'armorer' ||
+    data_gen.attribute === 'wind' ||
+    data_gen.attribute === 'lumiflux'
       ? []
       : customAnomalyDmg(
           `disorderDmgInst_${isMiyabi ? 'frost' : data_gen.attribute}`,
@@ -498,10 +542,12 @@ export function entriesForChar(data_gen: CharacterDatum): TagMapNodeEntries {
             ),
             own.final.atk
           )
-        )),
+        )) as any),
+    // Armorer uses Gash/Maim instead of Anomaly/Abloom
     // Abloom DMG (not applicable to lumiflux — Luminize is per-skill)
-    ...(data_gen.attribute !== 'lumiflux'
-      ? customAnomalyDmg(
+    ...((data_gen.specialty === 'armorer' || data_gen.attribute === 'lumiflux'
+      ? []
+      : customAnomalyDmg(
           'abloomDmgInst',
           {
             attribute: data_gen.attribute,
@@ -514,16 +560,21 @@ export function entriesForChar(data_gen: CharacterDatum): TagMapNodeEntries {
             sum(percent(1), own.final.anom_mv_mult_)
           ),
           { cond: cmpEq(own.final.anom_mv_mult_, 0, '', 'infer') }
-        )
-      : []),
-    // Lumiflux characters don't accumulate Anomaly Buildup from anomaly DMG
-    ...(data_gen.attribute !== 'lumiflux'
-      ? customAnomalyBuildup(
-          'anomalyBuildupInst',
-          { attribute: data_gen.attribute },
+        )) as any),
+    // Armorer characters apply Gash instead of Anomaly — 3 stacks max, consumed for Maim
+    ...((data_gen.specialty === 'armorer'
+      ? customGashBuildup(
+          'gashBuildupInst',
+          { attribute: data_gen.attribute, damageType1: 'gash' },
           percent(1)
         )
-      : []),
+      : data_gen.attribute !== 'lumiflux'
+        ? customAnomalyBuildup(
+            'anomalyBuildupInst',
+            { attribute: data_gen.attribute },
+            percent(1)
+          )
+        : []) as any),
     ...customDaze('dazeInst', { attribute: data_gen.attribute }, percent(1)),
     // Formula listings for stats
     ownBuff.listing.formulas.add(listingItem(own.final.hp)),

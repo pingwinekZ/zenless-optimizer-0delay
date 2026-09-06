@@ -1,0 +1,293 @@
+{
+  "name": "Roxy",
+  "fullName": "Roxy",
+  "basic": {
+    "BasicAttackDoStayAWhile": {
+      "name": "Basic Attack: Do Stay a While",
+      "desc": {
+        "0": "Press <IconNormal /> to activate:",
+        "1": "Perform up to 4 strikes forward, dealing <ct color=#A6C5FD>Wind DMG</ct>."
+      },
+      "params": [
+        "1st-Hit ",
+        "2nd-Hit ",
+        "3rd-Hit ",
+        "4th-Hit "
+      ]
+    }
+  },
+  "dodge": {
+    "DodgeExcuseMe": {
+      "name": "Dodge: Excuse Me",
+      "desc": {
+        "0": "Press <IconEvade /> to activate:",
+        "1": "Perform a quick dodge to the side."
+      },
+      "params": []
+    },
+    "DashAttackForgiveMyRudeness": {
+      "name": "Dash Attack: Forgive My Rudeness",
+      "desc": {
+        "0": "Press <IconNormal /> during a dodge to activate:",
+        "1": "Strike forward, dealing <ct color=#A6C5FD>Wind DMG</ct>."
+      },
+      "params": [
+        " "
+      ]
+    },
+    "DodgeCounterReturnedCourtesy": {
+      "name": "Dodge Counter: Returned Courtesy",
+      "desc": {
+        "0": "Press <IconNormal /> during a Perfect Dodge to activate:",
+        "1": "Strike enemies in front, dealing <ct color=#A6C5FD>Wind DMG</ct>.",
+        "2": "Character is invulnerable while using this skill."
+      },
+      "params": [
+        " "
+      ]
+    }
+  },
+  "special": {
+    "SpecialAttackForgiveMeForNotSeeingYouOff": {
+      "name": "Special Attack: Forgive Me for Not Seeing You Off",
+      "desc": {
+        "0": "<ct color=#FFFFFF>[EX Special Attack: Kindly Rest in Peace]</ct> When activated, if there are a combined total of at least 3 Storm's Eye and own Wind Energy on the field, automatically activates:",
+        "1": "Throws her hammer at enemies on the field, dealing <ct color=#A6C5FD>Wind DMG</ct>;",
+        "2": "<ct color=#FFFFFF>[Storm's Eye]</ct> hit by this skill are detonated, up to 3 <ct color=#FFFFFF>[Storm's Eye]</ct> at a time. Miniature Windstorms are generated based on the number of Storm's Eyes hit, dealing <ct color=#A6C5FD>Wind DMG</ct>;",
+        "3": "If 3 <ct color=#FFFFFF>[Storm's Eye]</ct> are detonated at once, a Giant Windstorm is generated instead, dealing <ct color=#A6C5FD>Wind DMG</ct>;",
+        "4": "Character is invulnerable while using this skill."
+      },
+      "params": [
+        " "
+      ]
+    },
+    "SpecialAttackMuchObliged": {
+      "name": "Special Attack: Much Obliged",
+      "desc": {
+        "0": "Press <IconSpecial /> to activate:",
+        "1": "Perform a forward strike, dealing <ct color=#A6C5FD>Wind DMG</ct>."
+      },
+      "params": [
+        " "
+      ]
+    },
+    "EXSpecialAttackDontCatchAChill": {
+      "name": "EX Special Attack: Don't Catch a Chill",
+      "desc": {
+        "0": "With enough energy, press or hold <IconSpecialReady /> to activate:",
+        "1": "Slide forward, dealing <ct color=#A6C5FD>Wind DMG</ct>.",
+        "2": "While sliding, press and hold <IconSpecialReady /> to have Roxy enter the <ct color=#FFFFFF>Whirlwind</ct> state:",
+        "3": "While in the <ct color=#FFFFFF>Whirlwind</ct> state, Roxy transforms into a tornado. Drag the joystick to control its direction. During this, Energy is continuously consumed, dealing <ct color=#A6C5FD>Wind DMG</ct> to enemies along its path. When Energy is depleted, or when <IconSpecialReady /> is released while the joystick is not being moved, Roxy exits the <ct color=#FFFFFF>Whirlwind</ct> state.",
+        "4": "When the slide  ends or when exiting the <ct color=#FFFFFF>Whirlwind</ct> state, automatically follow up with <ct color=#ffffff>EX Special Attack: Kindly Rest in Peace</ct>.",
+        "5": "Character is invulnerable while using this skill."
+      },
+      "params": [
+        " ",
+        "Energy Cost ",
+        "Whirlwind Per Second ",
+        "Energy Cost Per Second "
+      ]
+    },
+    "EXSpecialAttackKindlyRestInPeace": {
+      "name": "EX Special Attack: Kindly Rest in Peace",
+      "desc": {
+        "0": "Automatically activates after <ct color=#FFFFFF>EX Special Attack: Don't Catch a Chill</ct> ends:",
+        "1": "Consume all Wind Energy to fire a wind cannon forward, dealing <ct color=#A6C5FD>Wind DMG</ct>.",
+        "2": "After the attack, for each point of <ct color=#FFFFFF>Wind Energy</ct> consumed, deals an additional instance of <ct color=#A6C5FD>Wind DMG</ct> and generates 1 Storm's Eye at the current position."
+      },
+      "params": [
+        " ",
+        "Additional Explosion "
+      ]
+    },
+    "StormsEye": {
+      "name": "Storm's Eye",
+      "desc": {
+        "0": "Generated after <ct color=#FFFFFF>[EX Special Attack: Kindly Rest in Peace]</ct> consumes Wind Energy, lasting 30s before automatically detonating;",
+        "1": "Up to 9 Storm's Eye can exist at the same time. If this limit is exceeded, the earliest generated <ct color=#FFFFFF>[Storm's Eye]</ct> will automatically detonate;",
+        "2": "Detonates when hit by <ct color=#FFFFFF>[Special Attack: Forgive Me for Not Seeing You Off]</ct>. If fewer than 3 are hit at the same time, 1 Miniature Windstorm is generated at the location of each <ct color=#FFFFFF>[Storm's Eye]</ct>, tracking enemies and dealing <ct color=#A6C5FD>Wind DMG</ct> for 1s;",
+        "3": "If 3 are hit at the same time, 1 Giant Windstorm is generated instead, dealing <ct color=#A6C5FD>Wind DMG</ct> for 1s.",
+        "4": "When detonated by any means, a <ct color=#FFFFFF>[Storm's Eye]</ct> releases a blast, dealing 1 instance of <ct color=#A6C5FD>Wind DMG</ct> to nearby enemies."
+      },
+      "params": [
+        "Detonation ",
+        "Miniature Windstorm per Second ",
+        "Giant Windstorm per Second "
+      ]
+    }
+  },
+  "chain": {
+    "ChainAttackGaleBurialGreatHammer": {
+      "name": "Chain Attack: Gale-Burial Great Hammer",
+      "desc": {
+        "0": "When a <ct color=#ffffff>Chain Attack</ct> is triggered, select the character to activate:",
+        "1": "Unleashes a powerful strike at enemies in front, dealing massive <ct color=#A6C5FD>Wind DMG</ct>.",
+        "2": "Character is invulnerable while using this skill."
+      },
+      "params": [
+        " "
+      ]
+    },
+    "UltimateRequiemForTheNightBurial": {
+      "name": "Ultimate: Requiem for the Night-Burial",
+      "desc": {
+        "0": "When Decibel Rating is at Maximum, press <IconUltimateReady /> to activate:",
+        "1": "Unleashes a powerful strike at enemies in front in a large area, dealing massive <ct color=#A6C5FD>Wind DMG</ct>;",
+        "2": "After using this skill, gain 1 Wind Energy;",
+        "3": "Character is invulnerable while using this skill."
+      },
+      "params": [
+        " "
+      ]
+    }
+  },
+  "assist": {
+    "AssistMoreOvertime": {
+      "name": "Assist: More Overtime?",
+      "desc": {
+        "0": "Press <IconSwitch /> after a <ct color=#FFFFFF>Defensive Assist</ct> to activate:",
+        "1": "Roxy stays on field and Strikes enemies in front, dealing <ct color=#A6C5FD>Wind DMG</ct>.",
+        "2": "Upon activating this skill, it is considered a <ct color=#FFFFFF>Basic Attack</ct>.",
+        "3": "Character is invulnerable while using this skill."
+      },
+      "params": [
+        " "
+      ]
+    },
+    "QuickAssistAtYourService": {
+      "name": "Quick Assist: At Your Service",
+      "desc": {
+        "0": "When the on-field character is launched, press <IconSwitch /> to activate:",
+        "1": "Strikes enemies in front, dealing <ct color=#A6C5FD>Wind DMG</ct>.",
+        "2": "Character is invulnerable while using this skill."
+      },
+      "params": [
+        " "
+      ]
+    },
+    "DefensiveAssistAllowMeToAssist": {
+      "name": "Defensive Assist: Allow Me to Assist",
+      "desc": {
+        "0": "When the on-field character is about to be attacked, press <IconSwitch /> to activate:",
+        "1": "Parries the enemy's attack, dealing massive Daze.",
+        "2": "This skill excels at parrying enemy attacks and reduces the consumption of <ct color=#FFFFFF>[Assist Points]</ct> when the character is under intense attacks.",
+        "3": "Character is invulnerable while using this skill."
+      },
+      "params": [
+        "Light Defensive ",
+        "Heavy Defensive ",
+        "Chain Defensive "
+      ]
+    },
+    "AssistFollowUpMidnightCode": {
+      "name": "Assist Follow-Up: Midnight Code",
+      "desc": {
+        "0": "Press <IconNormal /> after a <ct color=#ffffff>Defensive Assist</ct> to activate:",
+        "1": "Perform a forward strike, dealing <ct color=#A6C5FD>Wind DMG</ct>.",
+        "2": "Character is invulnerable while using this skill."
+      },
+      "params": [
+        " "
+      ]
+    }
+  },
+  "core": {
+    "name": "Core Passive: Warm Night's Embrace",
+    "desc": [
+      {
+        "0": "Gain 1 point of Wind Energy for every 25 Energy consumed, up to a maximum of 3 <ct color=#FFFFFF>[Wind Energy]</ct>.",
+        "1": "When Roxy's initial <ct color=#FFFFFF>Energy Regen</ct> exceeds 1.2, for every 0.01 above this value, ATK increases by 5, up to a maximum increase of <ct color=#2BAD00>480</ct>, and Impact increases by 0.4, up to a maximum increase of <ct color=#2BAD00>40</ct>.",
+        "2": "After <ct color=#FFFFFF>[Special Attack: Forgive Me for Not Seeing You Off]</ct> hits an enemy affected by <ct color=#FFFFFF>[Windswept]</ct>, it triggers Cleanse, reverting <ct color=#FFFFFF>[Contamination]</ct> back to its original state.",
+        "3": "When any squad member triggers <ct color=#FFFFFF>[Contamination]</ct> or <ct color=#FFFFFF>[Cleanse]</ct>, for every 1% CRIT Rate Roxy has, the CRIT DMG of all non-<ct color=#FFFFFF>[Armorer]</ct> characters for the Contamination or Cleansed attribute and the Wind attribute increases by 0.4%, up to a maximum of <ct color=#2BAD00>22%</ct>, while the Laceration DMG of <ct color=#FFFFFF>[Armorer]</ct> characters for the Contamination or Cleansed attribute and Wind attribute increases by 0.2%, up to a maximum of <ct color=#2BAD00>10%</ct>. Each attribute's buff independently lasts 50s, and repeated triggers reset the duration.",
+        "4": "When <ct color=#FFFFFF>[Windswept]</ct> is applied again to an enemy already in the <ct color=#FFFFFF>[Windswept]</ct> state, all squad members also gain the buffs corresponding to their Specialty for the <ct color=#FFFFFF>[Contamination]</ct> attribute and Wind attribute of the overwritten <ct color=#FFFFFF>[Windswept]</ct> state."
+      },
+      {
+        "0": "Gain 1 point of Wind Energy for every 25 Energy consumed, up to a maximum of 3 <ct color=#FFFFFF>[Wind Energy]</ct>.",
+        "1": "When Roxy's initial <ct color=#FFFFFF>Energy Regen</ct> exceeds 1.2, for every 0.01 above this value, ATK increases by 5, up to a maximum increase of <ct color=#2BAD00>560</ct>, and Impact increases by 0.4, up to a maximum increase of <ct color=#2BAD00>46</ct>.",
+        "2": "After <ct color=#FFFFFF>[Special Attack: Forgive Me for Not Seeing You Off]</ct> hits an enemy affected by <ct color=#FFFFFF>[Windswept]</ct>, it triggers Cleanse, reverting <ct color=#FFFFFF>[Contamination]</ct> back to its original state.",
+        "3": "When any squad member triggers <ct color=#FFFFFF>[Contamination]</ct> or <ct color=#FFFFFF>[Cleanse]</ct>, for every 1% CRIT Rate Roxy has, the CRIT DMG of all non-<ct color=#FFFFFF>[Armorer]</ct> characters for the Contamination or Cleansed attribute and the Wind attribute increases by 0.4%, up to a maximum of <ct color=#2BAD00>25%</ct>, while the Laceration DMG of <ct color=#FFFFFF>[Armorer]</ct> characters for the Contamination or Cleansed attribute and Wind attribute increases by 0.2%, up to a maximum of <ct color=#2BAD00>11.5%</ct>. Each attribute's buff independently lasts 50s, and repeated triggers reset the duration.",
+        "4": "When <ct color=#FFFFFF>[Windswept]</ct> is applied again to an enemy already in the <ct color=#FFFFFF>[Windswept]</ct> state, all squad members also gain the buffs corresponding to their Specialty for the <ct color=#FFFFFF>[Contamination]</ct> attribute and Wind attribute of the overwritten <ct color=#FFFFFF>[Windswept]</ct> state."
+      },
+      {
+        "0": "Gain 1 point of Wind Energy for every 25 Energy consumed, up to a maximum of 3 <ct color=#FFFFFF>[Wind Energy]</ct>.",
+        "1": "When Roxy's initial <ct color=#FFFFFF>Energy Regen</ct> exceeds 1.2, for every 0.01 above this value, ATK increases by 5, up to a maximum increase of <ct color=#2BAD00>640</ct>, and Impact increases by 0.4, up to a maximum increase of <ct color=#2BAD00>52</ct>.",
+        "2": "After <ct color=#FFFFFF>[Special Attack: Forgive Me for Not Seeing You Off]</ct> hits an enemy affected by <ct color=#FFFFFF>[Windswept]</ct>, it triggers Cleanse, reverting <ct color=#FFFFFF>[Contamination]</ct> back to its original state.",
+        "3": "When any squad member triggers <ct color=#FFFFFF>[Contamination]</ct> or <ct color=#FFFFFF>[Cleanse]</ct>, for every 1% CRIT Rate Roxy has, the CRIT DMG of all non-<ct color=#FFFFFF>[Armorer]</ct> characters for the Contamination or Cleansed attribute and the Wind attribute increases by 0.4%, up to a maximum of <ct color=#2BAD00>28%</ct>, while the Laceration DMG of <ct color=#FFFFFF>[Armorer]</ct> characters for the Contamination or Cleansed attribute and Wind attribute increases by 0.2%, up to a maximum of <ct color=#2BAD00>13%</ct>. Each attribute's buff independently lasts 50s, and repeated triggers reset the duration.",
+        "4": "When <ct color=#FFFFFF>[Windswept]</ct> is applied again to an enemy already in the <ct color=#FFFFFF>[Windswept]</ct> state, all squad members also gain the buffs corresponding to their Specialty for the <ct color=#FFFFFF>[Contamination]</ct> attribute and Wind attribute of the overwritten <ct color=#FFFFFF>[Windswept]</ct> state."
+      },
+      {
+        "0": "Gain 1 point of Wind Energy for every 25 Energy consumed, up to a maximum of 3 <ct color=#FFFFFF>[Wind Energy]</ct>.",
+        "1": "When Roxy's initial <ct color=#FFFFFF>Energy Regen</ct> exceeds 1.2, for every 0.01 above this value, ATK increases by 5, up to a maximum increase of <ct color=#2BAD00>720</ct>, and Impact increases by 0.4, up to a maximum increase of <ct color=#2BAD00>58</ct>.",
+        "2": "After <ct color=#FFFFFF>[Special Attack: Forgive Me for Not Seeing You Off]</ct> hits an enemy affected by <ct color=#FFFFFF>[Windswept]</ct>, it triggers Cleanse, reverting <ct color=#FFFFFF>[Contamination]</ct> back to its original state.",
+        "3": "When any squad member triggers <ct color=#FFFFFF>[Contamination]</ct> or <ct color=#FFFFFF>[Cleanse]</ct>, for every 1% CRIT Rate Roxy has, the CRIT DMG of all non-<ct color=#FFFFFF>[Armorer]</ct> characters for the Contamination or Cleansed attribute and the Wind attribute increases by 0.4%, up to a maximum of <ct color=#2BAD00>31%</ct>, while the Laceration DMG of <ct color=#FFFFFF>[Armorer]</ct> characters for the Contamination or Cleansed attribute and Wind attribute increases by 0.2%, up to a maximum of <ct color=#2BAD00>14.5%</ct>. Each attribute's buff independently lasts 50s, and repeated triggers reset the duration.",
+        "4": "When <ct color=#FFFFFF>[Windswept]</ct> is applied again to an enemy already in the <ct color=#FFFFFF>[Windswept]</ct> state, all squad members also gain the buff corresponding to their Specialty for the <ct color=#FFFFFF>[Contamination]</ct> attribute and Wind attribute of the overwritten <ct color=#FFFFFF>[Windswept]</ct> state."
+      },
+      {
+        "0": "Gain 1 point of Wind Energy for every 25 Energy consumed, up to a maximum of 3 <ct color=#FFFFFF>[Wind Energy]</ct>.",
+        "1": "When Roxy's initial <ct color=#FFFFFF>Energy Regen</ct> exceeds 1.2, for every 0.01 above this value, ATK increases by 5, up to a maximum increase of <ct color=#2BAD00>800</ct>, and Impact increases by 0.4, up to a maximum increase of <ct color=#2BAD00>64</ct>.",
+        "2": "After <ct color=#FFFFFF>[Special Attack: Forgive Me for Not Seeing You Off]</ct> hits an enemy affected by <ct color=#FFFFFF>[Windswept]</ct>, it triggers Cleanse, reverting <ct color=#FFFFFF>[Contamination]</ct> back to its original state.",
+        "3": "When any squad member triggers <ct color=#FFFFFF>[Contamination]</ct> or <ct color=#FFFFFF>[Cleanse]</ct>, for every 1% CRIT Rate Roxy has, the CRIT DMG of all non-<ct color=#FFFFFF>[Armorer]</ct> characters for the Contamination or Cleansed attribute and the Wind attribute increases by 0.4%, up to a maximum of <ct color=#2BAD00>34%</ct>, while the Laceration DMG of <ct color=#FFFFFF>[Armorer]</ct> characters for the Contamination or Cleansed attribute and the Wind attribute increases by 0.2%, up to a maximum of <ct color=#2BAD00>16%</ct>. Each attribute's buff independently lasts 50s, and repeated triggers reset the duration.",
+        "4": "When <ct color=#FFFFFF>[Windswept]</ct> is applied again to an enemy already in the <ct color=#FFFFFF>[Windswept]</ct> state, all squad members can also gain the buff corresponding to their Specialty for the <ct color=#FFFFFF>[Contamination]</ct> attribute and Wind attribute of the overwritten <ct color=#FFFFFF>[Windswept]</ct> state."
+      },
+      {
+        "0": "Gain 1 point of Wind Energy for every 25 Energy consumed, up to a maximum of 3 <ct color=#FFFFFF>[Wind Energy]</ct>.",
+        "1": "When Roxy's initial <ct color=#FFFFFF>Energy Regen</ct> exceeds 1.2, for every 0.01 above this value, ATK increases by 5, up to a maximum increase of <ct color=#2BAD00>880</ct>, and Impact increases by 0.4, up to a maximum increase of <ct color=#2BAD00>70</ct>.",
+        "2": "After <ct color=#FFFFFF>[Special Attack: Forgive Me for Not Seeing You Off]</ct> hits an enemy affected by <ct color=#FFFFFF>[Windswept]</ct>, it triggers Cleanse, reverting <ct color=#FFFFFF>[Contamination]</ct> back to its original state.",
+        "3": "When any squad member triggers <ct color=#FFFFFF>[Contamination]</ct> or <ct color=#FFFFFF>[Cleanse]</ct>, for every 1% CRIT Rate Roxy has, the CRIT DMG of all non-<ct color=#FFFFFF>[Armorer]</ct> characters for the Contamination or Cleansed attribute and the Wind attribute increases by 0.4%, up to a maximum of <ct color=#2BAD00>37%</ct>, while the Laceration DMG of <ct color=#FFFFFF>[Armorer]</ct> characters for the Contamination or Cleansed attribute and the Wind attribute increases by 0.2%, up to a maximum of <ct color=#2BAD00>17.5%</ct>. Each attribute's buff independently lasts 50s, and repeated triggers reset the duration.",
+        "4": "When <ct color=#FFFFFF>[Windswept]</ct> is applied again to an enemy already in the <ct color=#FFFFFF>[Windswept]</ct> state, all squad members likewise gain the buff corresponding to their Specialty for the <ct color=#FFFFFF>[Contamination]</ct> attribute and Wind attribute that were overwritten by the new <ct color=#FFFFFF>[Windswept]</ct>."
+      },
+      {
+        "0": "Gain 1 point of Wind Energy for every 25 Energy consumed, up to a maximum of 3 <ct color=#FFFFFF>[Wind Energy]</ct>.",
+        "1": "When Roxy's initial <ct color=#FFFFFF>Energy Regen</ct> exceeds 1.2, for every 0.01 above this value, ATK increases by 5, up to a maximum increase of <ct color=#2BAD00>960</ct>, and Impact increases by 0.4, up to a maximum increase of <ct color=#2BAD00>76.8</ct>.",
+        "2": "After <ct color=#FFFFFF>[Special Attack: Forgive Me for Not Seeing You Off]</ct> hits an enemy affected by <ct color=#FFFFFF>[Windswept]</ct>, it triggers Cleanse, reverting <ct color=#FFFFFF>[Contamination]</ct> back to its original state.",
+        "3": "When any squad member triggers <ct color=#FFFFFF>[Contamination]</ct> or <ct color=#FFFFFF>[Cleanse]</ct>, for every 1% CRIT Rate Roxy has, the CRIT DMG of all non-<ct color=#FFFFFF>[Armorer]</ct> characters for the Contamination or Cleansed attribute and the Wind attribute increases by 0.4%, up to a maximum of <ct color=#2BAD00>40%</ct>, while the Laceration DMG of <ct color=#FFFFFF>[Armorer]</ct> characters for the Contamination or Cleansed attribute and the Wind attribute increases by 0.2%, up to a maximum of <ct color=#2BAD00>20%</ct>. Each attribute's buff independently lasts 50s, and repeated triggers reset the duration.",
+        "4": "When <ct color=#FFFFFF>[Windswept]</ct> is applied again to an enemy already in the <ct color=#FFFFFF>[Windswept]</ct> state, all squad members likewise gain the buff corresponding to their Specialty for the <ct color=#FFFFFF>[Contamination]</ct> attribute and Wind attribute of the overwritten <ct color=#FFFFFF>[Windswept]</ct> state."
+      }
+    ]
+  },
+  "ability": {
+    "name": "Additional Ability: Porcelloy Heart",
+    "desc": {
+      "0": "When another character in your squad is an <ct color=#FFFFFF>[Attack]</ct>, <ct color=#FFFFFF>[Rupture]</ct>, or <ct color=#FFFFFF>[Armorer]</ct> character:",
+      "1": "Roxy's DMG increases by 8%. This effect increases with character Level, increasing by 1.2% per level, up to a maximum increase of 80%.",
+      "2": "When any squad member's attack hits an enemy, it increases their Stun DMG Multiplier by 30%. This effect is removed when the Stunned state ends. When an enemy becomes Stunned, its Stun duration is extended by 2s. This Stun duration increase does not stack with similar effects.",
+      "3": "While an enemy is in the <ct color=#FFFFFF>[Windswept]</ct> state applied by a squad member, the <ct color=#A6C5FD>direct Wind DMG</ct> they take and the direct attack DMG they take of the attribute that triggered [Contamination] are increased by 8%.",
+      "4": "Upon entering the battlefield, restores 40 Energy. In Investigation Zone Mode, This effect can trigger once every 180s.",
+      "5": "<ct color=#FFFFFF>[Windswept]</ct> applied by all squad members lasts 20s longer.",
+      "6": "When using an <ct color=#ffffff>[EX Special Attack]</ct>, Anomaly Buildup Rate increases by 30% for 50s. Repeated triggers reset the duration."
+    }
+  },
+  "mindscapes": {
+    "1": {
+      "name": "Versatile Attendant",
+      "desc": "When <ct color=#ffffff>EX Special Attack: Kindly Rest in Peace</ct> hits, it reduces the enemy's All-Attribute RES by 15% for 50s; repeated triggers reset the duration. CRIT DMG increases by 40%.",
+      "flavor": "..."
+    },
+    "2": {
+      "name": "Clocking Out Myth",
+      "desc": "<ct color=#ffffff>EX Special Attack: Don't Catch a Chill</ct> deals 5% more Daze. For each <ct color=#ffffff>Storm's Eye</ct> detonated, gain 1 stack of <ct color=#ffffff>Windflow</ct>, up to 3 stacks. During <ct color=#ffffff>EX Special Attack: Don't Catch a Chill</ct>, if Roxy switches out after entering the <ct color=#ffffff>Whirlwind</ct> state, she consumes all <ct color=#ffffff>Windflow</ct>. Each stack consumed sustains the <ct color=#ffffff>Whirlwind</ct> state for 0.2s, during which no Energy is consumed, up to a maximum of 0.6s. When <ct color=#ffffff>EX Special Attack: Don't Catch a Chill</ct> hits an enemy, that enemy's Stun DMG Multiplier increases by 30% until the target recovers from Stun.",
+      "flavor": "..."
+    },
+    "3": {
+      "name": "Tales of Insomnia",
+      "desc": "<ct color=#FFFFFF>Basic Attack</ct>, <ct color=#FFFFFF>Dodge</ct>, <ct color=#FFFFFF>Assist</ct>, <ct color=#FFFFFF>Special Attack</ct>, and <ct color=#FFFFFF>Chain Attack</ct> Lv. +2",
+      "flavor": "..."
+    },
+    "4": {
+      "name": "R.I.P.",
+      "desc": "When a <ct color=#ffffff>Defensive Assist</ct> successfully parries an enemy attack, Roxy gains 1 Energy, up to once per skill. When <ct color=#ffffff>Dodge Counter: Returned Courtesy</ct> hits an enemy, it grants 2 Energy, up to once per skill. <ct color=#ffffff>Ultimate: Requiem for the Night-Burial</ct> deals 20% more DMG and 10% more Daze.",
+      "flavor": "..."
+    },
+    "5": {
+      "name": "Second Heartbeat",
+      "desc": "<ct color=#FFFFFF>Basic Attack</ct>, <ct color=#FFFFFF>Dodge</ct>, <ct color=#FFFFFF>Assist</ct>, <ct color=#FFFFFF>Special Attack</ct>, and <ct color=#FFFFFF>Chain Attack</ct> Lv. +2",
+      "flavor": "..."
+    },
+    "6": {
+      "name": "Eternity and the Clockwork Doll",
+      "desc": "The DMG dealt by attacks ignores 15% of the target's <ct color=#A6C5FD>Wind RES</ct>. When <ct color=#ffffff>[Special Attack: Forgive Me for Not Seeing You Off]</ct> detonates <ct color=#ffffff>[Storm's Eye]</ct> to generate a Giant Windstorm, the primary target is inflicted with <ct color=#ffffff>[Afterecho]</ct>. A Giant Windstorm is generated at the target's location every 3s, for a total of 2 additional Giant Windstorms. Repeated triggers stack the number of additional instances generated and refresh the duration of <ct color=#ffffff>[Afterecho]</ct>. Giant Windstorms deal DMG increased to 250% of the original value, and their Daze dealt increases by 20%.",
+      "flavor": "..."
+    }
+  },
+  "potential": {}
+}

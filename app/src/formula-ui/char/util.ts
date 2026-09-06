@@ -9,7 +9,13 @@ export function getVariant(tag: Tag) {
 }
 export function isDmg(tag: Tag) {
   const { q } = tag
-  return ['standardDmg', 'anomalyDmg', 'sheerDmg'].includes(q as string)
+  return [
+    'standardDmg',
+    'anomalyDmg',
+    'sheerDmg',
+    'sharpDmg',
+    'maimDmg',
+  ].includes(q as string)
 }
 
 export function getDmgType(tag: Tag) {
@@ -35,11 +41,15 @@ export const damageTypeKeysMap: Record<DamageType, string> = {
   defensiveAssist: 'Defensive Assist',
   evasiveAssist: 'Evasive Assist',
   assistFollowUp: 'Assist Follow Up',
+  counterAssist: 'Counter Assist',
   anomaly: 'Anomaly',
   disorder: 'Disorder',
   aftershock: 'Aftershock',
   elemental: 'Elemental',
   sheer: 'Sheer',
+  sharp: 'Sharp',
+  gash: 'Gash',
+  maim: 'Maim',
   abloom: 'Abloom',
   luminize: 'Luminize',
   vortex: 'Vortex',

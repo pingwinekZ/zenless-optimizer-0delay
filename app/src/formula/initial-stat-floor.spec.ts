@@ -114,3 +114,45 @@ describe('initial stat flooring (game parity)', () => {
     expect(computeStat(calc, 'atk')).toBeCloseTo(3998.18, 6)
   })
 })
+
+describe('Armorer w-engine Base DEF (game parity)', () => {
+  it('CrimsonThirst adds floored Base DEF to initial DEF, not ATK', () => {
+    const calc = setupCalc(
+      [
+        ...wengineTagMapNodeEntries({
+          key: 'CrimsonThirst',
+          level: 60,
+          modification: 5,
+          phase: 1,
+        }),
+      ],
+      'Claret'
+    )
+    // Claret base def: floor(35 + 122 + 59 * 4.8155) = floor(441.11) = 441
+    // CrimsonThirst base def: floor(29 * (1 + 9.409 + 0.8922 * 5)) = 431
+    // substat def_: 0.192 * (1 + 0.3 * 5) = 0.48
+    // initial def = floor(441 + 431) * (1 + 0.48) = 1290.56
+    expect(computeStat(calc, 'def')).toBeCloseTo(1290.56, 6)
+    // The Armorer w-engine must not contribute any base ATK
+    expect(computeStat(calc, 'atk')).toBe(626)
+  })
+
+  it('ATK w-engines still contribute base ATK and leave DEF alone', () => {
+    const calc = setupCalc(
+      [
+        ...wengineTagMapNodeEntries({
+          key: 'ZanshinHerbCase',
+          level: 60,
+          modification: 5,
+          phase: 1,
+        }),
+      ],
+      'Claret'
+    )
+    // Claret base def stays 441 (no def_ substat)
+    expect(computeStat(calc, 'def')).toBe(441)
+    // base atk: floor(101 + 180 + 59 * 5.8479) + floor(48 * 14.87) =
+    // 626 + 713 = 1339 (substat is crit_dmg_, no atk_)
+    expect(computeStat(calc, 'atk')).toBe(1339)
+  })
+})

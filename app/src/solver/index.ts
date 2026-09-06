@@ -28,6 +28,7 @@ import {
 import type { StatFilter } from '../db'
 import { type ICachedDisc, StatFilterTagToTag } from '../db'
 import { type Calculator, Read, type Tag } from '../formula'
+import { allStats } from '../stats'
 
 const EPSILON = 1e-7
 
@@ -92,13 +93,16 @@ export function createSolverConfig(
         : new Read(newTag, undefined)
     }),
     // CR overcap constraint: prevent solver from allocating substat rolls
-    // to CR above 100%. Final crit rate includes base, w-engine, abilities,
-    // disc main stat, and disc substats. Any CR beyond 100% contributes
-    // nothing to damage (formula caps via `cappedCrit_`), so the solver
-    // must not waste rolls on it.
+    // to CR above cap (100% normally, 200% for Armorer). Final crit rate
+    // includes base, w-engine, abilities, disc main stat, and disc substats.
+    // Any CR beyond cap contributes nothing to damage (formula caps via
+    // `cappedCrit_` / `cappedCritExcess_`), so the solver must not waste
+    // rolls on it.
     // Only applies in theoretical max mode (recipeCandidates) where the
     // solver freely allocates rolls across substats; in normal mode, discs
     // have fixed substats and the formula's cappedCrit_ already handles it.
+    // Note: cap value is enforced via `minimum` (finalCrit <= cap); the node
+    // here is just -finalCrit.
     ...(recipeCandidates
       ? [
           prod(
@@ -218,9 +222,14 @@ export function createSolverConfig(
         const decimalVal = toDecimal(value, tag.q ?? '')
         return (isMax ? decimalVal * -1 : decimalVal) - EPSILON
       }),
-      // CR overcap constraint minimum (finalCrit <= 1.0):
-      // inverted max constraint: -finalCrit >= -1 - EPSILON === finalCrit <= 1 + EPSILON
-      ...(recipeCandidates ? [-1 - EPSILON] : []),
+      // CR overcap constraint minimum (finalCrit <= 1.0, 2.0 for Armorer):
+      // inverted max constraint: -finalCrit >= -cap - EPSILON === finalCrit <= cap + EPSILON
+      ...(recipeCandidates
+        ? [
+            (allStats.char[characterKey]?.specialty === 'armorer' ? -2 : -1) -
+              EPSILON,
+          ]
+        : []),
       2, // setFilter2
       4, // setFilter4
       bothFiltersActive && allSelectedSets.length ? 6 : Infinity, // all selected sets fill 6 slots

@@ -16,6 +16,26 @@ const data: TagMapNodeEntries = [
   ownBuff.formula.sheerDmg.reread(ownBuff.dmg.shared),
   ownBuff.formula.sheerDmg.add(own.dmg.sheer_mult_),
 
+  ownBuff.formula.sharpDmg.add(sum(own.formula.base, own.final.flat_dmg)),
+  ownBuff.formula.sharpDmg.add(own.dmg.laceration_mult_),
+  ownBuff.formula.sharpDmg.add(own.dmg.laceration_check_mult_),
+  // Reread to flatten the formula
+  ownBuff.formula.sharpDmg.reread(ownBuff.dmg.shared),
+  ownBuff.formula.sharpDmg.add(own.dmg.def_mult_),
+  ownBuff.formula.sharpDmg.add(own.dmg.sharp_mult_),
+
+  ownBuff.formula.maimDmg.add(sum(own.formula.base, own.final.flat_dmg)),
+  ownBuff.formula.maimDmg.add(own.dmg.laceration_mult_),
+  ownBuff.formula.maimDmg.add(own.dmg.laceration_check_mult_),
+  // Reread to flatten the formula
+  ownBuff.formula.maimDmg.reread(ownBuff.dmg.shared),
+  ownBuff.formula.maimDmg.add(own.dmg.def_mult_),
+  ownBuff.formula.maimDmg.add(own.dmg.sharp_mult_),
+
+  ownBuff.formula.gashBuildup.add(
+    prod(own.formula.base, sum(percent(1), own.final.gashBuildup_))
+  ),
+
   ownBuff.formula.anomalyDmg.add(
     sum(
       prod(own.formula.base, own.dmg.anom_base_mult_),

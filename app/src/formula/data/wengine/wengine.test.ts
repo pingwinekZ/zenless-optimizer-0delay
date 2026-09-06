@@ -21,6 +21,7 @@ import {
   enemy,
   enemyDebuff,
   own,
+  ownBuff,
   ownTag,
   type TagMapNodeEntries,
 } from '../util'
@@ -34,6 +35,7 @@ const specialityMap: Record<SpecialityKey, CharacterKey> = {
   anomaly: 'Piper',
   support: 'Nicole',
   defense: 'Ben',
+  armorer: 'Claret',
 }
 
 function testCharacterData(wengineKey: WengineKey) {
@@ -107,6 +109,36 @@ describe('Disc sheets test', () => {
 
     expect(calc.compute(char.final.dmg_.ice).val).toBeCloseTo(0.24) // passive
     expect(calc.compute(char.combat.atk_).val).toBeCloseTo(4 * 0.032) // cond
+  })
+
+  it('BloodmarrowCoffer', () => {
+    const { data, characterKey } = testCharacterData('BloodmarrowCoffer')
+    const char = convert(ownTag, { et: 'own', src: characterKey })
+    // P5: 0.8% DMG per whole 1% CRIT over 100%, capped at 40%
+    const baseCrit = new Calculator(
+      keys,
+      values,
+      compileTagMapValues(keys, data)
+    )
+      .withTag({ src: characterKey, dst: characterKey })
+      .compute(char.final.crit_).val
+    const critDmgAt = (critRate: number) =>
+      new Calculator(
+        keys,
+        values,
+        compileTagMapValues(keys, [
+          ...data,
+          ownBuff.combat.crit_.add(critRate - baseCrit),
+        ])
+      )
+        .withTag({ src: characterKey, dst: characterKey })
+        .compute(char.combat.common_dmg_).val
+
+    expect(critDmgAt(1.01)).toBeCloseTo(0.008) // 1 step
+    expect(critDmgAt(1.019)).toBeCloseTo(0.008) // fractional excess floored away
+    expect(critDmgAt(1.02)).toBeCloseTo(0.016) // 2 steps
+    expect(critDmgAt(1.025)).toBeCloseTo(0.016) // still 2 steps
+    expect(critDmgAt(1.51)).toBeCloseTo(0.4) // capped at 40%
   })
 
   // BigCyliner should be here but no conds

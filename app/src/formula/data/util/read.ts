@@ -222,6 +222,12 @@ export class Read extends BaseRead<Tag> {
       super.with('damageType2', 'assistFollowUp'),
     ]
   }
+  get counterAssist(): Read[] {
+    return [
+      super.with('damageType1', 'counterAssist'),
+      super.with('damageType2', 'counterAssist'),
+    ]
+  }
   get anomaly(): Read[] {
     return [
       super.with('damageType1', 'anomaly'),
@@ -250,6 +256,24 @@ export class Read extends BaseRead<Tag> {
     return [
       super.with('damageType1', 'sheer'),
       super.with('damageType2', 'sheer'),
+    ]
+  }
+  get sharp(): Read[] {
+    return [
+      super.with('damageType1', 'sharp'),
+      super.with('damageType2', 'sharp'),
+    ]
+  }
+  get gash(): Read[] {
+    return [
+      super.with('damageType1', 'gash'),
+      super.with('damageType2', 'gash'),
+    ]
+  }
+  get maim(): Read[] {
+    return [
+      super.with('damageType1', 'maim'),
+      super.with('damageType2', 'maim'),
     ]
   }
   get abloom(): Read[] {

@@ -1,4 +1,5 @@
 import anomaly from './IconAnomaly.png'
+import armorer from './IconArmorer.png'
 import attack from './IconAttack.png'
 import defense from './IconDefense.png'
 import rupture from './IconRupture.png'
@@ -8,6 +9,7 @@ import support from './IconSupport.png'
 const data = {
   attack,
   anomaly,
+  armorer,
   defense,
   stun,
   support,

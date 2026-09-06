@@ -1,0 +1,14 @@
+{
+  "name": "[Lunar] Semiluna",
+  "desc": "...",
+  "desc2": "Equip to increase Armorer Agents' combat capabilities",
+  "desc3": "...",
+  "phase": "Crescent Moon",
+  "phaseDescs": [
+    "When using an <ct color=#FFFFFF>EX Special Attack</ct>, Basic Attack DMG increases by <ct color=#2BAD00>18%</ct> for 10s. Repeated triggers refresh the duration.",
+    "When using an <ct color=#FFFFFF>EX Special Attack</ct>, Basic Attack DMG increases by <ct color=#2BAD00>21%</ct> for 10s. Repeated triggers refresh the duration.",
+    "When using an <ct color=#FFFFFF>EX Special Attack</ct>, Basic Attack DMG increases by <ct color=#2BAD00>24%</ct> for 10s. Repeated triggers refresh the duration.",
+    "When using an <ct color=#FFFFFF>EX Special Attack</ct>, Basic Attack DMG increases by <ct color=#2BAD00>27%</ct> for 10s. Repeated triggers refresh the duration.",
+    "When using an <ct color=#FFFFFF>EX Special Attack</ct>, Basic Attack DMG increases by <ct color=#2BAD00>30%</ct> for 10s. Repeated triggers refresh the duration."
+  ]
+}

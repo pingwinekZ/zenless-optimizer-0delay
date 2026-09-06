@@ -22,6 +22,7 @@ export function WengineEditor({
   const wengineStats = key
     ? getWengineStats(key, level, phase, modification)
     : undefined
+  const baseStat = wengineStat?.baseStatkey === 'def_base' ? 'def' : 'atk'
 
   const img = key ? wengineAsset(key) : ''
   return (
@@ -64,10 +65,11 @@ export function WengineEditor({
                         fontWeight: 'bold',
                       }}
                     >
-                      <StatDisplay statKey={'atk'} />
+                      <StatDisplay statKey={baseStat} />
                     </Text>
                     <Text fw="bold">
-                      {wengineStats && wengineStats['atk_base'].toFixed()}
+                      {wengineStats &&
+                        wengineStats[wengineStat.baseStatkey].toFixed()}
                     </Text>
                   </Flex>
 

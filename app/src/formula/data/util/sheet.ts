@@ -112,6 +112,9 @@ function registerFormula(
   q:
     | 'standardDmg'
     | 'sheerDmg'
+    | 'sharpDmg'
+    | 'maimDmg'
+    | 'gashBuildup'
     | 'heal'
     | 'shield'
     | 'anomalyDmg'
@@ -185,6 +188,57 @@ export function customSheerDmg(
     name,
     team,
     'sheerDmg',
+    tag(cond, dmgTag),
+    ownBuff.formula.base.add(base),
+    ...extra
+  )
+}
+
+export function customSharpDmg(
+  name: string,
+  dmgTag: DmgTag,
+  base: NumNode,
+  { team, cond = 'infer' }: FormulaArg = {},
+  ...extra: TagMapNodeEntries
+): TagMapNodeEntries {
+  return registerFormula(
+    name,
+    team,
+    'sharpDmg',
+    tag(cond, dmgTag),
+    ownBuff.formula.base.add(base),
+    ...extra
+  )
+}
+
+export function customMaimDmg(
+  name: string,
+  dmgTag: DmgTag,
+  base: NumNode,
+  { team, cond = 'infer' }: FormulaArg = {},
+  ...extra: TagMapNodeEntries
+): TagMapNodeEntries {
+  return registerFormula(
+    name,
+    team,
+    'maimDmg',
+    tag(cond, dmgTag),
+    ownBuff.formula.base.add(base),
+    ...extra
+  )
+}
+
+export function customGashBuildup(
+  name: string,
+  dmgTag: DmgTag,
+  base: NumNode,
+  { team, cond = 'infer' }: FormulaArg = {},
+  ...extra: TagMapNodeEntries
+): TagMapNodeEntries {
+  return registerFormula(
+    name,
+    team,
+    'gashBuildup',
     tag(cond, dmgTag),
     ownBuff.formula.base.add(base),
     ...extra

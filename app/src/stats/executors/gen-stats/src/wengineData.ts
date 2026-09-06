@@ -5,13 +5,15 @@ import type {
   WengineRarityKey,
   WengineSubStatKey,
 } from '../../../../consts'
+import type { WengineBaseStatKey } from '../../../../dm'
 import { wengineDetailedJSONData } from '../../../../dm'
 import { extractParamsFromString } from './util'
 
 export type WengineDatum = {
   rarity: WengineRarityKey
   type: SpecialityKey
-  atk_base: number
+  baseStatkey: WengineBaseStatKey
+  baseStatvalue: number
   second_statkey: WengineSubStatKey
   second_statvalue: number
   phase: PhaseData[]
@@ -24,10 +26,19 @@ export type WenginesData = Record<WengineKey, WengineDatum>
 export function getWenginesData(): WenginesData {
   return objMap(
     wengineDetailedJSONData,
-    ({ rarity, type, atk_base, second_statkey, second_statvalue, phase }) => ({
+    ({
       rarity,
       type,
-      atk_base,
+      baseStatkey,
+      baseStatvalue,
+      second_statkey,
+      second_statvalue,
+      phase,
+    }) => ({
+      rarity,
+      type,
+      baseStatkey,
+      baseStatvalue,
       second_statkey,
       second_statvalue,
       phase: phase.map(({ desc }) => ({

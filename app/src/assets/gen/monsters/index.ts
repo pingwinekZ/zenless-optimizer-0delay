@@ -13,12 +13,15 @@ import GirReborn from './GirReborn.webp'
 import Girtablu from './Girtablu.webp'
 import Girtablu_HC from './Girtablu_HC.webp'
 import GraymaneCenturion from './GraymaneCenturion.webp'
+import HACMecha from './HACMecha.webp'
 import Hayyot from './Hayyot.webp'
 import HereticHunter from './HereticHunter.webp'
+import HoloMutant from './HoloMutant.webp'
 import HugoVlad_Boss from './HugoVlad_Boss.webp'
 import InnerKnight from './InnerKnight.webp'
 import InnerKnightSlime from './InnerKnightSlime.webp'
 import IsoldetheDefiler from './IsoldetheDefiler.webp'
+import Larval from './Larval.webp'
 import MentorMevorakh from './MentorMevorakh.webp'
 import MiasmaDubiousHero from './MiasmaDubiousHero.webp'
 import MiasmaHugoSlime from './MiasmaHugoSlime.webp'
@@ -33,8 +36,10 @@ import NotoriousDeadEndButcher from './NotoriousDeadEndButcher.webp'
 import NotoriousMarionette from './NotoriousMarionette.webp'
 import NotoriousPompey from './NotoriousPompey.webp'
 import ObsoleteAndroid from './ObsoleteAndroid.webp'
+import PorcelumeTerrorBird from './PorcelumeTerrorBird.webp'
 import SacrificeBringer from './SacrificeBringer.webp'
 import Sentinel from './Sentinel.webp'
+import SymbioticEtherealSinner from './SymbioticEtherealSinner.webp'
 import Tepes from './Tepes.webp'
 import Thracian from './Thracian.webp'
 import TyphonDestroyer from './TyphonDestroyer.webp'
@@ -43,6 +48,7 @@ import Vesper from './Vesper.webp'
 import Vessel from './Vessel.webp'
 import WanderingHunter from './WanderingHunter.webp'
 import WingedAvarus from './WingedAvarus.webp'
+import WingedChelonethid from './WingedChelonethid.webp'
 
 const data = {
   Avarus,
@@ -58,12 +64,15 @@ const data = {
   Girtablu,
   Girtablu_HC,
   GraymaneCenturion,
+  HACMecha,
   Hayyot,
   HereticHunter,
+  HoloMutant,
   HugoVlad_Boss,
   InnerKnight,
   InnerKnightSlime,
   IsoldetheDefiler,
+  Larval,
   MentorMevorakh,
   MiasmaDubiousHero,
   MiasmaHugoSlime,
@@ -78,8 +87,10 @@ const data = {
   NotoriousMarionette,
   NotoriousPompey,
   ObsoleteAndroid,
+  PorcelumeTerrorBird,
   SacrificeBringer,
   Sentinel,
+  SymbioticEtherealSinner,
   Tepes,
   Thracian,
   TyphonDestroyer,
@@ -88,5 +99,6 @@ const data = {
   Vessel,
   WanderingHunter,
   WingedAvarus,
+  WingedChelonethid,
 } as const
 export default data

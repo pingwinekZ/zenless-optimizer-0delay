@@ -1,0 +1,14 @@
+{
+  "name": "Crimson Thirst",
+  "desc": "...",
+  "desc2": "Equip to increase Armorer Agents' combat capabilities",
+  "desc3": "...",
+  "phase": "Bloodthirst",
+  "phaseDescs": [
+    "The equipper's CRIT Rate increases by <ct color=#2BAD00>25%</ct>, and <ct color=#2EB6FF>Electric DMG</ct> increases by <ct color=#2BAD00>15%</ct>. When the equipper uses an <ct color=#FFFFFF>EX Special Attack</ct> or triggers <ct color=#FFFFFF>Maim</ct>, <ct color=#2EB6FF>Electric Sharp DMG</ct> dealt increases by <ct color=#2BAD00>10%</ct> for 40s. Repeated triggers refresh the duration.",
+    "The equipper's CRIT Rate increases by <ct color=#2BAD00>27.5%</ct>, and <ct color=#2EB6FF>Electric DMG</ct> increases by <ct color=#2BAD00>17.5%</ct>. When the equipper uses an <ct color=#FFFFFF>EX Special Attack</ct> or triggers <ct color=#FFFFFF>Maim</ct>, <ct color=#2EB6FF>Electric Sharp DMG</ct> dealt increases by <ct color=#2BAD00>11.5%</ct> for 40s. Repeated triggers refresh the duration.",
+    "The equipper's CRIT Rate increases by <ct color=#2BAD00>30%</ct>, and <ct color=#2EB6FF>Electric DMG</ct> increases by <ct color=#2BAD00>20%</ct>. When the equipper uses an <ct color=#FFFFFF>EX Special Attack</ct> or triggers <ct color=#FFFFFF>Maim</ct>, <ct color=#2EB6FF>Electric Sharp DMG</ct> dealt increases by <ct color=#2BAD00>13%</ct> for 40s. Repeated triggers refresh the duration.",
+    "The equipper's CRIT Rate increases by <ct color=#2BAD00>32.5%</ct>, and <ct color=#2EB6FF>Electric DMG</ct> increases by <ct color=#2BAD00>22.5%</ct>. When the equipper uses an <ct color=#FFFFFF>EX Special Attack</ct> or triggers <ct color=#FFFFFF>Maim</ct>, <ct color=#2EB6FF>Electric Sharp DMG</ct> dealt increases by <ct color=#2BAD00>14.5%</ct> for 40s. Repeated triggers refresh the duration.",
+    "The equipper's CRIT Rate increases by <ct color=#2BAD00>35%</ct>, and <ct color=#2EB6FF>Electric DMG</ct> increases by <ct color=#2BAD00>25%</ct>. When the equipper uses an <ct color=#FFFFFF>EX Special Attack</ct> or triggers <ct color=#FFFFFF>Maim</ct>, <ct color=#2EB6FF>Electric Sharp DMG</ct> dealt increases by <ct color=#2BAD00>16%</ct> for 40s. Repeated triggers refresh the duration."
+  ]
+}

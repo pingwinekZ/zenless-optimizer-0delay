@@ -13,6 +13,13 @@ import {
 } from './consts'
 
 const SCALING = 10000
+
+export const baseStatMap = {
+  'Base ATK': 'atk_base',
+  'Base DEF': 'def_base',
+} as const
+export type WengineBaseStatKey = (typeof baseStatMap)[keyof typeof baseStatMap]
+
 type WengineRawData = {
   Rarity: number
   WeaponType: Record<string, string>
@@ -22,8 +29,8 @@ type WengineRawData = {
   Desc3: string
   Icon: string
   BaseProperty: {
-    Name: 'Base ATK'
-    Name2: 'Base ATK'
+    Name: keyof typeof baseStatMap
+    Name2: keyof typeof baseStatMap
     Format: '{0:0.#}'
     Value: 40
   }
@@ -39,7 +46,8 @@ export type WengineData = {
   name: string
   rarity: WengineRarityKey
   type: SpecialityKey
-  atk_base: number
+  baseStatkey: WengineBaseStatKey
+  baseStatvalue: number
   second_statkey: (typeof subStatMap)[keyof typeof subStatMap]
   second_statvalue: number
   icon: string
@@ -62,7 +70,8 @@ export const wengineDetailedJSONData = Object.fromEntries(
       name: raw.Name,
       rarity: wengineRarityMap[raw.Rarity],
       type: specialityMap[Object.keys(raw.WeaponType)[0] as any],
-      atk_base: raw.BaseProperty.Value,
+      baseStatkey: baseStatMap[raw.BaseProperty.Name],
+      baseStatvalue: raw.BaseProperty.Value,
       second_statkey,
       second_statvalue:
         raw.RandProperty.Value / (isPercentStat(second_statkey) ? SCALING : 1),
