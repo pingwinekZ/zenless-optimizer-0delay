@@ -782,7 +782,7 @@ const characterPlans: Record<CharacterKey, CharacterPlan> = {
       def: 0.8,
     },
     mainStats: {
-      4: ['crit_', 'def_'],
+      4: ['crit_'],
       5: ['pen_'],
       6: ['def_'],
     },
