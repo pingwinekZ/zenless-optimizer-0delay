@@ -216,7 +216,7 @@ function isTdrRiskPlatform(): boolean {
 }
 
 function encodeCandidates(candidates: Candidate<string | number>[][]): {
-  coords: Float32Array
+  coords: Float32Array<ArrayBuffer>
   coordKeys: string[]
   coordIndex: Map<string, number>
 } {
@@ -268,11 +268,9 @@ export async function optimize<ID>(
   // TDR-risk platforms by the calibration below.
   let chunkSize = computeChunkSize(permLimit, targetChunks)
 
-  const {
-    coords: allCoords,
-    coordKeys,
-    coordIndex,
-  } = encodeCandidates(orderedCandidates as Candidate<string | number>[][])
+  const { coords: allCoords, coordKeys } = encodeCandidates(
+    orderedCandidates as Candidate<string | number>[][]
+  )
   // Per-slot coordinate availability: which keys each slot's candidates carry.
   // The codegen uses this to drop per-cycle loads for coords absent from slot
   // 0 (pure hoisted-base reads) and to skip base recompute for coords confined
