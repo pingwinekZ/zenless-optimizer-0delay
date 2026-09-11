@@ -27,11 +27,7 @@ const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
-const { ex_chain_ult_used, suppresive_mode } = allBoolConditionals(
-  key,
-  undefined,
-  { suppresive_mode: 2 }
-)
+const { ex_chain_ult_used } = allBoolConditionals(key, undefined)
 const { shotshells_hit } = allNumConditionals(
   key,
   true,
@@ -197,11 +193,21 @@ const sheet = register(
 
   // TODO: override the assist followup
 
-  // Mindscape 6 custom damage
+  // Mindscape 6 custom damage (paired registerBuff so the sheet field renders)
   ...customDmg(
     'm6_ether_afterglow',
     { ...baseTag, damageType1: 'elemental' },
     cmpGE(char.mindscape, 6, prod(own.final.atk, percent(dm.m6.dmg)))
+  ),
+  registerBuff(
+    'm6_ether_afterglow',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'elemental',
+      cmpGE(char.mindscape, 6, percent(dm.m6.dmg))
+    ),
+    undefined,
+    undefined,
+    false
   ),
 
   // Buffs
@@ -219,12 +225,6 @@ const sheet = register(
         2,
         ex_chain_ult_used.ifOn(dm.ability.crit_)
       )
-    )
-  ),
-  registerBuff(
-    'm2_dmg_red_',
-    ownBuff.combat.dmg_red_.add(
-      cmpGE(char.mindscape, 2, suppresive_mode.ifOn(dm.m2.dmg_red_))
     )
   ),
   registerBuff(

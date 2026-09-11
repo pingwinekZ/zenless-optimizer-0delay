@@ -177,6 +177,10 @@ function extractCharConditionalFields(
           if (teamFields.length === 0 && !doc.conditional.showInTeammateView)
             return
           if (!result[condName]) result[condName] = []
+          // Dedup only against fields merged from earlier docs (linked
+          // conditionals split across sections). Fields within this doc are
+          // all kept, even when they share a tag: the same buff may be shown
+          // under several per-hit/per-skill titles (Seed §3.7 pattern).
           const seenKeys = new Set(
             result[condName]
               .map((f) =>
@@ -190,7 +194,6 @@ function extractCharConditionalFields(
             if ('fieldRef' in field) {
               const key = `${field.fieldRef?.q ?? ''}|${field.fieldRef?.damageType1 ?? ''}|${field.fieldRef?.damageType2 ?? ''}|${field.fieldRef?.name ?? ''}`
               if (!key || !seenKeys.has(key)) {
-                seenKeys.add(key)
                 result[condName].push(field)
               }
             } else {
@@ -203,6 +206,10 @@ function extractCharConditionalFields(
           // Remielle m1: hide squad-only Anomaly DMG conditional from own view
           if (characterKey === 'Remielle' && condName === 'phaseFlow_m1') return
           if (!result[condName]) result[condName] = []
+          // Dedup only against fields merged from earlier docs (linked
+          // conditionals split across sections). Fields within this doc are
+          // all kept, even when they share a tag: the same buff may be shown
+          // under several per-hit/per-skill titles (Seed §3.7 pattern).
           const seenKeys = new Set(
             result[condName]
               .map((f) =>
@@ -230,7 +237,6 @@ function extractCharConditionalFields(
             if ('fieldRef' in field) {
               const key = `${field.fieldRef?.q ?? ''}|${field.fieldRef?.damageType1 ?? ''}|${field.fieldRef?.damageType2 ?? ''}|${field.fieldRef?.name ?? ''}`
               if (!key || !seenKeys.has(key)) {
-                seenKeys.add(key)
                 result[condName].push(field)
               }
             } else {
