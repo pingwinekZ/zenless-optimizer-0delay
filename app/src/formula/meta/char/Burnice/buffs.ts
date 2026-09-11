@@ -69,7 +69,7 @@ export const buffs = {
       qt: 'combat',
       q: 'crit_',
       sheet: 'Burnice',
-      skillType2: 'assistSkill',
+      skillType1: 'assistSkill',
       name: 'm4_assistSkill_crit_',
     },
     team: false,

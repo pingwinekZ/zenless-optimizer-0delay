@@ -70,12 +70,25 @@ export default async function runExecutor(
         // teamBuff.listing.buffs → et: 'teamBuff'.
         const team = tag['et'] === 'teamBuff'
         const preExisting = result[sheet]?.[name]
-        // Ignore double listings for damageType
+        // Ignore double listings for damageType / skillType.
+        // `addWithDmgType` / `addWithSkillType` emit paired entries
+        // (`damageType1` vs `damageType2`, `skillType1` vs `skillType2`)
+        // for the same logical buff, and `registerBuff` creates a listing
+        // entry for each. Only keep the first listing.
         if (
           preExisting &&
-          preExisting.tag.damageType1 !== undefined &&
-          preExisting.tag.damageType1 === value.tag['damageType2'] &&
-          preExisting.tag.damageType2 === value.tag['damageType1']
+          (isSwappedPair(
+            preExisting.tag.damageType1,
+            preExisting.tag.damageType2,
+            value.tag['damageType1'],
+            value.tag['damageType2']
+          ) ||
+            isSwappedPair(
+              preExisting.tag.skillType1,
+              preExisting.tag.skillType2,
+              value.tag['skillType1'],
+              value.tag['skillType2']
+            ))
         ) {
           return undefined
         }
@@ -115,6 +128,17 @@ export default async function runExecutor(
   ])
 
   return { success: true }
+}
+
+function isSwappedPair(
+  existing1: unknown,
+  existing2: unknown,
+  next1: unknown,
+  next2: unknown
+): boolean {
+  return (
+    existing1 !== undefined && existing1 === next2 && existing2 === next1
+  )
 }
 
 async function dumpMeta(

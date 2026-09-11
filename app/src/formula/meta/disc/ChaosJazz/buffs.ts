@@ -63,7 +63,7 @@ export const buffs = {
       q: 'dmg_',
       sheet: 'ChaosJazz',
       dst: null,
-      skillType2: 'assistSkill',
+      skillType1: 'assistSkill',
       name: 'set4_off_field_assist_dmg_',
     },
     team: false,
