@@ -1,10 +1,14 @@
 {
-  "core_header": "Core Passive",
-  "iceAttacksCond": "Ice Attacks",
-  "abilityIceAttacksCond": "Ice Attacks · Ice DMG",
-  "potentialIceAttacksCond": "Ice Attacks · CRIT DMG & Ice RES Ignore",
-  "m1Cond": "For each Flash Freeze Charge consumed",
-  "m2Cond": "For each point of Flash Freeze Charge",
-  "m6Cond": "When Ellen uses an EX Special Attack, Chain Attack, or gains Quick Charge",
-  "m6Cond2": "All The Feast Begins stacks consumed"
+  "core_header": "CD",
+  "core_flash_freeze_trimming_crit_dmg_": "Flash Freeze Trimming CRIT DMG",
+  "core_icy_blade_crit_dmg_": "Icy Blade CRIT DMG",
+  "core_glacial_blade_wave_crit_dmg_": "Glacial Blade Wave CRIT DMG",
+  "core_charged_scissors_crit_dmg_": "Arctic Ambush - Charged Scissors CRIT DMG",
+  "abilityIceAttacksCond": "Ice DMG · DMG",
+  "potentialIceAttacksCond": "Ice DMG · CD & RES Ignore",
+  "m1Cond": "Flash Freeze Consumed · CR",
+  "m2Cond": "Flash Freeze Charge · CD",
+  "m6Cond": "EX / Chain / Quick Charge · PEN",
+  "m6Cond2": "The Feast Begins · DMG",
+  "m6_feast_dmg": "Arctic Ambush #3 DMG"
 }
