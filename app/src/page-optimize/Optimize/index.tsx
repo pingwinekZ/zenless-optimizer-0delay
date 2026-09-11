@@ -663,7 +663,6 @@ function OptimizeWrapper() {
   ])
 
   const [optimizing, setOptimizing] = useState(false)
-  const [sortByKey, setSortByKey] = useState<string | undefined>(undefined)
   const [sortTrigger, setSortTrigger] = useState(0)
 
   const onResultLimitChange = useCallback(
@@ -1244,13 +1243,9 @@ function OptimizeWrapper() {
             character={character}
             team={team}
             discsBySlot={discsBySlot}
-            sortByKey={sortByKey}
-            resultLimit={optConfig.maxBuildsToShow}
             statFiltersRef={statFiltersRef}
             onCharacterChange={onCharacterChange}
             onWengineChange={onWengineChange}
-            onSortByChange={setSortByKey}
-            onResultLimitChange={onResultLimitChange}
             useTheoreticalMax={useTheoreticalMax}
             setUseTheoreticalMax={setUseTheoreticalMax}
           />
@@ -1264,7 +1259,6 @@ function OptimizeWrapper() {
                 enrichedBuilds={enrichedBuilds}
                 pinnedBuild={equippedBuild}
                 statDisplay={statDisplay}
-                sortByKey={sortByKey}
                 sortTrigger={sortTrigger}
                 specialityKey={getCharStat(characterKey).specialty}
                 selectedBuildId={
@@ -1378,10 +1372,12 @@ function OptimizeWrapper() {
                     statDisplay={statDisplay}
                     useTheoreticalMax={useTheoreticalMax}
                     engine={engine}
+                    resultLimit={optConfig.maxBuildsToShow}
                     onEngineChange={setEngine}
                     onOptimize={onOptimize}
                     onCancel={onCancel}
                     onReset={onReset}
+                    onResultLimitChange={onResultLimitChange}
                     onStatDisplayChange={setStatDisplay}
                   />
                   <ResultsSection

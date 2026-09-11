@@ -52,13 +52,9 @@ export function OptimizerForm({
   team,
   discsBySlot,
   disabled,
-  sortByKey,
-  resultLimit,
   statFiltersRef,
   onCharacterChange,
   onWengineChange,
-  onSortByChange,
-  onResultLimitChange,
   useTheoreticalMax,
   setUseTheoreticalMax,
 }: {
@@ -67,13 +63,9 @@ export function OptimizerForm({
   team: Team
   discsBySlot: Record<DiscSlotKey, ICachedDisc[]>
   disabled?: boolean
-  sortByKey?: string
-  resultLimit?: number
   statFiltersRef: MutableRefObject<StatFilters>
   onCharacterChange: (ck: CharacterKey) => void
   onWengineChange: (wengineKey: WengineKey | '') => void
-  onSortByChange: (key: string) => void
-  onResultLimitChange: (limit: number) => void
   useTheoreticalMax: boolean
   setUseTheoreticalMax: (v: boolean) => void
 }) {
@@ -125,17 +117,13 @@ export function OptimizerForm({
           onWengineChange={onWengineChange}
         />
 
-        {/* Card 2: Character + W-Engine selectors, Presets, Optimization Target */}
+        {/* Card 2: Character + W-Engine selectors, Presets */}
         <FormCard>
           <CharacterSelectorDisplay
             characterKey={characterKey}
             onCharacterChange={onCharacterChange}
             wengineKey={character.wengineKey || ''}
             onWengineChange={onWengineChange}
-            sortByKey={sortByKey}
-            resultLimit={resultLimit}
-            onSortByChange={onSortByChange}
-            onResultLimitChange={onResultLimitChange}
           />
         </FormCard>
 
