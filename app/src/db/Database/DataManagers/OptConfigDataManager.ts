@@ -102,8 +102,6 @@ const optConfigSchema = z.object({
   useEquipped: zodBoolean(),
   useCharacterPriority: zodBoolean(),
   includeOffsets: zodBoolean(),
-  showCharPassives: zodBoolean(),
-  showWenginePassives: zodBoolean(),
 
   engine: z.enum(allOptimizerEngines).catch('gpu'),
 

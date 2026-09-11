@@ -1,5 +1,9 @@
-import { Box, Divider, Menu, Stack } from '@mantine/core'
-import { DropdownButton } from '@zenless-optimizer/common/ui'
+import { Box, Button, Divider, Group, Menu, Stack, Text } from '@mantine/core'
+import {
+  ColorText,
+  DropdownButton,
+  SqBadge,
+} from '@zenless-optimizer/common/ui'
 import { useCallback, useMemo } from 'react'
 import type { TargetTag } from '../db'
 import {
@@ -11,8 +15,21 @@ import {
 import { useDatabaseContext } from '../db-ui'
 import type { Tag } from '../formula'
 import { own } from '../formula'
-import { getDmgType, useZzzCalcContext } from '../formula-ui'
-import { OptTargetTagDisplay } from './OptTargetTagDisplay'
+import {
+  damageTypeKeysMap,
+  getDmgType,
+  getVariant,
+  useZzzCalcContext,
+} from '../formula-ui'
+import { getCharStat } from '../stats'
+import { AttributeName } from '../ui'
+import {
+  OptTargetTagDisplay,
+  parseSkillVariant,
+  type SkillVariantKind,
+  skillBadges,
+  skillVariantBase,
+} from './OptTargetTagDisplay'
 
 const statTargets = [
   own.final.atk,
@@ -43,16 +60,57 @@ const dmgCategories: DmgCategory[] = [
       'defensiveAssist',
       'evasiveAssist',
       'assistFollowUp',
+      'counterAssist',
     ],
   },
 ]
 
 function getFormulaCategory(tag: Tag): string {
+  // Use the raw damageType1 first so Daze/Buildup variants (whose q is not a
+  // dmg type and hence invisible to getDmgType) land in the same category as
+  // their DMG counterpart instead of "other".
+  const rawDamageType = tag.damageType1
+  if (rawDamageType) {
+    for (const cat of dmgCategories) {
+      if (cat.matchTypes.includes(rawDamageType)) return cat.key
+    }
+  }
   const dmgTypes = getDmgType(tag)
   for (const cat of dmgCategories) {
     if (dmgTypes.some((dt) => cat.matchTypes.includes(dt))) return cat.key
   }
   return 'other'
+}
+
+type SkillVariantEntry = { tag: Tag; kind: SkillVariantKind }
+
+type CategoryEntry =
+  | { type: 'group'; key: string; base: string; variants: SkillVariantEntry[] }
+  | { type: 'single'; tag: Tag }
+
+const variantOrder: Record<SkillVariantKind, number> = {
+  dmg: 0,
+  daze: 1,
+  anomBuildup: 2,
+  gashBuildup: 2,
+}
+
+function variantPillLabel(kind: SkillVariantKind): string {
+  switch (kind) {
+    case 'dmg':
+      return 'DMG'
+    case 'daze':
+      return 'Daze'
+    case 'anomBuildup':
+    case 'gashBuildup':
+      return 'Buildup'
+  }
+}
+
+/** Element suffix of shared anomaly vortex targets (`vortexDmgInst_fire` → `fire`). */
+function vortexSuffix(tag: Tag): string | undefined {
+  if (tag.sheet !== 'agg' || typeof tag.name !== 'string') return undefined
+  return tag.name.match(/^vortexDmgInst_(.+)$/)?.[1]
 }
 
 export function OptTargetSelector({
@@ -97,9 +155,13 @@ export function OptTargetSelector({
     return getFormulaCategory(tag)
   }, [tag])
 
-  // Group formulas by damage type category
-  const categorizedFormulas = useMemo(() => {
-    const map: Record<string, Tag[]> = {
+  // Group formulas by damage type category, combining the DMG / Daze /
+  // Buildup variants of each attack (ability + hit) into a single entry so
+  // each row reads "{attack name} DMG | Daze | Buildup".
+  // Shared anomaly vortex targets are filtered to the character's element
+  // (wind/lumiflux keep all; Miyabi sees frost instead of ice).
+  const categorizedEntries = useMemo(() => {
+    const map: Record<string, CategoryEntry[]> = {
       basic: [],
       dodge: [],
       special: [],
@@ -107,14 +169,49 @@ export function OptTargetSelector({
       assist: [],
       other: [],
     }
+    const attribute = getCharStat(characterKey).attribute
+    const expectedVortex =
+      attribute === 'wind' || attribute === 'lumiflux'
+        ? undefined
+        : characterKey === 'Miyabi'
+          ? 'frost'
+          : attribute
+    const groupIndex: Record<string, Record<string, number>> = {}
     for (const { tag: ftag } of formulaOptions) {
       const { name, sheet } = ftag
       if (!name || !sheet) continue
+      const suffix = vortexSuffix(ftag)
+      if (suffix && expectedVortex && suffix !== expectedVortex) continue
       const cat = getFormulaCategory(ftag)
-      map[cat].push(ftag)
+      const parsed = parseSkillVariant(ftag)
+      if (!parsed) {
+        map[cat].push({ type: 'single', tag: ftag })
+        continue
+      }
+      const groupKey = `${sheet}_${parsed.abilityKey}_${parsed.hitIdx}`
+      const idx = groupIndex[cat]?.[groupKey]
+      if (idx === undefined) {
+        ;(groupIndex[cat] ??= {})[groupKey] = map[cat].length
+        map[cat].push({
+          type: 'group',
+          key: groupKey,
+          base: skillVariantBase(ftag) ?? parsed.abilityKey,
+          variants: [{ tag: ftag, kind: parsed.kind }],
+        })
+      } else {
+        const entry = map[cat][idx]
+        if (entry.type === 'group')
+          entry.variants.push({ tag: ftag, kind: parsed.kind })
+      }
     }
+    for (const entries of Object.values(map))
+      for (const entry of entries)
+        if (entry.type === 'group')
+          entry.variants.sort(
+            (a, b) => variantOrder[a.kind] - variantOrder[b.kind]
+          )
     return map
-  }, [formulaOptions])
+  }, [formulaOptions, characterKey])
 
   // Check if a formula tag matches the currently active target
   const isFormulaActive = useCallback(
@@ -154,10 +251,81 @@ export function OptTargetSelector({
     [handleFormulaSelect, isFormulaActive]
   )
 
+  // Render a grouped "{attack name} DMG | Daze | Buildup" row: colored name +
+  // badges in the first column, variant pills in the second column.
+  const renderGroupEntry = useCallback(
+    (entry: Extract<CategoryEntry, { type: 'group' }>) => {
+      const anyActive = entry.variants.some(({ tag: vtag }) =>
+        isFormulaActive(vtag)
+      )
+      const repTag =
+        entry.variants.find(({ kind }) => kind === 'dmg')?.tag ??
+        entry.variants[0].tag
+      const badges = skillBadges(repTag)
+      return (
+        <Box key={entry.key} px={10} py={6}>
+          <Group gap="xs" wrap="nowrap" align="center">
+            <Box style={{ flex: 1, minWidth: 0 }}>
+              <ColorText color={getVariant(repTag)}>
+                <Text fw={anyActive ? 'bold' : undefined} component="span">
+                  {entry.base}
+                </Text>
+              </ColorText>
+            </Box>
+            <Box
+              style={{
+                display: 'flex',
+                gap: 4,
+                alignItems: 'center',
+                flexShrink: 0,
+              }}
+            >
+              {badges.map((dmgType) => (
+                <SqBadge key={dmgType}>{damageTypeKeysMap[dmgType]}</SqBadge>
+              ))}
+              {repTag.attribute && (
+                <SqBadge color={repTag.attribute}>
+                  {<AttributeName attribute={repTag.attribute} />}
+                </SqBadge>
+              )}
+            </Box>
+            <Group gap={4} wrap="nowrap" style={{ flexShrink: 0 }}>
+              {entry.variants.map(({ tag: vtag, kind }) => {
+                const { name, sheet } = vtag
+                if (!name || !sheet) return null
+                const active = isFormulaActive(vtag)
+                return (
+                  <Button
+                    key={`${sheet}_${name}`}
+                    size="compact-xs"
+                    variant="filled"
+                    styles={{
+                      root: {
+                        backgroundColor: active ? '#214886' : '#1E2C4B',
+                        color: '#fff',
+                        '&:hover': {
+                          backgroundColor: active ? '#2b56a3' : '#27395c',
+                        },
+                      },
+                    }}
+                    onClick={() => handleFormulaSelect(sheet, name)}
+                  >
+                    {variantPillLabel(kind)}
+                  </Button>
+                )
+              })}
+            </Group>
+          </Group>
+        </Box>
+      )
+    },
+    [handleFormulaSelect, isFormulaActive]
+  )
+
   // Render a category-specific dropdown button
   const renderCategoryButton = useCallback(
     (cat: DmgCategory) => {
-      const formulas = categorizedFormulas[cat.key]
+      const entries = categorizedEntries[cat.key]
       const isActive = activeCategory === cat.key
 
       return (
@@ -176,16 +344,26 @@ export function OptTargetSelector({
           }
           style={{ width: '100%' }}
         >
-          {formulas.length > 0 && (
+          {entries.length > 0 && (
             <>
               <Menu.Label>{cat.label}</Menu.Label>
-              {formulas.map(renderFormulaItem)}
+              {entries.map((entry) =>
+                entry.type === 'group'
+                  ? renderGroupEntry(entry)
+                  : renderFormulaItem(entry.tag)
+              )}
             </>
           )}
         </DropdownButton>
       )
     },
-    [categorizedFormulas, activeCategory, tag, renderFormulaItem]
+    [
+      categorizedEntries,
+      activeCategory,
+      tag,
+      renderFormulaItem,
+      renderGroupEntry,
+    ]
   )
 
   return (
@@ -221,11 +399,15 @@ export function OptTargetSelector({
             </Menu.Item>
           )
         })}
-        {categorizedFormulas.other.length > 0 && (
+        {categorizedEntries.other.length > 0 && (
           <>
             <Divider />
             <Menu.Label>Other DMG</Menu.Label>
-            {categorizedFormulas.other.map(renderFormulaItem)}
+            {categorizedEntries.other.map((entry) =>
+              entry.type === 'group'
+                ? renderGroupEntry(entry)
+                : renderFormulaItem(entry.tag)
+            )}
           </>
         )}
       </DropdownButton>

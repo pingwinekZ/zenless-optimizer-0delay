@@ -17,6 +17,7 @@ import {
 } from '@zenless-optimizer/game-opt/sheet-ui'
 import type { CalcResult } from '@zenless-optimizer/pando/engine'
 import { useCallback, useContext, useMemo } from 'react'
+import type { Tag as AppTag } from '../../formula'
 import { OptTargetTagDisplay } from '../OptTargetTagDisplay'
 import type { AnalysisData } from './ExpandedDataPanelController'
 
@@ -232,7 +233,7 @@ export function ActionBreakdown({
 }
 
 function FormulaLabel({ tag }: { tag: Tag }) {
-  return <OptTargetTagDisplay tag={tag} />
+  return <OptTargetTagDisplay tag={tag as unknown as AppTag} />
 }
 
 function FormulaHelpIcon({
@@ -260,7 +261,7 @@ function FormulaHelpIcon({
       label={
         <div>
           <div style={{ display: 'flex', gap: 4 }}>
-            <OptTargetTagDisplay tag={tag} />
+            <OptTargetTagDisplay tag={tag as unknown as AppTag} />
             <span>{valDisplay}</span>
           </div>
           <Divider />
