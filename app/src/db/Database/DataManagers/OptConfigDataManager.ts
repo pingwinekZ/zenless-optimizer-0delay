@@ -105,7 +105,7 @@ const optConfigSchema = z.object({
   showCharPassives: zodBoolean(),
   showWenginePassives: zodBoolean(),
 
-  engine: z.enum(allOptimizerEngines).catch('cpu'),
+  engine: z.enum(allOptimizerEngines).catch('gpu'),
 
   optWengine: zodBoolean(),
   wlevelLow: z.number().int().min(0).max(60).catch(wengineMaxLevel),

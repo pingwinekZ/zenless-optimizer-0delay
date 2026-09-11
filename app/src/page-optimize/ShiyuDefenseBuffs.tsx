@@ -1,5 +1,7 @@
-import { Box, CardSection, Stack, Text } from '@mantine/core'
+import { ActionIcon, Box, CardSection, Flex, Stack, Text } from '@mantine/core'
 import { CardThemed } from '@zenless-optimizer/common/ui'
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { monsterAsset } from '../assets'
 import type { AttributeKey } from '../consts'
@@ -10,14 +12,29 @@ import { getCharStat } from '../stats'
 import { parseBuffDescription } from './parseBuffDescription'
 import seasons from './shiyuSeasons_gen.json'
 
-function getActiveSeason() {
+const validSeasons = seasons
+  .filter((s) => s.beginTime && s.endTime)
+  .sort(
+    (a, b) =>
+      new Date(a.beginTime!).getTime() - new Date(b.beginTime!).getTime()
+  )
+
+function getActiveSeasonIndex(): number {
   const now = Date.now()
-  for (const season of seasons) {
+  for (let i = validSeasons.length - 1; i >= 0; i--) {
+    const season = validSeasons[i]
     const begin = new Date(season.beginTime!).getTime()
     const end = new Date(season.endTime!).getTime()
-    if (begin <= now && now < end) return season
+    if (begin <= now && now < end) return i
   }
-  return null
+  return validSeasons.length - 1
+}
+
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+  })
 }
 
 type SeasonRoom = (typeof seasons)[number]['rooms'][number]
@@ -28,7 +45,9 @@ export function ShiyuDefenseBuffs() {
   const { key: characterKey } = useCharacterContext()!
   const team = useTeam(characterKey)!
 
-  const activeSeason = getActiveSeason()
+  const [seasonIdx, setSeasonIdx] = useState(getActiveSeasonIndex)
+  const minSeasonIdx = getActiveSeasonIndex()
+  const activeSeason = validSeasons[seasonIdx] ?? null
   const rooms = activeSeason?.rooms ?? []
 
   const applyRoom = (room: SeasonRoom) => {
@@ -105,9 +124,29 @@ export function ShiyuDefenseBuffs() {
           borderBottom: '1px solid var(--border-subtle)',
         }}
       >
-        <Text size="sm" fw={700}>
-          {`${t('sdBuffs')} - ${activeSeason.name}`}
-        </Text>
+        <Flex justify="space-between" align="center">
+          <ActionIcon
+            size="sm"
+            variant="subtle"
+            disabled={seasonIdx <= minSeasonIdx}
+            onClick={() => setSeasonIdx((i) => i - 1)}
+          >
+            <IconChevronLeft size={16} />
+          </ActionIcon>
+          <Text size="sm" fw={700} style={{ textAlign: 'center', flex: 1 }}>
+            {activeSeason
+              ? `${t('sdBuffs')} - ${activeSeason.name} (${formatDate(activeSeason.beginTime!)} - ${formatDate(activeSeason.endTime!)})`
+              : t('sdBuffs')}
+          </Text>
+          <ActionIcon
+            size="sm"
+            variant="subtle"
+            disabled={seasonIdx >= validSeasons.length - 1}
+            onClick={() => setSeasonIdx((i) => i + 1)}
+          >
+            <IconChevronRight size={16} />
+          </ActionIcon>
+        </Flex>
       </CardSection>
       <CardSection style={{ padding: 12 }}>
         <div

@@ -1,6 +1,19 @@
 import type { AttributeKey, SpecialityKey } from '../consts'
 import type { BonusStatTag, EnemyStatsTag } from '../db'
 
+// Enemy stat keys that should be routed to enemyStats instead of bonusStats
+const enemyStatKeys = new Set([
+  'defRed_',
+  'res_',
+  'resRed_',
+  'stun_',
+  'unstun_',
+  'anomBuildupRes_',
+  'dazeRes_',
+  'dazeInc_',
+  'dazeRed_',
+])
+
 export type BuffBonusStat = {
   tag: BonusStatTag
   value: number
@@ -27,6 +40,7 @@ const statKeywords: Record<string, string> = {
   'Max HP': 'hp_',
   DEF: 'def_',
   'Sheer DMG': 'sheer_dmg_',
+  'PEN Ratio': 'pen_',
   'Sharp DMG': 'sharp_dmg_',
   'Laceration DMG': 'laceration_dmg_',
   Laceration: 'laceration_dmg_',
@@ -62,6 +76,7 @@ const percentageStats = new Set([
   'def_',
   'dmg_',
   'sheer_dmg_',
+  'pen_',
   'sharp_dmg_',
   'laceration_dmg_',
   'impact_',
@@ -323,13 +338,13 @@ function extractAttrDmgList(
 ): string {
   // Match "increase(s) by N%" or "is/are increased by N%" at the end of a clause
   const incMatch = sentence.match(
-    /(?:<[^>]+>)?(?:is\s+|are\s+)?increas\w*\s+by\s+(\d+)%/i
+    /(?:<[^>]+>)?(?:is\s+|are\s+)?increas\w*\s+by\s+(\d+)(?:%\/(\d+))?%/i
   )
   if (!incMatch) return sentence
 
   const incIdx = sentence.indexOf(incMatch[0])
   const beforeInc = sentence.substring(0, incIdx)
-  const value = Number(incMatch[1])
+  const value = incMatch[2] ? Number(incMatch[2]) : Number(incMatch[1])
 
   // Extract all "<Attribute> DMG" mentions from text before "increase"
   const attrs: AttributeKey[] = []
@@ -671,8 +686,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
           }
         }
 
-        // Skip "Stun DMG Multiplier" — not useful in buff context
-        if (/Stun DMG Multiplier/i.test(seg)) continue
+
 
         // Skip "Daze recovery speed" and "Stun recovery speed" — not useful in buff context
         if (/(?:Daze|Stun) recovery speed/i.test(seg)) continue
@@ -884,11 +898,12 @@ export function parseBuffDescription(desc: string): BuffConfig {
         }
 
         // --- Percentage stat increases ---
-        // "X% more DMG" / "X% bonus DMG" (generic damage)
-        const moreDmgMatch = seg.match(/(\d+)%\s+more\s+DMG/i)
+        // "X% more DMG" / "X% more <Attribute> DMG" (generic damage)
+        const moreDmgMatch = seg.match(/(\d+)%\s+more\s+(?:(\w+)\s+)?DMG/i)
         if (moreDmgMatch) {
+          const moreAttr = moreDmgMatch[2] ? matchAttribute(moreDmgMatch[2]) : undefined
           bonusStats.push({
-            tag: { q: 'dmg_', qt: 'combat' },
+            tag: { q: 'dmg_', qt: 'combat', ...(moreAttr && { attribute: moreAttr }) },
             value: Number(moreDmgMatch[1]),
             ...(conditional && { conditional: true }),
             ...(specialty && { specialty }),
@@ -1110,37 +1125,51 @@ export function parseBuffDescription(desc: string): BuffConfig {
           continue
         }
 
-        // Try to find a stat keyword at the start of the segment
+        // Try to find a stat keyword at the start of the segment (longest first for specificity)
         let found = false
-        for (const [kw, statKey] of Object.entries(statKeywords)) {
+        const sortedKeywords = Object.entries(statKeywords).sort(
+          (a, b) => b[0].length - a[0].length
+        )
+        for (const [kw, statKey] of sortedKeywords) {
           if (!seg.startsWith(kw)) continue
 
-          const pctMatch = seg.match(/(\d+)%/)
+          const pctMatch = seg.match(/(\d+)(?:%\/(\d+))?%/)
           if (pctMatch) {
-            bonusStats.push({
-              tag: {
-                q: statKey as BonusStatTag['q'],
-                qt: 'combat',
-                ...(!percentageStats.has(statKey) && matchAttribute(seg)
-                  ? { attribute: matchAttribute(seg) }
-                  : {}),
-                ...(matchDamageType(seg) && {
-                  damageType1: matchDamageType(
-                    seg
-                  ) as BonusStatTag['damageType1'],
-                }),
-              },
-              value: Number(pctMatch[1]),
-              ...(conditional && { conditional: true }),
-              ...(specialty && { specialty }),
-            })
+            const value = pctMatch[2] ? Number(pctMatch[2]) : Number(pctMatch[1])
+            const isEnemy = enemyStatKeys.has(statKey)
+            if (isEnemy) {
+              enemyStats.push({
+                tag: { q: statKey as EnemyStatsTag['q'] },
+                value,
+                ...(conditional && { conditional: true }),
+              })
+            } else {
+              bonusStats.push({
+                tag: {
+                  q: statKey as BonusStatTag['q'],
+                  qt: 'combat',
+                  ...(!percentageStats.has(statKey) && matchAttribute(seg)
+                    ? { attribute: matchAttribute(seg) }
+                    : {}),
+                  ...(matchDamageType(seg) && {
+                    damageType1: matchDamageType(
+                      seg
+                    ) as BonusStatTag['damageType1'],
+                  }),
+                },
+                value,
+                ...(conditional && { conditional: true }),
+                ...(specialty && { specialty }),
+              })
+            }
             found = true
             break
           }
 
           // Flat value (e.g., "Anomaly Proficiency increases by 40")
-          const flatMatch = seg.match(/(?:by|pts|points)\s+(\d+)/)
+          const flatMatch = seg.match(/(?:by|pts|points)\s+(\d+)(?:\/(\d+))?/)
           if (flatMatch) {
+            const value = flatMatch[2] ? Number(flatMatch[2]) : Number(flatMatch[1])
             bonusStats.push({
               tag: {
                 q: statKey as BonusStatTag['q'],
@@ -1149,7 +1178,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
                   attribute: matchAttribute(seg)!,
                 }),
               },
-              value: Number(flatMatch[1]),
+              value,
               ...(conditional && { conditional: true }),
               ...(specialty && { specialty }),
             })
@@ -1159,36 +1188,47 @@ export function parseBuffDescription(desc: string): BuffConfig {
         }
         if (found) continue
 
-        // Try to find a stat keyword anywhere in the segment
-        for (const [kw, statKey] of Object.entries(statKeywords)) {
+        // Try to find a stat keyword anywhere in the segment (longest first for specificity)
+        for (const [kw, statKey] of sortedKeywords) {
           if (!seg.includes(kw)) continue
 
-          const pctMatch = seg.match(/(\d+)%/)
+          const pctMatch = seg.match(/(\d+)(?:%\/(\d+))?%/)
           if (pctMatch) {
-            bonusStats.push({
-              tag: {
-                q: statKey as BonusStatTag['q'],
-                qt: 'combat',
-                ...(!percentageStats.has(statKey) && matchAttribute(seg)
-                  ? { attribute: matchAttribute(seg) }
-                  : {}),
-                ...(matchDamageType(seg) && {
-                  damageType1: matchDamageType(
-                    seg
-                  ) as BonusStatTag['damageType1'],
-                }),
-              },
-              value: Number(pctMatch[1]),
-              ...(conditional && { conditional: true }),
-              ...(specialty && { specialty }),
-            })
+            const value = pctMatch[2] ? Number(pctMatch[2]) : Number(pctMatch[1])
+            const isEnemy = enemyStatKeys.has(statKey)
+            if (isEnemy) {
+              enemyStats.push({
+                tag: { q: statKey as EnemyStatsTag['q'] },
+                value,
+                ...(conditional && { conditional: true }),
+              })
+            } else {
+              bonusStats.push({
+                tag: {
+                  q: statKey as BonusStatTag['q'],
+                  qt: 'combat',
+                  ...(!percentageStats.has(statKey) && matchAttribute(seg)
+                    ? { attribute: matchAttribute(seg) }
+                    : {}),
+                  ...(matchDamageType(seg) && {
+                    damageType1: matchDamageType(
+                      seg
+                    ) as BonusStatTag['damageType1'],
+                  }),
+                },
+                value,
+                ...(conditional && { conditional: true }),
+                ...(specialty && { specialty }),
+              })
+            }
             found = true
             break
           }
 
           // Flat value
-          const flatMatch = seg.match(/(?:by|pts|points)\s+(\d+)/)
+          const flatMatch = seg.match(/(?:by|pts|points)\s+(\d+)(?:\/(\d+))?/)
           if (flatMatch) {
+            const value = flatMatch[2] ? Number(flatMatch[2]) : Number(flatMatch[1])
             bonusStats.push({
               tag: {
                 q: statKey as BonusStatTag['q'],
@@ -1197,7 +1237,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
                   attribute: matchAttribute(seg)!,
                 }),
               },
-              value: Number(flatMatch[1]),
+              value,
               ...(conditional && { conditional: true }),
               ...(specialty && { specialty }),
             })

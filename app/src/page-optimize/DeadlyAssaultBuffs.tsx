@@ -1,5 +1,7 @@
-import { Box, CardSection, Stack, Text } from '@mantine/core'
+import { ActionIcon, Box, CardSection, Flex, Stack, Text } from '@mantine/core'
 import { CardThemed } from '@zenless-optimizer/common/ui'
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
+import { useState } from 'react'
 import { monsterAsset } from '../assets'
 import type { AttributeKey } from '../consts'
 import type { TeamBonusStat, TeamEnemyStat } from '../db'
@@ -30,20 +32,29 @@ type DaSeason = {
   zones: DaZone[]
 }
 
-function getActiveSeason(): DaSeason | null {
+const validSeasons = (seasons as DaSeason[])
+  .filter((s) => s.beginTime && s.endTime)
+  .sort(
+    (a, b) =>
+      new Date(a.beginTime!).getTime() - new Date(b.beginTime!).getTime()
+  )
+
+function getActiveSeasonIndex(): number {
   const now = Date.now()
-  let best: DaSeason | null = null
-  let bestBegin = 0
-  for (const season of seasons as DaSeason[]) {
-    if (!season.beginTime || !season.endTime) continue
-    const begin = new Date(season.beginTime).getTime()
-    const end = new Date(season.endTime).getTime()
-    if (begin <= now && now < end && begin > bestBegin) {
-      best = season
-      bestBegin = begin
-    }
+  for (let i = validSeasons.length - 1; i >= 0; i--) {
+    const season = validSeasons[i]
+    const begin = new Date(season.beginTime!).getTime()
+    const end = new Date(season.endTime!).getTime()
+    if (begin <= now && now < end) return i
   }
-  return best
+  return validSeasons.length - 1
+}
+
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+  })
 }
 
 type SeasonZone = DaZone
@@ -91,7 +102,9 @@ export function DeadlyAssaultBuffs() {
   const { key: characterKey } = useCharacterContext()!
   const team = useTeam(characterKey)!
 
-  const activeSeason = getActiveSeason()
+  const [seasonIdx, setSeasonIdx] = useState(getActiveSeasonIndex)
+  const minSeasonIdx = getActiveSeasonIndex()
+  const activeSeason = validSeasons[seasonIdx] ?? null
   const zones: SeasonZone[] = activeSeason?.zones ?? []
   const seen = new Set<string>()
   const buffs = activeSeason
@@ -175,9 +188,29 @@ export function DeadlyAssaultBuffs() {
           borderBottom: '1px solid var(--border-subtle)',
         }}
       >
-        <Text size="sm" fw={700}>
-          Boss
-        </Text>
+        <Flex justify="space-between" align="center">
+          <ActionIcon
+            size="sm"
+            variant="subtle"
+            disabled={seasonIdx <= minSeasonIdx}
+            onClick={() => setSeasonIdx((i) => i - 1)}
+          >
+            <IconChevronLeft size={16} />
+          </ActionIcon>
+          <Text size="sm" fw={700} style={{ textAlign: 'center', flex: 1 }}>
+            {activeSeason
+              ? `${formatDate(activeSeason.beginTime!)} - ${formatDate(activeSeason.endTime!)}`
+              : 'Boss'}
+          </Text>
+          <ActionIcon
+            size="sm"
+            variant="subtle"
+            disabled={seasonIdx >= validSeasons.length - 1}
+            onClick={() => setSeasonIdx((i) => i + 1)}
+          >
+            <IconChevronRight size={16} />
+          </ActionIcon>
+        </Flex>
       </CardSection>
       <CardSection style={{ padding: 12 }}>
         {hardZone && (
