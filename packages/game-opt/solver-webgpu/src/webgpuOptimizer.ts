@@ -216,7 +216,7 @@ function isTdrRiskPlatform(): boolean {
 }
 
 function encodeCandidates(candidates: Candidate<string | number>[][]): {
-  coords: Float32Array
+  coords: Float32Array<ArrayBuffer>
   coordKeys: string[]
   coordIndex: Map<string, number>
 } {
@@ -268,11 +268,9 @@ export async function optimize<ID>(
   // TDR-risk platforms by the calibration below.
   let chunkSize = computeChunkSize(permLimit, targetChunks)
 
-  const {
-    coords: allCoords,
-    coordKeys,
-    coordIndex,
-  } = encodeCandidates(orderedCandidates as Candidate<string | number>[][])
+  const { coords: allCoords, coordKeys } = encodeCandidates(
+    orderedCandidates as Candidate<string | number>[][]
+  )
   // Per-slot coordinate availability: which keys each slot's candidates carry.
   // The codegen uses this to drop per-cycle loads for coords absent from slot
   // 0 (pure hoisted-base reads) and to skip base recompute for coords confined
@@ -297,17 +295,12 @@ export async function optimize<ID>(
     f16: useF16,
     slotCoordKeys,
   })
-  // Shrink the candidate matrix to only the coordinates referenced by live
-  // (non-folded) reads. The codegen indexes `coords` by the live position, so
-  // the matrix columns must match `generated.liveCoordKeys` order.
+  // Use the full coordinate matrix (not shrunk to live columns) because
+  // the codegen indexes `coords` by the original coordinate index from
+  // coordIndex, not the live position. Shrinking would misalign columns
+  // when folded-away coordinates create gaps in the index space.
   const rowCount = allCoords.length / coordKeys.length
-  const coords = new Float32Array(rowCount * generated.liveCoordKeys.length)
-  for (let k = 0; k < generated.liveCoordKeys.length; k++) {
-    const src = coordIndex.get(generated.liveCoordKeys[k])!
-    for (let r = 0; r < rowCount; r++)
-      coords[k * rowCount + r] = allCoords[src * rowCount + r]
-  }
-  const coordsBytes = useF16 ? packF16(coords) : coords
+  const coordsBytes = useF16 ? packF16(allCoords) : allCoords
   const compactLimit = Math.min(Math.max(4096, permLimit), 500_000)
   let effectiveWorkgroup = workgroupSize
   const buildWgsl = (wg: number) =>
@@ -345,7 +338,7 @@ export async function optimize<ID>(
     device,
     wgsl,
     rowCount,
-    generated.coordCount,
+    coordKeys.length,
     compactLimit,
     useF16
   )

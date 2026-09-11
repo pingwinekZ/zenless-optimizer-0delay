@@ -24,6 +24,8 @@ export function OptimizerSidebar({
   onClearPins,
   statDisplay,
   onStatDisplayChange,
+  resultLimit,
+  onResultLimitChange,
 }: {
   optimizing: boolean
   total: number
@@ -37,6 +39,8 @@ export function OptimizerSidebar({
   onPin: () => void
   onClearPins: () => void
   onStatDisplayChange: (value: StatDisplay) => void
+  resultLimit?: number
+  onResultLimitChange?: (limit: number) => void
 }) {
   const { t } = useTranslation('page_optimize')
   const lg = useMediaQuery('(min-width: 992px)')
@@ -109,6 +113,8 @@ export function OptimizerSidebar({
               onOptimize={onOptimize}
               onCancel={onCancel}
               onReset={onReset}
+              resultLimit={resultLimit}
+              onResultLimitChange={onResultLimitChange}
               onStatDisplayChange={onStatDisplayChange}
             />
             <ResultsSection

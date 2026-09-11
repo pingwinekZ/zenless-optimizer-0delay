@@ -1,6 +1,19 @@
 import type { AttributeKey, SpecialityKey } from '../consts'
 import type { BonusStatTag, EnemyStatsTag } from '../db'
 
+// Enemy stat keys that should be routed to enemyStats instead of bonusStats
+const enemyStatKeys = new Set([
+  'defRed_',
+  'res_',
+  'resRed_',
+  'stun_',
+  'unstun_',
+  'anomBuildupRes_',
+  'dazeRes_',
+  'dazeInc_',
+  'dazeRed_',
+])
+
 export type BuffBonusStat = {
   tag: BonusStatTag
   value: number
@@ -27,6 +40,7 @@ const statKeywords: Record<string, string> = {
   'Max HP': 'hp_',
   DEF: 'def_',
   'Sheer DMG': 'sheer_dmg_',
+  'PEN Ratio': 'pen_',
   'Sharp DMG': 'sharp_dmg_',
   'Laceration DMG': 'laceration_dmg_',
   Laceration: 'laceration_dmg_',
@@ -62,6 +76,7 @@ const percentageStats = new Set([
   'def_',
   'dmg_',
   'sheer_dmg_',
+  'pen_',
   'sharp_dmg_',
   'laceration_dmg_',
   'impact_',
@@ -127,6 +142,18 @@ function matchDamageType(text: string): string | undefined {
     if (text.includes(kw)) return key
   }
   return undefined
+}
+
+/**
+ * Match a single-word qualifier immediately before "DMG"
+ * (e.g. "Anomaly" in "8% bonus Anomaly DMG").
+ * Falls back to bare "Anomaly" → anomaly, which has no
+ * "Attribute Anomaly" multi-word form to match on.
+ */
+function matchQualifierDamageType(word: string): string | undefined {
+  return (
+    matchDamageType(word) ?? (/^anomaly$/i.test(word) ? 'anomaly' : undefined)
+  )
 }
 
 function matchSpecialty(text: string): SpecialityKey | undefined {
@@ -323,13 +350,13 @@ function extractAttrDmgList(
 ): string {
   // Match "increase(s) by N%" or "is/are increased by N%" at the end of a clause
   const incMatch = sentence.match(
-    /(?:<[^>]+>)?(?:is\s+|are\s+)?increas\w*\s+by\s+(\d+)%/i
+    /(?:<[^>]+>)?(?:is\s+|are\s+)?increas\w*\s+by\s+(\d+)(?:%\/(\d+))?%/i
   )
   if (!incMatch) return sentence
 
   const incIdx = sentence.indexOf(incMatch[0])
   const beforeInc = sentence.substring(0, incIdx)
-  const value = Number(incMatch[1])
+  const value = incMatch[2] ? Number(incMatch[2]) : Number(incMatch[1])
 
   // Extract all "<Attribute> DMG" mentions from text before "increase"
   const attrs: AttributeKey[] = []
@@ -482,16 +509,38 @@ export function parseBuffDescription(desc: string): BuffConfig {
   const bonusStats: BuffBonusStat[] = []
   const enemyStats: BuffEnemyStat[] = []
 
-  // Strip HTML color tags
+  // Strip rich-text tags (<color>, <Term:...>, <IconMap:...>)
+  // and normalize thousand separators ("1,000" → "1000")
   const stripped = desc
     .replace(/<color=#[A-Fa-f0-9]{6}>/g, '')
     .replace(/<\/color>/g, '')
+    .replace(/<Term:[^>]*>/g, '')
+    .replace(/<\/Term>/g, '')
+    .replace(/<IconMap:[^>]*>/g, '')
+    .replace(/(\d),(\d)/g, '$1$2')
 
   // Split by bullet points
   const bullets = stripped
     .split(/·/)
     .map((s) => s.trim())
     .filter(Boolean)
+
+  // Description-level stack cap for per-stack phrasing split across
+  // sentences/bullets (e.g. "...stacking up to 2 times... For every stack
+  // of Blight Mark... take 8% more Attribute Anomaly DMG").
+  // No description in the data mixes different cap values, so a single
+  // max cap is unambiguous.
+  const descCapMatch = stripped.match(
+    /(?:stacking|stack)\s+up\s+to\s+(\d+)\s+times|up\s+to\s+a\s+maximum\s+of\s+(\d+)\s+stacks|can\s+stack\s+up\s+to\s+(\d+)\s+times/gi
+  )
+  const descCap = descCapMatch
+    ? Math.max(
+        ...descCapMatch.map((m) => {
+          const n = m.match(/(\d+)/)
+          return n ? Number(n[1]) : 1
+        })
+      )
+    : 1
 
   for (const bullet of bullets) {
     // Split each bullet into sentences by period
@@ -522,9 +571,14 @@ export function parseBuffDescription(desc: string): BuffConfig {
       // Use bullet-level specialty as fallback for sentences that don't re-state it
       const effectiveSpecialty = sentSpecialty ?? bulletSpecialty
 
-      // Detect stack multiplier: "stacking up to N times"
-      const stackMatch = sentence.match(/stacking\s+up\s+to\s+(\d+)\s+times/i)
-      const stackMult = stackMatch ? Number(stackMatch[1]) : 1
+      // Detect stack multiplier: "stacking up to N times",
+      // "stack up to N times", "up to a maximum of N stacks"
+      const stackMatch = sentence.match(
+        /(?:stacking|stack)\s+up\s+to\s+(\d+)\s+times|up\s+to\s+a\s+maximum\s+of\s+(\d+)\s+stacks|can\s+stack\s+up\s+to\s+(\d+)\s+times/i
+      )
+      const stackMult = stackMatch
+        ? Number(stackMatch[1] ?? stackMatch[2] ?? stackMatch[3])
+        : 1
 
       // Track how many bonus/enemy stats existed before this sentence
       // so we can apply stack multiplier to sentence-local stats
@@ -670,9 +724,6 @@ export function parseBuffDescription(desc: string): BuffConfig {
             continue
           }
         }
-
-        // Skip "Stun DMG Multiplier" — not useful in buff context
-        if (/Stun DMG Multiplier/i.test(seg)) continue
 
         // Skip "Daze recovery speed" and "Stun recovery speed" — not useful in buff context
         if (/(?:Daze|Stun) recovery speed/i.test(seg)) continue
@@ -866,6 +917,94 @@ export function parseBuffDescription(desc: string): BuffConfig {
           }
         }
 
+        // --- Zone buffs: "Daze value dealt ... is reduced by N%" (enemy takes less Daze) ---
+        // Must run before the generic keyword fallback, which would
+        // misread it as a dazeInc_ increase.
+        const dazeDealtRedMatch = seg.match(
+          /Daze(?:\s+value)?\s+dealt[^.]*?reduced\s+by\s+(\d+)%/i
+        )
+        if (dazeDealtRedMatch) {
+          enemyStats.push({
+            tag: { q: 'dazeRed_' },
+            value: Number(dazeDealtRedMatch[1]),
+            ...(conditional && { conditional: true }),
+            ...(specialty && { specialty }),
+          })
+          continue
+        }
+
+        // --- Zone buffs: "DMG it/they takes is reduced by N%" (enemy takes less DMG) ---
+        // There is no enemy damage-taken stat; skip so the generic fallback
+        // below does not misread it as a damage increase.
+        if (/DMG[^.]*?\btakes?\b[^.]*?reduced\s+by\s+\d+%/i.test(seg)) continue
+
+        // --- Zone buffs: "Anomaly Buildup RES increases by N%" (enemy RES gain) ---
+        // Must run before the generic keyword fallback, which would
+        // misread it as bonus Anomaly Mastery.
+        // Handles both word orders: "RES increases by N" and "increases RES by N".
+        const anomResIncMatch = seg.match(
+          /(?:Anomaly\s+Buildup\s+RES\s+(?:<[^>]+>)?increases?\s+by|increases?\s+(?:All[- ]Attribute\s+)?Anomaly\s+Buildup\s+RES\s+by)\s+(\d+)%/i
+        )
+        if (anomResIncMatch) {
+          enemyStats.push({
+            tag: { q: 'anomBuildupRes_' },
+            value: Number(anomResIncMatch[1]),
+            ...(conditional && { conditional: true }),
+            ...(specialty && { specialty }),
+          })
+          continue
+        }
+
+        // --- "X reduces <enemy stat> by N%" (enemy stat reductions) ---
+        // e.g. "each stack of Self-Sacrifice reduces The Thrall's DEF by 8%".
+        // Must run before the /reduc/ safety guard below.
+        const reducesMatch = seg.match(
+          /reduces?\s+(?:the\s+|their\s+)?(.+?)\s+by\s+(\d+)%/i
+        )
+        if (reducesMatch) {
+          const enemyStatName = reducesMatch[1]
+          const value = Number(reducesMatch[2])
+
+          if (
+            /All[- ]?Attribute\s+RES/i.test(enemyStatName) ||
+            /All[- ]?DMG\s+RES/i.test(enemyStatName)
+          ) {
+            enemyStats.push({
+              tag: { q: 'resRed_' },
+              value,
+              ...(conditional && { conditional: true }),
+              ...(specialty && { specialty }),
+            })
+            continue
+          }
+
+          const reducesAttr = matchAttribute(enemyStatName)
+          if (reducesAttr && /RES/i.test(enemyStatName)) {
+            enemyStats.push({
+              tag: { q: 'resRed_', attribute: reducesAttr },
+              value,
+              ...(conditional && { conditional: true }),
+              ...(specialty && { specialty }),
+            })
+            continue
+          }
+
+          if (/DEF/i.test(enemyStatName)) {
+            enemyStats.push({
+              tag: { q: 'defRed_' },
+              value,
+              ...(conditional && { conditional: true }),
+              ...(specialty && { specialty }),
+            })
+            continue
+          }
+        }
+
+        // Generic safety: a segment describing a reduction that wasn't
+        // claimed by an explicit handler must not fall through to the
+        // increase-oriented keyword matching below.
+        if (/reduc/i.test(seg)) continue
+
         // --- "drops by N%" for RES within larger phrases ---
         const resDropMatch = seg.match(
           /(\w+)\s+RES\s+(?:<[^>]+>)?drops?\s+by\s+(\d+)%/i
@@ -884,11 +1023,24 @@ export function parseBuffDescription(desc: string): BuffConfig {
         }
 
         // --- Percentage stat increases ---
-        // "X% more DMG" / "X% bonus DMG" (generic damage)
-        const moreDmgMatch = seg.match(/(\d+)%\s+more\s+DMG/i)
+        // "X% more DMG" / "X% more <Attribute> DMG" / "X% more <DamageType> DMG" (generic damage)
+        const moreDmgMatch = seg.match(/(\d+)%\s+more\s+(?:(\w+)\s+)?DMG/i)
         if (moreDmgMatch) {
+          const moreAttr = moreDmgMatch[2]
+            ? matchAttribute(moreDmgMatch[2])
+            : undefined
+          const moreDmgType = moreDmgMatch[2]
+            ? matchQualifierDamageType(moreDmgMatch[2])
+            : undefined
           bonusStats.push({
-            tag: { q: 'dmg_', qt: 'combat' },
+            tag: {
+              q: 'dmg_',
+              qt: 'combat',
+              ...(moreAttr && { attribute: moreAttr }),
+              ...(moreDmgType && {
+                damageType1: moreDmgType as BonusStatTag['damageType1'],
+              }),
+            },
             value: Number(moreDmgMatch[1]),
             ...(conditional && { conditional: true }),
             ...(specialty && { specialty }),
@@ -941,16 +1093,22 @@ export function parseBuffDescription(desc: string): BuffConfig {
           continue
         }
 
-        // "N% bonus [Attribute] DMG" / "N% bonus DMG" (no "deals" verb)
+        // "N% bonus [Attribute] DMG" / "N% bonus [DamageType] DMG" / "N% bonus DMG" (no "deals" verb)
         const bonusDmgMatch = seg.match(/(\d+)%\s+bonus\s+(?:(\w+)\s+)?DMG/i)
         if (bonusDmgMatch) {
           const qualifier = bonusDmgMatch[2]?.trim()
           const attr = qualifier ? matchAttribute(qualifier) : undefined
+          const dmgType = qualifier
+            ? matchQualifierDamageType(qualifier)
+            : undefined
           bonusStats.push({
             tag: {
               q: 'dmg_',
               qt: 'combat',
               ...(attr && { attribute: attr }),
+              ...(dmgType && {
+                damageType1: dmgType as BonusStatTag['damageType1'],
+              }),
             },
             value: Number(bonusDmgMatch[1]),
             ...(conditional && { conditional: true }),
@@ -1110,37 +1268,55 @@ export function parseBuffDescription(desc: string): BuffConfig {
           continue
         }
 
-        // Try to find a stat keyword at the start of the segment
+        // Try to find a stat keyword at the start of the segment (longest first for specificity)
         let found = false
-        for (const [kw, statKey] of Object.entries(statKeywords)) {
+        const sortedKeywords = Object.entries(statKeywords).sort(
+          (a, b) => b[0].length - a[0].length
+        )
+        for (const [kw, statKey] of sortedKeywords) {
           if (!seg.startsWith(kw)) continue
 
-          const pctMatch = seg.match(/(\d+)%/)
+          const pctMatch = seg.match(/(\d+)(?:%\/(\d+))?%/)
           if (pctMatch) {
-            bonusStats.push({
-              tag: {
-                q: statKey as BonusStatTag['q'],
-                qt: 'combat',
-                ...(!percentageStats.has(statKey) && matchAttribute(seg)
-                  ? { attribute: matchAttribute(seg) }
-                  : {}),
-                ...(matchDamageType(seg) && {
-                  damageType1: matchDamageType(
-                    seg
-                  ) as BonusStatTag['damageType1'],
-                }),
-              },
-              value: Number(pctMatch[1]),
-              ...(conditional && { conditional: true }),
-              ...(specialty && { specialty }),
-            })
+            const value = pctMatch[2]
+              ? Number(pctMatch[2])
+              : Number(pctMatch[1])
+            const isEnemy = enemyStatKeys.has(statKey)
+            if (isEnemy) {
+              enemyStats.push({
+                tag: { q: statKey as EnemyStatsTag['q'] },
+                value,
+                ...(conditional && { conditional: true }),
+              })
+            } else {
+              bonusStats.push({
+                tag: {
+                  q: statKey as BonusStatTag['q'],
+                  qt: 'combat',
+                  ...(!percentageStats.has(statKey) && matchAttribute(seg)
+                    ? { attribute: matchAttribute(seg) }
+                    : {}),
+                  ...(matchDamageType(seg) && {
+                    damageType1: matchDamageType(
+                      seg
+                    ) as BonusStatTag['damageType1'],
+                  }),
+                },
+                value,
+                ...(conditional && { conditional: true }),
+                ...(specialty && { specialty }),
+              })
+            }
             found = true
             break
           }
 
           // Flat value (e.g., "Anomaly Proficiency increases by 40")
-          const flatMatch = seg.match(/(?:by|pts|points)\s+(\d+)/)
+          const flatMatch = seg.match(/(?:by|pts|points)\s+(\d+)(?:\/(\d+))?/)
           if (flatMatch) {
+            const value = flatMatch[2]
+              ? Number(flatMatch[2])
+              : Number(flatMatch[1])
             bonusStats.push({
               tag: {
                 q: statKey as BonusStatTag['q'],
@@ -1149,7 +1325,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
                   attribute: matchAttribute(seg)!,
                 }),
               },
-              value: Number(flatMatch[1]),
+              value,
               ...(conditional && { conditional: true }),
               ...(specialty && { specialty }),
             })
@@ -1159,36 +1335,51 @@ export function parseBuffDescription(desc: string): BuffConfig {
         }
         if (found) continue
 
-        // Try to find a stat keyword anywhere in the segment
-        for (const [kw, statKey] of Object.entries(statKeywords)) {
+        // Try to find a stat keyword anywhere in the segment (longest first for specificity)
+        for (const [kw, statKey] of sortedKeywords) {
           if (!seg.includes(kw)) continue
 
-          const pctMatch = seg.match(/(\d+)%/)
+          const pctMatch = seg.match(/(\d+)(?:%\/(\d+))?%/)
           if (pctMatch) {
-            bonusStats.push({
-              tag: {
-                q: statKey as BonusStatTag['q'],
-                qt: 'combat',
-                ...(!percentageStats.has(statKey) && matchAttribute(seg)
-                  ? { attribute: matchAttribute(seg) }
-                  : {}),
-                ...(matchDamageType(seg) && {
-                  damageType1: matchDamageType(
-                    seg
-                  ) as BonusStatTag['damageType1'],
-                }),
-              },
-              value: Number(pctMatch[1]),
-              ...(conditional && { conditional: true }),
-              ...(specialty && { specialty }),
-            })
+            const value = pctMatch[2]
+              ? Number(pctMatch[2])
+              : Number(pctMatch[1])
+            const isEnemy = enemyStatKeys.has(statKey)
+            if (isEnemy) {
+              enemyStats.push({
+                tag: { q: statKey as EnemyStatsTag['q'] },
+                value,
+                ...(conditional && { conditional: true }),
+              })
+            } else {
+              bonusStats.push({
+                tag: {
+                  q: statKey as BonusStatTag['q'],
+                  qt: 'combat',
+                  ...(!percentageStats.has(statKey) && matchAttribute(seg)
+                    ? { attribute: matchAttribute(seg) }
+                    : {}),
+                  ...(matchDamageType(seg) && {
+                    damageType1: matchDamageType(
+                      seg
+                    ) as BonusStatTag['damageType1'],
+                  }),
+                },
+                value,
+                ...(conditional && { conditional: true }),
+                ...(specialty && { specialty }),
+              })
+            }
             found = true
             break
           }
 
           // Flat value
-          const flatMatch = seg.match(/(?:by|pts|points)\s+(\d+)/)
+          const flatMatch = seg.match(/(?:by|pts|points)\s+(\d+)(?:\/(\d+))?/)
           if (flatMatch) {
+            const value = flatMatch[2]
+              ? Number(flatMatch[2])
+              : Number(flatMatch[1])
             bonusStats.push({
               tag: {
                 q: statKey as BonusStatTag['q'],
@@ -1197,7 +1388,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
                   attribute: matchAttribute(seg)!,
                 }),
               },
-              value: Number(flatMatch[1]),
+              value,
               ...(conditional && { conditional: true }),
               ...(specialty && { specialty }),
             })
@@ -1218,12 +1409,24 @@ export function parseBuffDescription(desc: string): BuffConfig {
           continue
       }
 
-      // Apply stack multiplier to all stats parsed from this sentence
-      if (stackMult > 1) {
+      // Apply stack multiplier to all stats parsed from this sentence.
+      // One-time restores (Energy/Decibels) never scale with stacks.
+      const scaleStacks = (mult: number) => {
         for (let i = bonusStatsBefore; i < bonusStats.length; i++)
-          bonusStats[i].value *= stackMult
+          if (bonusStats[i].tag.q !== 'enerRegen_') bonusStats[i].value *= mult
         for (let i = enemyStatsBefore; i < enemyStats.length; i++)
-          enemyStats[i].value *= stackMult
+          enemyStats[i].value *= mult
+      }
+      if (stackMult > 1) {
+        scaleStacks(stackMult)
+      } else if (
+        descCap > 1 &&
+        /each stack|every stack|per stack/i.test(sentence)
+      ) {
+        // Per-stack value with the cap stated in another sentence/bullet
+        // (e.g. "...up to a maximum of 4 stacks. For each stack... CRIT
+        // DMG is increased by 25%") → use max-stack value.
+        scaleStacks(descCap)
       }
     }
   }

@@ -4,7 +4,6 @@ import {
   Flex,
   HoverCard,
   SegmentedControl,
-  Select,
   Text,
 } from '@mantine/core'
 import { useBoolState } from '@zenless-optimizer/common/react-util'
@@ -56,19 +55,11 @@ export function CharacterSelectorDisplay({
   onCharacterChange,
   wengineKey,
   onWengineChange,
-  sortByKey,
-  resultLimit,
-  onSortByChange,
-  onResultLimitChange,
 }: {
   characterKey: CharacterKey
   onCharacterChange: (ck: CharacterKey) => void
   wengineKey: WengineKey | ''
   onWengineChange: (wengineKey: WengineKey | '') => void
-  sortByKey?: string
-  resultLimit?: number
-  onSortByChange: (key: string) => void
-  onResultLimitChange: (limit: number) => void
 }) {
   const { database } = useDatabaseContext()
   const character = useCharacter(characterKey)
@@ -128,41 +119,6 @@ export function CharacterSelectorDisplay({
       })),
     []
   )
-
-  // Result limit options (like fribbels' "Find top results")
-  const resultLimitOptions = useMemo(() => {
-    const limits = [1, 5, 10, 50, 100, 500, 1000, 5000, 10000, 50000]
-    return limits.map((v) => ({
-      value: String(v),
-      label: `Top ${v}`,
-    }))
-  }, [])
-
-  // Sort options matching OptimizerGrid columns
-  const sortByOptions = [
-    {
-      group: 'DMG',
-      items: [
-        { value: 'target', label: 'Optimization Target' },
-        { value: 'final_atk', label: 'ATK' },
-        { value: 'final_hp', label: 'HP' },
-        { value: 'final_def', label: 'DEF' },
-        { value: 'final_impact', label: 'Impact' },
-      ],
-    },
-    {
-      group: 'Stats',
-      items: [
-        { value: 'final_critRate', label: 'Crit Rate' },
-        { value: 'final_critDmg', label: 'Crit DMG' },
-        { value: 'final_pen', label: 'PEN' },
-        { value: 'final_sheerForce', label: 'Sheer Force' },
-        { value: 'final_enerRegen', label: 'Energy Regen' },
-        { value: 'final_anomProf', label: 'Anomaly Proficiency' },
-        { value: 'final_anomMas', label: 'Anomaly Mastery' },
-      ],
-    },
-  ]
 
   return (
     <Box>
@@ -260,42 +216,6 @@ export function CharacterSelectorDisplay({
         </Flex>
 
         <PresetsButton characterKey={characterKey} />
-
-        {/* Optimization Target section — no tooltip icon, matching fribbels */}
-        <Flex justify="space-between" align="center" style={{ marginTop: 20 }}>
-          <HeaderText>Optimization Target</HeaderText>
-        </Flex>
-
-        <Select
-          data={resultLimitOptions.map((opt) => ({
-            value: opt.value,
-            label: opt.label,
-          }))}
-          value={resultLimit != null ? String(resultLimit) : '5'}
-          onChange={(val) => {
-            if (val != null) onResultLimitChange(Number(val))
-          }}
-          placeholder="Find top results"
-          size="xs"
-          comboboxProps={{ width: 200, transitionProps: { duration: 150 } }}
-        />
-
-        <Select
-          data={sortByOptions.map((group) => ({
-            group: group.group,
-            items: group.items.map((item) => ({
-              value: item.value,
-              label: item.label,
-            })),
-          }))}
-          value={sortByKey ?? 'target'}
-          onChange={(val) => {
-            if (val != null) onSortByChange(val)
-          }}
-          placeholder="Sorted by"
-          size="xs"
-          comboboxProps={{ width: 250, transitionProps: { duration: 150 } }}
-        />
       </Flex>
     </Box>
   )

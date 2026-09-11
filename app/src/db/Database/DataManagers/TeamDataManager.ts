@@ -56,6 +56,7 @@ export const specificDmgTypeKeys: SpecificDmgTypeKey[] = [
   'defensiveAssist',
   'evasiveAssist',
   'assistFollowUp',
+  'counterAssist',
   'vortex',
 ] as const
 
@@ -98,6 +99,8 @@ export const bonusStatKeys: Array<keyof typeof own.final> = [
   'resIgn_',
   'sheerForce',
   'sheer_dmg_',
+  'sharp_dmg_',
+  'laceration_dmg_',
 ] as const
 export type BonusStatKey = (typeof bonusStatKeys)[number]
 
@@ -141,6 +144,7 @@ export const bonusStatDamageTypes: BonusStatDamageType[] = [
   'defensiveAssist',
   'evasiveAssist',
   'assistFollowUp',
+  'counterAssist',
   'anomaly',
   'disorder',
   'abloom',

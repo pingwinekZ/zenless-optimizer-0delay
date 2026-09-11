@@ -388,7 +388,7 @@ function buildEffectGroups(): EffectGroup[] {
     }
     groups.get(effectKey)!.setKeys.push(sk)
   }
-  return [...groups.values()]
+  return [...groups.values()].sort((a, b) => a.label.localeCompare(b.label))
 }
 
 function EffectGrid({

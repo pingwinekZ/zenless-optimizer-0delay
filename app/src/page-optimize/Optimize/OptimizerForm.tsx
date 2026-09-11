@@ -40,6 +40,7 @@ import {
   SimulationManager,
   StatSimulationDisplay,
 } from '../Simulation'
+import { useShowPassivesStore } from '../stores/useShowPassivesStore'
 import { CharacterConditionalsDisplay } from './CharacterConditionalsDisplay'
 import { DiscMainSetFilters } from './DiscMainSetFilters'
 import { MinMaxStatFilters } from './MinMaxStatFilters'
@@ -52,13 +53,9 @@ export function OptimizerForm({
   team,
   discsBySlot,
   disabled,
-  sortByKey,
-  resultLimit,
   statFiltersRef,
   onCharacterChange,
   onWengineChange,
-  onSortByChange,
-  onResultLimitChange,
   useTheoreticalMax,
   setUseTheoreticalMax,
 }: {
@@ -67,13 +64,9 @@ export function OptimizerForm({
   team: Team
   discsBySlot: Record<DiscSlotKey, ICachedDisc[]>
   disabled?: boolean
-  sortByKey?: string
-  resultLimit?: number
   statFiltersRef: MutableRefObject<StatFilters>
   onCharacterChange: (ck: CharacterKey) => void
   onWengineChange: (wengineKey: WengineKey | '') => void
-  onSortByChange: (key: string) => void
-  onResultLimitChange: (limit: number) => void
   useTheoreticalMax: boolean
   setUseTheoreticalMax: (v: boolean) => void
 }) {
@@ -98,18 +91,11 @@ export function OptimizerForm({
   )
 
   const [activeDrawer, setActiveDrawer] = useState<string | null>(null)
-  const { optConfigId, optConfig } = useContext(OptConfigContext)
-  const showCharPassives = optConfig.showCharPassives
-  const showWenginePassives = optConfig.showWenginePassives
-  const setShowCharPassives = useCallback(
-    (v: boolean) =>
-      database.optConfigs.set(optConfigId, { showCharPassives: v }),
-    [database, optConfigId]
-  )
-  const setShowWenginePassives = useCallback(
-    (v: boolean) =>
-      database.optConfigs.set(optConfigId, { showWenginePassives: v }),
-    [database, optConfigId]
+  const showCharPassives = useShowPassivesStore((s) => s.showCharPassives)
+  const showWenginePassives = useShowPassivesStore((s) => s.showWenginePassives)
+  const setShowCharPassives = useShowPassivesStore((s) => s.setShowCharPassives)
+  const setShowWenginePassives = useShowPassivesStore(
+    (s) => s.setShowWenginePassives
   )
 
   const wengineKey: WengineKey | '' = character.wengineKey || ''
@@ -125,17 +111,13 @@ export function OptimizerForm({
           onWengineChange={onWengineChange}
         />
 
-        {/* Card 2: Character + W-Engine selectors, Presets, Optimization Target */}
+        {/* Card 2: Character + W-Engine selectors, Presets */}
         <FormCard>
           <CharacterSelectorDisplay
             characterKey={characterKey}
             onCharacterChange={onCharacterChange}
             wengineKey={character.wengineKey || ''}
             onWengineChange={onWengineChange}
-            sortByKey={sortByKey}
-            resultLimit={resultLimit}
-            onSortByChange={onSortByChange}
-            onResultLimitChange={onResultLimitChange}
           />
         </FormCard>
 
