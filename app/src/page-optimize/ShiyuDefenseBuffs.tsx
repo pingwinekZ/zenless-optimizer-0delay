@@ -1,6 +1,6 @@
 import { ActionIcon, Box, CardSection, Flex, Stack, Text } from '@mantine/core'
-import { CardThemed } from '@zenless-optimizer/common/ui'
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
+import { CardThemed } from '@zenless-optimizer/common/ui'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { monsterAsset } from '../assets'
@@ -75,39 +75,27 @@ export function ShiyuDefenseBuffs() {
     const config = room.buff
       ? parseBuffDescription(room.buff.desc)
       : { bonusStats: [], enemyStats: [] }
-    if (config.bonusStats.length > 0 || config.enemyStats.length > 0) {
-      const characterSpecialty = getCharStat(characterKey).specialty
-      const newBonusStats: TeamBonusStat[] = config.bonusStats
-        .filter(
-          ({ specialty }) => !specialty || specialty === characterSpecialty
-        )
-        .map(({ tag, value }) => ({
-          tag,
-          value,
-          disabled: false,
-        }))
-      const newEnemyStats: TeamEnemyStat[] = config.enemyStats
-        .filter(
-          ({ specialty }) => !specialty || specialty === characterSpecialty
-        )
-        .map(({ tag, value }) => ({
-          tag,
-          value,
-        }))
-      database.teams.setFrame0(characterKey, (frame) => {
-        const nonResists = frame.enemyStats.filter((s) => s.tag.q !== 'res_')
-        return {
-          bonusStats: newBonusStats,
-          enemyStats: [...bossStats, ...nonResists, ...newEnemyStats],
-          description: `sd_room:${room.id}`,
-        }
-      })
-    } else {
-      database.teams.setFrame0(characterKey, {
-        enemyStats: bossStats,
-        description: `sd_room:${room.id}`,
-      })
-    }
+    // Clean apply: replace all buff stats with this room's base stats,
+    // clearing anything left over from other rooms/modes.
+    const characterSpecialty = getCharStat(characterKey).specialty
+    const newBonusStats: TeamBonusStat[] = config.bonusStats
+      .filter(({ specialty }) => !specialty || specialty === characterSpecialty)
+      .map(({ tag, value }) => ({
+        tag,
+        value,
+        disabled: false,
+      }))
+    const newEnemyStats: TeamEnemyStat[] = config.enemyStats
+      .filter(({ specialty }) => !specialty || specialty === characterSpecialty)
+      .map(({ tag, value }) => ({
+        tag,
+        value,
+      }))
+    database.teams.setFrame0(characterKey, {
+      bonusStats: newBonusStats,
+      enemyStats: [...bossStats, ...newEnemyStats],
+      description: `sd_room:${room.id}`,
+    })
   }
 
   const selectedRoomId = getTeamFrame0(team).description?.startsWith('sd_room:')
@@ -135,7 +123,7 @@ export function ShiyuDefenseBuffs() {
           </ActionIcon>
           <Text size="sm" fw={700} style={{ textAlign: 'center', flex: 1 }}>
             {activeSeason
-              ? `${t('sdBuffs')} - ${activeSeason.name} (${formatDate(activeSeason.beginTime!)} - ${formatDate(activeSeason.endTime!)})`
+              ? `${t('sdBuffs')} (${formatDate(activeSeason.beginTime!)} - ${formatDate(activeSeason.endTime!)})`
               : t('sdBuffs')}
           </Text>
           <ActionIcon

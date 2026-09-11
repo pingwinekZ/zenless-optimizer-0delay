@@ -1,7 +1,8 @@
 import { ActionIcon, Box, CardSection, Flex, Stack, Text } from '@mantine/core'
-import { CardThemed } from '@zenless-optimizer/common/ui'
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
+import { CardThemed } from '@zenless-optimizer/common/ui'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { monsterAsset } from '../assets'
 import type { AttributeKey } from '../consts'
 import type { TeamBonusStat, TeamEnemyStat } from '../db'
@@ -22,6 +23,7 @@ type DaZone = {
   enemyResists?: Record<string, number>
   enemyWeak?: Record<string, number>
   buffs: DaBuff[]
+  zoneBuffs?: DaBuff[]
   hard?: boolean
 }
 
@@ -59,6 +61,47 @@ function formatDate(dateStr: string): string {
 
 type SeasonZone = DaZone
 
+function formatBuffHtml(desc: string): string {
+  return desc
+    .replace(/\n/g, ' ')
+    .replace(/<color=(#[A-Fa-f0-9]{6})>/g, '<span style="color:$1">')
+    .replace(/<\/color>/g, '</span>')
+    .trim()
+}
+
+function hasStatMapping(desc: string): boolean {
+  const config = parseBuffDescription(desc)
+  return config.bonusStats.length > 0 || config.enemyStats.length > 0
+}
+
+function parseDaSelection(description?: string): {
+  bossName: string | null
+  buffIds: string[]
+} {
+  const empty = { bossName: null, buffIds: [] }
+  if (!description) return empty
+  let bossName: string | null = null
+  let buffIds: string[] = []
+  for (const part of description.split('|')) {
+    if (part.startsWith('da_boss:'))
+      bossName = part.slice('da_boss:'.length) || null
+    else if (part.startsWith('da_buffs:'))
+      buffIds = part.slice('da_buffs:'.length).split(',').filter(Boolean)
+  }
+  if (!bossName && buffIds.length === 0) return empty
+  return { bossName, buffIds }
+}
+
+function encodeDaSelection(
+  bossName: string | null,
+  buffIds: string[]
+): string | undefined {
+  const parts: string[] = []
+  if (bossName) parts.push(`da_boss:${bossName}`)
+  if (buffIds.length > 0) parts.push(`da_buffs:${buffIds.join(',')}`)
+  return parts.length > 0 ? parts.join('|') : undefined
+}
+
 function BossCard({
   zone,
   selected,
@@ -69,6 +112,11 @@ function BossCard({
   onSelect: () => void
 }) {
   const imgSrc = monsterAsset(zone.monsterImage)
+  // Only show zone buffs that map to stats — score-only entries
+  // (Performance Points, specialty suitability) are hidden entirely.
+  const zoneBuffs = (zone.zoneBuffs ?? []).filter((buff) =>
+    hasStatMapping(buff.desc)
+  )
   return (
     <CardThemed
       bgt="dark"
@@ -91,6 +139,33 @@ function BossCard({
           <Text size="xs" style={{ textAlign: 'center' }}>
             {zone.name}
           </Text>
+          {zoneBuffs.map((buff) => {
+            return (
+              <Stack key={buff.id} gap={2} style={{ width: '100%' }}>
+                {buff.title ? (
+                  <Text size="xs" fw={500} style={{ textAlign: 'center' }}>
+                    {buff.title}
+                  </Text>
+                ) : (
+                  <Text
+                    size="xs"
+                    fw={500}
+                    c="dimmed"
+                    style={{ textAlign: 'center' }}
+                  >
+                    Zone Buff
+                  </Text>
+                )}
+                <Text
+                  size="xs"
+                  style={{ textAlign: 'center' }}
+                  dangerouslySetInnerHTML={{
+                    __html: formatBuffHtml(buff.desc),
+                  }}
+                />
+              </Stack>
+            )
+          })}
         </Stack>
       </CardSection>
     </CardThemed>
@@ -98,6 +173,7 @@ function BossCard({
 }
 
 export function DeadlyAssaultBuffs() {
+  const { t } = useTranslation('page_optimize')
   const { database } = useDatabaseContext()
   const { key: characterKey } = useCharacterContext()!
   const team = useTeam(characterKey)!
@@ -120,63 +196,110 @@ export function DeadlyAssaultBuffs() {
   const hardZone = zones.find((z) => 'hard' in z && z.hard)
   const normalZones = zones.filter((z) => !('hard' in z) || !z.hard)
 
-  const applyBuff = (desc: string) => {
-    const config = parseBuffDescription(desc)
-    if (!config.bonusStats.length && !config.enemyStats.length) return
-    const characterSpecialty = getCharStat(characterKey).specialty
-    const newBonusStats: TeamBonusStat[] = config.bonusStats
-      .filter(({ specialty }) => !specialty || specialty === characterSpecialty)
-      .map(({ tag, value }) => ({
-        tag,
-        value,
-        disabled: false,
-      }))
-    const newEnemyStats: TeamEnemyStat[] = config.enemyStats
-      .filter(({ specialty }) => !specialty || specialty === characterSpecialty)
-      .map(({ tag, value }) => ({
-        tag,
-        value,
-      }))
-    database.teams.setFrame0(characterKey, (frame) => {
-      const bossResists = frame.enemyStats.filter((s) => s.tag.q === 'res_')
-      return {
-        bonusStats: newBonusStats,
-        enemyStats: [...bossResists, ...newEnemyStats],
+  // Selection state is encoded in the frame description so it survives
+  // drawer close/reopen: `da_boss:<name>` plus optional
+  // `|da_buffs:<id>,<id>` for stacked selectable buffs.
+  const { bossName: selectedBossName, buffIds: appliedBuffIds } =
+    parseDaSelection(getTeamFrame0(team).description)
+  const selectedZone = zones.find((z) => z.name === selectedBossName) ?? null
+
+  const collectParsedStats = (
+    descs: string[],
+    characterSpecialty: string
+  ): { bonusStats: TeamBonusStat[]; enemyStats: TeamEnemyStat[] } => {
+    const bonusStats: TeamBonusStat[] = []
+    const enemyStats: TeamEnemyStat[] = []
+    for (const desc of descs) {
+      const config = parseBuffDescription(desc)
+      for (const { tag, value, specialty } of config.bonusStats) {
+        if (specialty && specialty !== characterSpecialty) continue
+        bonusStats.push({ tag, value, disabled: false })
       }
-    })
+      for (const { tag, value, specialty } of config.enemyStats) {
+        if (specialty && specialty !== characterSpecialty) continue
+        enemyStats.push({ tag, value })
+      }
+    }
+    return { bonusStats, enemyStats }
   }
 
-  const selectBoss = (zone: SeasonZone) => {
+  const findSeasonBuff = (id: string): DaBuff | undefined => {
+    for (const z of zones) {
+      const found = (z.buffs ?? []).find((b) => b.id === id)
+      if (found) return found
+    }
+    return undefined
+  }
+
+  // Single write path: zone base stats (boss + Zone Buffs) with the
+  // checked selectable buffs layered on top.
+  const writeDaFrame = (zone: SeasonZone | null, buffIds: string[]) => {
     const bossStats: TeamEnemyStat[] = []
-    if (zone.enemyResists)
+    if (zone?.enemyResists)
       Object.entries(zone.enemyResists).forEach(([attr, val]) =>
         bossStats.push({
           tag: { q: 'res_', attribute: attr as AttributeKey },
           value: val,
         })
       )
-    if (zone.enemyWeak)
+    if (zone?.enemyWeak)
       Object.entries(zone.enemyWeak).forEach(([attr, val]) =>
         bossStats.push({
           tag: { q: 'res_', attribute: attr as AttributeKey },
           value: -val,
         })
       )
+    const characterSpecialty = getCharStat(characterKey).specialty
+    const zoneStats = collectParsedStats(
+      (zone?.zoneBuffs ?? []).map((b) => b.desc),
+      characterSpecialty
+    )
+    const selectableStats = collectParsedStats(
+      buffIds.flatMap((id) => {
+        const buff = findSeasonBuff(id)
+        return buff ? [buff.desc] : []
+      }),
+      characterSpecialty
+    )
+    // No zone in view (e.g. toggling before any boss is selected):
+    // keep existing boss resists instead of wiping them.
+    const prevResists = zone
+      ? []
+      : getTeamFrame0(team).enemyStats.filter((s) => s.tag.q === 'res_')
     database.teams.setFrame0(characterKey, {
-      description: `da_boss:${zone.name}`,
-      enemyStats: bossStats,
+      description: encodeDaSelection(zone?.name ?? null, buffIds),
+      bonusStats: [...zoneStats.bonusStats, ...selectableStats.bonusStats],
+      enemyStats: [
+        ...prevResists,
+        ...bossStats,
+        ...zoneStats.enemyStats,
+        ...selectableStats.enemyStats,
+      ],
     })
-    database.teams.set(characterKey, {
-      enemyLvl: zone.monsterLevel,
-      enemyDef: zone.monsterDef,
-    })
+    if (zone)
+      database.teams.set(characterKey, {
+        enemyLvl: zone.monsterLevel,
+        enemyDef: zone.monsterDef,
+      })
   }
 
-  const selectedBossName = getTeamFrame0(team).description?.startsWith(
-    'da_boss:'
-  )
-    ? getTeamFrame0(team).description!.slice(8)
-    : null
+  // Boss select cleanly (re)applies the room: zone base stats only,
+  // previously stacked selectable buffs are cleared.
+  const selectBoss = (zone: SeasonZone) => writeDaFrame(zone, [])
+
+  // Selectable buffs toggle on top of the zone base stats.
+  // IDs from another season view are pruned since they can't resolve here.
+  const toggleBuff = (buff: DaBuff) => {
+    const knownIds = new Set(
+      zones.flatMap((z) => (z.buffs ?? []).map((b) => b.id))
+    )
+    const nextIds = (
+      appliedBuffIds.includes(buff.id)
+        ? appliedBuffIds.filter((id) => id !== buff.id)
+        : [...appliedBuffIds, buff.id]
+    ).filter((id) => knownIds.has(id))
+    writeDaFrame(selectedZone, nextIds)
+  }
 
   if (!activeSeason) return null
 
@@ -199,8 +322,8 @@ export function DeadlyAssaultBuffs() {
           </ActionIcon>
           <Text size="sm" fw={700} style={{ textAlign: 'center', flex: 1 }}>
             {activeSeason
-              ? `${formatDate(activeSeason.beginTime!)} - ${formatDate(activeSeason.endTime!)}`
-              : 'Boss'}
+              ? `${t('daBuffs')} (${formatDate(activeSeason.beginTime!)} - ${formatDate(activeSeason.endTime!)})`
+              : t('daBuffs')}
           </Text>
           <ActionIcon
             size="sm"
@@ -265,14 +388,20 @@ export function DeadlyAssaultBuffs() {
             const config = parseBuffDescription(buff.desc)
             const hasConfig =
               config.bonusStats.length > 0 || config.enemyStats.length > 0
+            const applied = appliedBuffIds.includes(buff.id)
             return (
               <CardThemed
                 key={buff.id}
                 bgt="dark"
-                style={{ opacity: hasConfig ? 1 : 0.5 }}
+                style={{
+                  opacity: hasConfig ? 1 : 0.5,
+                  outline: `2px solid ${
+                    applied ? 'var(--mantine-color-yellow-6)' : 'transparent'
+                  }`,
+                }}
               >
                 <CardSection
-                  onClick={() => hasConfig && applyBuff(buff.desc)}
+                  onClick={() => hasConfig && toggleBuff(buff)}
                   style={{
                     cursor: hasConfig ? 'pointer' : 'default',
                     padding: 8,
@@ -285,14 +414,7 @@ export function DeadlyAssaultBuffs() {
                     <Text
                       size="xs"
                       dangerouslySetInnerHTML={{
-                        __html: buff.desc
-                          .replace(/\n/g, ' ')
-                          .replace(
-                            /<color=(#[A-Fa-f0-9]{6})>/g,
-                            '<span style="color:$1">'
-                          )
-                          .replace(/<\/color>/g, '</span>')
-                          .trim(),
+                        __html: formatBuffHtml(buff.desc),
                       }}
                     />
                     {!hasConfig && (

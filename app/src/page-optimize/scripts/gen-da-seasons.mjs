@@ -57,6 +57,21 @@ function mapZone(zone, extra = {}) {
       title: b.Title,
       desc: b.Desc,
     })),
+    // Zone Buffs: room-specific LayerBuff entries (e.g. per-boss mechanics
+    // like Dead End Butcher's Ether Enhanced state). Unlike SelectableBuff,
+    // these always apply to the room and are parsed by parseBuffDescription.
+    // Titles that are unlocalized keys (e.g. "69014405_Title") are cleared
+    // so the UI falls back to the generic "Zone Buff" label.
+    zoneBuffs: Object.entries(zone.LayerBuff ?? {})
+      .filter(([, b]) => b.Desc && b.Desc.trim())
+      .map(([id, b]) => ({
+        id,
+        title:
+          b.Title && !/_Title$/.test(b.Title) && !/^\d/.test(b.Title)
+            ? b.Title
+            : '',
+        desc: b.Desc,
+      })),
     ...extra,
   }
 }
