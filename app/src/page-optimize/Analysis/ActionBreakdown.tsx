@@ -14,10 +14,10 @@ import type { CalcMeta, Tag } from '@zenless-optimizer/game-opt/engine'
 import {
   FormulaTextCacheContext,
   FormulaTextContext,
-  FullTagDisplayContext,
 } from '@zenless-optimizer/game-opt/sheet-ui'
 import type { CalcResult } from '@zenless-optimizer/pando/engine'
 import { useCallback, useContext, useMemo } from 'react'
+import { OptTargetTagDisplay } from '../OptTargetTagDisplay'
 import type { AnalysisData } from './ExpandedDataPanelController'
 
 const DAMAGE_COLORS = [
@@ -232,8 +232,7 @@ export function ActionBreakdown({
 }
 
 function FormulaLabel({ tag }: { tag: Tag }) {
-  const FullTagDisplay = useContext(FullTagDisplayContext)
-  return <FullTagDisplay tag={tag} />
+  return <OptTargetTagDisplay tag={tag} />
 }
 
 function FormulaHelpIcon({
@@ -241,7 +240,6 @@ function FormulaHelpIcon({
 }: {
   computed: CalcResult<number, CalcMeta<Tag, string>>
 }) {
-  const FullTagDisplay = useContext(FullTagDisplayContext)
   const formulaText = useContext(FormulaTextContext)
   const formulaTextCache = useContext(FormulaTextCacheContext)
   const tag = computed.meta.tag
@@ -262,7 +260,7 @@ function FormulaHelpIcon({
       label={
         <div>
           <div style={{ display: 'flex', gap: 4 }}>
-            <FullTagDisplay tag={tag} />
+            <OptTargetTagDisplay tag={tag} />
             <span>{valDisplay}</span>
           </div>
           <Divider />

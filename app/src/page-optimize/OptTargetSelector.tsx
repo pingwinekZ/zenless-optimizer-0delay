@@ -11,7 +11,8 @@ import {
 import { useDatabaseContext } from '../db-ui'
 import type { Tag } from '../formula'
 import { own } from '../formula'
-import { FullTagDisplay, getDmgType, useZzzCalcContext } from '../formula-ui'
+import { getDmgType, useZzzCalcContext } from '../formula-ui'
+import { OptTargetTagDisplay } from './OptTargetTagDisplay'
 
 const statTargets = [
   own.final.atk,
@@ -145,7 +146,7 @@ export function OptTargetSelector({
           style={{ fontWeight: isFormulaActive(ftag) ? 'bold' : undefined }}
         >
           <Box style={{ display: 'flex', gap: 4 }}>
-            <FullTagDisplay tag={ftag} />
+            <OptTargetTagDisplay tag={ftag} />
           </Box>
         </Menu.Item>
       )
@@ -167,7 +168,7 @@ export function OptTargetSelector({
           title={
             isActive && tag ? (
               <Box style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                <FullTagDisplay tag={tag} />
+                <OptTargetTagDisplay tag={tag} />
               </Box>
             ) : (
               cat.label
@@ -196,7 +197,7 @@ export function OptTargetSelector({
         title={
           activeCategory === 'other' && tag ? (
             <Box style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-              <FullTagDisplay tag={tag} />
+              <OptTargetTagDisplay tag={tag} />
             </Box>
           ) : (
             'Other'
@@ -215,7 +216,7 @@ export function OptTargetSelector({
               style={{ fontWeight: isStatActive(st) ? 'bold' : undefined }}
             >
               <Box style={{ display: 'flex', gap: 4 }}>
-                <FullTagDisplay tag={st.tag} />
+                <OptTargetTagDisplay tag={st.tag} />
               </Box>
             </Menu.Item>
           )
