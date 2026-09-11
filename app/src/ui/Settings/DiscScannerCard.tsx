@@ -26,9 +26,7 @@ export function DiscScannerCard() {
       </Box>
       <Divider />
       <Box p="md" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <Text size="sm">
-          {t('discScannerCard.description')}
-        </Text>
+        <Text size="sm">{t('discScannerCard.description')}</Text>
         <SimpleGrid cols={{ base: 1, md: 2 }} spacing="sm">
           {links.map(({ title, icon, url }) => (
             <Button

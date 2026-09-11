@@ -71,8 +71,10 @@ export function LiveImportCard() {
       <Box p="md" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <Text size="sm">
           Sync your database in real time from the ZZZ Packet Capture app. Start
-          the app, enable &quot;Live export&quot; in the app and start packet capturing, then turn this
-          on and launch the game and login. If for example you dont want w-engines to constantly sync, then just disable the w-engine toggle in the capture app.
+          the app, enable &quot;Live export&quot; in the app and start packet
+          capturing, then turn this on and launch the game and login. If for
+          example you dont want w-engines to constantly sync, then just disable
+          the w-engine toggle in the capture app.
         </Text>
         <Text size="xs" c="dimmed">
           Server: {LIVE_IMPORT_URL}

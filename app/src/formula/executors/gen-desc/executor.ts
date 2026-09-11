@@ -136,9 +136,7 @@ function isSwappedPair(
   next1: unknown,
   next2: unknown
 ): boolean {
-  return (
-    existing1 !== undefined && existing1 === next2 && existing2 === next1
-  )
+  return existing1 !== undefined && existing1 === next2 && existing2 === next1
 }
 
 async function dumpMeta(
