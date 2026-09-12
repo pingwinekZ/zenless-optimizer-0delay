@@ -1,7 +1,13 @@
 import type { CharacterKey } from '../../../consts'
 import { Grace } from '../../../formula'
-import { st, trans } from '../../util'
-import { createBaseSheet, fieldForBuff } from '../sheetUtil'
+import { GameDesc } from '../../../i18n'
+import { trans } from '../../util'
+import {
+  AbilityBodyText,
+  CoreGameDesc,
+  createBaseSheet,
+  fieldForBuff,
+} from '../sheetUtil'
 
 const key: CharacterKey = 'Grace'
 const [, ch] = trans('char', key)
@@ -9,40 +15,18 @@ const cond = Grace.conditionals
 const buff = Grace.buffs
 
 const sheet = createBaseSheet(key, {
-  perSkillAbility: {
-    special: {
-      Pulse: [
-        {
-          type: 'conditional',
-          conditional: {
-            label: ch('abloom'),
-            description:
-              'Increases Anomaly Motion Values when Abloom is triggered.',
-            metadata: cond.abloom,
-            fields: [
-              fieldForBuff(buff.special_ether_anom_mv_mult_),
-              fieldForBuff(buff.special_electric_anom_mv_mult_),
-              fieldForBuff(buff.special_fire_anom_mv_mult_),
-              fieldForBuff(buff.special_physical_anom_mv_mult_),
-              fieldForBuff(buff.special_ice_anom_mv_mult_),
-            ],
-          },
-        },
-      ],
-    },
-  },
   core: [
     {
       type: 'conditional',
       conditional: {
-        label: ch('coreCond'),
-        description:
-          'Increases Electric Anomaly Buildup Rate at maximum Zap stacks.',
+        label: ch('fullZapCond'),
+        description: <CoreGameDesc characterKey={key} />,
         metadata: cond.fullZap,
         fields: [
           fieldForBuff(buff.core_special_electric_anomBuildup_),
           fieldForBuff(buff.core_exSpecial_electric_anomBuildup_),
         ],
+        linked: ['m6_fullZap'],
       },
     },
   ],
@@ -50,8 +34,15 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
-        label: st('uponLaunch.1', { val1: '$t(skills.exSpecial)' }),
-        description: 'Increases Shock DMG upon launching EX Special Attack.',
+        label: ch('exSpecialHitCond'),
+        description: (
+          <>
+            <GameDesc ns="char_Grace_gen" key18="ability.desc.0" />
+            <AbilityBodyText characterKey={key}>
+              <GameDesc ns="char_Grace_gen" key18="ability.desc.1" />
+            </AbilityBodyText>
+          </>
+        ),
         metadata: cond.exSpecialHit,
         fields: [fieldForBuff(buff.ability_shock_dmg_)],
       },
@@ -61,8 +52,8 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
-        label: ch('potentialCond'),
-        description: 'Increases Electric DMG when Zap is consumed.',
+        label: ch('zapConsumedCond'),
+        description: <GameDesc ns="char_Grace_gen" key18="potential.desc.6" />,
         metadata: cond.zapConsumed,
         fields: [fieldForBuff(buff.potential_electric_dmg_)],
       },
@@ -72,9 +63,8 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
-        label: ch('m2Cond'),
-        description:
-          'Reduces enemy Electric RES and Anomaly Buildup RES when the grenade hits.',
+        label: ch('grenadeHitCond'),
+        description: <GameDesc ns="char_Grace_gen" key18="mindscapes.2.desc" />,
         metadata: cond.grenadeHit,
         fields: [
           fieldForBuff(buff.m2_electric_resRed_),
@@ -83,29 +73,18 @@ const sheet = createBaseSheet(key, {
       },
     },
   ],
-  m4: [
-    {
-      type: 'conditional',
-      conditional: {
-        label: st('uponLaunch.1', { val1: '$t(skills.exSpecial)' }),
-        description: 'Increases Energy Regen upon launching EX Special Attack.',
-        metadata: cond.chargeConsumed,
-        fields: [fieldForBuff(buff.m4_enerRegen_)],
-      },
-    },
-  ],
   m6: [
     {
       type: 'conditional',
       conditional: {
-        label: ch('coreCond'),
-        description:
-          'Increases Special Attack and EX Special Attack Motion Values at maximum Zap stacks.',
-        metadata: cond.fullZap,
+        label: ch('m6FullZapCond'),
+        description: <GameDesc ns="char_Grace_gen" key18="mindscapes.6.desc" />,
+        metadata: cond.m6_fullZap,
         fields: [
           fieldForBuff(buff.m6_special_mv_mult_),
           fieldForBuff(buff.m6_exSpecial_mv_mult_),
         ],
+        linked: ['fullZap'],
       },
     },
   ],

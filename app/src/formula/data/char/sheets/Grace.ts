@@ -1,9 +1,14 @@
 import { cmpGE, prod, subscript, sum } from '@zenless-optimizer/pando/engine'
-import { type CharacterKey } from '../../../../consts'
+import {
+  type AttributeAnomalyKey,
+  allAttributeAnomalyKeys,
+  type CharacterKey,
+} from '../../../../consts'
 import { allStats, mappedStats } from '../../../../stats'
 import {
   allBoolConditionals,
   allNumConditionals,
+  customAnomalyDmg,
   enemyDebuff,
   own,
   ownBuff,
@@ -11,9 +16,9 @@ import {
   register,
   registerBuff,
   team,
-  teamBuff,
 } from '../../util'
 import {
+  anomalyMultipliers,
   dmgDazeAndAnomOverride,
   entriesForChar,
   registerAllDmgDazeAndAnom,
@@ -25,13 +30,32 @@ const dm = mappedStats.char[key]
 
 const { char } = own
 
-const { fullZap, grenadeHit, chargeConsumed, zapConsumed, abloom } =
-  allBoolConditionals(key, undefined, {
+const { fullZap, m6_fullZap, grenadeHit, zapConsumed } = allBoolConditionals(
+  key,
+  undefined,
+  {
     grenadeHit: 2,
-    chargeConsumed: 4,
-    fullZap: 6,
-  })
+    m6_fullZap: 6,
+  }
+)
 const { exSpecialHit } = allNumConditionals(key, true, 0, dm.ability.stacks)
+
+// Pulse Grenade Abloom: additional instance = X% of the original anomaly DMG
+// (special.Pulse.desc.1: 560/280/700/50/70/28%). The fraction folds into the
+// base anomaly MV so each instance/anomaly ratio matches game text exactly.
+// Named `abloomDmgInst_<attr>` (Vivian convention) so opt-target labels render
+// as "<Attr> Anomaly Abloom" via the shared formula label maps.
+// Note: entriesForChar also registers the bare `abloomDmgInst` (electric,
+// Grace's own attribute) with the unfractioned base; with no abloom MV-mult
+// sources it stays hidden from listings.
+const abloomFrac: Record<AttributeAnomalyKey, number> = {
+  ether: 5.6,
+  electric: 2.8,
+  fire: 7,
+  physical: 0.5,
+  ice: 0.7,
+  wind: 0.28,
+}
 
 const sheet = register(
   key,
@@ -79,50 +103,22 @@ const sheet = register(
   ),
 
   // Buffs
-  registerBuff(
-    'special_ether_anom_mv_mult_',
-    teamBuff.combat.anom_mv_mult_.ether.addWithDmgType(
-      'abloom',
-      abloom.ifOn(percent(5.6))
-    ),
-    undefined,
-    true
-  ),
-  registerBuff(
-    'special_electric_anom_mv_mult_',
-    teamBuff.combat.anom_mv_mult_.electric.addWithDmgType(
-      'abloom',
-      abloom.ifOn(percent(2.8))
-    ),
-    undefined,
-    true
-  ),
-  registerBuff(
-    'special_fire_anom_mv_mult_',
-    teamBuff.combat.anom_mv_mult_.fire.addWithDmgType(
-      'abloom',
-      abloom.ifOn(percent(7))
-    ),
-    undefined,
-    true
-  ),
-  registerBuff(
-    'special_physical_anom_mv_mult_',
-    teamBuff.combat.anom_mv_mult_.physical.addWithDmgType(
-      'abloom',
-      abloom.ifOn(percent(0.5))
-    ),
-    undefined,
-    true
-  ),
-  registerBuff(
-    'special_ice_anom_mv_mult_',
-    teamBuff.combat.anom_mv_mult_.ice.addWithDmgType(
-      'abloom',
-      abloom.ifOn(percent(0.7))
-    ),
-    undefined,
-    true
+  // Abloom — Pulse Grenade (per-element damage instances, always-on opt targets)
+  ...allAttributeAnomalyKeys.map((attr) =>
+    customAnomalyDmg(
+      `abloomDmgInst_${attr}`,
+      {
+        attribute: attr,
+        damageType1: 'anomaly',
+        damageType2: 'abloom',
+      },
+      prod(
+        percent(anomalyMultipliers[attr]),
+        percent(abloomFrac[attr]),
+        own.final.atk,
+        sum(percent(1), own.final.anom_mv_mult_)
+      )
+    )
   ),
   registerBuff(
     'core_special_electric_anomBuildup_',
@@ -180,23 +176,17 @@ const sheet = register(
     true
   ),
   registerBuff(
-    'm4_enerRegen_',
-    ownBuff.combat.enerRegen_.add(
-      cmpGE(char.mindscape, 4, chargeConsumed.ifOn(percent(dm.m4.enerRegen_)))
-    )
-  ),
-  registerBuff(
     'm6_special_mv_mult_',
     ownBuff.dmg.mv_mult_.addWithDmgType(
       'special',
-      cmpGE(char.mindscape, 6, fullZap.ifOn(percent(dm.m6.mv_mult_)))
+      cmpGE(char.mindscape, 6, m6_fullZap.ifOn(percent(dm.m6.mv_mult_)))
     )
   ),
   registerBuff(
     'm6_exSpecial_mv_mult_',
     ownBuff.dmg.mv_mult_.addWithDmgType(
       'exSpecial',
-      cmpGE(char.mindscape, 6, fullZap.ifOn(percent(dm.m6.mv_mult_)))
+      cmpGE(char.mindscape, 6, m6_fullZap.ifOn(percent(dm.m6.mv_mult_)))
     )
   )
 )

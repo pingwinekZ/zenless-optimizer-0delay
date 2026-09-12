@@ -7,7 +7,11 @@ import {
   subscript,
   sum,
 } from '@zenless-optimizer/pando/engine'
-import { type CharacterKey } from '../../../../consts'
+import {
+  type AttributeAnomalyKey,
+  allAttributeAnomalyKeys,
+  type CharacterKey,
+} from '../../../../consts'
 import { allStats, mappedStats } from '../../../../stats'
 import {
   allBoolConditionals,
@@ -23,6 +27,7 @@ import {
   teamBuff,
 } from '../../util'
 import {
+  anomalyMultipliers,
   dmgDazeAndAnomOverride,
   entriesForChar,
   getBaseTag,
@@ -65,6 +70,16 @@ const m6_fire_resIgn_ = ownBuff.combat.resIgn_.fire.add(
     exSpecial_active.ifOn(dm.m6.exSpecial_specialAfterburn_burn_fire_resIgn_)
   )
 )
+
+// Tossing Method Abloom fractions of the original anomaly DMG (desc.3)
+const abloomFrac: Record<AttributeAnomalyKey, number> = {
+  ether: 4.8,
+  electric: 2.4,
+  fire: 6,
+  physical: 0.4,
+  ice: 0.6,
+  wind: 0.24,
+}
 
 const sheet = register(
   key,
@@ -196,35 +211,29 @@ const sheet = register(
 
   // Buffs
   // Abloom — EX Special Attack: Intense Heat Tossing Method (per-element damage instances)
-  ...customAnomalyDmg(
-    'exSpecial_ether_abloomDmg',
-    { attribute: 'ether', damageType1: 'anomaly', damageType2: 'abloom' },
-    prod(percent(480), own.final.atk, sum(percent(1), own.final.anom_mv_mult_))
-  ),
-  ...customAnomalyDmg(
-    'exSpecial_electric_abloomDmg',
-    { attribute: 'electric', damageType1: 'anomaly', damageType2: 'abloom' },
-    prod(percent(240), own.final.atk, sum(percent(1), own.final.anom_mv_mult_))
-  ),
-  ...customAnomalyDmg(
-    'exSpecial_fire_abloomDmg',
-    { attribute: 'fire', damageType1: 'anomaly', damageType2: 'abloom' },
-    prod(percent(600), own.final.atk, sum(percent(1), own.final.anom_mv_mult_))
-  ),
-  ...customAnomalyDmg(
-    'exSpecial_physical_abloomDmg',
-    { attribute: 'physical', damageType1: 'anomaly', damageType2: 'abloom' },
-    prod(percent(40), own.final.atk, sum(percent(1), own.final.anom_mv_mult_))
-  ),
-  ...customAnomalyDmg(
-    'exSpecial_ice_abloomDmg',
-    { attribute: 'ice', damageType1: 'anomaly', damageType2: 'abloom' },
-    prod(percent(60), own.final.atk, sum(percent(1), own.final.anom_mv_mult_))
-  ),
-  ...customAnomalyDmg(
-    'exSpecial_wind_abloomDmg',
-    { attribute: 'wind', damageType1: 'anomaly', damageType2: 'abloom' },
-    prod(percent(24), own.final.atk, sum(percent(1), own.final.anom_mv_mult_))
+  // Each instance = X% of the original anomaly DMG (desc.3: 480/240/600/40/60/24%).
+  // The fraction folds into the base anomaly MV so instance/anomaly ratios
+  // match game text exactly (was: raw game-text percents as MVs, ~200x over).
+  // Named `abloomDmgInst_<attr>` (Vivian convention) so opt-target labels render
+  // as "<Attr> Anomaly Abloom" via the shared formula label maps.
+  // Note: entriesForChar also registers the bare `abloomDmgInst` (fire,
+  // Burnice's own attribute) with the unfractioned base; with no abloom
+  // MV-mult sources it stays hidden from listings.
+  ...allAttributeAnomalyKeys.map((attr) =>
+    customAnomalyDmg(
+      `abloomDmgInst_${attr}`,
+      {
+        attribute: attr,
+        damageType1: 'anomaly',
+        damageType2: 'abloom',
+      },
+      prod(
+        percent(anomalyMultipliers[attr]),
+        percent(abloomFrac[attr]),
+        own.final.atk,
+        sum(percent(1), own.final.anom_mv_mult_)
+      )
+    )
   ),
   registerBuff(
     'core_afterburn_dmg',

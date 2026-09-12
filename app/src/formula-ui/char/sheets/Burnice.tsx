@@ -37,81 +37,6 @@ function PotentialDescription() {
 }
 
 const sheet = createBaseSheet(key, {
-  perSkillAbility: {
-    special: {
-      EXSpecialAttackIntenseHeatTossingMethod: [
-        {
-          type: 'fields',
-          header: {
-            icon: <ImgIcon src={commonDefIcon('specialFlat')} size={1.5} />,
-            text: ch('abloom'),
-          },
-          fields: [
-            {
-              title: (
-                <ColorText
-                  color={getVariant(formula.exSpecial_ether_abloomDmg.tag)}
-                >
-                  {ch('exSpecial_ether_abloomDmg')}
-                </ColorText>
-              ),
-              fieldRef: formula.exSpecial_ether_abloomDmg.tag,
-            },
-            {
-              title: (
-                <ColorText
-                  color={getVariant(formula.exSpecial_electric_abloomDmg.tag)}
-                >
-                  {ch('exSpecial_electric_abloomDmg')}
-                </ColorText>
-              ),
-              fieldRef: formula.exSpecial_electric_abloomDmg.tag,
-            },
-            {
-              title: (
-                <ColorText
-                  color={getVariant(formula.exSpecial_fire_abloomDmg.tag)}
-                >
-                  {ch('exSpecial_fire_abloomDmg')}
-                </ColorText>
-              ),
-              fieldRef: formula.exSpecial_fire_abloomDmg.tag,
-            },
-            {
-              title: (
-                <ColorText
-                  color={getVariant(formula.exSpecial_physical_abloomDmg.tag)}
-                >
-                  {ch('exSpecial_physical_abloomDmg')}
-                </ColorText>
-              ),
-              fieldRef: formula.exSpecial_physical_abloomDmg.tag,
-            },
-            {
-              title: (
-                <ColorText
-                  color={getVariant(formula.exSpecial_ice_abloomDmg.tag)}
-                >
-                  {ch('exSpecial_ice_abloomDmg')}
-                </ColorText>
-              ),
-              fieldRef: formula.exSpecial_ice_abloomDmg.tag,
-            },
-            {
-              title: (
-                <ColorText
-                  color={getVariant(formula.exSpecial_wind_abloomDmg.tag)}
-                >
-                  {ch('exSpecial_wind_abloomDmg')}
-                </ColorText>
-              ),
-              fieldRef: formula.exSpecial_wind_abloomDmg.tag,
-            },
-          ],
-        },
-      ],
-    },
-  },
   core: [
     {
       type: 'fields',
@@ -205,13 +130,7 @@ const sheet = createBaseSheet(key, {
           />
         ),
         metadata: cond.exSpecial_active,
-        fields: [
-          fieldForBuff(buff.m6_burn_fire_resIgn_),
-          {
-            title: ch('m6_fire_resIgn'),
-            fieldRef: buff.m6_burn_fire_resIgn_.tag,
-          },
-        ],
+        fields: [fieldForBuff(buff.m6_burn_fire_resIgn_)],
       },
     },
     {
