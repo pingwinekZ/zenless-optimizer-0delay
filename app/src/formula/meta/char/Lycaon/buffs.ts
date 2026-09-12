@@ -63,7 +63,7 @@ export const buffs = {
       attribute: 'ice',
       name: 'core_ice_resRed_',
     },
-    team: false,
+    team: true,
   },
   core_ether_dmgInc_: {
     sheet: 'Lycaon',
@@ -76,7 +76,7 @@ export const buffs = {
       attribute: 'ether',
       name: 'core_ether_dmgInc_',
     },
-    team: false,
+    team: true,
   },
   core_electric_dmgInc_: {
     sheet: 'Lycaon',
@@ -89,7 +89,7 @@ export const buffs = {
       attribute: 'electric',
       name: 'core_electric_dmgInc_',
     },
-    team: false,
+    team: true,
   },
   core_fire_dmgInc_: {
     sheet: 'Lycaon',
@@ -102,7 +102,7 @@ export const buffs = {
       attribute: 'fire',
       name: 'core_fire_dmgInc_',
     },
-    team: false,
+    team: true,
   },
   core_physical_dmgInc_: {
     sheet: 'Lycaon',
@@ -115,7 +115,7 @@ export const buffs = {
       attribute: 'physical',
       name: 'core_physical_dmgInc_',
     },
-    team: false,
+    team: true,
   },
   core_wind_dmgInc_: {
     sheet: 'Lycaon',
@@ -128,7 +128,7 @@ export const buffs = {
       attribute: 'wind',
       name: 'core_wind_dmgInc_',
     },
-    team: false,
+    team: true,
   },
   ability_stun_: {
     sheet: 'Lycaon',
@@ -140,7 +140,7 @@ export const buffs = {
       sheet: 'Lycaon',
       name: 'ability_stun_',
     },
-    team: false,
+    team: true,
   },
   m1_dazeInc_: {
     sheet: 'Lycaon',

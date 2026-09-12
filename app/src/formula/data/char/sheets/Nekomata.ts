@@ -1,9 +1,11 @@
+import type { NumNode } from '@zenless-optimizer/pando/engine'
 import { cmpGE, prod, subscript, sum } from '@zenless-optimizer/pando/engine'
 import { type CharacterKey } from '../../../../consts'
 import { allStats, mappedStats } from '../../../../stats'
 import {
   allBoolConditionals,
   allNumConditionals,
+  customDmg,
   own,
   ownBuff,
   percent,
@@ -11,11 +13,12 @@ import {
   registerBuff,
   team,
 } from '../../util'
-import { entriesForChar, registerAllDmgDazeAndAnom } from '../util'
+import { entriesForChar, getBaseTag, registerAllDmgDazeAndAnom } from '../util'
 
 const key: CharacterKey = 'Nekomata'
 const data_gen = allStats.char[key]
 const dm = mappedStats.char[key]
+const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
@@ -45,6 +48,28 @@ const { chain_ult_used } = allNumConditionals(
 )
 const { pawpad_ambush } = allBoolConditionals(key)
 
+// Ability check: another teammate is Support, or shares attribute (physical)
+// or faction (CunningHares). team.common.count includes self — she
+// contributes 2 (1 physical + 1 faction), so threshold >= 3 means
+// "self + at least 1 qualifying teammate".
+const abilityCheck = (node: NumNode | number) =>
+  cmpGE(
+    sum(
+      team.common.count.withSpecialty('support'),
+      team.common.count.physical,
+      team.common.count.withFaction('CunningHares')
+    ),
+    3,
+    node
+  )
+
+// Assault / Disappearing Tail stacks (0-2): EX Special Attack and Dodge
+// Counter both gain the same per-stack DMG.
+const ability_stacks_dmg_ = prod(
+  assaults_inflicted,
+  percent(dm.ability.exSpecial_dmg_)
+)
+
 const sheet = register(
   key,
   // Handles base stats, core stats and Mindscapes 3 + 5
@@ -52,6 +77,25 @@ const sheet = register(
 
   // Formulas
   ...registerAllDmgDazeAndAnom(key, dm),
+
+  // Super Mean Pawprint (core para 6): additional Physical instance while
+  // Pawpad Ambush is active. Paired registerBuff below so the sheet renders.
+  ...customDmg(
+    'core_pawprint_dmg',
+    { ...baseTag },
+    pawpad_ambush.ifOn(
+      prod(own.final.atk, percent(subscript(char.core, dm.core.pawprint_dmg)))
+    )
+  ),
+  registerBuff(
+    'core_pawprint_dmg',
+    ownBuff.combat.dmg_.physical.add(
+      pawpad_ambush.ifOn(percent(subscript(char.core, dm.core.pawprint_dmg)))
+    ),
+    undefined,
+    undefined,
+    false
+  ),
 
   // Buffs
   registerBuff(
@@ -66,14 +110,14 @@ const sheet = register(
     'ability_exSpecial_dmg_',
     ownBuff.combat.dmg_.addWithDmgType(
       'exSpecial',
-      cmpGE(
-        sum(
-          team.common.count.physical,
-          team.common.count.withFaction('CunningHares')
-        ),
-        3,
-        prod(assaults_inflicted, percent(dm.ability.exSpecial_dmg_))
-      )
+      abilityCheck(ability_stacks_dmg_)
+    )
+  ),
+  registerBuff(
+    'ability_dodgeCounter_dmg_',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'dodgeCounter',
+      abilityCheck(ability_stacks_dmg_)
     )
   ),
   registerBuff(

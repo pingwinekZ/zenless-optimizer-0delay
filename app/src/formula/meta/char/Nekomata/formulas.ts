@@ -790,4 +790,16 @@ export const formulas = {
       name: 'AssistFollowUpShadowStrike_0_anomBuildup',
     },
   },
+  core_pawprint_dmg: {
+    sheet: 'Nekomata',
+    name: 'core_pawprint_dmg',
+    tag: {
+      et: 'own',
+      qt: 'formula',
+      q: 'standardDmg',
+      sheet: 'Nekomata',
+      attribute: 'physical',
+      name: 'core_pawprint_dmg',
+    },
+  },
 } as const

@@ -1,5 +1,18 @@
 // WARNING: Generated file, do not modify
 export const buffs = {
+  core_pawprint_dmg: {
+    sheet: 'Nekomata',
+    name: 'core_pawprint_dmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Nekomata',
+      attribute: 'physical',
+      name: 'core_pawprint_dmg',
+    },
+    team: false,
+  },
   core_common_dmg_: {
     sheet: 'Nekomata',
     name: 'core_common_dmg_',
@@ -22,6 +35,19 @@ export const buffs = {
       sheet: 'Nekomata',
       damageType1: 'exSpecial',
       name: 'ability_exSpecial_dmg_',
+    },
+    team: false,
+  },
+  ability_dodgeCounter_dmg_: {
+    sheet: 'Nekomata',
+    name: 'ability_dodgeCounter_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Nekomata',
+      damageType1: 'dodgeCounter',
+      name: 'ability_dodgeCounter_dmg_',
     },
     team: false,
   },

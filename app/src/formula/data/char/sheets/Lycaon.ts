@@ -252,41 +252,55 @@ const sheet = register(
     undefined,
     false
   ),
+  // Core RES shred + team DMG taken: enemy debuffs that benefit the whole
+  // squad, so they're registered as team buffs for the teammate view
   registerBuff(
     'core_ice_resRed_',
     enemyDebuff.common.resRed_.ice.add(
       exSpecial_assistFollowUp_hit.ifOn(percent(dm.core.ice_resRed_))
-    )
+    ),
+    undefined,
+    true
   ),
   registerBuff(
     'core_ether_dmgInc_',
     enemyDebuff.common.dmgInc_.ether.add(
       exSpecial_assistFollowUp_hit.ifOn(percent(dm.core.other_dmgInc_))
-    )
+    ),
+    undefined,
+    true
   ),
   registerBuff(
     'core_electric_dmgInc_',
     enemyDebuff.common.dmgInc_.electric.add(
       exSpecial_assistFollowUp_hit.ifOn(percent(dm.core.other_dmgInc_))
-    )
+    ),
+    undefined,
+    true
   ),
   registerBuff(
     'core_fire_dmgInc_',
     enemyDebuff.common.dmgInc_.fire.add(
       exSpecial_assistFollowUp_hit.ifOn(percent(dm.core.other_dmgInc_))
-    )
+    ),
+    undefined,
+    true
   ),
   registerBuff(
     'core_physical_dmgInc_',
     enemyDebuff.common.dmgInc_.physical.add(
       exSpecial_assistFollowUp_hit.ifOn(percent(dm.core.other_dmgInc_))
-    )
+    ),
+    undefined,
+    true
   ),
   registerBuff(
     'core_wind_dmgInc_',
     enemyDebuff.common.dmgInc_.wind.add(
       exSpecial_assistFollowUp_hit.ifOn(percent(dm.core.other_dmgInc_))
-    )
+    ),
+    undefined,
+    true
   ),
   registerBuff(
     'ability_stun_',
@@ -300,7 +314,9 @@ const sheet = register(
         3,
         stunned_enemy_hit.ifOn(percent(dm.ability.stun_))
       )
-    )
+    ),
+    undefined,
+    true
   ),
   registerBuff('m1_dazeInc_', m1_dazeInc_, undefined, undefined, false),
   registerBuff(
