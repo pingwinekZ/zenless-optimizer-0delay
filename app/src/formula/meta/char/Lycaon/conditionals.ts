@@ -17,6 +17,11 @@ export const conditionals = {
     min: 0,
     max: 8,
   },
+  encircle_prey_active: {
+    sheet: 'Lycaon',
+    name: 'encircle_prey_active',
+    type: 'bool',
+  },
   exSpecial_assistFollowUp_hit: {
     sheet: 'Lycaon',
     name: 'exSpecial_assistFollowUp_hit',

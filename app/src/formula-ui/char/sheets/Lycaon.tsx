@@ -1,18 +1,52 @@
+import { ColorText } from '@zenless-optimizer/common/ui'
 import type { CharacterKey } from '../../../consts'
 import { Lycaon } from '../../../formula'
-import { st, trans } from '../../util'
-import { createBaseSheet, fieldForBuff } from '../sheetUtil'
+import { GameDesc } from '../../../i18n'
+import { trans } from '../../util'
+import {
+  AbilityBodyText,
+  CoreGameDesc,
+  createBaseSheet,
+  fieldForBuff,
+} from '../sheetUtil'
+import { getVariant } from '../util'
 
 const key: CharacterKey = 'Lycaon'
 const [, ch] = trans('char', key)
 const cond = Lycaon.conditionals
 const buff = Lycaon.buffs
-const formula = Lycaon.formulas
+
+function AbilityDescription() {
+  return (
+    <>
+      <GameDesc ns="char_Lycaon_gen" key18="ability.desc.0" />
+      <AbilityBodyText characterKey={key}>
+        <GameDesc ns="char_Lycaon_gen" key18="ability.desc.1" />
+      </AbilityBodyText>
+    </>
+  )
+}
+
+function EncirclePreyDescription() {
+  return (
+    <>
+      <CoreGameDesc characterKey={key} paragraph={2} />
+      <div style={{ marginBottom: 8 }} />
+      <CoreGameDesc characterKey={key} paragraph={3} />
+      <div style={{ marginBottom: 8 }} />
+      <CoreGameDesc characterKey={key} paragraph={4} />
+      <div style={{ marginBottom: 8 }} />
+      <CoreGameDesc characterKey={key} paragraph={5} />
+    </>
+  )
+}
 
 const sheet = createBaseSheet(key, {
   core: [
     {
       type: 'fields',
+      header: { icon: null, text: ch('core_daze_header') },
+      description: <CoreGameDesc characterKey={key} paragraph={0} />,
       fields: [
         fieldForBuff(buff.core_basic_dazeInc_),
         fieldForBuff(buff.core_dodgeCounter_dazeInc_),
@@ -22,27 +56,37 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
-        label: ch('coreCond'),
-        description:
-          'Reduces all enemy RES when EX Special Attack or Assist Follow-Up hits.',
+        label: ch('resShredCond'),
+        description: <CoreGameDesc characterKey={key} paragraph={1} />,
         metadata: cond.exSpecial_assistFollowUp_hit,
         fields: [
           fieldForBuff(buff.core_ice_resRed_),
-          fieldForBuff(buff.core_ether_resRed_),
-          fieldForBuff(buff.core_electric_resRed_),
-          fieldForBuff(buff.core_fire_resRed_),
-          fieldForBuff(buff.core_physical_resRed_),
+          fieldForBuff(buff.core_ether_dmgInc_),
+          fieldForBuff(buff.core_electric_dmgInc_),
+          fieldForBuff(buff.core_fire_dmgInc_),
+          fieldForBuff(buff.core_physical_dmgInc_),
+          fieldForBuff(buff.core_wind_dmgInc_),
         ],
       },
     },
     {
       type: 'conditional',
       conditional: {
-        label: ch('durationLeft'),
-        description:
-          'Increases Assist Follow-Up Daze based on remaining Encircle Prey duration.',
+        label: ch('encirclePreyCond'),
+        description: <EncirclePreyDescription />,
         metadata: cond.durationLeft,
-        fields: [fieldForBuff(buff.core_assistFollowUp_dazeInc_)],
+        fields: [
+          {
+            title: (
+              <ColorText
+                color={getVariant(buff.core_assistFollowUp_dazeInc_.tag)}
+              >
+                {ch('core_assistFollowUp_dazeInc_')}
+              </ColorText>
+            ),
+            fieldRef: buff.core_assistFollowUp_dazeInc_.tag,
+          },
+        ],
       },
     },
   ],
@@ -50,8 +94,8 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
-        label: ch('abilityCond'),
-        description: 'Increases Daze dealt when hitting a Stunned enemy.',
+        label: ch('stunnedEnemyHitCond'),
+        description: <AbilityDescription />,
         metadata: cond.stunned_enemy_hit,
         fields: [fieldForBuff(buff.ability_stun_)],
       },
@@ -61,10 +105,9 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
-        label: ch('potentialCond'),
-        description:
-          'Increases Impact while Encircle Prey is active and Lycaon performs a Basic Attack, Dash Attack, or Dodge Counter.',
-        metadata: cond.durationLeft,
+        label: ch('encirclePreyActiveCond'),
+        description: <GameDesc ns="char_Lycaon_gen" key18="potential.desc.6" />,
+        metadata: cond.encircle_prey_active,
         fields: [fieldForBuff(buff.potential_impact_)],
       },
     },
@@ -72,25 +115,24 @@ const sheet = createBaseSheet(key, {
   m1: [
     {
       type: 'fields',
+      header: { icon: null, text: ch('m1_header') },
+      description: <GameDesc ns="char_Lycaon_gen" key18="mindscapes.1.desc" />,
       fields: [
         {
-          title: ch('m1_dazeInc_'),
+          title: (
+            <ColorText color={getVariant(buff.m1_dazeInc_.tag)}>
+              {ch('m1_dazeInc_')}
+            </ColorText>
+          ),
           fieldRef: buff.m1_dazeInc_.tag,
         },
         {
-          title: ch('m1_fullCharge_dazeInc_'),
+          title: (
+            <ColorText color={getVariant(buff.m1_fullCharge_dazeInc_.tag)}>
+              {ch('m1_fullCharge_dazeInc_')}
+            </ColorText>
+          ),
           fieldRef: buff.m1_fullCharge_dazeInc_.tag,
-        },
-      ],
-    },
-  ],
-  m4: [
-    {
-      type: 'fields',
-      fields: [
-        {
-          title: st('shield'),
-          fieldRef: formula.m4_shield.tag,
         },
       ],
     },
@@ -99,8 +141,10 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
-        label: ch('m6Cond'),
-        description: 'Increases all DMG when a charged attack hits an enemy.',
+        label: ch('chargedHitsCond'),
+        description: (
+          <GameDesc ns="char_Lycaon_gen" key18="mindscapes.6.desc" />
+        ),
         metadata: cond.charged_hits,
         fields: [fieldForBuff(buff.m6_common_dmg_)],
       },

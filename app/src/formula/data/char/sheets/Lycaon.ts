@@ -1,10 +1,4 @@
-import {
-  cmpGE,
-  cmpGT,
-  prod,
-  subscript,
-  sum,
-} from '@zenless-optimizer/pando/engine'
+import { cmpGE, prod, subscript, sum } from '@zenless-optimizer/pando/engine'
 import { type CharacterKey } from '../../../../consts'
 import { allStats, mappedStats } from '../../../../stats'
 import {
@@ -33,8 +27,11 @@ const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
-const { exSpecial_assistFollowUp_hit, stunned_enemy_hit } =
-  allBoolConditionals(key)
+const {
+  exSpecial_assistFollowUp_hit,
+  stunned_enemy_hit,
+  encircle_prey_active,
+} = allBoolConditionals(key)
 const { charged_hits } = allNumConditionals(
   key,
   true,
@@ -203,7 +200,7 @@ const sheet = register(
       dm,
       'special',
       'EXSpecialAttackThrillOfTheHunt',
-      1,
+      2,
       { ...baseTag, damageType1: 'exSpecial' },
       'atk',
       undefined,
@@ -262,27 +259,33 @@ const sheet = register(
     )
   ),
   registerBuff(
-    'core_ether_resRed_',
-    enemyDebuff.common.resRed_.ether.add(
-      exSpecial_assistFollowUp_hit.ifOn(percent(dm.core.other_resRed_))
+    'core_ether_dmgInc_',
+    enemyDebuff.common.dmgInc_.ether.add(
+      exSpecial_assistFollowUp_hit.ifOn(percent(dm.core.other_dmgInc_))
     )
   ),
   registerBuff(
-    'core_electric_resRed_',
-    enemyDebuff.common.resRed_.electric.add(
-      exSpecial_assistFollowUp_hit.ifOn(percent(dm.core.other_resRed_))
+    'core_electric_dmgInc_',
+    enemyDebuff.common.dmgInc_.electric.add(
+      exSpecial_assistFollowUp_hit.ifOn(percent(dm.core.other_dmgInc_))
     )
   ),
   registerBuff(
-    'core_fire_resRed_',
-    enemyDebuff.common.resRed_.fire.add(
-      exSpecial_assistFollowUp_hit.ifOn(percent(dm.core.other_resRed_))
+    'core_fire_dmgInc_',
+    enemyDebuff.common.dmgInc_.fire.add(
+      exSpecial_assistFollowUp_hit.ifOn(percent(dm.core.other_dmgInc_))
     )
   ),
   registerBuff(
-    'core_physical_resRed_',
-    enemyDebuff.common.resRed_.physical.add(
-      exSpecial_assistFollowUp_hit.ifOn(percent(dm.core.other_resRed_))
+    'core_physical_dmgInc_',
+    enemyDebuff.common.dmgInc_.physical.add(
+      exSpecial_assistFollowUp_hit.ifOn(percent(dm.core.other_dmgInc_))
+    )
+  ),
+  registerBuff(
+    'core_wind_dmgInc_',
+    enemyDebuff.common.dmgInc_.wind.add(
+      exSpecial_assistFollowUp_hit.ifOn(percent(dm.core.other_dmgInc_))
     )
   ),
   registerBuff(
@@ -316,7 +319,7 @@ const sheet = register(
   registerBuff(
     'potential_impact_',
     ownBuff.combat.impact_.add(
-      cmpGT(durationLeft, 0, percent(dm.potential.impact_[6]))
+      encircle_prey_active.ifOn(percent(dm.potential.impact_[6]))
     )
   )
 )

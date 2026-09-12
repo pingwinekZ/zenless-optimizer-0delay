@@ -1,9 +1,12 @@
 {
-  "coreCond": "When EX Special Attack: Thrill of the Hunt, Assist Follow-Up: Vengeful Counterattack or Assist Follow-Up: Vengeful Counterattack - Glacial Waltz hits an enemy",
-  "durationLeft": "Encircle Prey duration left",
-  "abilityCond": "When Lycaon hits a Stunned enemy",
-  "m1_dazeInc_": "EX Special Attack: Thrill of the Hunt Daze Increase",
-  "m1_fullCharge_dazeInc_": "EX Special Attack: Thrill of the Hunt Charged Attack Daze Increase",
-  "m6Cond": "When a charged attack hits an enemy",
-  "potentialCond": "While Encircle Prey is active"
+  "resShredCond": "EX / Assist Follow-Up · RES Shred & DMG",
+  "encirclePreyCond": "Encircle Prey Duration · Daze",
+  "stunnedEnemyHitCond": "Hitting Stunned Enemy · Stun DMG",
+  "encirclePreyActiveCond": "Encircle Prey · Impact",
+  "chargedHitsCond": "Charged Hits · DMG",
+  "core_daze_header": "Daze",
+  "core_assistFollowUp_dazeInc_": "Vengeful Counterattack - Glacial Waltz Daze",
+  "m1_header": "Daze",
+  "m1_dazeInc_": "Thrill of the Hunt #1 Daze",
+  "m1_fullCharge_dazeInc_": "Thrill of the Hunt #3 Daze"
 }
