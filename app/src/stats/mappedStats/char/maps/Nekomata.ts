@@ -37,6 +37,7 @@ const dm = {
   core: {
     common_dmg_: data_gen.coreParams[0],
     duration: data_gen.coreParams[1][0],
+    pawprint_dmg: data_gen.coreParams[11],
   },
   ability: {
     exSpecial_dmg_: data_gen.abilityParams[0],

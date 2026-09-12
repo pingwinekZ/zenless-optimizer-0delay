@@ -42,7 +42,7 @@ const dm = {
   core: {
     dazeInc_: data_gen.coreParams[0],
     ice_resRed_: data_gen.coreParams[1][0],
-    other_resRed_: data_gen.coreParams[2][0],
+    other_dmgInc_: data_gen.coreParams[2][0],
     duration: data_gen.coreParams[3][0],
     encirclePreyDuration: data_gen.coreParams[4][0],
     encirclePreyGained: data_gen.coreParams[5][0],

@@ -1,6 +1,11 @@
 {
-  "coreCond": "When Nekomata's Dodge Counter or Quick Assist hits an enemy",
-  "abilityCond": "After any character inflicts Assault",
-  "m1Cond": "When Nekomata hits an enemy from behind",
-  "potentialCond": "While in Pawpad Ambush state"
+  "coreCond": "Dodge Counter / Quick Assist · DMG",
+  "abilityCond": "Dodge / Assault · DMG",
+  "potentialCond": "Pawpad Ambush · CD",
+  "m1Cond": "From Behind / Enemy Stunned · RES Ignore",
+  "m2Cond": "Single Enemy · ER",
+  "m4Cond": "EX · CR",
+  "m6Cond": "Chain / Ultimate · CD",
+  "additional_dmg_header": "Additional DMG",
+  "core_pawprint_dmg": "Super Mean Pawprint DMG"
 }

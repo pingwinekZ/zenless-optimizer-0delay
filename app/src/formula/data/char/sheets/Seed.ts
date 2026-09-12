@@ -42,7 +42,9 @@ const { energy_consumed } = allNumConditionals(
   key,
   true,
   0,
-  dm.m2.max_energy_consumed - dm.m2.energy_consumed
+  dm.m2.max_energy_consumed - dm.m2.energy_consumed,
+  undefined,
+  { energy_consumed: 2 }
 )
 
 const abilityCheck = (node: NumNode | number) =>

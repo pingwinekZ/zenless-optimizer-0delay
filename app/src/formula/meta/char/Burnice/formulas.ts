@@ -1101,23 +1101,9 @@ export const formulas = {
       name: 'm6_burn_dmg',
     },
   },
-  exSpecial_ether_abloomDmg: {
+  abloomDmgInst_electric: {
     sheet: 'Burnice',
-    name: 'exSpecial_ether_abloomDmg',
-    tag: {
-      et: 'own',
-      qt: 'formula',
-      q: 'anomalyDmg',
-      sheet: 'Burnice',
-      attribute: 'ether',
-      damageType1: 'anomaly',
-      damageType2: 'abloom',
-      name: 'exSpecial_ether_abloomDmg',
-    },
-  },
-  exSpecial_electric_abloomDmg: {
-    sheet: 'Burnice',
-    name: 'exSpecial_electric_abloomDmg',
+    name: 'abloomDmgInst_electric',
     tag: {
       et: 'own',
       qt: 'formula',
@@ -1126,12 +1112,12 @@ export const formulas = {
       attribute: 'electric',
       damageType1: 'anomaly',
       damageType2: 'abloom',
-      name: 'exSpecial_electric_abloomDmg',
+      name: 'abloomDmgInst_electric',
     },
   },
-  exSpecial_fire_abloomDmg: {
+  abloomDmgInst_fire: {
     sheet: 'Burnice',
-    name: 'exSpecial_fire_abloomDmg',
+    name: 'abloomDmgInst_fire',
     tag: {
       et: 'own',
       qt: 'formula',
@@ -1140,26 +1126,12 @@ export const formulas = {
       attribute: 'fire',
       damageType1: 'anomaly',
       damageType2: 'abloom',
-      name: 'exSpecial_fire_abloomDmg',
+      name: 'abloomDmgInst_fire',
     },
   },
-  exSpecial_physical_abloomDmg: {
+  abloomDmgInst_ice: {
     sheet: 'Burnice',
-    name: 'exSpecial_physical_abloomDmg',
-    tag: {
-      et: 'own',
-      qt: 'formula',
-      q: 'anomalyDmg',
-      sheet: 'Burnice',
-      attribute: 'physical',
-      damageType1: 'anomaly',
-      damageType2: 'abloom',
-      name: 'exSpecial_physical_abloomDmg',
-    },
-  },
-  exSpecial_ice_abloomDmg: {
-    sheet: 'Burnice',
-    name: 'exSpecial_ice_abloomDmg',
+    name: 'abloomDmgInst_ice',
     tag: {
       et: 'own',
       qt: 'formula',
@@ -1168,12 +1140,40 @@ export const formulas = {
       attribute: 'ice',
       damageType1: 'anomaly',
       damageType2: 'abloom',
-      name: 'exSpecial_ice_abloomDmg',
+      name: 'abloomDmgInst_ice',
     },
   },
-  exSpecial_wind_abloomDmg: {
+  abloomDmgInst_physical: {
     sheet: 'Burnice',
-    name: 'exSpecial_wind_abloomDmg',
+    name: 'abloomDmgInst_physical',
+    tag: {
+      et: 'own',
+      qt: 'formula',
+      q: 'anomalyDmg',
+      sheet: 'Burnice',
+      attribute: 'physical',
+      damageType1: 'anomaly',
+      damageType2: 'abloom',
+      name: 'abloomDmgInst_physical',
+    },
+  },
+  abloomDmgInst_ether: {
+    sheet: 'Burnice',
+    name: 'abloomDmgInst_ether',
+    tag: {
+      et: 'own',
+      qt: 'formula',
+      q: 'anomalyDmg',
+      sheet: 'Burnice',
+      attribute: 'ether',
+      damageType1: 'anomaly',
+      damageType2: 'abloom',
+      name: 'abloomDmgInst_ether',
+    },
+  },
+  abloomDmgInst_wind: {
+    sheet: 'Burnice',
+    name: 'abloomDmgInst_wind',
     tag: {
       et: 'own',
       qt: 'formula',
@@ -1182,7 +1182,7 @@ export const formulas = {
       attribute: 'wind',
       damageType1: 'anomaly',
       damageType2: 'abloom',
-      name: 'exSpecial_wind_abloomDmg',
+      name: 'abloomDmgInst_wind',
     },
   },
 } as const

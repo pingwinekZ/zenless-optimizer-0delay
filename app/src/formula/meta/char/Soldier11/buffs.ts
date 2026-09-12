@@ -62,18 +62,6 @@ export const buffs = {
     },
     team: false,
   },
-  m4_dmg_red_: {
-    sheet: 'Soldier11',
-    name: 'm4_dmg_red_',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'dmg_red_',
-      sheet: 'Soldier11',
-      name: 'm4_dmg_red_',
-    },
-    team: false,
-  },
   m6_fire_resIgn_: {
     sheet: 'Soldier11',
     name: 'm6_fire_resIgn_',

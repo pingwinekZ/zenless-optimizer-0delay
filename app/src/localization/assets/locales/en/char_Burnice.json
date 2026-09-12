@@ -6,13 +6,6 @@
   "potential_header": "Potential",
   "m1_header": "Mindscape 1",
   "m1_afterburn_mv_mult": "Afterburn Damage Multiplier Increase",
-  "abloom": "Abloom",
-  "exSpecial_ether_abloomDmg": "Intense Heat Tossing Method · Ether",
-  "exSpecial_electric_abloomDmg": "Intense Heat Tossing Method · Electric",
-  "exSpecial_fire_abloomDmg": "Intense Heat Tossing Method · Fire",
-  "exSpecial_physical_abloomDmg": "Intense Heat Tossing Method · Physical",
-  "exSpecial_ice_abloomDmg": "Intense Heat Tossing Method · Ice",
-  "exSpecial_wind_abloomDmg": "Intense Heat Tossing Method · Wind",
   "m2Cond": "Thermal Penetration · PEN",
   "m2_header": "Mindscape 2",
   "m4_header": "CR",
@@ -22,7 +15,6 @@
   "m6_additional_afterburn_header": "Additional DMG",
   "m6_additional_afterburn_dmg": "Additional Afterburn Damage",
   "m6Cond": "Intense Heat Stirring Method - Double Shot Hit · RES Ignore",
-  "m6_fire_resIgn": "EX Special Attack: Intense Heat Stirring Method - Double Shot and special Afterburn effects Fire Res Ignore",
   "m6_burn_header": "Additional DMG",
   "m6_burn_dmg": "Burn DMG"
 }

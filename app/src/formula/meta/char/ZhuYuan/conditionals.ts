@@ -14,10 +14,4 @@ export const conditionals = {
     max: 5,
     mindscapeRequirement: 2,
   },
-  suppresive_mode: {
-    sheet: 'ZhuYuan',
-    name: 'suppresive_mode',
-    type: 'bool',
-    mindscapeRequirement: 2,
-  },
 } as const

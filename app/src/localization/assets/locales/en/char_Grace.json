@@ -1,4 +1,7 @@
 {
-  "coreCond": "Maximum Zap stacks",
-  "m2Cond": "When Grace's thrown grenade hits an enemy during a Basic Attack, Special Attack, or EX Special Attack"
+  "fullZapCond": "Maximum Zap · AB",
+  "exSpecialHitCond": "EX Hit · DMG",
+  "zapConsumedCond": "Zap Consumed · DMG",
+  "grenadeHitCond": "Grenade Hit · RES Reduction",
+  "m6FullZapCond": "Maximum Zap · DMG"
 }

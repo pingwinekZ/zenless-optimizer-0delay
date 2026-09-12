@@ -47,9 +47,16 @@ const { flash_freeze_consumed } = allNumConditionals(
   undefined,
   { flash_freeze_consumed: 1 }
 )
-const { flash_freeze } = allNumConditionals(key, true, 0, 3, undefined, {
-  flash_freeze: 2,
-})
+const { flash_freeze } = allNumConditionals(
+  key,
+  true,
+  0,
+  Math.round(dm.m2.max_crit_dmg_ / dm.m2.crit_dmg_),
+  undefined,
+  {
+    flash_freeze: 2,
+  }
+)
 
 const ability_check = (a: number | NumNode) =>
   cmpGE(
@@ -200,17 +207,6 @@ const sheet = register(
       undefined,
       ...core_basic_crit_dmg_
     )
-    // TODO: a hit should be here
-    // dmgDazeAndAnomOverride(
-    //   dm,
-    //   'basic',
-    //   'BasicAttackIcyBlade',
-    //   2,
-    //   { ...baseTag, damageType1: 'basic' },
-    //   'atk',
-    //   undefined,
-    //   ...core_basic_crit_dmg_
-    // )
   ),
 
   // Buffs

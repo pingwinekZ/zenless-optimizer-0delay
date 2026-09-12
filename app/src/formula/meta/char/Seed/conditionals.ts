@@ -21,6 +21,7 @@ export const conditionals = {
     int_only: true,
     min: 0,
     max: 60,
+    mindscapeRequirement: 2,
   },
   onslaught_atk: { sheet: 'Seed', name: 'onslaught_atk', type: 'bool' },
 } as const
