@@ -27,10 +27,9 @@ const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
-const { fireSuppression_triggered, fireSuppression_4th_hit, charge_consumed } =
-  allBoolConditionals(key, undefined, {
-    charge_consumed: 6,
-  })
+const { charge_consumed } = allBoolConditionals(key, undefined, {
+  charge_consumed: 6,
+})
 const { m2_stacks } = allNumConditionals(
   key,
   true,
@@ -227,18 +226,6 @@ const sheet = register(
     ownBuff.combat.dmg_.addWithDmgType(
       'dodgeCounter',
       cmpGE(char.mindscape, 2, prod(m2_stacks, percent(dm.m2.common_dmg_)))
-    )
-  ),
-  registerBuff(
-    'm4_dmg_red_',
-    ownBuff.combat.dmg_red_.add(
-      cmpGE(
-        char.mindscape,
-        4,
-        fireSuppression_triggered.ifOn(
-          fireSuppression_4th_hit.ifOn(percent(1), dm.m4.dmg_red_)
-        )
-      )
     )
   ),
   registerBuff('m6_fire_resIgn_', m6_fire_resIgn_, undefined, undefined, false)

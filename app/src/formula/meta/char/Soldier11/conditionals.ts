@@ -6,16 +6,6 @@ export const conditionals = {
     type: 'bool',
     mindscapeRequirement: 6,
   },
-  fireSuppression_4th_hit: {
-    sheet: 'Soldier11',
-    name: 'fireSuppression_4th_hit',
-    type: 'bool',
-  },
-  fireSuppression_triggered: {
-    sheet: 'Soldier11',
-    name: 'fireSuppression_triggered',
-    type: 'bool',
-  },
   m2_stacks: {
     sheet: 'Soldier11',
     name: 'm2_stacks',
