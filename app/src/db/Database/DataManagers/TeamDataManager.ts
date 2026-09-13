@@ -151,6 +151,21 @@ export const bonusStatDamageTypes: BonusStatDamageType[] = [
   'vortex',
 ] as const
 
+export const comboTypeKeys = ['simple', 'advanced'] as const
+export type ComboTypeKey = (typeof comboTypeKeys)[number]
+
+/** Version of the serialized advanced-rotation combo state. */
+export const COMBO_STATE_VERSION = '1.0'
+/** Max rotation hits with distinct buff states (limited by calc presets). */
+export const MAX_COMBO_HITS = 10
+
+export type ComboHit = {
+  sheet: string
+  name: string
+  /** Hit count / weight multiplier for this action. Defaults to 1. */
+  multiplier?: number
+}
+
 export type TargetTag = {
   sheet?: string
   name?: string
@@ -158,8 +173,17 @@ export type TargetTag = {
   damageType2?: 'aftershock' | 'abloom'
   q?: (typeof targetQ)[number]
   qt?: (typeof targetQt)[number]
-  rotation?: Array<{ sheet: string; name: string }>
+  rotation?: ComboHit[]
+  comboType?: ComboTypeKey
+  /** Versioned JSON blob with per-hit buff overrides (advanced mode). */
+  comboStateJson?: string
 }
+
+const comboHitSchema = z.object({
+  sheet: z.string(),
+  name: z.string(),
+  multiplier: z.number().positive().finite().catch(1),
+})
 
 const targetTagSchema = z
   .object({
@@ -169,9 +193,9 @@ const targetTagSchema = z
     damageType2: z.literal('aftershock').or(z.literal('abloom')).optional(),
     q: z.enum(targetQ).optional(),
     qt: z.enum(targetQt).optional(),
-    rotation: z
-      .array(z.object({ sheet: z.string(), name: z.string() }))
-      .optional(),
+    rotation: z.array(comboHitSchema).optional(),
+    comboType: zodEnumWithDefault(comboTypeKeys, 'simple'),
+    comboStateJson: z.string().optional(),
   })
   .optional() as z.ZodType<TargetTag | undefined>
 
@@ -399,8 +423,24 @@ export class TeamDataManager extends DataManager<
           const formula = getFormula({ sheet, name })
           return !!formula
         })
-        .map(({ sheet, name }) => ({ sheet, name }))
-      if (rotation.length > 0) return { rotation }
+        .slice(0, MAX_COMBO_HITS)
+        .map(({ sheet, name, multiplier }) =>
+          removeUndefinedFields({
+            sheet,
+            name,
+            multiplier: multiplier && multiplier !== 1 ? multiplier : undefined,
+          })
+        )
+      if (rotation.length > 0)
+        return removeUndefinedFields({
+          rotation,
+          comboType:
+            rawTarget.comboType === 'advanced' ? 'advanced' : undefined,
+          comboStateJson: validateComboStateJson(
+            rawTarget.comboStateJson,
+            rotation.length
+          ),
+        }) as TargetTag
       return undefined
     }
 
@@ -852,6 +892,165 @@ function getFormula({ sheet, name }: TargetTag) {
         tag: Tag
       }
     | undefined
+}
+
+/**
+ * Advanced rotation combo state (ported from HSR optimizer's ComboState).
+ *
+ * Instead of HSR's per-action boolean `activations` + value `partitions`,
+ * each conditional stores its numeric value per hit directly (`condValue`
+ * already covers bool 0/1, num and list indices), which subsumes partitions.
+ * Hit 0 (the main-form defaults shown in the conditionals drawers) is not
+ * stored here — it lives in `frames[0].conditionals` as before.
+ */
+export type ComboState = {
+  version: string
+  /** `${sheet}:${condKey}:${src}:${dst}` → one value per rotation hit. */
+  values: Record<string, number[]>
+}
+
+export function comboCondHash(
+  sheet: string,
+  condKey: string,
+  src: string,
+  dst: string | null
+): string {
+  return `${sheet}:${condKey}:${src}:${dst ?? ''}`
+}
+
+function comboHashOf(c: TeamConditional): string {
+  return comboCondHash(c.sheet, c.condKey, c.src, c.dst)
+}
+
+/** Parse + sanity-check a stored combo blob. Returns undefined when stale. */
+export function parseComboState(
+  json: string | undefined,
+  hitCount: number
+): ComboState | undefined {
+  if (!json) return undefined
+  try {
+    const parsed = JSON.parse(json) as ComboState
+    if (!parsed || parsed.version !== COMBO_STATE_VERSION) return undefined
+    if (!parsed.values || typeof parsed.values !== 'object') return undefined
+    for (const arr of Object.values(parsed.values)) {
+      if (!Array.isArray(arr) || arr.length !== hitCount) return undefined
+      if (!arr.every((v) => typeof v === 'number' && Number.isFinite(v)))
+        return undefined
+    }
+    return parsed
+  } catch {
+    return undefined
+  }
+}
+
+function validateComboStateJson(
+  json: string | undefined,
+  hitCount: number
+): string | undefined {
+  if (!json) return undefined
+  // Drop stale blobs (wrong version / hit count / non-numeric values) so the
+  // UI re-initializes them from the frame defaults on next open.
+  return parseComboState(json, hitCount) ? json : undefined
+}
+
+/**
+ * Remap a stored combo blob onto a new hit sequence, preserving per-hit
+ * values by position. New hits (or unknown hashes) fall back to the frame
+ * defaults; dropped hits are discarded. Always returns a valid blob for
+ * `newLength` hits (initializing from defaults when the previous blob is
+ * missing or stale).
+ *
+ * `indexMap` maps each new hit index to its previous hit index (`-1` for
+ * newly added hits). Pass an identity map to only fix up lengths.
+ */
+export function remapComboState(
+  conditionals: TeamConditional[],
+  prevJson: string | undefined,
+  indexMap: number[]
+): string {
+  let prev: ComboState | undefined
+  if (prevJson) {
+    try {
+      const parsed = JSON.parse(prevJson) as ComboState
+      if (
+        parsed &&
+        parsed.version === COMBO_STATE_VERSION &&
+        parsed.values &&
+        typeof parsed.values === 'object'
+      )
+        prev = parsed
+    } catch {
+      // Stale/corrupt blob — fall through to defaults.
+    }
+  }
+  const values: Record<string, number[]> = {}
+  for (const c of conditionals) {
+    const hash = comboHashOf(c)
+    const old = prev?.values[hash]
+    values[hash] = indexMap.map((oldI) => {
+      const v = oldI >= 0 ? old?.[oldI] : undefined
+      return typeof v === 'number' && Number.isFinite(v) ? v : c.condValue
+    })
+  }
+  return JSON.stringify({ version: COMBO_STATE_VERSION, values })
+}
+
+/**
+ * Build a fresh combo state from the frame defaults: every hit inherits the
+ * main-form conditional values (HSR's `initializeComboState` equivalent).
+ */
+export function initializeComboState(
+  conditionals: TeamConditional[],
+  hitCount: number
+): ComboState {
+  const values: Record<string, number[]> = {}
+  for (const c of conditionals)
+    values[comboHashOf(c)] = Array(hitCount).fill(c.condValue)
+  return { version: COMBO_STATE_VERSION, values }
+}
+
+/**
+ * Expand the team's optimization frames for combo calculation.
+ *
+ * - No rotation → the stored frames (unchanged legacy behavior).
+ * - Simple rotation → one frame per hit sharing frame0's buff state.
+ * - Advanced rotation → one frame per hit with per-hit conditional values
+ *   from `comboStateJson` (missing/stale entries fall back to frame0).
+ *
+ * Each returned frame maps to calc `preset${i}`, matching the solver's
+ * multi-preset summation in `createSolverConfig`.
+ */
+export function getComboFrames(team: Team): OptFrame[] {
+  const frame0 = getTeamFrame0(team)
+  const rotation = frame0.tag?.rotation
+  if (!rotation || rotation.length === 0)
+    return team.frames.length > 0 ? team.frames : [frame0]
+
+  const isAdvanced = frame0.tag?.comboType === 'advanced'
+  const combo = isAdvanced
+    ? parseComboState(frame0.tag?.comboStateJson, rotation.length)
+    : undefined
+
+  return rotation.map((hit, i) => {
+    let conditionals = frame0.conditionals
+    if (combo) {
+      conditionals = frame0.conditionals.map((c) => {
+        const override = combo.values[comboHashOf(c)]?.[i]
+        if (override === undefined) return c
+        const cond = getConditional(c.sheet, c.condKey)
+        const condValue = cond
+          ? correctConditionalValue(cond, override)
+          : override
+        return condValue === c.condValue ? c : { ...c, condValue }
+      })
+    }
+    return {
+      ...frame0,
+      tag: removeUndefinedFields({ sheet: hit.sheet, name: hit.name }),
+      multiplier: hit.multiplier ?? 1,
+      conditionals,
+    }
+  })
 }
 
 export function targetTag(target: TargetTag): Tag {

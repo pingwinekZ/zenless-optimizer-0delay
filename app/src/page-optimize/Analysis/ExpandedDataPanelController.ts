@@ -15,7 +15,7 @@ import type {
   Team,
   TeammateDatum,
 } from '../../db'
-import { getTeamFrame0, targetTag } from '../../db'
+import { getComboFrames, getTeamFrame0, targetTag } from '../../db'
 import type { Tag } from '../../formula'
 import { convert, ownTag, Read, zzzCalculatorWithEntries } from '../../formula'
 import type { ISubstat } from '../../schema/disc'
@@ -226,9 +226,15 @@ function buildTargetInfo(
 
   const perActionDamage: PerActionDamage[] = []
 
-  const readBuffedStats = (nameContext?: string): BuildCombatStats => {
+  const readBuffedStats = (
+    nameContext?: string,
+    preset = 'preset0'
+  ): BuildCombatStats => {
     if (!nameContext) return buffedStats
-    const s = (r: any) => calc.compute(r.with('name', nameContext as any)).val
+    const s = (r: any) =>
+      calc.compute(
+        r.with('name', nameContext as any).with('preset', preset as any)
+      ).val
     return {
       hp: s(combatReader.final.hp),
       atk: s(combatReader.final.atk),
@@ -248,21 +254,29 @@ function buildTargetInfo(
   }
 
   if (frame.tag.rotation) {
-    for (const action of frame.tag.rotation) {
-      const actionTag = targetTag({ sheet: action.sheet, name: action.name })
+    // Each combo frame is bound to preset${i}, so per-hit buff overrides
+    // (advanced mode) are reflected here, matching the solver summation.
+    const comboFrames = getComboFrames(team)
+    comboFrames.forEach((comboFrame, i) => {
+      if (!comboFrame.tag?.sheet || !comboFrame.tag?.name) return
+      const actionTag = targetTag({
+        sheet: comboFrame.tag.sheet,
+        name: comboFrame.tag.name,
+      })
+      const preset = `preset${i}`
       const targetRead = new Read(
         { src: character.key, ...actionTag },
         undefined
-      ).with('preset', 'preset0' as any)
+      ).with('preset', preset as any)
       const actionResult = calc.compute(targetRead)
       perActionDamage.push({
-        name: `${action.sheet}.${action.name}`,
+        name: `${comboFrame.tag.sheet}.${comboFrame.tag.name}`,
         tag: actionTag,
-        value: actionResult.val,
+        value: actionResult.val * comboFrame.multiplier,
         calcResult: actionResult,
-        buffedStats: readBuffedStats(action.name),
+        buffedStats: readBuffedStats(comboFrame.tag.name, preset),
       })
-    }
+    })
   } else {
     const targetRead = new Read(
       { src: character.key, ...formulaTag },

@@ -21,6 +21,7 @@ import { AfterShockToggleButton } from '../AfterShockToggleButton'
 import { AppliedBuffStats } from '../AppliedBuffStats'
 import { CharacterPreviewPanel } from '../CharacterPreviewPanel'
 import { CharacterSelectorDisplay } from '../CharacterSelectorDisplay'
+import { ComboCard } from '../combo'
 import { DeadlyAssaultBuffs } from '../DeadlyAssaultBuffs'
 import { EnemyStatsSection } from '../EnemyStats'
 import {
@@ -173,6 +174,11 @@ export function OptimizerForm({
         {/* Optimization Target */}
         <FormCard size="small">
           <OptTargetSelector character={character} team={team} />
+        </FormCard>
+
+        {/* Combo DMG rotation + advanced buff grid */}
+        <FormCard size="medium">
+          <ComboCard characterKey={characterKey} team={team} />
         </FormCard>
 
         {/* Disc main set filters + set conditionals */}

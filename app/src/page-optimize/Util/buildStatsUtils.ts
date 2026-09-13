@@ -15,7 +15,7 @@ import type {
   Team,
   TeammateDatum,
 } from '../../db'
-import { getTeamFrame0, StatFilterTagToTag, teamCharacterKeys } from '../../db'
+import { getComboFrames, StatFilterTagToTag, teamCharacterKeys } from '../../db'
 import type { Tag } from '../../formula'
 import {
   charTagMapNodeEntries,
@@ -389,7 +389,9 @@ export function buildCalculatorEntries(
   getDisc?: (id: string) => ICachedDisc | undefined
 ): TagMapNodeEntries {
   const teamMembers = teamCharacterKeys(team)
-  const frames = team.frames.length > 0 ? team.frames : [getTeamFrame0(team)]
+  // Combo-aware frames: one entry per rotation hit (each bound to preset${i}).
+  // Without a rotation this is just the stored frames, as before.
+  const frames = getComboFrames(team)
 
   // Build withMember entries for all non-main teammates using their roster data + overrides
   const teammateEntries = team.teammates

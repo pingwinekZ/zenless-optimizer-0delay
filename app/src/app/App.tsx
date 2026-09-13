@@ -1,4 +1,5 @@
 import { Box, Flex, MantineProvider } from '@mantine/core'
+import { ModalsProvider } from '@mantine/modals'
 import { ScrollTop } from '@zenless-optimizer/common/ui'
 import { DatabaseProvider } from '../db-ui'
 import '../i18n' // import to load translations
@@ -45,10 +46,12 @@ export default function App() {
       defaultColorScheme="dark"
     >
       <DatabaseProvider>
-        <NavigateContextProvider>
-          <Content />
-          <ScrollTop />
-        </NavigateContextProvider>
+        <ModalsProvider>
+          <NavigateContextProvider>
+            <Content />
+            <ScrollTop />
+          </NavigateContextProvider>
+        </ModalsProvider>
       </DatabaseProvider>
     </MantineProvider>
   )

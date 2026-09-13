@@ -79,6 +79,7 @@
     "react-ga4": "^3.0.1",
     "react-i18next": "^17.0.13",
     "react-markdown": "^10.1.0",
+    "react-selecto": "^1.26.3",
     "recharts": "^3.10.1",
     "remark-gfm": "^4.0.1",
     "tesseract.js": "^7.0.0",

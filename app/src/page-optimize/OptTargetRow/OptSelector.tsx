@@ -1,7 +1,7 @@
 import { Box, MenuItem } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { DropdownButton } from '@zenless-optimizer/common/ui'
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import type { TargetTag } from '../../db'
 import {
   getTeamFrame0,
@@ -12,7 +12,8 @@ import {
 import { useDatabaseContext } from '../../db-ui'
 import { own } from '../../formula'
 import { FullTagDisplay, useZzzCalcContext } from '../../formula-ui'
-import { RotationConfigDialog } from '../RotationConfigDialog'
+import { ComboDrawer } from '../combo'
+import { useComboMembers } from '../combo/useComboMembers'
 
 const statTargets = [
   own.final.atk,
@@ -39,17 +40,12 @@ export function OptSelector({
   }, [target])
 
   const isRotation = !!target?.rotation
+  const isAdvanced = target?.comboType === 'advanced'
   const rotationCount = target?.rotation?.length ?? 0
 
-  const [rotationOpened, { open: openRotation, close: closeRotation }] =
+  const [advancedOpened, { open: openAdvanced, close: closeAdvanced }] =
     useDisclosure(false)
-
-  const handleRotationChange = useCallback(
-    (rotation: Array<{ sheet: string; name: string }> | undefined) => {
-      database.teams.setFrame0(characterKey, { tag: { rotation } })
-    },
-    [database, characterKey]
-  )
+  const members = useComboMembers(characterKey, team)
 
   return (
     <>
@@ -62,7 +58,8 @@ export function OptSelector({
               {isRotation ? (
                 <span>
                   Rotation DMG ({rotationCount} attack
-                  {rotationCount !== 1 ? 's' : ''})
+                  {rotationCount !== 1 ? 's' : ''}
+                  {isAdvanced ? ' • Advanced' : ''})
                 </span>
               ) : (
                 <FullTagDisplay tag={tag} />
@@ -75,12 +72,9 @@ export function OptSelector({
         variant={tag ? 'outline' : undefined}
         style={{ height: '100%', flexGrow: 1 }}
       >
-        <MenuItem
-          onClick={openRotation}
-          style={{ fontWeight: isRotation ? 'bold' : undefined }}
-        >
-          Rotation DMG
-        </MenuItem>
+        {isRotation && (
+          <MenuItem onClick={openAdvanced}>Advanced rotation…</MenuItem>
+        )}
         {calc?.listFormulas(own.listing.formulas).map(({ tag }, i) => {
           const { name, sheet } = tag
           if (!name || !sheet) return
@@ -124,11 +118,12 @@ export function OptSelector({
           )
         })}
       </DropdownButton>
-      <RotationConfigDialog
-        opened={rotationOpened}
-        close={closeRotation}
-        rotation={target?.rotation}
-        onRotationChange={handleRotationChange}
+      <ComboDrawer
+        opened={advancedOpened}
+        close={closeAdvanced}
+        characterKey={characterKey}
+        team={team}
+        members={members}
       />
     </>
   )

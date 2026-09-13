@@ -37,6 +37,7 @@ import { allDiscSlotKeys, getDiscSubStatBaseVal } from '../../consts'
 import {
   type DiscIds,
   type GeneratedBuild,
+  getComboFrames,
   getTeamFrame0,
   type ICachedDisc,
   type maxBuildsToShowList,
@@ -710,12 +711,16 @@ function OptimizeWrapper() {
       const statFilters = (statFiltersRef.current ?? []).filter(
         (s) => !s.disabled
       )
-      const frames = target.rotation
-        ? target.rotation.map(({ sheet, name }) => ({
-            tag: targetTag({ sheet, name }),
-            multiplier: 1,
-          }))
-        : [{ tag: targetTag(target), multiplier: 1 }]
+      // Combo frames carry per-hit tags, multipliers and (in advanced
+      // mode) per-hit buff overrides. Each frame maps to calc preset${i}.
+      const frames = getComboFrames(team)
+        .filter((frame) => frame.tag)
+        .map((frame) => ({
+          tag: targetTag(frame.tag!),
+          multiplier: frame.multiplier,
+        }))
+      if (frames.length === 0)
+        frames.push({ tag: targetTag(target), multiplier: 1 })
 
       // When theoretical max mode is on, generate build-level recipes (one
       // candidate = total stats across all 6 discs) instead of per-slot
@@ -946,6 +951,7 @@ function OptimizeWrapper() {
     [
       calc,
       target,
+      team,
       statFiltersRef,
       useTheoreticalMax,
       database,

@@ -25,7 +25,7 @@ import { useMemo } from 'react'
 import type { CharacterKey, PhaseKey } from '../../consts'
 import { allDiscSetKeys, allDiscSlotKeys, allWengineKeys } from '../../consts'
 import type { DiscIds, ICachedCharacter, Team, TeamConditional } from '../../db'
-import { getTeamFrame0, teamCharacterKeys } from '../../db'
+import { getComboFrames, teamCharacterKeys } from '../../db'
 import { useCharacter, useDiscs } from '../../db-ui'
 import type { TagMapNodeEntries } from '../../formula'
 import {
@@ -81,7 +81,9 @@ export function CharCalcProvider({
   )
 
   const calc = useMemo(() => {
-    const frames = team.frames.length > 0 ? team.frames : [getTeamFrame0(team)]
+    // Combo-aware frames: one entry per rotation hit (each bound to
+    // preset${i}). Without a rotation this is just the stored frames.
+    const frames = getComboFrames(team)
     return zzzCalculatorWithEntries([
       ...teamData(teamCharacterKeys(team)),
       ...member0,
