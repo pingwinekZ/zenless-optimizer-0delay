@@ -1,3 +1,6 @@
 {
-  "cheerOnCond": "In the Cheer On! state"
+  "cheerOnCond": "Cheer On! · ATK",
+  "cheerOnM4Cond": "Cheer On! · CD",
+  "m6_additional_dmg": "Additional DMG",
+  "m6_guard_boar_dmg": "Guard Boar Drop DMG"
 }
