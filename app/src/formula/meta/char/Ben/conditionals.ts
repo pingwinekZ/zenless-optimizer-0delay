@@ -6,11 +6,11 @@ export const conditionals = {
     type: 'bool',
     mindscapeRequirement: 6,
   },
-  enemyBlocked: {
+  enemyBlocked_m4: {
     sheet: 'Ben',
-    name: 'enemyBlocked',
+    name: 'enemyBlocked_m4',
     type: 'bool',
-    mindscapeRequirement: 1,
+    mindscapeRequirement: 4,
   },
   shieldOn: { sheet: 'Ben', name: 'shieldOn', type: 'bool' },
 } as const

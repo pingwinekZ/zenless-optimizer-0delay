@@ -172,6 +172,16 @@ const sheet = register(
     false
   ),
   registerBuff(
+    'm6_dmg',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'elemental',
+      cmpGE(char.mindscape, 6, prod(percent(dm.m6.dmg), charge))
+    ),
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff(
     'ability_common_dmg_',
     ownBuff.combat.common_dmg_.add(
       cmpGE(
@@ -198,7 +208,9 @@ const sheet = register(
         2,
         prod(exSpecial_chain_ult_hits, percent(dm.m2.physical_resRed_))
       )
-    )
+    ),
+    undefined,
+    true
   )
 )
 export default sheet

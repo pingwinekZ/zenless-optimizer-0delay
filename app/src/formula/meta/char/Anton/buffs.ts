@@ -1,5 +1,18 @@
 // WARNING: Generated file, do not modify
 export const buffs = {
+  ability_dmg: {
+    sheet: 'Anton',
+    name: 'ability_dmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Anton',
+      damageType1: 'elemental',
+      name: 'ability_dmg',
+    },
+    team: false,
+  },
   core_piledriver_dmg_: {
     sheet: 'Anton',
     name: 'core_piledriver_dmg_',
@@ -21,19 +34,6 @@ export const buffs = {
       q: 'common_dmg_',
       sheet: 'Anton',
       name: 'core_drill_dmg_',
-    },
-    team: false,
-  },
-  ability_electric_anom_mv_mult_: {
-    sheet: 'Anton',
-    name: 'ability_electric_anom_mv_mult_',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'anom_mv_mult_',
-      sheet: 'Anton',
-      attribute: 'electric',
-      name: 'ability_electric_anom_mv_mult_',
     },
     team: false,
   },

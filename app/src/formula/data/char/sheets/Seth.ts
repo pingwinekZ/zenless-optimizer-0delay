@@ -219,7 +219,15 @@ const sheet = register(
     undefined,
     false
   ),
-  registerBuff('m6_crit_', m6_crit_, undefined, undefined, false),
-  registerBuff('m6_crit_dmg_', m6_crit_dmg_, undefined, undefined, false)
+  registerBuff(
+    'm6_dmg',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'elemental',
+      cmpGE(char.mindscape, 6, percent(dm.m6.dmg))
+    ),
+    undefined,
+    undefined,
+    false
+  )
 )
 export default sheet

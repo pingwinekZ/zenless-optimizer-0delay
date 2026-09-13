@@ -35,7 +35,7 @@ export const buffs = {
       attribute: 'ice',
       name: 'ability_ice_dmg_',
     },
-    team: false,
+    team: true,
   },
   m4_ice_resRed_: {
     sheet: 'Soukaku',

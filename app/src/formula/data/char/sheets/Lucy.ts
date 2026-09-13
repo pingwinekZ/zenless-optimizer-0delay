@@ -33,7 +33,9 @@ const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
-const { cheerOn } = allBoolConditionals(key)
+const { cheerOn, cheerOn_m4 } = allBoolConditionals(key, undefined, {
+  cheerOn_m4: 4,
+})
 
 const core_atk = ownBuff.combat.atk.add(
   cheerOn.ifOn(
@@ -176,11 +178,21 @@ const sheet = register(
   ...customDmg(
     'm6_dmg',
     { ...baseTag, damageType1: 'elemental' },
-    prod(own.final.atk, percent(dm.m6.dmg)),
+    cmpGE(char.mindscape, 6, prod(own.final.atk, percent(dm.m6.dmg))),
     undefined,
     core_atk,
     ability_crit_,
     ability_crit_dmg_
+  ),
+  registerBuff(
+    'm6_dmg',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'elemental',
+      cmpGE(char.mindscape, 6, percent(dm.m6.dmg))
+    ),
+    undefined,
+    undefined,
+    false
   ),
 
   // Buffs
@@ -204,19 +216,13 @@ const sheet = register(
     undefined,
     true
   ),
-  registerBuff('core_atk', core_atk, undefined, undefined, false),
-  registerBuff('ability_crit_', ability_crit_, undefined, undefined, false),
-  registerBuff(
-    'ability_crit_dmg_',
-    ability_crit_dmg_,
-    undefined,
-    undefined,
-    false
-  ),
+  // Note: core_atk / ability_crit_ / ability_crit_dmg_ are Boar-only and
+  // intentionally unregistered (no buff listing). They still apply to Guard
+  // Boar hits + M6 via the dmgDazeAndAnomOverride / customDmg extras above.
   registerBuff(
     'm4_crit_dmg_',
     teamBuff.combat.crit_dmg_.add(
-      cmpGE(char.mindscape, 4, cheerOn.ifOn(percent(dm.m4.crit_dmg_)))
+      cmpGE(char.mindscape, 4, cheerOn_m4.ifOn(percent(dm.m4.crit_dmg_)))
     ),
     undefined,
     true

@@ -1,5 +1,18 @@
 // WARNING: Generated file, do not modify
 export const buffs = {
+  m2_dmg: {
+    sheet: 'Ben',
+    name: 'm2_dmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Ben',
+      damageType1: 'elemental',
+      name: 'm2_dmg',
+    },
+    team: false,
+  },
   core_atk: {
     sheet: 'Ben',
     name: 'core_atk',
@@ -21,18 +34,6 @@ export const buffs = {
       q: 'crit_',
       sheet: 'Ben',
       name: 'ability_crit_',
-    },
-    team: true,
-  },
-  m1_dmg_red_: {
-    sheet: 'Ben',
-    name: 'm1_dmg_red_',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'dmg_red_',
-      sheet: 'Ben',
-      name: 'm1_dmg_red_',
     },
     team: true,
   },

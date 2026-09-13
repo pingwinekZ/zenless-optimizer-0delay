@@ -1,12 +1,48 @@
+import { ColorText } from '@zenless-optimizer/common/ui'
 import type { CharacterKey } from '../../../consts'
+import { useCharacter } from '../../../db-ui'
 import { Soukaku } from '../../../formula'
+import { GameDesc, GameDescSlice } from '../../../i18n'
 import { trans } from '../../util'
-import { createBaseSheet, fieldForBuff } from '../sheetUtil'
+import { AbilityBodyText, createBaseSheet, fieldForBuff } from '../sheetUtil'
+import { getVariant } from '../util'
 
 const key: CharacterKey = 'Soukaku'
+const ns = 'char_Soukaku_gen'
 const [, ch] = trans('char', key)
 const cond = Soukaku.conditionals
 const buff = Soukaku.buffs
+
+function CoreBaseDescription() {
+  const char = useCharacter(key)
+  const coreKey = `core.desc.${char?.core ?? 0}`
+  return (
+    <>
+      <GameDescSlice
+        ns={ns}
+        key18={coreKey}
+        from="When Soukaku launches"
+        to="for 22s"
+      />
+      <div style={{ marginTop: 8 }}>
+        <GameDescSlice
+          ns={ns}
+          key18={coreKey}
+          from="This buff can be passed along"
+          to="refreshes the duration of the buff"
+        />
+      </div>
+    </>
+  )
+}
+
+function CoreVortexDescription() {
+  const char = useCharacter(key)
+  const coreKey = `core.desc.${char?.core ?? 0}`
+  return (
+    <GameDescSlice ns={ns} key18={coreKey} from="When consuming" to="1,000" />
+  )
+}
 
 const sheet = createBaseSheet(key, {
   perSkillAbility: {
@@ -16,8 +52,24 @@ const sheet = createBaseSheet(key, {
           type: 'conditional',
           conditional: {
             label: ch('ultCond'),
-            description:
-              "Increases Soukaku's CRIT Rate for her Ultimate while in the Masked state.",
+            description: (
+              <>
+                <GameDesc
+                  ns={ns}
+                  key18="chain.UltimateJumboPuddingSlash.desc.0"
+                />
+                <div style={{ marginBottom: 8 }} />
+                <GameDesc
+                  ns={ns}
+                  key18="chain.UltimateJumboPuddingSlash.desc.1"
+                />
+                <div style={{ marginBottom: 8 }} />
+                <GameDesc
+                  ns={ns}
+                  key18="chain.UltimateJumboPuddingSlash.desc.2"
+                />
+              </>
+            ),
             metadata: cond.masked,
             fields: [fieldForBuff(buff.ult_crit_)],
           },
@@ -30,8 +82,7 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('coreCond'),
-        description:
-          'The entire squad gains bonus ATK when Soukaku launches Fly the Flag.',
+        description: <CoreBaseDescription />,
         metadata: cond.flyTheFlag,
         fields: [fieldForBuff(buff.core_atk)],
       },
@@ -40,9 +91,10 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('coreCond2'),
-        description:
-          'Activates additional effects when consuming Vortex during Fly the Flag.',
+        description: <CoreVortexDescription />,
         metadata: cond.vortexConsumed,
+        linked: ['vortexConsumed_ability'],
+        showInTeammateView: true,
       },
     },
   ],
@@ -50,10 +102,17 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
-        label: ch('coreCond2'),
-        description:
-          "Increases Soukaku's Ice DMG when consuming Vortex during Fly the Flag.",
-        metadata: cond.vortexConsumed,
+        label: ch('abilityCond'),
+        description: (
+          <>
+            <GameDesc ns={ns} key18="ability.desc.0" />
+            <AbilityBodyText characterKey={key}>
+              <GameDesc ns={ns} key18="ability.desc.1" />
+            </AbilityBodyText>
+          </>
+        ),
+        metadata: cond.vortexConsumed_ability,
+        linked: ['vortexConsumed'],
         fields: [fieldForBuff(buff.ability_ice_dmg_)],
       },
     },
@@ -63,8 +122,7 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('m4Cond'),
-        description:
-          "Reduces the enemy's Ice RES when Fly the Flag hits an enemy.",
+        description: <GameDesc ns={ns} key18="mindscapes.4.desc" />,
         metadata: cond.flyTheFlagHit,
         fields: [fieldForBuff(buff.m4_ice_resRed_)],
       },
@@ -75,12 +133,23 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('m6Cond'),
-        description:
-          "Increases Soukaku's Enhanced Basic and Dash Attack DMG while in the Frosted Banner state.",
+        description: <GameDesc ns={ns} key18="mindscapes.6.desc" />,
         metadata: cond.frostedBanner,
         fields: [
           {
-            title: ch('m6_dmg_'),
+            title: (
+              <ColorText color={getVariant(buff.m6_common_dmg_.tag)}>
+                {ch('m6_makingRiceCakes_dmg_')}
+              </ColorText>
+            ),
+            fieldRef: buff.m6_common_dmg_.tag,
+          },
+          {
+            title: (
+              <ColorText color={getVariant(buff.m6_common_dmg_.tag)}>
+                {ch('m6_5050_dmg_')}
+              </ColorText>
+            ),
             fieldRef: buff.m6_common_dmg_.tag,
           },
         ],

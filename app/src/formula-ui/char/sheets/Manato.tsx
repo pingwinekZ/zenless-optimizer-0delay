@@ -1,9 +1,13 @@
+import { ColorText } from '@zenless-optimizer/common/ui'
 import type { CharacterKey } from '../../../consts'
 import { Manato } from '../../../formula'
-import { st, trans } from '../../util'
-import { createBaseSheet, fieldForBuff } from '../sheetUtil'
+import { GameDesc, GameDescSlice } from '../../../i18n'
+import { trans } from '../../util'
+import { CoreGameDesc, createBaseSheet, fieldForBuff } from '../sheetUtil'
+import { getVariant } from '../util'
 
 const key: CharacterKey = 'Manato'
+const ns = 'char_Manato_gen'
 const [, ch] = trans('char', key)
 const cond = Manato.conditionals
 const buff = Manato.buffs
@@ -12,17 +16,25 @@ const sheet = createBaseSheet(key, {
   core: [
     {
       type: 'fields',
+      description: <CoreGameDesc characterKey={key} paragraph={0} />,
+      header: { icon: null, text: ch('core_sheerForce_header') },
       fields: [fieldForBuff(buff.core_hpSheerForce)],
     },
     {
       type: 'conditional',
       conditional: {
-        label: ch('coreCond.consumingHp'),
-        description:
-          'Increases Basic Attack and Assist Follow-Up CRIT DMG when consuming HP.',
+        label: ch('coreCond_consumingHp'),
+        description: <CoreGameDesc characterKey={key} paragraph={4} />,
         metadata: cond.consumingHp_consecutiveStrikes,
         fields: [
-          fieldForBuff(buff.core_basic_crit_dmg_),
+          {
+            title: (
+              <ColorText color={getVariant(buff.core_basic_crit_dmg_.tag)}>
+                {ch('core_basic_crit_dmg_')}
+              </ColorText>
+            ),
+            fieldRef: buff.core_basic_crit_dmg_.tag,
+          },
           fieldForBuff(buff.core_assistFollowUp_crit_dmg_),
         ],
       },
@@ -30,10 +42,10 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
-        label: ch('coreCond.moltenEdge'),
-        description:
-          'Increases CRIT Rate and Fire DMG while in the Molten Edge state.',
+        label: ch('coreCond_moltenEdge'),
+        description: <CoreGameDesc characterKey={key} paragraph={5} />,
         metadata: cond.moltenEdge,
+        linked: ['moltenEdge_m2'],
         fields: [
           fieldForBuff(buff.core_crit_),
           fieldForBuff(buff.core_fire_dmg_),
@@ -46,12 +58,27 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('m1Cond'),
-        description:
-          'Increases Basic Attack and Assist Follow-Up Fire DMG based on HP consumed.',
+        description: <GameDesc ns={ns} key18="mindscapes.1.desc" />,
         metadata: cond.hpTallied,
         fields: [
-          fieldForBuff(buff.m1_assistFollowUp_fire_dmg_),
-          fieldForBuff(buff.m1_basic_fire_dmg_),
+          {
+            title: (
+              <ColorText
+                color={getVariant(buff.m1_assistFollowUp_fire_dmg_.tag)}
+              >
+                {ch('m1_assistFollowUp_fire_dmg_')}
+              </ColorText>
+            ),
+            fieldRef: buff.m1_assistFollowUp_fire_dmg_.tag,
+          },
+          {
+            title: (
+              <ColorText color={getVariant(buff.m1_basic_fire_dmg_.tag)}>
+                {ch('m1_basic_fire_dmg_')}
+              </ColorText>
+            ),
+            fieldRef: buff.m1_basic_fire_dmg_.tag,
+          },
         ],
       },
     },
@@ -60,9 +87,17 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
-        label: ch('coreCond.moltenEdge'),
-        description: 'Ignores enemy Fire RES while in the Molten Edge state.',
-        metadata: cond.moltenEdge,
+        label: ch('m2Cond'),
+        description: (
+          <GameDescSlice
+            ns={ns}
+            key18="mindscapes.2.desc"
+            from="While in the <ct color=#FFFFFF>Molten Edge</ct> state"
+            to="Fire RES"
+          />
+        ),
+        metadata: cond.moltenEdge_m2,
+        linked: ['moltenEdge'],
         fields: [fieldForBuff(buff.m2_fire_resIgn_)],
       },
     },
@@ -70,6 +105,7 @@ const sheet = createBaseSheet(key, {
   m4: [
     {
       type: 'fields',
+      header: { icon: null, text: ch('m4_header') },
       fields: [fieldForBuff(buff.m4_hp_)],
     },
   ],
@@ -77,9 +113,15 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
-        label: st('uponHit.1', { val1: '$t(skills.assistFollowUp)' }),
-        description:
-          'Increases Fire DMG when an Assist Follow-Up hits an enemy.',
+        label: ch('m6Cond'),
+        description: (
+          <GameDescSlice
+            ns={ns}
+            key18="mindscapes.6.desc"
+            from="When his <ct color=#FFFFFF>Assist Follow-Up</ct> hits an enemy"
+            to="up to 5 times"
+          />
+        ),
         metadata: cond.assistFollowUpHitsEnemy,
         fields: [fieldForBuff(buff.m6_fire_dmg_)],
       },

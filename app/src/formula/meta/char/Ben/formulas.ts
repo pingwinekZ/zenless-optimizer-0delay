@@ -832,28 +832,6 @@ export const formulas = {
       name: 'AssistFollowUpDontBreakContract_0_anomBuildup',
     },
   },
-  special_shield: {
-    sheet: 'Ben',
-    name: 'special_shield',
-    tag: {
-      et: 'own',
-      qt: 'formula',
-      q: 'shield',
-      sheet: 'Ben',
-      name: 'special_shield',
-    },
-  },
-  core_shield: {
-    sheet: 'Ben',
-    name: 'core_shield',
-    tag: {
-      et: 'own',
-      qt: 'formula',
-      q: 'shield',
-      sheet: 'Ben',
-      name: 'core_shield',
-    },
-  },
   m2_dmg: {
     sheet: 'Ben',
     name: 'm2_dmg',

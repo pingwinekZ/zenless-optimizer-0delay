@@ -5,6 +5,11 @@ export const conditionals = {
     name: 'bulletsOrFieldHit',
     type: 'bool',
   },
+  bulletsOrFieldHit_ability: {
+    sheet: 'Nicole',
+    name: 'bulletsOrFieldHit_ability',
+    type: 'bool',
+  },
   fieldHitsEnemy: {
     sheet: 'Nicole',
     name: 'fieldHitsEnemy',

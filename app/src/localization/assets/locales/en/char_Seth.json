@@ -1,6 +1,10 @@
 {
-  "core_shield": "Shield of Firm Resolve",
-  "coreCond": "Having a Shield of Firm Resolve",
-  "abilityCond": "When Seth's Chain Attack: Final Judgment or Finishing Move during Basic Attack: Lightning Strike - Electrified hits an enemy",
-  "m1_shield_": "Shield Strength"
+  "coreCond": "Shield · Anomaly Proficiency",
+  "abilityCond": "Chain/Finishing Move Hit · Anomaly Buildup RES",
+  "m2_header": "Anomaly Buildup",
+  "m2_electrified_anomBuildup_": "Lightning Strike - Electrified Anomaly Buildup",
+  "m4_header": "Daze",
+  "m4_thundershield_daze_": "Thundershield Daze",
+  "m6_header": "Finishing Move",
+  "m6_dmg": "Finishing Move DMG"
 }

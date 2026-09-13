@@ -1,7 +1,15 @@
+import { ColorText } from '@zenless-optimizer/common/ui'
 import type { CharacterKey } from '../../../consts'
 import { Corin } from '../../../formula'
-import { st, trans } from '../../util'
-import { createBaseSheet, fieldForBuff } from '../sheetUtil'
+import { GameDesc } from '../../../i18n'
+import { trans } from '../../util'
+import {
+  AbilityBodyText,
+  CoreGameDesc,
+  createBaseSheet,
+  fieldForBuff,
+} from '../sheetUtil'
+import { getVariant } from '../util'
 
 const key: CharacterKey = 'Corin'
 const [, ch] = trans('char', key)
@@ -10,13 +18,82 @@ const buff = Corin.buffs
 const formula = Corin.formulas
 
 const sheet = createBaseSheet(key, {
-  // TODO: Add missing text for some hits
   core: [
     {
       type: 'fields',
+      description: <CoreGameDesc characterKey={key} />,
+      header: { icon: null, text: ch('core_dmg_header') },
       fields: [
         {
-          title: ch('core_common_dmg_'),
+          title: (
+            <ColorText color={getVariant(buff.core_common_dmg_.tag)}>
+              {ch('core_wipeout_dmg_')}
+            </ColorText>
+          ),
+          fieldRef: buff.core_common_dmg_.tag,
+        },
+        {
+          title: (
+            <ColorText color={getVariant(buff.core_common_dmg_.tag)}>
+              {ch('core_oopsyDaisy_dmg_')}
+            </ColorText>
+          ),
+          fieldRef: buff.core_common_dmg_.tag,
+        },
+        {
+          title: (
+            <ColorText color={getVariant(buff.core_common_dmg_.tag)}>
+              {ch('core_nope_dmg_')}
+            </ColorText>
+          ),
+          fieldRef: buff.core_common_dmg_.tag,
+        },
+        {
+          title: (
+            <ColorText color={getVariant(buff.core_common_dmg_.tag)}>
+              {ch('core_cleanSweep_dmg_')}
+            </ColorText>
+          ),
+          fieldRef: buff.core_common_dmg_.tag,
+        },
+        {
+          title: (
+            <ColorText color={getVariant(buff.core_common_dmg_.tag)}>
+              {ch('core_skirtAlert_dmg_')}
+            </ColorText>
+          ),
+          fieldRef: buff.core_common_dmg_.tag,
+        },
+        {
+          title: (
+            <ColorText color={getVariant(buff.core_common_dmg_.tag)}>
+              {ch('core_sorry_dmg_')}
+            </ColorText>
+          ),
+          fieldRef: buff.core_common_dmg_.tag,
+        },
+        {
+          title: (
+            <ColorText color={getVariant(buff.core_common_dmg_.tag)}>
+              {ch('core_veryVerySorry_dmg_')}
+            </ColorText>
+          ),
+          fieldRef: buff.core_common_dmg_.tag,
+        },
+        {
+          title: (
+            <ColorText color={getVariant(buff.core_common_dmg_.tag)}>
+              {ch('core_emergencyMeasures_dmg_')}
+            </ColorText>
+          ),
+          fieldRef: buff.core_common_dmg_.tag,
+        },
+        {
+          title: (
+            <ColorText color={getVariant(buff.core_common_dmg_.tag)}>
+              {ch('core_quickSweep_dmg_')}
+            </ColorText>
+          ),
           fieldRef: buff.core_common_dmg_.tag,
         },
       ],
@@ -25,6 +102,15 @@ const sheet = createBaseSheet(key, {
   ability: [
     {
       type: 'fields',
+      description: (
+        <>
+          <GameDesc ns="char_Corin_gen" key18="ability.desc.0" />
+          <AbilityBodyText characterKey={key}>
+            <GameDesc ns="char_Corin_gen" key18="ability.desc.1" />
+          </AbilityBodyText>
+        </>
+      ),
+      header: { icon: null, text: ch('ability_header') },
       fields: [fieldForBuff(buff.ability_common_dmg_)],
     },
   ],
@@ -32,12 +118,8 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
-        label: st('uponHit.2', {
-          val1: '$t(skills.chain)',
-          val2: '$t(skills.ult)',
-        }),
-        description:
-          'Increases Corin DMG after hitting an enemy with Chain Attack or Ultimate.',
+        label: ch('m1Cond'),
+        description: <GameDesc ns="char_Corin_gen" key18="mindscapes.1.desc" />,
         metadata: cond.chain_ult_hit,
         fields: [fieldForBuff(buff.m1_common_dmg_)],
       },
@@ -47,13 +129,8 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
-        label: st('uponHit.3', {
-          val1: '$t(skills.exSpecial)',
-          val2: '$t(skills.chain)',
-          val3: '$t(skills.ult)',
-        }),
-        description:
-          'Reduces enemy Physical RES after hitting with EX Special Attack, Chain Attack, or Ultimate.',
+        label: ch('m2Cond'),
+        description: <GameDesc ns="char_Corin_gen" key18="mindscapes.2.desc" />,
         metadata: cond.exSpecial_chain_ult_hits,
         fields: [fieldForBuff(buff.m2_physical_resRed_)],
       },
@@ -64,12 +141,21 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('m6Cond'),
-        description:
-          'Deals additional DMG when Corin extended slash hits an enemy.',
+        description: (
+          <>
+            <GameDesc ns="char_Corin_gen" key18="mindscapes.6.desc.0" />
+            <div style={{ marginBottom: 8 }} />
+            <GameDesc ns="char_Corin_gen" key18="mindscapes.6.desc.1" />
+          </>
+        ),
         metadata: cond.charge,
         fields: [
           {
-            title: st('dmg'),
+            title: (
+              <ColorText color={getVariant(formula.m6_dmg.tag)}>
+                {ch('m6_additional_dmg')}
+              </ColorText>
+            ),
             fieldRef: formula.m6_dmg.tag,
           },
         ],

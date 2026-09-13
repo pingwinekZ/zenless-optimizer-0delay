@@ -1,10 +1,11 @@
+import type { NumNode } from '@zenless-optimizer/pando/engine'
 import { cmpGE, prod, subscript, sum } from '@zenless-optimizer/pando/engine'
 import { type CharacterKey } from '../../../../consts'
 import { allStats, mappedStats } from '../../../../stats'
 import {
   allBoolConditionals,
   allNumConditionals,
-  customShield,
+  customDmg,
   own,
   ownBuff,
   percent,
@@ -27,7 +28,7 @@ const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
-const { burst_mode, chain_ult_used } = allBoolConditionals(key, undefined, {
+const { chain_ult_used } = allBoolConditionals(key, undefined, {
   chain_ult_used: 4,
 })
 const { piledriver_crits } = allNumConditionals(
@@ -38,6 +39,16 @@ const { piledriver_crits } = allNumConditionals(
   undefined,
   { piledriver_crits: 6 }
 )
+
+const abilityCheck = (node: NumNode | number) =>
+  cmpGE(
+    sum(
+      team.common.count.electric,
+      team.common.count.withFaction('BelebogHeavyIndustries')
+    ),
+    3,
+    node
+  )
 
 const core_piledriver_dmg_ = ownBuff.combat.common_dmg_.add(
   percent(subscript(char.core, dm.core.piledriver_dmg_))
@@ -236,9 +247,20 @@ const sheet = register(
     )
   ),
 
-  ...customShield(
-    'm2_shield',
-    cmpGE(char.mindscape, 2, prod(own.final.hp, percent(dm.m2.shield)))
+  ...customDmg(
+    'ability_dmg',
+    { ...baseTag },
+    abilityCheck(prod(own.final.atk, percent(dm.ability.dmg)))
+  ),
+  registerBuff(
+    'ability_dmg',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'elemental',
+      abilityCheck(percent(dm.ability.dmg))
+    ),
+    undefined,
+    undefined,
+    false
   ),
 
   // Buffs
@@ -250,19 +272,6 @@ const sheet = register(
     false
   ),
   registerBuff('core_drill_dmg_', core_drill_dmg_, undefined, false, false),
-  registerBuff(
-    'ability_electric_anom_mv_mult_',
-    ownBuff.combat.anom_mv_mult_.electric.add(
-      cmpGE(
-        sum(
-          team.common.count.electric,
-          team.common.count.withFaction('BelebogHeavyIndustries')
-        ),
-        3,
-        burst_mode.ifOn(percent(dm.ability.dmg))
-      )
-    )
-  ),
   registerBuff(
     'm4_crit_',
     teamBuff.combat.crit_.add(

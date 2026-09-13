@@ -1,4 +1,8 @@
 {
-  "coreCond": "In Hunter's Gait state",
-  "abilityCond": "Enemy in Binding Trap effect"
+  "coreCond": "Hunter's Gait · Daze",
+  "abilityCond": "Binding Trap · DMG",
+  "m1Cond": "Binding Trap · CR",
+  "m2Cond": "Hunter's Gait · ATK",
+  "m6_header": "DMG",
+  "m6_nightmare_dmg_": "Rending Claw - Nightmare Shadow DMG"
 }

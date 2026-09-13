@@ -62,15 +62,15 @@ export const buffs = {
     },
     team: false,
   },
-  m6_common_dmg_: {
+  ability_m6_common_dmg_: {
     sheet: 'Pulchra',
-    name: 'm6_common_dmg_',
+    name: 'ability_m6_common_dmg_',
     tag: {
       et: 'display',
       qt: 'combat',
       q: 'common_dmg_',
       sheet: 'Pulchra',
-      name: 'm6_common_dmg_',
+      name: 'ability_m6_common_dmg_',
     },
     team: true,
   },
