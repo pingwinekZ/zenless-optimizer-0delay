@@ -51,27 +51,16 @@ export const buffs = {
     },
     team: false,
   },
-  m6_crit_: {
+  m6_dmg: {
     sheet: 'Seth',
-    name: 'm6_crit_',
+    name: 'm6_dmg',
     tag: {
       et: 'display',
       qt: 'combat',
-      q: 'crit_',
+      q: 'dmg_',
       sheet: 'Seth',
-      name: 'm6_crit_',
-    },
-    team: false,
-  },
-  m6_crit_dmg_: {
-    sheet: 'Seth',
-    name: 'm6_crit_dmg_',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'crit_dmg_',
-      sheet: 'Seth',
-      name: 'm6_crit_dmg_',
+      damageType1: 'elemental',
+      name: 'm6_dmg',
     },
     team: false,
   },

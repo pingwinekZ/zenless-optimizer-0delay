@@ -1,33 +1,49 @@
+import { ColorText } from '@zenless-optimizer/common/ui'
 import type { CharacterKey } from '../../../consts'
 import { Seth } from '../../../formula'
-import { mappedStats } from '../../../stats'
-import { st, trans } from '../../util'
-import { createBaseSheet, fieldForBuff } from '../sheetUtil'
+import { GameDesc, GameDescSlice } from '../../../i18n'
+import { trans } from '../../util'
+import {
+  AbilityBodyText,
+  CoreGameDesc,
+  createBaseSheet,
+  fieldForBuff,
+  PrefixedLine,
+  useEffectiveMindscape,
+} from '../sheetUtil'
+import { getVariant } from '../util'
 
 const key: CharacterKey = 'Seth'
+const ns = 'char_Seth_gen'
 const [, ch] = trans('char', key)
 const cond = Seth.conditionals
 const buff = Seth.buffs
 const formula = Seth.formulas
-const dm = mappedStats.char[key]
+
+function CoreAnomProfDescription() {
+  const mindscape = useEffectiveMindscape(key)
+  return (
+    <>
+      <CoreGameDesc characterKey={key} />
+      <PrefixedLine prefix="M1" dimmed={mindscape < 1}>
+        <GameDescSlice
+          ns={ns}
+          key18="mindscapes.1.desc"
+          from="When <ct color=#FFFFFF>Shield of Firm Resolve</ct> ends"
+          to="additional 10s"
+        />
+      </PrefixedLine>
+    </>
+  )
+}
 
 const sheet = createBaseSheet(key, {
   core: [
     {
-      type: 'fields',
-      fields: [
-        {
-          title: ch('core_shield'),
-          fieldRef: formula.core_shield.tag,
-        },
-      ],
-    },
-    {
       type: 'conditional',
       conditional: {
         label: ch('coreCond'),
-        description:
-          "Increases the entire squad's Anomaly Proficiency while Seth has his Shield of Firm Resolve.",
+        description: <CoreAnomProfDescription />,
         metadata: cond.shield_active,
         fields: [fieldForBuff(buff.core_anomProf)],
       },
@@ -38,43 +54,74 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('abilityCond'),
-        description:
-          "Reduces the squad's Anomaly Buildup RES when Seth's Chain Attack or finishing move hits an enemy.",
+        description: (
+          <>
+            <GameDesc ns={ns} key18="ability.desc.0" />
+            <AbilityBodyText characterKey={key}>
+              <GameDesc ns={ns} key18="ability.desc.1" />
+            </AbilityBodyText>
+          </>
+        ),
         metadata: cond.chain_finish_hit,
         fields: [fieldForBuff(buff.ability_anomBuildupRes_)],
       },
     },
   ],
-  m1: [
-    {
-      type: 'fields',
-      fields: [
-        {
-          title: ch('m1_shield_'),
-          fieldValue: dm.m1.shield_ * 100,
-          unit: '%',
-        },
-      ],
-    },
-  ],
   m2: [
     {
       type: 'fields',
-      fields: [fieldForBuff(buff.m2_basic_electric_anomBuildup_)],
+      description: (
+        <GameDescSlice
+          ns={ns}
+          key18="mindscapes.2.desc"
+          from="Hitting an enemy with"
+          to="by 35%"
+        />
+      ),
+      header: { icon: null, text: ch('m2_header') },
+      fields: [
+        {
+          title: (
+            <ColorText
+              color={getVariant(buff.m2_basic_electric_anomBuildup_.tag)}
+            >
+              {ch('m2_electrified_anomBuildup_')}
+            </ColorText>
+          ),
+          fieldRef: buff.m2_basic_electric_anomBuildup_.tag,
+        },
+      ],
     },
   ],
   m4: [
     {
       type: 'fields',
-      fields: [fieldForBuff(buff.m4_defensiveAssist_dazeInc_)],
+      description: <GameDesc ns={ns} key18="mindscapes.4.desc" />,
+      header: { icon: null, text: ch('m4_header') },
+      fields: [
+        {
+          title: (
+            <ColorText color={getVariant(buff.m4_defensiveAssist_dazeInc_.tag)}>
+              {ch('m4_thundershield_daze_')}
+            </ColorText>
+          ),
+          fieldRef: buff.m4_defensiveAssist_dazeInc_.tag,
+        },
+      ],
     },
   ],
   m6: [
     {
       type: 'fields',
+      description: <GameDesc ns={ns} key18="mindscapes.6.desc" />,
+      header: { icon: null, text: ch('m6_header') },
       fields: [
         {
-          title: st('dmg'),
+          title: (
+            <ColorText color={getVariant(formula.m6_dmg.tag)}>
+              {ch('m6_dmg')}
+            </ColorText>
+          ),
           fieldRef: formula.m6_dmg.tag,
         },
       ],
