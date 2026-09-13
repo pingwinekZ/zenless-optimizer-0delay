@@ -1,5 +1,8 @@
 {
-  "coreCond": "Stacks of Power",
-  "m1Cond": "Extra stacks of Power",
-  "m2_physical_dmg_": "Downward Smash DMG"
+  "coreCond": "Power · AB",
+  "abilityCond": "Power · DMG",
+  "m2Cond": "Power · DMG",
+  "m2_oneTrillionTons_dmg_": "One Trillion Tons DMG",
+  "m2_reallyHeavy_dmg_": "Really Heavy DMG",
+  "m2_holdOnTight_dmg_": "Hold On Tight DMG"
 }

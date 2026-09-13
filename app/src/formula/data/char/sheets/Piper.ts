@@ -29,7 +29,14 @@ const dm = mappedStats.char[key]
 
 const { char } = own
 
-const { power } = allNumConditionals(key, true, 0, dm.core.stacks + 10) // extra stacks from M1
+const { power, power_ability, power_m2 } = allNumConditionals(
+  key,
+  true,
+  0,
+  dm.core.stacks + 10, // extra stacks from M1
+  undefined,
+  { power_m2: 2 }
+)
 
 const m2_physical_dmg_ = ownBuff.combat.dmg_.physical.add(
   cmpGE(
@@ -39,7 +46,7 @@ const m2_physical_dmg_ = ownBuff.combat.dmg_.physical.add(
       percent(dm.m2.physical_dmg_),
       prod(
         min(
-          power,
+          power_m2,
           cmpGE(char.mindscape, 1, dm.core.stacks + 10, dm.core.stacks)
         ),
         percent(dm.m2.extra_physical_dmg_)
@@ -138,7 +145,7 @@ const sheet = register(
         4,
         cmpGE(
           min(
-            power,
+            power_ability,
             cmpGE(char.mindscape, 1, dm.core.stacks + 10, dm.core.stacks)
           ),
           dm.ability.stack_threshold,
