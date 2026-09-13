@@ -1,6 +1,5 @@
 // WARNING: Generated file, do not modify
 export const conditionals = {
-  burst_mode: { sheet: 'Anton', name: 'burst_mode', type: 'bool' },
   chain_ult_used: {
     sheet: 'Anton',
     name: 'chain_ult_used',
