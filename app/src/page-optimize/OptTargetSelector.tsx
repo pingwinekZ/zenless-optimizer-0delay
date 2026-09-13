@@ -149,11 +149,39 @@ export function OptTargetSelector({
     [database, characterKey]
   )
 
+  // A rotation target means the optimizer sums the combo hits. It has no
+  // sheet/name of its own, so it is represented as an explicit Combo DMG
+  // entry in the Other category.
+  const rotation = target?.rotation
+  const rotationCount = rotation?.length ?? 0
+  const isRotation = rotationCount > 0
+
+  const handleComboSelect = useCallback(() => {
+    // Already targeting the combo.
+    if (isRotation) return
+    // Convert the current single-formula target into a 1-hit rotation so no
+    // configured target is lost. Otherwise seed from the first formula.
+    const seed =
+      target?.sheet && target?.name
+        ? { sheet: target.sheet, name: target.name }
+        : (() => {
+            const first = formulaOptions.find(
+              ({ tag: ftag }) => ftag.sheet && ftag.name
+            )?.tag
+            return first?.sheet && first?.name
+              ? { sheet: first.sheet, name: first.name }
+              : undefined
+          })()
+    if (seed)
+      database.teams.setFrame0(characterKey, { tag: { rotation: [seed] } })
+  }, [database, characterKey, isRotation, target, formulaOptions])
+
   // Determine which category has the active selection
   const activeCategory = useMemo(() => {
     if (!tag) return undefined
+    if (isRotation) return 'other'
     return getFormulaCategory(tag)
-  }, [tag])
+  }, [tag, isRotation])
 
   // Group formulas by damage type category, combining the DMG / Daze /
   // Buildup variants of each attack (ability + hit) into a single entry so
@@ -225,10 +253,10 @@ export function OptTargetSelector({
   // Check if a stat tag matches the currently active target
   const isStatActive = useCallback(
     (st: (typeof statTargets)[number]): boolean => {
-      if (!tag) return false
+      if (!tag || isRotation) return false
       return tag.q === st.tag.q && tag.qt === st.tag.qt
     },
-    [tag]
+    [tag, isRotation]
   )
 
   // Render a menu item for a formula
@@ -375,7 +403,13 @@ export function OptTargetSelector({
         title={
           activeCategory === 'other' && tag ? (
             <Box style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-              <OptTargetTagDisplay tag={tag} />
+              {isRotation ? (
+                <Text fw="bold" component="span">
+                  Combo DMG ({rotationCount})
+                </Text>
+              ) : (
+                <OptTargetTagDisplay tag={tag} />
+              )}
             </Box>
           ) : (
             'Other'
@@ -383,6 +417,19 @@ export function OptTargetSelector({
         }
         style={{ width: '100%' }}
       >
+        <Menu.Label>Combo</Menu.Label>
+        <Menu.Item
+          onClick={handleComboSelect}
+          style={{ fontWeight: isRotation ? 'bold' : undefined }}
+        >
+          <Box style={{ display: 'flex', gap: 4 }}>
+            <Text component="span">
+              Combo DMG
+              {isRotation ? ` (${rotationCount} hits)` : ''}
+            </Text>
+          </Box>
+        </Menu.Item>
+        <Divider />
         <Menu.Label>Stats</Menu.Label>
         {statTargets.map((st, i) => {
           const { q, qt } = st.tag

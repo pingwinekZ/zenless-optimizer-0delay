@@ -1,4 +1,5 @@
 import { Divider, Drawer, Flex } from '@mantine/core'
+import { ImgIcon } from '@zenless-optimizer/common/ui'
 import {
   type RefObject,
   useCallback,
@@ -8,15 +9,26 @@ import {
   useState,
 } from 'react'
 import Selecto from 'react-selecto'
-import type { CharacterKey } from '../../consts'
+import { discDefIcon } from '../../assets'
+import {
+  allDiscSetKeys,
+  type CharacterKey,
+  type DiscSetKey,
+  discSetNames,
+} from '../../consts'
 import type { Team, TeamConditional } from '../../db'
-import { COMBO_STATE_VERSION, getTeamFrame0 } from '../../db'
+import { COMBO_STATE_VERSION, getTeamFrame0, parseComboState } from '../../db'
 import { useDatabaseContext } from '../../db-ui'
-import { getConditional } from '../../formula'
+import {
+  conditionals as allConditionalsMeta,
+  getConditional,
+} from '../../formula'
 import { CascaderSelect } from './CascaderSelect'
 import { abilityGap, abilityWidth } from './comboDrawerConstants'
 import { type CellKey, CondGroupRow } from './comboRows'
 import './selecto.css'
+import { MultiSelectPills } from '../layout/MultiSelectPills'
+import { ComboSheetName, sortComboConds } from './comboLabels'
 import {
   hashOf,
   parseHitValue,
@@ -27,6 +39,8 @@ import {
   type ComboMember,
   filterRelevantConditionals,
   sortRelevantConditionals,
+  synthesizeExtraSet,
+  synthesizeTeammateConditionals,
 } from './useComboMembers'
 
 const drawerContentStyle = { width: 1560, height: '100%' } as const
@@ -71,15 +85,37 @@ export function ComboDrawer({
     } = latest.current
     if (opened) {
       const frame0 = getTeamFrame0(currentTeam)
+      const hits = frame0.tag?.rotation ?? []
+      const relevant = filterRelevantConditionals(
+        frame0.conditionals,
+        currentMembers
+      )
+      const relevantSheets = new Set<string>(
+        relevant.map((c) => c.sheet as string)
+      )
+      const mainKey = currentMembers[0]?.key as string | undefined
+      // Restore extra (unequipped) disc sets picked in previous sessions,
+      // skipping sets that are equipped by now (covered above).
+      const extraSets =
+        parseComboState(
+          frame0.tag?.comboStateJson,
+          hits.length
+        )?.extraSets?.filter((setKey) => !relevantSheets.has(setKey)) ?? []
+      const extras = extraSets.flatMap((setKey) =>
+        mainKey ? synthesizeExtraSet(setKey, mainKey) : []
+      )
       useComboDrawerStore
         .getState()
         .initialize(
-          frame0.tag?.rotation ?? [],
+          hits,
           sortRelevantConditionals(
-            filterRelevantConditionals(frame0.conditionals, currentMembers),
+            synthesizeTeammateConditionals(relevant, currentMembers).concat(
+              extras
+            ),
             currentMembers
           ),
-          frame0.tag?.comboStateJson
+          frame0.tag?.comboStateJson,
+          currentMembers
         )
       setContentMounted(true)
       return undefined
@@ -97,6 +133,10 @@ export function ComboDrawer({
             defaults[hashOf(c)] ?? c.condValue,
           ])
         )
+        // Hashes of rows that exist in the frame (for blob pruning below).
+        const frameHashes = new Set(
+          getTeamFrame0(currentTeam).conditionals.map(hashOf)
+        )
         currentDatabase.teams.setFrame0(currentCharacterKey, (frame) => {
           const tag = frame.tag
           if (!tag?.rotation) return false
@@ -108,9 +148,21 @@ export function ComboDrawer({
               ? { ...c, condValue: v }
               : c
           })
+          // Materialize synthesized teammate rows, but only when edited —
+          // untouched rows stay absent (matching page behavior).
+          for (const c of s.conditionals) {
+            const hash = hashOf(c)
+            if (frameHashes.has(hash) || !s.dirty[hash]) continue
+            frameHashes.add(hash)
+            conditionals.push({
+              ...c,
+              condValue: defaults[hash] ?? c.condValue,
+            })
+          }
           const values: Record<string, number[]> = {}
           for (const [hash, arr] of Object.entries(s.values))
-            if (arr.length === s.hits.length) values[hash] = arr
+            if (arr.length === s.hits.length && frameHashes.has(hash))
+              values[hash] = arr
           return {
             conditionals,
             tag: {
@@ -120,6 +172,7 @@ export function ComboDrawer({
               comboStateJson: JSON.stringify({
                 version: COMBO_STATE_VERSION,
                 values,
+                ...(s.extraSets.length > 0 ? { extraSets: s.extraSets } : {}),
               }),
             },
           }
@@ -223,8 +276,13 @@ function ComboHeader() {
   )
 }
 
-function GroupDivider({ text }: { text: string }) {
-  return <Divider label={text} labelPosition="center" />
+function GroupDivider({ sheetKey }: { sheetKey: string }) {
+  return (
+    <Divider
+      label={<ComboSheetName sheetKey={sheetKey} />}
+      labelPosition="center"
+    />
+  )
 }
 
 function StateDisplay() {
@@ -236,7 +294,9 @@ function StateDisplay() {
       list.push(c)
       map.set(c.sheet, list)
     }
-    return [...map.entries()]
+    return [...map.entries()].map(
+      ([sheet, conds]) => [sheet, sortComboConds(sheet, conds)] as const
+    )
   }, [conditionals])
 
   if (grouped.length === 0) return <div>No conditional buffs</div>
@@ -245,7 +305,7 @@ function StateDisplay() {
     <Flex direction="column" gap={8}>
       {grouped.map(([sheet, conds]) => (
         <div key={sheet}>
-          <GroupDivider text={sheet} />
+          <GroupDivider sheetKey={sheet} />
           <div style={{ marginTop: 8 }}>
             <CondGroupRow sheet={sheet} conds={conds} />
           </div>
@@ -269,6 +329,92 @@ function cellValue(hash: string, index: number): number {
   return s.values[hash]?.[index - 1] ?? 0
 }
 
+/**
+ * Disc set selector, mirroring HSR's set selectors: a multi-select pill
+ * input with set icons that toggles conditionals rows for unequipped sets.
+ * The optimizer swaps the main character's discs, so activations configured
+ * here apply whenever an evaluated build equips the set.
+ */
+function SetSelectors() {
+  const extraSets = useComboDrawerStore((s) => s.extraSets)
+  const members = useComboDrawerStore((s) => s.members)
+  const conditionals = useComboDrawerStore((s) => s.conditionals)
+  const addExtraSet = useComboDrawerStore((s) => s.addExtraSet)
+  const removeExtraSet = useComboDrawerStore((s) => s.removeExtraSet)
+
+  const visibleSheets = useMemo(
+    () => new Set(conditionals.map((c) => c.sheet)),
+    [conditionals]
+  )
+  const options = useMemo(
+    () =>
+      allDiscSetKeys
+        // Keep selected sets listed so they can be unchecked; only hide
+        // equipped sets (their rows are always shown, not picker-managed).
+        // Sets without conditionals (passive-only, e.g. Feathered Fate)
+        // have no rows to show, so they are hidden as well.
+        .filter(
+          (setKey) =>
+            (!visibleSheets.has(setKey) || extraSets.includes(setKey)) &&
+            Object.keys(
+              (allConditionalsMeta as Record<string, Record<string, unknown>>)[
+                setKey
+              ] ?? {}
+            ).length > 0
+        )
+        .map((setKey) => ({
+          value: setKey,
+          label: discSetNames[setKey] ?? setKey,
+        })),
+    [visibleSheets, extraSets]
+  )
+  const labelMap = useMemo(
+    () =>
+      new Map<string, string>(
+        options.map((opt) => [opt.value, opt.label] as const)
+      ),
+    [options]
+  )
+  const mainKey = members[0]?.key as string | undefined
+
+  const renderOption = useCallback(
+    (opt: { value: string; label: string }) => (
+      <Flex gap={8} align="center" wrap="nowrap">
+        <ImgIcon src={discDefIcon(opt.value as DiscSetKey)} size={1.5} />
+        <span>{labelMap.get(opt.value) ?? opt.label}</span>
+      </Flex>
+    ),
+    [labelMap]
+  )
+
+  return (
+    <Flex w="100%" gap={10}>
+      <MultiSelectPills
+        dropdownWidth={600}
+        maxDisplayedValues={1}
+        maxDropdownHeight={600}
+        columns={2}
+        clearable
+        style={{ flex: 1 }}
+        data={options}
+        placeholder="Disc set conditionals"
+        value={extraSets}
+        onChange={(selected) => {
+          if (!mainKey) return
+          const prev = new Set(extraSets)
+          const next = new Set(selected)
+          for (const setKey of next)
+            if (!prev.has(setKey))
+              addExtraSet(setKey, synthesizeExtraSet(setKey, mainKey))
+          for (const setKey of prev)
+            if (!next.has(setKey)) removeExtraSet(setKey)
+        }}
+        renderOption={renderOption}
+      />
+    </Flex>
+  )
+}
+
 function ComboDrawerContent() {
   const initialized = useComboDrawerStore((s) => s.initialized)
 
@@ -290,7 +436,7 @@ function ComboDrawerContent() {
           (e.inputEvent as MouseEvent).target as HTMLElement | null
         )?.getAttribute('data-key') ?? '{}'
       const dataKey: CellKey = JSON.parse(startKey)
-      if (!dataKey.hash || dataKey.index === 0) return
+      if (!dataKey.hash || dataKey.index === 0 || dataKey.locked) return
 
       startCellKind.current = locateKind(dataKey.hash)
       if (startCellKind.current === 'bool') {
@@ -312,7 +458,7 @@ function ComboDrawerContent() {
       if (selectedKey === lastSelectedKeyState.current) return
 
       const dataKey: CellKey = JSON.parse(selectedKey)
-      if (!dataKey.hash || dataKey.index === 0) {
+      if (!dataKey.hash || dataKey.index === 0 || dataKey.locked) {
         lastSelectedKeyState.current = selectedKey
         return
       }
@@ -345,7 +491,7 @@ function ComboDrawerContent() {
       const collect = (el: Element, removed: boolean) => {
         const keyStr = el.getAttribute('data-key') ?? '{}'
         const key: CellKey = JSON.parse(keyStr)
-        if (!key.hash || key.index === 0) return
+        if (!key.hash || key.index === 0 || key.locked) return
         if (locateKind(key.hash) !== startCellKind.current) return
         if (key.kind === 'bool') {
           updates.push({
@@ -377,6 +523,9 @@ function ComboDrawerContent() {
 
   return (
     <div style={drawerContentStyle}>
+      <div style={{ marginBottom: 8 }}>
+        <SetSelectors />
+      </div>
       <StateDisplay />
       <Selecto
         ref={selectoRef}

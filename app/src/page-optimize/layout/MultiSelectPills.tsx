@@ -28,6 +28,9 @@ export function MultiSelectPills({
   leftSectionWidth,
   renderOption,
   size,
+  dropdownWidth,
+  maxDropdownHeight,
+  columns,
 }: {
   data: DataItem[]
   value: string[]
@@ -40,6 +43,9 @@ export function MultiSelectPills({
   leftSectionWidth?: number
   renderOption?: (option: SimpleOption, active: boolean) => React.ReactNode
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+  dropdownWidth?: number | string
+  maxDropdownHeight?: number
+  columns?: number
 }) {
   const compact = size === 'xs'
   const compactHeight = compact ? 30 : undefined
@@ -116,9 +122,22 @@ export function MultiSelectPills({
         key={opt.value}
         active={active}
         className={active ? classes.activeOption : undefined}
+        style={columns ? { overflow: 'hidden' } : undefined}
       >
         <Group gap="sm" justify="space-between" wrap="nowrap">
-          <span>{renderOption ? renderOption(opt, active) : opt.label}</span>
+          <span
+            style={
+              columns
+                ? {
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }
+                : undefined
+            }
+          >
+            {renderOption ? renderOption(opt, active) : opt.label}
+          </span>
           {active && <CheckIcon size={12} />}
         </Group>
       </Combobox.Option>
@@ -128,7 +147,11 @@ export function MultiSelectPills({
   const showClear = clearable && value.length > 0
 
   return (
-    <Combobox store={combobox} onOptionSubmit={handleValueSelect}>
+    <Combobox
+      store={combobox}
+      onOptionSubmit={handleValueSelect}
+      width={dropdownWidth}
+    >
       <Combobox.DropdownTarget>
         <PillsInput
           pointer
@@ -207,7 +230,11 @@ export function MultiSelectPills({
       </Combobox.DropdownTarget>
 
       <Combobox.Dropdown>
-        <Combobox.Options style={{ overflowY: 'auto' }}>
+        <Combobox.Options
+          mah={maxDropdownHeight}
+          className={columns ? classes.columnOptions : undefined}
+          style={{ overflowY: 'auto' }}
+        >
           {combobox.dropdownOpened &&
             data.filter(matchesSearch).map(renderOptionItem)}
         </Combobox.Options>

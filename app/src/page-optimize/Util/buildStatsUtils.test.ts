@@ -92,6 +92,63 @@ describe('buildCalculatorEntries combo frames', () => {
     expect(JSON.stringify(byPreset['preset1'])).toContain('"ex":0')
   })
 
+  it('emits per-preset entries for teammate conditionals in advanced mode', () => {
+    const { sheet, name } = firstFormula()
+    const condKey = 'cheerOn'
+    const team = {
+      teammates: [{ characterKey: mainKey }, { characterKey: 'Lucy' }],
+      frames: [
+        {
+          tag: {
+            rotation: [
+              { sheet, name },
+              { sheet, name },
+            ],
+            comboType: 'advanced',
+            comboStateJson: JSON.stringify({
+              version: '1.0',
+              values: {
+                [`Lucy:${condKey}:Lucy:`]: [1, 0],
+              },
+            }),
+          },
+          multiplier: 1,
+          critMode: 'avg',
+          bonusStats: [],
+          conditionals: [
+            {
+              sheet: 'Lucy',
+              src: 'Lucy',
+              dst: null,
+              condKey,
+              condValue: 1,
+            },
+          ],
+          enemyStats: [],
+        },
+      ],
+      enemyLvl: 80,
+      enemyDef: 953,
+      enemyStunMultiplier: 150,
+    } as unknown as Team
+
+    const entries = buildCalculatorEntries(mockCharacter(mainKey), {}, team)
+    const condEntries = entries.filter(
+      (e) =>
+        (e.tag as Record<string, unknown>)['qt'] === 'cond' &&
+        (e.tag as Record<string, unknown>)['q'] === condKey
+    )
+    const byPreset = Object.fromEntries(
+      condEntries.map((e) => [
+        (e.tag as Record<string, unknown>)['preset'],
+        e.value,
+      ])
+    )
+    expect(Object.keys(byPreset).sort()).toEqual(['preset0', 'preset1'])
+    expect(JSON.stringify(byPreset['preset0'])).toContain('"ex":1')
+    expect(JSON.stringify(byPreset['preset1'])).toContain('"ex":0')
+  })
+
   it('shares frame0 buffs across presets in simple mode', () => {
     const { sheet, name } = firstFormula()
     const condKey = 'entering_combat'

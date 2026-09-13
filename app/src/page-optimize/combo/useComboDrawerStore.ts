@@ -6,6 +6,7 @@ import { own } from '../../formula'
 import { useZzzCalcContext } from '../../formula-ui'
 import { parseSkillVariant, skillVariantBase } from '../OptTargetTagDisplay'
 import type { CascaderData } from './CascaderSelect'
+import type { ComboMember } from './useComboMembers'
 
 export const hitValue = (sheet: string, name: string) => `${sheet}|||${name}`
 
@@ -110,19 +111,28 @@ type ComboDrawerStore = {
   initialized: boolean
   hits: ComboHit[]
   conditionals: TeamConditional[]
+  members: ComboMember[]
   defaults: Record<string, number>
   values: Record<string, number[]>
   extraValues: Record<string, number[]>
+  /** Hashes the user actually edited — only these are materialized on save. */
+  dirty: Record<string, true>
   initialize: (
     hits: ComboHit[],
     conditionals: TeamConditional[],
-    comboStateJson: string | undefined
+    comboStateJson: string | undefined,
+    members: ComboMember[]
   ) => void
   reset: () => void
   setHits: (hits: ComboHit[]) => void
   setHitAbility: (index: number, sheet: string, name: string) => void
   removeHit: (index: number) => void
   setDefault: (hash: string, value: number) => void
+  /**
+   * HSR's setBooleanDefault: toggling the row switch sets the default AND
+   * every hit, so disabling a conditional turns off the whole row.
+   */
+  setBooleanDefault: (hash: string, value: number) => void
   setHitValue: (hash: string, hitIndex: number, value: number) => void
   batchSetHitValues: (
     updates: Array<{ hash: string; index: number; value: number }>
@@ -130,16 +140,22 @@ type ComboDrawerStore = {
   setPartitionValue: (hash: string, oldValue: number, newValue: number) => void
   addPartition: (hash: string, candidates: number[]) => void
   deletePartition: (hash: string, value: number) => void
+  extraSets: string[]
+  addExtraSet: (setKey: string, rows: TeamConditional[]) => void
+  removeExtraSet: (setKey: string) => void
 }
 
 export const useComboDrawerStore = create<ComboDrawerStore>()((set) => ({
   initialized: false,
   hits: [],
   conditionals: [],
+  members: [],
   defaults: {},
   values: {},
   extraValues: {},
-  initialize: (hits, conditionals, comboStateJson) => {
+  dirty: {},
+  extraSets: [],
+  initialize: (hits, conditionals, comboStateJson, members) => {
     const parsed = parseComboState(comboStateJson, hits.length)
     const defaults: Record<string, number> = {}
     const values: Record<string, number[]> = {}
@@ -156,9 +172,12 @@ export const useComboDrawerStore = create<ComboDrawerStore>()((set) => ({
       initialized: true,
       hits: hits.map((h) => ({ ...h })),
       conditionals,
+      members,
       defaults,
       values,
       extraValues: {},
+      dirty: {},
+      extraSets: parsed?.extraSets ?? [],
     })
   },
   reset: () =>
@@ -166,9 +185,55 @@ export const useComboDrawerStore = create<ComboDrawerStore>()((set) => ({
       initialized: false,
       hits: [],
       conditionals: [],
+      members: [],
       defaults: {},
       values: {},
       extraValues: {},
+      dirty: {},
+      extraSets: [],
+    }),
+  addExtraSet: (setKey, rows) =>
+    set((s) => {
+      if (s.extraSets.includes(setKey)) return s
+      const hitCount = Math.max(s.hits.length, 1)
+      const conditionals = [...s.conditionals, ...rows]
+      const defaults = { ...s.defaults }
+      const values = { ...s.values }
+      for (const c of rows) {
+        const hash = hashOf(c)
+        if (defaults[hash] === undefined) defaults[hash] = c.condValue
+        if (values[hash] === undefined)
+          values[hash] = Array(hitCount).fill(c.condValue)
+      }
+      return {
+        conditionals,
+        defaults,
+        values,
+        extraSets: [...s.extraSets, setKey],
+      }
+    }),
+  removeExtraSet: (setKey) =>
+    set((s) => {
+      if (!s.extraSets.includes(setKey)) return s
+      const gone = new Set(
+        s.conditionals.filter((c) => c.sheet === setKey).map((c) => hashOf(c))
+      )
+      const drop = (obj: Record<string, number[]>) =>
+        Object.fromEntries(
+          Object.entries(obj).filter(([hash]) => !gone.has(hash))
+        )
+      return {
+        conditionals: s.conditionals.filter((c) => c.sheet !== setKey),
+        defaults: Object.fromEntries(
+          Object.entries(s.defaults).filter(([hash]) => !gone.has(hash))
+        ),
+        values: drop(s.values),
+        extraValues: drop(s.extraValues),
+        dirty: Object.fromEntries(
+          Object.entries(s.dirty).filter(([hash]) => !gone.has(hash))
+        ),
+        extraSets: s.extraSets.filter((k) => k !== setKey),
+      }
     }),
   setHits: (hits) => set({ hits: hits.map((h) => ({ ...h })) }),
   setHitAbility: (index, sheet, name) =>
@@ -184,7 +249,19 @@ export const useComboDrawerStore = create<ComboDrawerStore>()((set) => ({
       return { hits, values }
     }),
   setDefault: (hash, value) =>
-    set((s) => ({ defaults: { ...s.defaults, [hash]: value } })),
+    set((s) => ({
+      defaults: { ...s.defaults, [hash]: value },
+      dirty: { ...s.dirty, [hash]: true },
+    })),
+  setBooleanDefault: (hash, value) =>
+    set((s) => {
+      const hitCount = Math.max(s.hits.length, s.values[hash]?.length ?? 0, 1)
+      return {
+        defaults: { ...s.defaults, [hash]: value },
+        values: { ...s.values, [hash]: Array(hitCount).fill(value) },
+        dirty: { ...s.dirty, [hash]: true },
+      }
+    }),
   setHitValue: (hash, hitIndex, value) =>
     set((s) => ({
       values: {
@@ -193,18 +270,21 @@ export const useComboDrawerStore = create<ComboDrawerStore>()((set) => ({
           value,
         ],
       },
+      dirty: { ...s.dirty, [hash]: true },
     })),
   batchSetHitValues: (updates) =>
     set((s) => {
       const values: Record<string, number[]> = { ...s.values }
+      const dirty: Record<string, true> = { ...s.dirty }
       for (const { hash, index, value } of updates) {
         const arr = values[hash]
         if (!arr) continue
         const next = [...arr]
         next[index] = value
         values[hash] = next
+        dirty[hash] = true
       }
-      return { values }
+      return { values, dirty }
     }),
   setPartitionValue: (hash, oldValue, newValue) =>
     set((s) => {
@@ -216,7 +296,7 @@ export const useComboDrawerStore = create<ComboDrawerStore>()((set) => ({
       const extra = extraValues[hash]
       if (extra)
         extraValues[hash] = extra.map((v) => (v === oldValue ? newValue : v))
-      return { values, extraValues }
+      return { values, extraValues, dirty: { ...s.dirty, [hash]: true } }
     }),
   addPartition: (hash, candidates) =>
     set((s) => {
@@ -232,6 +312,7 @@ export const useComboDrawerStore = create<ComboDrawerStore>()((set) => ({
           ...s.extraValues,
           [hash]: [...(s.extraValues[hash] ?? []), next],
         },
+        dirty: { ...s.dirty, [hash]: true },
       }
     }),
   deletePartition: (hash, value) =>
@@ -244,7 +325,7 @@ export const useComboDrawerStore = create<ComboDrawerStore>()((set) => ({
       const extraValues: Record<string, number[]> = { ...s.extraValues }
       const extra = extraValues[hash]
       if (extra) extraValues[hash] = extra.filter((v) => v !== value)
-      return { values, extraValues }
+      return { values, extraValues, dirty: { ...s.dirty, [hash]: true } }
     }),
 }))
 
@@ -253,6 +334,7 @@ export function flushDrawerState(): {
   conditionals: TeamConditional[]
   defaults: Record<string, number>
   values: Record<string, number[]>
+  dirty: Record<string, true>
 } {
   const s = useComboDrawerStore.getState()
   return {
@@ -260,6 +342,7 @@ export function flushDrawerState(): {
     conditionals: s.conditionals,
     defaults: s.defaults,
     values: s.values,
+    dirty: s.dirty,
   }
 }
 

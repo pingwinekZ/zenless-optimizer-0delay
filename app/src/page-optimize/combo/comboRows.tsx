@@ -1,15 +1,22 @@
-import { Button, Flex, Select, Slider, Switch } from '@mantine/core'
+import { Button, Flex, Select, Switch } from '@mantine/core'
 import { IconCircleMinus, IconCirclePlus } from '@tabler/icons-react'
 import { memo, useMemo } from 'react'
 import type { TeamConditional } from '../../db'
 import { getConditional } from '../../formula'
-import { condLabel } from '../Optimize/conditionalUtils'
+import { NumConditionalRow } from '../Optimize/conditionalUtils'
 import {
   abilityWidth,
   buttonStyle,
   comboColumnStyle,
   comboRowStyle,
 } from './comboDrawerConstants'
+import {
+  ComboSheetIcon,
+  ComboSheetName,
+  CondLabelWithHover,
+  comboCondLabel,
+  isComboRowLocked,
+} from './comboLabels'
 import {
   derivePartitions,
   hashOf,
@@ -106,39 +113,67 @@ export type CellKey = {
   kind: 'bool' | 'partition'
   /** Absolute value to set (bool cells use toggle direction instead). */
   value: number
+  /** Locked rows (e.g. mindscape requirement unmet) skip edits. */
+  locked?: boolean
 }
 
 export function cellKey(key: CellKey): string {
   return JSON.stringify(key)
 }
 
-function BooleanRow({ cond }: { cond: TeamConditional }) {
+function BooleanRow({
+  cond,
+  locked,
+}: {
+  cond: TeamConditional
+  locked: boolean
+}) {
   const hash = hashOf(cond)
   const def = useComboDrawerStore((s) => s.defaults[hash] ?? 0)
   const arr = useComboDrawerStore((s) => s.values[hash])
-  const setDefault = useComboDrawerStore((s) => s.setDefault)
+  const setBooleanDefault = useComboDrawerStore((s) => s.setBooleanDefault)
   const actionCount = useComboDrawerStore((s) => s.hits.length)
+  const members = useComboDrawerStore((s) => s.members)
 
   const display = useMemo(() => [def, ...(arr ?? [])], [def, arr])
   const boxValues = useMemo(() => display.map(() => 1), [display])
   const dataKeys = useMemo(
     () =>
       display.map((_, i) =>
-        cellKey({ hash, index: i, kind: 'bool', value: i === 0 ? def : 0 })
+        cellKey({
+          hash,
+          index: i,
+          kind: 'bool',
+          value: i === 0 ? def : 0,
+          locked,
+        })
       ),
-    [hash, display, def]
+    [hash, display, def, locked]
   )
 
   return (
     <div style={comboRowStyle}>
       <Flex style={{ width: 275, marginRight: 10 }} align="center">
-        <Flex w={210} align="center">
-          <Switch
-            size="xs"
-            checked={def !== 0}
-            onChange={(e) => setDefault(hash, e.currentTarget.checked ? 1 : 0)}
-            label={condLabel(cond.condKey, cond.sheet)}
-          />
+        <Flex
+          w={210}
+          align="center"
+          style={locked ? { opacity: 0.5 } : undefined}
+        >
+          <CondLabelWithHover
+            sheet={cond.sheet}
+            condKey={cond.condKey}
+            members={members}
+          >
+            <Switch
+              size="xs"
+              checked={def !== 0}
+              disabled={locked}
+              onChange={(e) =>
+                setBooleanDefault(hash, e.currentTarget.checked ? 1 : 0)
+              }
+              label={comboCondLabel(cond.sheet, cond.condKey)}
+            />
+          </CondLabelWithHover>
         </Flex>
       </Flex>
       <BoxArray
@@ -147,6 +182,7 @@ function BooleanRow({ cond }: { cond: TeamConditional }) {
         actionCount={actionCount}
         dataKeys={dataKeys}
         partition={false}
+        unselectable={locked}
       />
     </div>
   )
@@ -156,10 +192,12 @@ function PartitionRow({
   cond,
   partitionValue,
   isDefault,
+  locked,
 }: {
   cond: TeamConditional
   partitionValue: number
   isDefault: boolean
+  locked: boolean
 }) {
   const hash = hashOf(cond)
   const def = useComboDrawerStore((s) => s.defaults[hash] ?? 0)
@@ -168,6 +206,7 @@ function PartitionRow({
   const addPartition = useComboDrawerStore((s) => s.addPartition)
   const deletePartition = useComboDrawerStore((s) => s.deletePartition)
   const actionCount = useComboDrawerStore((s) => s.hits.length)
+  const members = useComboDrawerStore((s) => s.members)
   const condData = getConditional(cond.sheet as never, cond.condKey)
 
   const display = useMemo(() => [def, ...arr], [def, arr])
@@ -178,9 +217,15 @@ function PartitionRow({
   const dataKeys = useMemo(
     () =>
       display.map((_, i) =>
-        cellKey({ hash, index: i, kind: 'partition', value: partitionValue })
+        cellKey({
+          hash,
+          index: i,
+          kind: 'partition',
+          value: partitionValue,
+          locked,
+        })
       ),
-    [hash, display, partitionValue]
+    [hash, display, partitionValue, locked]
   )
 
   const candidates = useMemo(() => {
@@ -195,37 +240,62 @@ function PartitionRow({
   return (
     <div style={comboRowStyle}>
       <Flex style={{ width: 275, marginRight: 10 }} align="center" gap={5}>
-        {condData?.type === 'list' ? (
-          <Select
-            size="xs"
-            style={{ width: 210 }}
-            data={condData.list.map((label, i) => ({
-              value: String(i),
-              label,
-            }))}
-            value={String(partitionValue)}
-            onChange={(v) =>
-              v !== null && setPartitionValue(hash, partitionValue, Number(v))
-            }
-            aria-label={cond.condKey}
-          />
-        ) : (
-          <Slider
-            key={`${partitionValue}`}
-            style={{ width: 210 }}
-            size="xs"
-            min={condData?.type === 'num' ? (condData.min ?? 0) : 0}
-            max={condData?.type === 'num' ? (condData.max ?? 10) : 10}
-            step={condData?.type === 'num' && !condData.int_only ? 0.1 : 1}
-            value={partitionValue}
-            onChange={(v) => setPartitionValue(hash, partitionValue, v)}
-            label={(v) => `${cond.condKey}: ${v}`}
-            aria-label={cond.condKey}
-          />
-        )}
+        <div
+          style={{
+            width: 210,
+            ...(locked ? { opacity: 0.5 } : undefined),
+          }}
+        >
+          <CondLabelWithHover
+            sheet={cond.sheet}
+            condKey={cond.condKey}
+            members={members}
+          >
+            {condData?.type === 'list' ? (
+              <>
+                <div
+                  style={{
+                    fontSize: 11,
+                    lineHeight: '14px',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {comboCondLabel(cond.sheet, cond.condKey)}
+                </div>
+                <Select
+                  size="xs"
+                  disabled={locked}
+                  data={condData.list.map((label, i) => ({
+                    value: String(i),
+                    label,
+                  }))}
+                  value={String(partitionValue)}
+                  onChange={(v) =>
+                    v !== null &&
+                    setPartitionValue(hash, partitionValue, Number(v))
+                  }
+                  aria-label={cond.condKey}
+                />
+              </>
+            ) : (
+              <NumConditionalRow
+                label={comboCondLabel(cond.sheet, cond.condKey)}
+                value={partitionValue}
+                min={condData?.type === 'num' ? (condData.min ?? 0) : 0}
+                max={condData?.type === 'num' ? (condData.max ?? 10) : 10}
+                step={condData?.type === 'num' && !condData.int_only ? 0.1 : 1}
+                onChange={(v) => setPartitionValue(hash, partitionValue, v)}
+                disabled={locked}
+              />
+            )}
+          </CondLabelWithHover>
+        </div>
         <Button
           variant="transparent"
           p={0}
+          disabled={locked}
           leftSection={
             isDefault ? (
               <IconCirclePlus style={buttonStyle} />
@@ -256,12 +326,19 @@ function PartitionRow({
         actionCount={actionCount}
         dataKeys={dataKeys}
         partition={!isDefault}
+        unselectable={locked}
       />
     </div>
   )
 }
 
-function NumberOrSelectRow({ cond }: { cond: TeamConditional }) {
+function NumberOrSelectRow({
+  cond,
+  locked,
+}: {
+  cond: TeamConditional
+  locked: boolean
+}) {
   const hash = hashOf(cond)
   const def = useComboDrawerStore((s) => s.defaults[hash] ?? 0)
   const arr = useComboDrawerStore((s) => s.values[hash] ?? EMPTY_VALUES)
@@ -281,6 +358,7 @@ function NumberOrSelectRow({ cond }: { cond: TeamConditional }) {
           cond={cond}
           partitionValue={value}
           isDefault={value === def}
+          locked={locked}
         />
       ))}
       <PartitionDivider bottom />
@@ -312,8 +390,11 @@ const groupRowStyle: React.CSSProperties = {
 
 function RowForCond({ cond }: { cond: TeamConditional }) {
   const condData = getConditional(cond.sheet as never, cond.condKey)
-  if (!condData || condData.type === 'bool') return <BooleanRow cond={cond} />
-  return <NumberOrSelectRow cond={cond} />
+  const members = useComboDrawerStore((s) => s.members)
+  const locked = isComboRowLocked(cond, members)
+  if (!condData || condData.type === 'bool')
+    return <BooleanRow cond={cond} locked={locked} />
+  return <NumberOrSelectRow cond={cond} locked={locked} />
 }
 
 export function CondGroupRow({
@@ -325,8 +406,20 @@ export function CondGroupRow({
 }) {
   return (
     <div style={groupRowStyle}>
-      <div style={{ width: 80, flexShrink: 0 }}>
-        <div style={{ fontSize: 13, fontWeight: 700 }}>{sheet}</div>
+      <div
+        style={{
+          width: 110,
+          flexShrink: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 4,
+        }}
+      >
+        <ComboSheetIcon sheetKey={sheet} />
+        <div style={{ fontSize: 13, fontWeight: 700, textAlign: 'center' }}>
+          <ComboSheetName sheetKey={sheet} />
+        </div>
         <div style={{ fontSize: 11, opacity: 0.6 }}>
           {conds.length} buff{conds.length !== 1 ? 's' : ''}
         </div>

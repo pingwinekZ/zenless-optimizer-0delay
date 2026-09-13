@@ -907,6 +907,8 @@ export type ComboState = {
   version: string
   /** `${sheet}:${condKey}:${src}:${dst}` → one value per rotation hit. */
   values: Record<string, number[]>
+  /** Extra (unequipped) disc set sheets shown in the advanced drawer. */
+  extraSets?: string[]
 }
 
 export function comboCondHash(
@@ -937,6 +939,12 @@ export function parseComboState(
       if (!arr.every((v) => typeof v === 'number' && Number.isFinite(v)))
         return undefined
     }
+    if (
+      parsed.extraSets !== undefined &&
+      (!Array.isArray(parsed.extraSets) ||
+        !parsed.extraSets.every((s) => typeof s === 'string'))
+    )
+      return undefined
     return parsed
   } catch {
     return undefined
@@ -992,7 +1000,11 @@ export function remapComboState(
       return typeof v === 'number' && Number.isFinite(v) ? v : c.condValue
     })
   }
-  return JSON.stringify({ version: COMBO_STATE_VERSION, values })
+  return JSON.stringify({
+    version: COMBO_STATE_VERSION,
+    values,
+    ...(prev?.extraSets ? { extraSets: prev.extraSets } : {}),
+  })
 }
 
 /**
