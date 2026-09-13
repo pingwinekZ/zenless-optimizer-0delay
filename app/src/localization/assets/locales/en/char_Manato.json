@@ -1,7 +1,12 @@
 {
-  "coreCond": {
-    "consumingHp": "When consuming HP during Basic Attack: Blazing Wind - Misty Slash or during the consecutive slashes from an Assist Follow-Up",
-    "moltenEdge": "In the Molten Edge state"
-  },
-  "m1Cond": "Each 1% of HP consumed"
+  "core_sheerForce_header": "HP to SF",
+  "coreCond_consumingHp": "Consuming HP · CD",
+  "core_basic_crit_dmg_": "Blazing Wind - Misty Slash CRIT DMG",
+  "coreCond_moltenEdge": "Molten Edge · CR & DMG",
+  "m1Cond": "HP Tallied · DMG",
+  "m1_assistFollowUp_fire_dmg_": "Assist Follow-Up Fire DMG",
+  "m1_basic_fire_dmg_": "Basic Attack Fire DMG",
+  "m2Cond": "Molten Edge · RES Ignore",
+  "m4_header": "HP",
+  "m6Cond": "Assist Follow-Up Hit · DMG"
 }

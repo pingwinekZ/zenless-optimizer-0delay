@@ -30,22 +30,23 @@ const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
-const { consumingHp_consecutiveStrikes, moltenEdge } = allBoolConditionals(
-  key,
-  undefined,
-  { moltenEdge: 2 }
-)
+const { consumingHp_consecutiveStrikes, moltenEdge, moltenEdge_m2 } =
+  allBoolConditionals(key, undefined, { moltenEdge_m2: 2 })
 const { hpTallied } = allNumConditionals(
   key,
   true,
   0,
-  dm.m1.max_dmg_ / dm.m1.assist_basic_fire_dmg_
+  dm.m1.max_dmg_ / dm.m1.assist_basic_fire_dmg_,
+  undefined,
+  { hpTallied: 1 }
 )
 const { assistFollowUpHitsEnemy } = allNumConditionals(
   key,
   true,
   0,
-  dm.m6.stacks
+  dm.m6.stacks,
+  undefined,
+  { assistFollowUpHitsEnemy: 6 }
 )
 
 const core_basic_crit_dmg_ = ownBuff.combat.crit_dmg_.addWithDmgType(
@@ -238,7 +239,7 @@ const sheet = register(
   registerBuff(
     'm2_fire_resIgn_',
     ownBuff.combat.resIgn_.fire.add(
-      cmpGE(char.mindscape, 2, moltenEdge.ifOn(percent(dm.m2.fire_resIgn_)))
+      cmpGE(char.mindscape, 2, moltenEdge_m2.ifOn(percent(dm.m2.fire_resIgn_)))
     )
   ),
   registerBuff(

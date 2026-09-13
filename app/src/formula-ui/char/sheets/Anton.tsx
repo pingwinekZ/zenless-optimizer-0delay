@@ -1,7 +1,15 @@
+import { ColorText } from '@zenless-optimizer/common/ui'
 import type { CharacterKey } from '../../../consts'
 import { Anton } from '../../../formula'
-import { st, trans } from '../../util'
-import { createBaseSheet, fieldForBuff } from '../sheetUtil'
+import { GameDesc } from '../../../i18n'
+import { trans } from '../../util'
+import {
+  AbilityBodyText,
+  CoreGameDesc,
+  createBaseSheet,
+  fieldForBuff,
+} from '../sheetUtil'
+import { getVariant } from '../util'
 
 const key: CharacterKey = 'Anton'
 const [, ch] = trans('char', key)
@@ -13,13 +21,23 @@ const sheet = createBaseSheet(key, {
   core: [
     {
       type: 'fields',
+      description: <CoreGameDesc characterKey={key} />,
+      header: { icon: null, text: ch('core_header') },
       fields: [
         {
-          title: ch('core_piledriver_dmg_'),
+          title: (
+            <ColorText color={getVariant(buff.core_piledriver_dmg_.tag)}>
+              {ch('core_piledriver_dmg_')}
+            </ColorText>
+          ),
           fieldRef: buff.core_piledriver_dmg_.tag,
         },
         {
-          title: ch('core_drill_dmg_'),
+          title: (
+            <ColorText color={getVariant(buff.core_drill_dmg_.tag)}>
+              {ch('core_drill_dmg_')}
+            </ColorText>
+          ),
           fieldRef: buff.core_drill_dmg_.tag,
         },
       ],
@@ -27,23 +45,24 @@ const sheet = createBaseSheet(key, {
   ],
   ability: [
     {
-      type: 'conditional',
-      conditional: {
-        label: ch('abilityCond'),
-        description:
-          'While in Burst Mode, landing critical hits increases Electric Anomaly Multiplier.',
-        metadata: cond.burst_mode,
-        fields: [fieldForBuff(buff.ability_electric_anom_mv_mult_)],
-      },
-    },
-  ],
-  m2: [
-    {
       type: 'fields',
+      description: (
+        <>
+          <GameDesc ns="char_Anton_gen" key18="ability.desc.0" />
+          <AbilityBodyText characterKey={key}>
+            <GameDesc ns="char_Anton_gen" key18="ability.desc.1" />
+          </AbilityBodyText>
+        </>
+      ),
+      header: { icon: null, text: ch('ability_additional_dmg') },
       fields: [
         {
-          title: st('shield'),
-          fieldRef: formula.m2_shield.tag,
+          title: (
+            <ColorText color={getVariant(formula.ability_dmg.tag)}>
+              {ch('ability_shock_dmg')}
+            </ColorText>
+          ),
+          fieldRef: formula.ability_dmg.tag,
         },
       ],
     },
@@ -52,12 +71,8 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
-        label: st('uponLaunch.2', {
-          val1: '$t(skills.chain)',
-          val2: '$t(skills.ult)',
-        }),
-        description:
-          'Upon launching a Chain Attack or Ultimate, Anton gains increased CRIT Rate.',
+        label: ch('m4Cond'),
+        description: <GameDesc ns="char_Anton_gen" key18="mindscapes.4.desc" />,
         metadata: cond.chain_ult_used,
         fields: [fieldForBuff(buff.m4_crit_)],
       },
@@ -68,12 +83,23 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('m6Cond'),
-        description:
-          'When Piledriver Attack triggers a critical hit, Anton gains increased Burst Mode attack DMG.',
+        description: <GameDesc ns="char_Anton_gen" key18="mindscapes.6.desc" />,
         metadata: cond.piledriver_crits,
         fields: [
           {
-            title: ch('m6_dmg_'),
+            title: (
+              <ColorText color={getVariant(buff.m6_dmg_.tag)}>
+                {ch('m6_basic_dmg_')}
+              </ColorText>
+            ),
+            fieldRef: buff.m6_dmg_.tag,
+          },
+          {
+            title: (
+              <ColorText color={getVariant(buff.m6_dmg_.tag)}>
+                {ch('m6_dodgeCounter_dmg_')}
+              </ColorText>
+            ),
             fieldRef: buff.m6_dmg_.tag,
           },
         ],

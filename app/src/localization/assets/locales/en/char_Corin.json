@@ -1,4 +1,17 @@
 {
-  "core_common_dmg_": "Extended Slash DMG",
-  "m6Cond": "When Corin's extended slash hits an enemy"
+  "core_dmg_header": "DMG",
+  "core_wipeout_dmg_": "Wipeout Extended Slash DMG",
+  "core_oopsyDaisy_dmg_": "Oopsy-Daisy Extended Slash DMG",
+  "core_nope_dmg_": "Nope! Extended Slash DMG",
+  "core_cleanSweep_dmg_": "Clean Sweep Extended Slash DMG",
+  "core_skirtAlert_dmg_": "Skirt Alert Extended Slash DMG",
+  "core_sorry_dmg_": "Sorry... Extended Slash DMG",
+  "core_veryVerySorry_dmg_": "Very, Very Sorry! Extended Slash DMG",
+  "core_emergencyMeasures_dmg_": "Emergency Measures Extended Slash DMG",
+  "core_quickSweep_dmg_": "Quick Sweep Extended Slash DMG",
+  "ability_header": "DMG",
+  "m1Cond": "Chain / Ult Hit · DMG",
+  "m2Cond": "EX / Chain / Ult Hit · RES Reduction",
+  "m6Cond": "Charge · Additional DMG",
+  "m6_additional_dmg": "Additional Detonation DMG"
 }

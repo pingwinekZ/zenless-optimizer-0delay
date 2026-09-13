@@ -1,5 +1,9 @@
 import type { DBStorage } from '@zenless-optimizer/common/database'
 import { Database, SandboxStorage } from '@zenless-optimizer/common/database'
+import {
+  compressToB64Gzip,
+  decompressB64Gzip,
+} from '@zenless-optimizer/common/util'
 import type { IZenlessObjectDescription, IZZZDatabase } from '../Interfaces'
 import { zzzSource } from '../Interfaces'
 import { DBMetaEntry, DisplayDiscEntry } from './DataEntries/'
@@ -203,13 +207,41 @@ export class ZzzDatabase extends Database {
     this.saveStorage()
     other.saveStorage()
   }
-  toExtraLocalDB() {
-    const key = `zzz_extraDatabase_${this.storage.getDBIndex()}`
+  extraEntries(): Record<string, string> {
     const other = new SandboxStorage(undefined, 'zzz')
     const oldstorage = this.storage
     this.storage = other
     this.saveStorage()
     this.storage = oldstorage
-    localStorage.setItem(key, JSON.stringify(Object.fromEntries(other.entries)))
+    return Object.fromEntries(other.entries)
+  }
+  /** Deterministic plain-JSON form, used only for change detection.
+   * Never compare compressed output: gzip stamps the current mtime into the
+   * header, so it is non-deterministic and would always report a difference. */
+  serializeExtra(): string {
+    return JSON.stringify(this.extraEntries())
+  }
+  toExtraLocalDB() {
+    const key = `zzz_extraDatabase_${this.storage.getDBIndex()}`
+    const plainJson = this.serializeExtra()
+    const existing = localStorage.getItem(key)
+    if (existing) {
+      try {
+        // Legacy plain-JSON slot: migrate encoding if content is identical
+        if (JSON.stringify(JSON.parse(existing)) === plainJson) {
+          localStorage.setItem(key, compressToB64Gzip(plainJson))
+          return
+        }
+      } catch {
+        // Not legacy JSON — check compressed form below
+        try {
+          // Identical & already compressed: skip write (avoids multi-tab clobber)
+          if (decompressB64Gzip(existing) === plainJson) return
+        } catch {
+          // Malformed slot: fall through and self-heal by overwriting
+        }
+      }
+    }
+    localStorage.setItem(key, compressToB64Gzip(plainJson))
   }
 }

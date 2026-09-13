@@ -63,16 +63,16 @@ export const buffs = {
     },
     team: false,
   },
-  m6_charge_exSpecial_dmg_: {
+  m6_charge_dash_dmg_: {
     sheet: 'Anby',
-    name: 'm6_charge_exSpecial_dmg_',
+    name: 'm6_charge_dash_dmg_',
     tag: {
       et: 'display',
       qt: 'combat',
       q: 'dmg_',
       sheet: 'Anby',
-      damageType1: 'exSpecial',
-      name: 'm6_charge_exSpecial_dmg_',
+      damageType1: 'dash',
+      name: 'm6_charge_dash_dmg_',
     },
     team: false,
   },

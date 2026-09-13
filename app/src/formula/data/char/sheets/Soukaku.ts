@@ -33,8 +33,17 @@ const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
-const { masked, flyTheFlag, vortexConsumed, flyTheFlagHit, frostedBanner } =
-  allBoolConditionals(key, undefined, { flyTheFlagHit: 4, frostedBanner: 6 })
+const {
+  masked,
+  flyTheFlag,
+  vortexConsumed,
+  vortexConsumed_ability,
+  flyTheFlagHit,
+  frostedBanner,
+} = allBoolConditionals(key, undefined, {
+  flyTheFlagHit: 4,
+  frostedBanner: 6,
+})
 
 const m6_dmg_ = ownBuff.combat.common_dmg_.add(
   cmpGE(char.mindscape, 6, frostedBanner.ifOn(percent(dm.m6.dmg_)))
@@ -175,9 +184,11 @@ const sheet = register(
           team.common.count.withFaction('HollowSpecialOoperationsSection6')
         ),
         3,
-        vortexConsumed.ifOn(percent(dm.ability.ice_dmg_))
+        vortexConsumed_ability.ifOn(percent(dm.ability.ice_dmg_))
       )
-    )
+    ),
+    undefined,
+    true
   ),
   registerBuff(
     'm4_ice_resRed_',

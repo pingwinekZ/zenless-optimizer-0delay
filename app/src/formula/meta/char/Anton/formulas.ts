@@ -958,15 +958,16 @@ export const formulas = {
       name: 'AssistFollowUpLimitBurst_0_anomBuildup',
     },
   },
-  m2_shield: {
+  ability_dmg: {
     sheet: 'Anton',
-    name: 'm2_shield',
+    name: 'ability_dmg',
     tag: {
       et: 'own',
       qt: 'formula',
-      q: 'shield',
+      q: 'standardDmg',
       sheet: 'Anton',
-      name: 'm2_shield',
+      attribute: 'electric',
+      name: 'ability_dmg',
     },
   },
 } as const

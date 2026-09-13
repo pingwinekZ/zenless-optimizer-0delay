@@ -1,5 +1,6 @@
 // WARNING: Generated file, do not modify
 export const conditionals = {
+  crouchingShot: { sheet: 'Billy', name: 'crouchingShot', type: 'bool' },
   distance: {
     sheet: 'Billy',
     name: 'distance',

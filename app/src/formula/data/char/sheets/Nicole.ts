@@ -27,7 +27,8 @@ const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
-const { bulletsOrFieldHit } = allBoolConditionals(key)
+const { bulletsOrFieldHit, bulletsOrFieldHit_ability } =
+  allBoolConditionals(key)
 const { fieldHitsEnemy } = allNumConditionals(
   key,
   true,
@@ -242,20 +243,24 @@ const sheet = register(
     'core_defRed_',
     enemyDebuff.common.defRed_.add(
       bulletsOrFieldHit.ifOn(subscript(char.core, dm.core.def_red_))
-    )
+    ),
+    undefined,
+    true
   ),
   registerBuff(
     'ability_ether_dmg_',
-    teamBuff.combat.common_dmg_.add(
+    teamBuff.combat.dmg_.ether.add(
       cmpGE(
         sum(
           team.common.count.ether,
           team.common.count.withFaction('CunningHares')
         ),
         3,
-        bulletsOrFieldHit.ifOn(dm.ability.ether_dmg_)
+        bulletsOrFieldHit_ability.ifOn(dm.ability.ether_dmg_)
       )
-    )
+    ),
+    undefined,
+    true
   ),
   registerBuff(
     'm1_exSpecial_dmg_',

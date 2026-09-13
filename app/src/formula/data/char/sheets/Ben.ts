@@ -4,7 +4,6 @@ import { allStats, mappedStats } from '../../../../stats'
 import {
   allBoolConditionals,
   customDmg,
-  customShield,
   own,
   ownBuff,
   percent,
@@ -27,14 +26,14 @@ const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
-const { shieldOn, enemyBlocked, attackLaunched } = allBoolConditionals(
+const { shieldOn, enemyBlocked_m4, attackLaunched } = allBoolConditionals(
   key,
   undefined,
-  { enemyBlocked: 1, attackLaunched: 6 }
+  { enemyBlocked_m4: 4, attackLaunched: 6 }
 )
 
 const m4_dmg_ = ownBuff.combat.common_dmg_.add(
-  cmpGE(char.mindscape, 4, enemyBlocked.ifOn(percent(dm.m4.dmg_)))
+  cmpGE(char.mindscape, 4, enemyBlocked_m4.ifOn(percent(dm.m4.dmg_)))
 )
 
 const sheet = register(
@@ -112,18 +111,20 @@ const sheet = register(
     )
   ),
 
-  ...customShield('special_shield', prod(own.final.hp, percent(0.16))), // No data in dm
-  ...customShield(
-    'core_shield',
-    sum(
-      prod(own.final.def, percent(subscript(char.core, dm.core.shield_))),
-      subscript(char.core, dm.core.shield)
-    )
-  ),
   ...customDmg(
     'm2_dmg',
     { damageType1: 'elemental' },
     cmpGE(char.mindscape, 2, prod(own.final.def, percent(dm.m2.dmg)))
+  ),
+  registerBuff(
+    'm2_dmg',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'elemental',
+      cmpGE(char.mindscape, 2, percent(dm.m2.dmg))
+    ),
+    undefined,
+    undefined,
+    false
   ),
 
   // Buffs
@@ -144,14 +145,6 @@ const sheet = register(
         3,
         shieldOn.ifOn(percent(dm.ability.crit_))
       )
-    ),
-    undefined,
-    true
-  ),
-  registerBuff(
-    'm1_dmg_red_',
-    teamBuff.combat.dmg_red_.add(
-      cmpGE(char.mindscape, 1, enemyBlocked.ifOn(percent(dm.m1.dmg_red_)))
     ),
     undefined,
     true
