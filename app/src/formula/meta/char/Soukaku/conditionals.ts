@@ -15,4 +15,9 @@ export const conditionals = {
   },
   masked: { sheet: 'Soukaku', name: 'masked', type: 'bool' },
   vortexConsumed: { sheet: 'Soukaku', name: 'vortexConsumed', type: 'bool' },
+  vortexConsumed_ability: {
+    sheet: 'Soukaku',
+    name: 'vortexConsumed_ability',
+    type: 'bool',
+  },
 } as const
