@@ -2,6 +2,7 @@ import { cmpGE, prod, subscript, sum } from '@zenless-optimizer/pando/engine'
 import { type CharacterKey } from '../../../../consts'
 import { allStats, mappedStats } from '../../../../stats'
 import {
+  allBoolConditionals,
   allNumConditionals,
   own,
   ownBuff,
@@ -21,6 +22,8 @@ const data_gen = allStats.char[key]
 const dm = mappedStats.char[key]
 
 const { char } = own
+
+const { crouchingShot } = allBoolConditionals(key)
 
 const { ult_dmg_stacks } = allNumConditionals(key, true, 0, dm.ability.stacks)
 const { distance } = allNumConditionals(
@@ -43,7 +46,7 @@ const { m6_stacks } = allNumConditionals(
 )
 
 const core_dmg_ = ownBuff.combat.common_dmg_.add(
-  percent(subscript(char.core, dm.core.common_dmg_))
+  crouchingShot.ifOn(percent(subscript(char.core, dm.core.common_dmg_)))
 )
 
 const sheet = register(

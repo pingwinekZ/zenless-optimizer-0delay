@@ -128,9 +128,9 @@ const sheet = register(
     )
   ),
   registerBuff(
-    'm6_charge_exSpecial_dmg_',
+    'm6_charge_dash_dmg_',
     ownBuff.combat.dmg_.addWithDmgType(
-      'exSpecial',
+      'dash',
       cmpGE(char.mindscape, 6, m6ChargeConsumed.ifOn(dm.m6.dmg_))
     )
   )

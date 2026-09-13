@@ -1,15 +1,34 @@
 import type { CharacterKey } from '../../../consts'
 import { PanYinhu } from '../../../formula'
-import { mappedStats } from '../../../stats'
+import { GameDesc } from '../../../i18n'
 import { trans } from '../../util'
-import { createBaseSheet, fieldForBuff } from '../sheetUtil'
+import {
+  AbilityBodyText,
+  CoreGameDesc,
+  createBaseSheet,
+  fieldForBuff,
+  PrefixedLine,
+  useEffectiveMindscape,
+} from '../sheetUtil'
 
 const key: CharacterKey = 'PanYinhu'
+const ns = 'char_PanYinhu_gen'
 const [, ch] = trans('char', key)
 const cond = PanYinhu.conditionals
 const buff = PanYinhu.buffs
 const formula = PanYinhu.formulas
-const dm = mappedStats.char[key]
+
+function CoreDescription() {
+  const mindscape = useEffectiveMindscape(key)
+  return (
+    <>
+      <CoreGameDesc characterKey={key} />
+      <PrefixedLine prefix="M6" dimmed={mindscape < 6}>
+        <GameDesc ns={ns} key18="mindscapes.6.desc" />
+      </PrefixedLine>
+    </>
+  )
+}
 
 const sheet = createBaseSheet(key, {
   perSkillAbility: {
@@ -36,9 +55,9 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('coreCond'),
-        description:
-          'Grants Sheer Force stacks when EX Special Attack hits an enemy and triggers Quick Assist.',
+        description: <CoreDescription />,
         metadata: cond.meridian_flow,
+        targeted: true,
         fields: [fieldForBuff(buff.core_sheerForce)],
       },
     },
@@ -48,44 +67,30 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('abilityCond'),
-        description:
-          'Increases damage dealt when hitting an enemy with Special Attack: Touch of Death.',
+        description: (
+          <>
+            <GameDesc ns={ns} key18="ability.desc.0" />
+            <AbilityBodyText characterKey={key}>
+              <GameDesc ns={ns} key18="ability.desc.1" />
+            </AbilityBodyText>
+          </>
+        ),
         metadata: cond.depleted_qi,
+        linked: ['depleted_qi_m1'],
         fields: [fieldForBuff(buff.ability_dmgInc_)],
       },
     },
   ],
   m1: [
     {
-      type: 'fields',
-      fields: [fieldForBuff(buff.m1_dmgInc_)],
-    },
-  ],
-  m4: [
-    {
-      type: 'fields',
-      fields: [
-        {
-          title: ch('m4_heal'),
-          fieldRef: formula.m4_heal.tag,
-        },
-      ],
-    },
-  ],
-  m6: [
-    {
-      type: 'fields',
-      fields: [
-        {
-          title: ch('m6_sheerForce'),
-          fieldValue: dm.m6.sheerForce * 100,
-          unit: '%',
-        },
-        {
-          title: ch('m6_maxSheerForce'),
-          fieldValue: dm.m6.max_sheerForce,
-        },
-      ],
+      type: 'conditional',
+      conditional: {
+        label: ch('m1Cond'),
+        description: <GameDesc ns={ns} key18="mindscapes.1.desc" />,
+        metadata: cond.depleted_qi_m1,
+        linked: ['depleted_qi'],
+        fields: [fieldForBuff(buff.m1_dmgInc_)],
+      },
     },
   ],
 })

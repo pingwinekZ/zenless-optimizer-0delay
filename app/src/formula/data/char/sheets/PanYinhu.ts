@@ -26,9 +26,14 @@ const dm = mappedStats.char[key]
 
 const { char } = own
 
-const { meridian_flow, depleted_qi } = allBoolConditionals(key, undefined, {
-  depleted_qi: 1,
-})
+const { meridian_flow, depleted_qi, depleted_qi_m1 } = allBoolConditionals(
+  key,
+  undefined,
+  {
+    depleted_qi: 1,
+    depleted_qi_m1: 1,
+  }
+)
 
 const sheet = register(
   key,
@@ -101,13 +106,17 @@ const sheet = register(
         2,
         depleted_qi.ifOn(dm.ability.dmgInc_)
       )
-    )
+    ),
+    undefined,
+    true
   ),
   registerBuff(
     'm1_dmgInc_',
     enemyDebuff.common.dmgInc_.add(
-      cmpGE(char.mindscape, 1, depleted_qi.ifOn(dm.m1.dmgInc_))
-    )
+      cmpGE(char.mindscape, 1, depleted_qi_m1.ifOn(dm.m1.dmgInc_))
+    ),
+    undefined,
+    true
   )
 )
 export default sheet

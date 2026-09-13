@@ -24,8 +24,16 @@ const dm = mappedStats.char[key]
 
 const { char } = own
 
-const { hunters_gait, binding_trap } = allBoolConditionals(key, undefined, {
-  hunters_gait: 2,
+const {
+  hunters_gait,
+  hunters_gait_m2,
+  binding_trap,
+  binding_trap_m1,
+  binding_trap_m6,
+} = allBoolConditionals(key, undefined, {
+  hunters_gait_m2: 2,
+  binding_trap_m1: 1,
+  binding_trap_m6: 6,
 })
 
 const abilityCheck = (node: NumNode | number) =>
@@ -35,7 +43,9 @@ const abilityCheck = (node: NumNode | number) =>
       team.common.count.withSpecialty('rupture'),
       team.common.count.withFaction('SonsOfCalydon')
     ),
-    1,
+    // team.common.count includes self — Pulchra contributes 1 (faction),
+    // so threshold >= 2 means "self + at least 1 qualifying teammate".
+    2,
     node
   )
 
@@ -102,24 +112,24 @@ const sheet = register(
       cmpGE(
         char.mindscape,
         1,
-        abilityCheck(binding_trap.ifOn(percent(dm.m1.crit_)))
+        abilityCheck(binding_trap_m1.ifOn(percent(dm.m1.crit_)))
       )
     )
   ),
   registerBuff(
     'm2_atk_',
     ownBuff.combat.atk_.add(
-      cmpGE(char.mindscape, 2, hunters_gait.ifOn(percent(dm.m2.atk_)))
+      cmpGE(char.mindscape, 2, hunters_gait_m2.ifOn(percent(dm.m2.atk_)))
     )
   ),
   registerBuff('m6_special_dmg_', m6_special_dmg_, undefined, undefined, false),
   registerBuff(
-    'm6_common_dmg_',
+    'ability_m6_common_dmg_',
     teamBuff.combat.common_dmg_.add(
       cmpGE(
         char.mindscape,
         6,
-        abilityCheck(binding_trap.ifOn(percent(dm.ability.aftershock_dmg_)))
+        abilityCheck(binding_trap_m6.ifOn(percent(dm.ability.aftershock_dmg_)))
       )
     ),
     undefined,

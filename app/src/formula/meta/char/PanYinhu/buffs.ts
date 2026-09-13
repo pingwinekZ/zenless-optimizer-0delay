@@ -22,7 +22,7 @@ export const buffs = {
       sheet: 'PanYinhu',
       name: 'ability_dmgInc_',
     },
-    team: false,
+    team: true,
   },
   m1_dmgInc_: {
     sheet: 'PanYinhu',
@@ -34,6 +34,6 @@ export const buffs = {
       sheet: 'PanYinhu',
       name: 'm1_dmgInc_',
     },
-    team: false,
+    team: true,
   },
 } as const
