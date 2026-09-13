@@ -1,5 +1,7 @@
 {
-  "coreCond": "When her enhanced bullets or Energy Field hits an enemy",
+  "coreCond": "Enhanced Bullet / Energy Field Hit · DEF Reduction",
+  "abilityCond": "Enhanced Bullet / Energy Field Hit · DMG",
+  "m1_header": "DMG & AB",
   "m1_exSpecial_anomBuildup": "EX Special Anomaly Buildup",
-  "m6Cond": "When Nicole's energy fields deal DMG to an enemy"
+  "m6Cond": "Energy Field Hit · CR"
 }

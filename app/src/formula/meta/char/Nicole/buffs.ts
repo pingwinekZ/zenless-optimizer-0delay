@@ -10,7 +10,7 @@ export const buffs = {
       sheet: 'Nicole',
       name: 'core_defRed_',
     },
-    team: false,
+    team: true,
   },
   ability_ether_dmg_: {
     sheet: 'Nicole',
@@ -18,11 +18,12 @@ export const buffs = {
     tag: {
       et: 'display',
       qt: 'combat',
-      q: 'common_dmg_',
+      q: 'dmg_',
       sheet: 'Nicole',
+      attribute: 'ether',
       name: 'ability_ether_dmg_',
     },
-    team: false,
+    team: true,
   },
   m1_exSpecial_dmg_: {
     sheet: 'Nicole',
