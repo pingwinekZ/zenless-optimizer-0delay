@@ -17,15 +17,20 @@ import {
 } from '@tabler/icons-react'
 import { useCallback, useMemo } from 'react'
 import type { CharacterKey } from '../../consts'
-import type { ComboHit, ComboTypeKey, Team } from '../../db'
-import { getTeamFrame0, MAX_COMBO_HITS, remapComboState } from '../../db'
+import type { ComboHit, ComboKindKey, ComboTypeKey, Team } from '../../db'
+import {
+  comboKindKeys,
+  getTeamFrame0,
+  MAX_COMBO_HITS,
+  remapComboState,
+} from '../../db'
 import { useDatabaseContext } from '../../db-ui'
 import { HeaderText } from '../layout'
 import { CascaderSelect } from './CascaderSelect'
 import classes from './ComboCard.module.css'
 import { ComboDrawer } from './ComboDrawer'
 import {
-  hitValue,
+  hitOptionValue,
   parseHitValue,
   useComboFormulaGroups,
 } from './useComboDrawerStore'
@@ -66,36 +71,16 @@ export function ComboCard({
   team: Team
 }) {
   const members = useComboMembers(characterKey, team)
-  const { rotation, comboType, writeRotation, setType } = useComboWriter(
-    characterKey,
-    team,
-    members
-  )
+  const { rotation, comboType, comboKind, writeRotation, setType, setKind } =
+    useComboWriter(characterKey, team, members)
   const [drawerOpened, { open: openDrawer, close: closeDrawer }] =
     useDisclosure(false)
 
   return (
     <Flex direction="column" gap={8}>
       <Flex justify="space-between" align="center">
-        <HeaderText>Combo DMG</HeaderText>
+        <HeaderText>Combo</HeaderText>
       </Flex>
-      <SegmentedControl
-        fullWidth
-        value={comboType}
-        onChange={(value) => setType(value as ComboTypeKey)}
-        data={[
-          { label: 'Simple', value: 'simple' },
-          { label: 'Advanced', value: 'advanced' },
-        ]}
-      />
-
-      <ComboBasicDefinition
-        characterKey={characterKey}
-        rotation={rotation}
-        comboType={comboType}
-        writeRotation={writeRotation}
-      />
-
       <Flex
         direction="column"
         gap={8}
@@ -112,6 +97,35 @@ export function ComboCard({
           Rotation
         </Button>
       </Flex>
+      <SegmentedControl
+        fullWidth
+        value={comboType}
+        onChange={(value) => setType(value as ComboTypeKey)}
+        data={[
+          { label: 'Simple', value: 'simple' },
+          { label: 'Advanced', value: 'advanced' },
+        ]}
+      />
+      {rotation.length > 0 && (
+        <SegmentedControl
+          fullWidth
+          value={comboKind}
+          onChange={(value) => setKind(value as ComboKindKey)}
+          data={comboKindKeys.map((kind) => ({
+            label:
+              kind === 'dmg' ? 'DMG' : kind === 'daze' ? 'Daze' : 'Buildup',
+            value: kind,
+          }))}
+        />
+      )}
+
+      <ComboBasicDefinition
+        characterKey={characterKey}
+        rotation={rotation}
+        comboType={comboType}
+        writeRotation={writeRotation}
+      />
+
       <ComboDrawer
         opened={drawerOpened}
         close={closeDrawer}
@@ -132,6 +146,23 @@ function useComboWriter(
   const { tag: target } = getTeamFrame0(team)
   const rotation = useMemo(() => target?.rotation ?? [], [target])
   const comboType: ComboTypeKey = target?.comboType ?? 'simple'
+  const comboKind: ComboKindKey = target?.comboKind ?? 'dmg'
+
+  /** Switch the summed per-hit metric (DMG/Daze/Buildup). */
+  const setKind = useCallback(
+    (kind: ComboKindKey) => {
+      database.teams.setFrame0(characterKey, (frame) => {
+        if (!frame.tag?.rotation) return false
+        return {
+          tag: {
+            ...frame.tag,
+            comboKind: kind === 'dmg' ? undefined : kind,
+          },
+        }
+      })
+    },
+    [database, characterKey]
+  )
 
   /** Write a new rotation, preserving advanced per-hit values by position. */
   const writeRotation = useCallback(
@@ -164,7 +195,7 @@ function useComboWriter(
     [writeRotation, rotation]
   )
 
-  return { rotation, comboType, writeRotation, setType }
+  return { rotation, comboType, comboKind, writeRotation, setType, setKind }
 }
 
 function addHit(
@@ -204,7 +235,7 @@ function HitAbilitySelector({
   return (
     <CascaderSelect
       data={groups}
-      value={hit ? hitValue(hit.sheet, hit.name) : null}
+      value={hit ? hitOptionValue(groups, hit.sheet, hit.name) : null}
       placeholder="Ability"
       variant="unstyled"
       leftSection={<IndexLabel index={index} />}

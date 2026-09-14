@@ -5,8 +5,8 @@ import type { TeamConditional } from '../../db'
 import { getConditional } from '../../formula'
 import { NumConditionalRow } from '../Optimize/conditionalUtils'
 import {
-  abilityWidth,
   buttonStyle,
+  comboBoxWidth,
   comboColumnStyle,
   comboRowStyle,
 } from './comboDrawerConstants'
@@ -25,7 +25,7 @@ import {
 
 const flexRow: React.CSSProperties = { display: 'flex' }
 
-export const boxWidth = abilityWidth + 1
+export const boxWidth = comboBoxWidth
 
 const BoxComponent = memo(function BoxComponent({
   active,
@@ -65,7 +65,12 @@ const BoxComponent = memo(function BoxComponent({
     <div
       className={classnames}
       data-key={dataKey}
-      style={{ width: boxWidth, marginLeft: -1, marginTop: -1 }}
+      style={{
+        width: boxWidth,
+        boxSizing: 'border-box',
+        marginLeft: -1,
+        marginTop: -1,
+      }}
     />
   )
 })

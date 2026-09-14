@@ -1,11 +1,11 @@
 .selectable {
-  width: 50px;
+  width: 40px;
   border: 1px dashed #000000;
   background: #0a1b4533;
 }
 
 .unselectable {
-  width: 50px;
+  width: 40px;
   border: 1px dashed #000000;
   background: #0a1b4533;
 }
@@ -50,7 +50,7 @@
 }
 
 .disabledSelect {
-  width: 50px;
+  width: 40px;
   border: 1px dashed #000000;
   background: #3b48678f;
 }

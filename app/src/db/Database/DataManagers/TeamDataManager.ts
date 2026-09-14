@@ -154,10 +154,18 @@ export const bonusStatDamageTypes: BonusStatDamageType[] = [
 export const comboTypeKeys = ['simple', 'advanced'] as const
 export type ComboTypeKey = (typeof comboTypeKeys)[number]
 
+/**
+ * Which per-hit metric a rotation optimizes. Hits are stored as ability+hit
+ * references (usually the DMG variant); the kind selects which sibling
+ * variant (`_dmg` / `_daze` / `_anomBuildup`|`_gashBuildup`) each hit reads.
+ */
+export const comboKindKeys = ['dmg', 'daze', 'buildup'] as const
+export type ComboKindKey = (typeof comboKindKeys)[number]
+
 /** Version of the serialized advanced-rotation combo state. */
 export const COMBO_STATE_VERSION = '1.0'
 /** Max rotation hits with distinct buff states (limited by calc presets). */
-export const MAX_COMBO_HITS = 10
+export const MAX_COMBO_HITS = 50
 
 export type ComboHit = {
   sheet: string
@@ -175,6 +183,7 @@ export type TargetTag = {
   qt?: (typeof targetQt)[number]
   rotation?: ComboHit[]
   comboType?: ComboTypeKey
+  comboKind?: ComboKindKey
   /** Versioned JSON blob with per-hit buff overrides (advanced mode). */
   comboStateJson?: string
 }
@@ -195,6 +204,7 @@ const targetTagSchema = z
     qt: z.enum(targetQt).optional(),
     rotation: z.array(comboHitSchema).optional(),
     comboType: zodEnumWithDefault(comboTypeKeys, 'simple'),
+    comboKind: z.enum(comboKindKeys).optional(),
     comboStateJson: z.string().optional(),
   })
   .optional() as z.ZodType<TargetTag | undefined>
@@ -436,6 +446,10 @@ export class TeamDataManager extends DataManager<
           rotation,
           comboType:
             rawTarget.comboType === 'advanced' ? 'advanced' : undefined,
+          comboKind:
+            rawTarget.comboKind === 'daze' || rawTarget.comboKind === 'buildup'
+              ? rawTarget.comboKind
+              : undefined,
           comboStateJson: validateComboStateJson(
             rawTarget.comboStateJson,
             rotation.length
@@ -1021,6 +1035,38 @@ export function initializeComboState(
   return { version: COMBO_STATE_VERSION, values }
 }
 
+// Skill-variant formula suffix, mirroring parseSkillVariant in
+// page-optimize/OptTargetTagDisplay (kept local: db must not depend on UI).
+const comboVariantRe = /^(.+)_(\d+)_(dmg|daze|anomBuildup|gashBuildup)$/
+
+/**
+ * Map a rotation hit to the formula read for the given combo metric.
+ *
+ * Skill-variant hits (`<ability>_<idx>_<dmg|daze|anomBuildup|gashBuildup>`)
+ * resolve to the sibling variant of the same ability+hit, so a rotation
+ * stores each hit once and the opt target selects which metric to sum.
+ * Non-variant formulas only count toward DMG. Returns undefined when the
+ * hit has no formula for that metric (the hit is skipped for the sum).
+ */
+export function comboHitTarget(
+  hit: ComboHit,
+  kind: ComboKindKey
+): { sheet: string; name: string } | undefined {
+  if (kind === 'dmg') return { sheet: hit.sheet, name: hit.name }
+  const match = hit.name.match(comboVariantRe)
+  if (!match) return undefined
+  const [, ability, idx] = match
+  const candidates =
+    kind === 'daze'
+      ? [`${ability}_${idx}_daze`]
+      : [`${ability}_${idx}_anomBuildup`, `${ability}_${idx}_gashBuildup`]
+  for (const name of candidates) {
+    if (getFormula({ sheet: hit.sheet, name }))
+      return { sheet: hit.sheet, name }
+  }
+  return undefined
+}
+
 /**
  * Expand the team's optimization frames for combo calculation.
  *
@@ -1029,8 +1075,11 @@ export function initializeComboState(
  * - Advanced rotation → one frame per hit with per-hit conditional values
  *   from `comboStateJson` (missing/stale entries fall back to frame0).
  *
- * Each returned frame maps to calc `preset${i}`, matching the solver's
- * multi-preset summation in `createSolverConfig`.
+ * Each hit reads the sibling variant selected by `comboKind` (DMG by
+ * default); hits without a formula for that metric are skipped. Advanced
+ * overrides are looked up by original rotation index, while the returned
+ * frames are densely indexed so each maps to calc `preset${i}`, matching
+ * the solver's multi-preset summation in `createSolverConfig`.
  */
 export function getComboFrames(team: Team): OptFrame[] {
   const frame0 = getTeamFrame0(team)
@@ -1038,16 +1087,24 @@ export function getComboFrames(team: Team): OptFrame[] {
   if (!rotation || rotation.length === 0)
     return team.frames.length > 0 ? team.frames : [frame0]
 
+  const kind = frame0.tag?.comboKind ?? 'dmg'
   const isAdvanced = frame0.tag?.comboType === 'advanced'
   const combo = isAdvanced
     ? parseComboState(frame0.tag?.comboStateJson, rotation.length)
     : undefined
 
-  return rotation.map((hit, i) => {
+  const resolved = rotation
+    .map((hit, index) => {
+      const resolvedTag = comboHitTarget(hit, kind)
+      return resolvedTag ? { hit, resolvedTag, index } : undefined
+    })
+    .filter(notEmpty)
+
+  return resolved.map(({ hit, resolvedTag, index }) => {
     let conditionals = frame0.conditionals
     if (combo) {
       conditionals = frame0.conditionals.map((c) => {
-        const override = combo.values[comboHashOf(c)]?.[i]
+        const override = combo.values[comboHashOf(c)]?.[index]
         if (override === undefined) return c
         const cond = getConditional(c.sheet, c.condKey)
         const condValue = cond
@@ -1058,7 +1115,10 @@ export function getComboFrames(team: Team): OptFrame[] {
     }
     return {
       ...frame0,
-      tag: removeUndefinedFields({ sheet: hit.sheet, name: hit.name }),
+      tag: removeUndefinedFields({
+        sheet: resolvedTag.sheet,
+        name: resolvedTag.name,
+      }),
       multiplier: hit.multiplier ?? 1,
       conditionals,
     }

@@ -2,11 +2,13 @@ import {
   createTestDBStorage,
   DBLocalStorage,
 } from '@zenless-optimizer/common/database'
+import { presets } from '@zenless-optimizer/game-opt/engine'
 import { allCharacterKeys, allDiscSetKeys } from '../../../consts'
 import { conditionals, formulas } from '../../../formula'
 import { ZzzDatabase } from '../Database'
 import {
   COMBO_STATE_VERSION,
+  comboHitTarget,
   getComboFrames,
   initializeComboState,
   MAX_COMBO_HITS,
@@ -24,6 +26,47 @@ function firstFormula(): { sheet: string; name: string } {
     if (name) return { sheet, name }
   }
   throw new Error('No formulas found')
+}
+
+/** Pick a real non-skill-variant formula (no `_dmg`/`_daze`/buildup suffix). */
+function firstPlainFormula(): { sheet: string; name: string } {
+  const variantRe = /^(.+)_(\d+)_(dmg|daze|anomBuildup|gashBuildup)$/
+  for (const [sheet, sheetFormulas] of Object.entries(
+    formulas as Record<string, Record<string, unknown>>
+  )) {
+    for (const name of Object.keys(sheetFormulas ?? {})) {
+      if (!variantRe.test(name)) return { sheet, name }
+    }
+  }
+  throw new Error('No plain formulas found')
+}
+
+/**
+ * Find a real ability+hit with dmg, daze and buildup variants so combo-kind
+ * mapping can be tested against formulas validation keeps.
+ */
+function skillTrio(): {
+  sheet: string
+  dmg: string
+  daze: string
+  buildup: string
+} {
+  const all = formulas as Record<string, Record<string, unknown>>
+  for (const [sheet, sheetFormulas] of Object.entries(all)) {
+    for (const name of Object.keys(sheetFormulas ?? {})) {
+      const match = name.match(/^(.+)_(\d+)_dmg$/)
+      if (!match) continue
+      const [, ability, idx] = match
+      const daze = `${ability}_${idx}_daze`
+      const buildup = [
+        `${ability}_${idx}_anomBuildup`,
+        `${ability}_${idx}_gashBuildup`,
+      ].find((candidate) => sheetFormulas?.[candidate])
+      if (sheetFormulas?.[daze] && buildup)
+        return { sheet, dmg: name, daze, buildup }
+    }
+  }
+  throw new Error('No skill trio found')
 }
 
 /**
@@ -221,6 +264,13 @@ describe('TeamDataManager', () => {
       { sheet, name },
       { sheet, name, multiplier: 3 },
     ])
+  })
+
+  it('has a calc preset for every combo hit', () => {
+    // Each rotation hit reads preset${i}; the cap must never exceed the
+    // preset namespace or hits would silently share buff states.
+    expect(presets.length).toBeGreaterThanOrEqual(MAX_COMBO_HITS)
+    expect(presets[MAX_COMBO_HITS - 1]).toBe(`preset${MAX_COMBO_HITS - 1}`)
   })
 
   it('should cap rotation hits at MAX_COMBO_HITS', () => {
@@ -448,6 +498,141 @@ describe('TeamDataManager', () => {
     const frames = getComboFrames(team)
     expect(frames[0]?.conditionals[0]?.condValue).toBe(1)
     expect(frames[1]?.conditionals[0]?.condValue).toBe(0)
+  })
+
+  it('comboHitTarget maps skill variants to the selected metric', () => {
+    const { sheet, dmg, daze, buildup } = skillTrio()
+    // DMG keeps the hit as-is (legacy behavior, even for variant hits).
+    expect(comboHitTarget({ sheet, name: daze }, 'dmg')).toEqual({
+      sheet,
+      name: daze,
+    })
+    // Daze/buildup resolve the sibling variant of the same ability+hit.
+    expect(comboHitTarget({ sheet, name: dmg }, 'daze')).toEqual({
+      sheet,
+      name: daze,
+    })
+    expect(comboHitTarget({ sheet, name: daze }, 'daze')).toEqual({
+      sheet,
+      name: daze,
+    })
+    expect(comboHitTarget({ sheet, name: dmg }, 'buildup')).toEqual({
+      sheet,
+      name: buildup,
+    })
+    // Non-variant formulas only count toward DMG.
+    const plain = firstPlainFormula()
+    expect(comboHitTarget(plain, 'dmg')).toEqual(plain)
+    expect(comboHitTarget(plain, 'daze')).toBeUndefined()
+    expect(comboHitTarget(plain, 'buildup')).toBeUndefined()
+    // Unknown formulas never resolve.
+    expect(
+      comboHitTarget({ sheet: 'NOPE', name: 'missing' }, 'daze')
+    ).toBeUndefined()
+  })
+
+  it('should keep comboKind on rotation tags and default to dmg', () => {
+    const { sheet, name } = firstFormula()
+    const validateKind = (comboKind: unknown) => {
+      const team = {
+        teammates: [{ characterKey: mainKey }],
+        frames: [
+          {
+            tag: { rotation: [{ sheet, name }], comboKind },
+            multiplier: 1,
+            critMode: 'avg' as const,
+            bonusStats: [],
+            conditionals: [],
+            enemyStats: [],
+          },
+        ],
+        enemyLvl: 60,
+        enemyDef: 0,
+        enemyStunMultiplier: 1,
+      }
+      return teams['validate'](team, mainKey)?.frames[0]?.tag?.comboKind
+    }
+    expect(validateKind('daze')).toBe('daze')
+    expect(validateKind('buildup')).toBe('buildup')
+    expect(validateKind('dmg')).toBeUndefined()
+    expect(validateKind(undefined)).toBeUndefined()
+    expect(validateKind('INVALID')).toBeUndefined()
+  })
+
+  it('getComboFrames reads the sibling variant for comboKind daze', () => {
+    const { sheet, dmg, daze } = skillTrio()
+    const plain = firstPlainFormula()
+    const team = {
+      teammates: [{ characterKey: mainKey }],
+      frames: [
+        {
+          tag: {
+            rotation: [
+              { sheet, name: dmg },
+              { sheet: plain.sheet, name: plain.name },
+            ],
+            comboKind: 'daze',
+          },
+          multiplier: 1,
+          critMode: 'avg' as const,
+          bonusStats: [],
+          conditionals: [],
+          enemyStats: [],
+        },
+      ],
+      enemyLvl: 60,
+      enemyDef: 0,
+      enemyStunMultiplier: 1,
+    } as unknown as Team
+    // The plain formula has no daze variant, so it is skipped.
+    const frames = getComboFrames(team)
+    expect(frames).toHaveLength(1)
+    expect(frames[0]?.tag).toEqual({ sheet, name: daze })
+  })
+
+  it('getComboFrames looks up advanced overrides by rotation index', () => {
+    const { sheet, dmg, daze } = skillTrio()
+    const plain = firstPlainFormula()
+    const base = {
+      sheet: 'HormonePunk',
+      src: mainKey,
+      dst: null,
+      condKey: 'entering_combat',
+      condValue: 0,
+    }
+    const combo = initializeComboState([base] as never, 2)
+    // Index 0 (plain hit, skipped for daze) = 0, index 1 (kept) = 1.
+    // A dense-index lookup would read index 0 and yield 0.
+    combo.values[`HormonePunk:entering_combat:${mainKey}:`] = [0, 1]
+    const team = {
+      teammates: [{ characterKey: mainKey }],
+      frames: [
+        {
+          tag: {
+            rotation: [
+              { sheet: plain.sheet, name: plain.name },
+              { sheet, name: dmg },
+            ],
+            comboType: 'advanced',
+            comboKind: 'daze',
+            comboStateJson: JSON.stringify(combo),
+          },
+          multiplier: 1,
+          critMode: 'avg' as const,
+          bonusStats: [],
+          conditionals: [base],
+          enemyStats: [],
+        },
+      ],
+      enemyLvl: 60,
+      enemyDef: 0,
+      enemyStunMultiplier: 1,
+    } as unknown as Team
+    const frames = getComboFrames(team)
+    expect(frames).toHaveLength(1)
+    expect(frames[0]?.tag).toEqual({ sheet, name: daze })
+    // Override comes from rotation index 1, not the dense frame index 0.
+    expect(frames[0]?.conditionals[0]?.condValue).toBe(1)
   })
 
   it('should backfill conditionals for teams loaded from storage', () => {

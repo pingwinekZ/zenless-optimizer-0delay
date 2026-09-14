@@ -14,6 +14,7 @@ import { own } from '../../formula'
 import { FullTagDisplay, useZzzCalcContext } from '../../formula-ui'
 import { ComboDrawer } from '../combo'
 import { useComboMembers } from '../combo/useComboMembers'
+import { comboMetricLabel } from '../OptTargetSelector'
 
 const statTargets = [
   own.final.atk,
@@ -57,7 +58,8 @@ export function OptSelector({
               <strong>Optimization Target: </strong>
               {isRotation ? (
                 <span>
-                  Rotation DMG ({rotationCount} attack
+                  Rotation {comboMetricLabel(target?.comboKind ?? 'dmg')} (
+                  {rotationCount} attack
                   {rotationCount !== 1 ? 's' : ''}
                   {isAdvanced ? ' • Advanced' : ''})
                 </span>

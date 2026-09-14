@@ -1161,10 +1161,14 @@ function OptimizeWrapper() {
       return
     }
 
-    // Get the optimization target formula tag from the team's first frame
+    // Get the optimization target formula tag from the team's first frame.
+    // Rotations expand via getComboFrames so the selected combo metric
+    // (DMG/Daze/Buildup) is reflected in the per-build values.
     const { tag: target } = getTeamFrame0(team)
     const formulaTag = target?.rotation
-      ? target.rotation.map(({ sheet, name }) => targetTag({ sheet, name }))
+      ? getComboFrames(team)
+          .filter((frame) => frame.tag?.sheet && frame.tag?.name)
+          .map((frame) => targetTag(frame.tag!))
       : target
         ? targetTag(target)
         : undefined

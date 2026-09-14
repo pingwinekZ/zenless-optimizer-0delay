@@ -224,8 +224,7 @@ export function OptimizerForm({
         <Flex direction="column" gap="xs">
           {isRotation ? (
             <Text size="sm" c="dimmed">
-              Rotation DMG targets do not use individual damage configuration
-              options.
+              Combo targets do not use individual damage configuration options.
             </Text>
           ) : (
             <>

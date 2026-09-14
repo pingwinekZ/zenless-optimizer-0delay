@@ -5,8 +5,9 @@ import {
   SqBadge,
 } from '@zenless-optimizer/common/ui'
 import { useCallback, useMemo } from 'react'
-import type { TargetTag } from '../db'
+import type { ComboKindKey, TargetTag } from '../db'
 import {
+  comboKindKeys,
   getTeamFrame0,
   type ICachedCharacter,
   type Team,
@@ -107,6 +108,23 @@ function variantPillLabel(kind: SkillVariantKind): string {
   }
 }
 
+/** Short metric name for a combo kind (`dmg` → `DMG`). */
+export function comboMetricLabel(kind: ComboKindKey): string {
+  switch (kind) {
+    case 'dmg':
+      return 'DMG'
+    case 'daze':
+      return 'Daze'
+    case 'buildup':
+      return 'Buildup'
+  }
+}
+
+/** Opt-target label for a combo metric (`dmg` → `Combo DMG`). */
+export function comboKindLabel(kind: ComboKindKey): string {
+  return `Combo ${comboMetricLabel(kind)}`
+}
+
 /** Element suffix of shared anomaly vortex targets (`vortexDmgInst_fire` → `fire`). */
 function vortexSuffix(tag: Tag): string | undefined {
   if (tag.sheet !== 'agg' || typeof tag.name !== 'string') return undefined
@@ -150,31 +168,50 @@ export function OptTargetSelector({
   )
 
   // A rotation target means the optimizer sums the combo hits. It has no
-  // sheet/name of its own, so it is represented as an explicit Combo DMG
-  // entry in the Other category.
+  // sheet/name of its own, so it is represented as explicit Combo entries
+  // in the Other category — one per metric (DMG/Daze/Buildup). Each hit is
+  // stored once (ability+hit) and the selected kind picks which per-hit
+  // variant (`_dmg` / `_daze` / `_anomBuildup`) is summed.
   const rotation = target?.rotation
   const rotationCount = rotation?.length ?? 0
   const isRotation = rotationCount > 0
+  const comboKind: ComboKindKey = target?.comboKind ?? 'dmg'
 
-  const handleComboSelect = useCallback(() => {
-    // Already targeting the combo.
-    if (isRotation) return
-    // Convert the current single-formula target into a 1-hit rotation so no
-    // configured target is lost. Otherwise seed from the first formula.
-    const seed =
-      target?.sheet && target?.name
-        ? { sheet: target.sheet, name: target.name }
-        : (() => {
-            const first = formulaOptions.find(
-              ({ tag: ftag }) => ftag.sheet && ftag.name
-            )?.tag
-            return first?.sheet && first?.name
-              ? { sheet: first.sheet, name: first.name }
-              : undefined
-          })()
-    if (seed)
-      database.teams.setFrame0(characterKey, { tag: { rotation: [seed] } })
-  }, [database, characterKey, isRotation, target, formulaOptions])
+  const handleComboSelect = useCallback(
+    (kind: ComboKindKey) => {
+      // Already targeting this combo metric.
+      if (isRotation && comboKind === kind) return
+      // Convert the current single-formula target into a 1-hit rotation so
+      // no configured target is lost. Otherwise seed from the first formula.
+      const seed = isRotation
+        ? undefined
+        : target?.sheet && target?.name
+          ? { sheet: target.sheet, name: target.name }
+          : (() => {
+              const first = formulaOptions.find(
+                ({ tag: ftag }) => ftag.sheet && ftag.name
+              )?.tag
+              return first?.sheet && first?.name
+                ? { sheet: first.sheet, name: first.name }
+                : undefined
+            })()
+      database.teams.setFrame0(characterKey, (frame) => {
+        const prevRotation = frame.tag?.rotation
+        const nextRotation = prevRotation ?? (seed ? [seed] : undefined)
+        if (!nextRotation || nextRotation.length === 0) return false
+        return {
+          tag: {
+            ...frame.tag,
+            rotation: nextRotation,
+            comboType: frame.tag?.comboType,
+            comboStateJson: frame.tag?.comboStateJson,
+            comboKind: kind === 'dmg' ? undefined : kind,
+          },
+        }
+      })
+    },
+    [database, characterKey, isRotation, comboKind, target, formulaOptions]
+  )
 
   // Determine which category has the active selection
   const activeCategory = useMemo(() => {
@@ -405,7 +442,7 @@ export function OptTargetSelector({
             <Box style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
               {isRotation ? (
                 <Text fw="bold" component="span">
-                  Combo DMG ({rotationCount})
+                  {comboKindLabel(comboKind)} ({rotationCount})
                 </Text>
               ) : (
                 <OptTargetTagDisplay tag={tag} />
@@ -418,17 +455,23 @@ export function OptTargetSelector({
         style={{ width: '100%' }}
       >
         <Menu.Label>Combo</Menu.Label>
-        <Menu.Item
-          onClick={handleComboSelect}
-          style={{ fontWeight: isRotation ? 'bold' : undefined }}
-        >
-          <Box style={{ display: 'flex', gap: 4 }}>
-            <Text component="span">
-              Combo DMG
-              {isRotation ? ` (${rotationCount} hits)` : ''}
-            </Text>
-          </Box>
-        </Menu.Item>
+        {comboKindKeys.map((kind) => {
+          const active = isRotation && comboKind === kind
+          return (
+            <Menu.Item
+              key={kind}
+              onClick={() => handleComboSelect(kind)}
+              style={{ fontWeight: active ? 'bold' : undefined }}
+            >
+              <Box style={{ display: 'flex', gap: 4 }}>
+                <Text component="span">
+                  {comboKindLabel(kind)}
+                  {active ? ` (${rotationCount} hits)` : ''}
+                </Text>
+              </Box>
+            </Menu.Item>
+          )
+        })}
         <Divider />
         <Menu.Label>Stats</Menu.Label>
         {statTargets.map((st, i) => {

@@ -1,4 +1,5 @@
-import { Divider, Drawer, Flex } from '@mantine/core'
+import { ActionIcon, Divider, Drawer, Flex } from '@mantine/core'
+import { IconX } from '@tabler/icons-react'
 import { ImgIcon } from '@zenless-optimizer/common/ui'
 import {
   type RefObject,
@@ -17,20 +18,26 @@ import {
   discSetNames,
 } from '../../consts'
 import type { Team, TeamConditional } from '../../db'
-import { COMBO_STATE_VERSION, getTeamFrame0, parseComboState } from '../../db'
+import {
+  COMBO_STATE_VERSION,
+  getTeamFrame0,
+  MAX_COMBO_HITS,
+  parseComboState,
+} from '../../db'
 import { useDatabaseContext } from '../../db-ui'
 import {
   conditionals as allConditionalsMeta,
   getConditional,
 } from '../../formula'
 import { CascaderSelect } from './CascaderSelect'
-import { abilityGap, abilityWidth } from './comboDrawerConstants'
+import { comboBoxWidth } from './comboDrawerConstants'
 import { type CellKey, CondGroupRow } from './comboRows'
 import './selecto.css'
 import { MultiSelectPills } from '../layout/MultiSelectPills'
 import { ComboSheetName, sortComboConds } from './comboLabels'
 import {
   hashOf,
+  hitOptionValue,
   parseHitValue,
   useComboDrawerStore,
   useComboFormulaGroups,
@@ -220,7 +227,9 @@ export function ComboDrawer({
   )
 }
 
-const headerSelectorStyle = { width: abilityWidth }
+// Header columns tile with the same pitch as the grid cells below
+// (40px outer, overlapping borders).
+const headerSelectorStyle = { width: comboBoxWidth, marginLeft: -1 }
 
 function HeaderAbilitySelector({ index }: { index: number }) {
   const hits = useComboDrawerStore((s) => s.hits)
@@ -230,11 +239,64 @@ function HeaderAbilitySelector({ index }: { index: number }) {
   if (index === 0) return null
   const hit = hits[index - 1]
   if (!hit) return null
+  // The clear button sits below the selector: at cell width there is no
+  // room for it inside the input.
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 2,
+        width: comboBoxWidth,
+        marginLeft: -1,
+      }}
+    >
+      <CascaderSelect
+        data={groups}
+        value={hitOptionValue(groups, hit.sheet, hit.name)}
+        placeholder="Ability"
+        menuWidth={240}
+        styles={{
+          input: {
+            fontSize: 12,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          },
+        }}
+        style={headerSelectorStyle}
+        onChange={(v) => {
+          const parsed = parseHitValue(v)
+          if (parsed) setHitAbility(index - 1, parsed.sheet, parsed.name)
+        }}
+      />
+      <ActionIcon
+        size="xs"
+        variant="subtle"
+        color="gray"
+        aria-label={`Remove hit ${index}`}
+        onClick={() => removeHit(index - 1)}
+      >
+        <IconX size={12} />
+      </ActionIcon>
+    </div>
+  )
+}
+
+/** Trailing empty slot that appends a hit, mirroring the card's add-hit. */
+function AppendHitSelector() {
+  const hitCount = useComboDrawerStore((s) => s.hits.length)
+  const appendHit = useComboDrawerStore((s) => s.appendHit)
+  const groups = useComboFormulaGroups()
+  if (hitCount >= MAX_COMBO_HITS) return null
+  // Trailing slot: sized to fit its label instead of the cell pitch.
   return (
     <CascaderSelect
       data={groups}
-      value={`${hit.sheet}|||${hit.name}`}
-      placeholder="Ability"
+      value={null}
+      placeholder="Add hit"
+      menuWidth={240}
       styles={{
         input: {
           fontSize: 12,
@@ -243,12 +305,10 @@ function HeaderAbilitySelector({ index }: { index: number }) {
           whiteSpace: 'nowrap',
         },
       }}
-      style={headerSelectorStyle}
-      clearable
-      onClear={() => removeHit(index - 1)}
+      style={{ width: 'auto', minWidth: 84, marginLeft: -1 }}
       onChange={(v) => {
         const parsed = parseHitValue(v)
-        if (parsed) setHitAbility(index - 1, parsed.sheet, parsed.name)
+        if (parsed) appendHit(parsed.sheet, parsed.name)
       }}
     />
   )
@@ -263,16 +323,24 @@ function ComboHeader() {
         .map((_, index) => <HeaderAbilitySelector key={index} index={index} />),
     [hitCount]
   )
+  // Long rotations overflow the title bar: scroll them (and the trailing
+  // Add-hit slot) instead of clipping. Columns tile seamlessly like the
+  // grid cells below.
   return (
-    <Flex gap={abilityGap} align="center">
-      <div style={{ width: 380 }}>
-        <div style={{ width: 'fit-content', fontWeight: 700 }}>
-          Advanced Rotation
+    <div style={{ overflowX: 'auto', maxWidth: '100%' }}>
+      <Flex gap={0} align="center" style={{ width: 'max-content' }}>
+        {/* Mirror the body geometry (8 group padding + 110 sheet panel +
+            10 gap + 285 row label) so hit selectors sit over grid cells. */}
+        <div style={{ width: 413 }}>
+          <div style={{ width: 'fit-content', fontWeight: 700 }}>
+            Advanced Rotation
+          </div>
         </div>
-      </div>
-      <div style={{ width: abilityWidth }} />
-      {columns}
-    </Flex>
+        <div style={{ width: comboBoxWidth }} />
+        {columns}
+        <AppendHitSelector />
+      </Flex>
+    </div>
   )
 }
 

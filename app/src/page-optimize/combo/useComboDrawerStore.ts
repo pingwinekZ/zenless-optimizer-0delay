@@ -1,7 +1,12 @@
 import { useMemo } from 'react'
 import { create } from 'zustand'
 import type { ComboHit, TeamConditional } from '../../db'
-import { COMBO_STATE_VERSION, comboCondHash, parseComboState } from '../../db'
+import {
+  COMBO_STATE_VERSION,
+  comboCondHash,
+  MAX_COMBO_HITS,
+  parseComboState,
+} from '../../db'
 import { own } from '../../formula'
 import { useZzzCalcContext } from '../../formula-ui'
 import { parseSkillVariant, skillVariantBase } from '../OptTargetTagDisplay'
@@ -20,12 +25,14 @@ export function parseHitValue(value: string | null): {
   return { sheet, name }
 }
 
-const variantSuffix: Record<string, string> = {
-  dmg: '',
-  daze: 'Daze',
-  anomBuildup: 'Buildup',
-  gashBuildup: 'Buildup',
-}
+/**
+ * Representative preference when collapsing an ability+hit's variants into
+ * one picker entry: the DMG variant when it exists, else the first
+ * available variant.
+ */
+const variantPreference = ['dmg', 'daze', 'anomBuildup', 'gashBuildup']
+
+const hitVariantRe = /^(.+)_(\d+)_(dmg|daze|anomBuildup|gashBuildup)$/
 
 const categoryOrder = ['basic', 'dodge', 'special', 'chain', 'assist', 'other']
 const categoryLabels: Record<string, string> = {
@@ -37,22 +44,45 @@ const categoryLabels: Record<string, string> = {
   other: 'Other',
 }
 
-/** Formula options grouped by damage category, for the hit selectors. */
+/**
+ * Formula options grouped by damage category, for the hit selectors.
+ *
+ * Each ability+hit appears once (e.g. "Basic Attack #1") instead of once
+ * per DMG/Daze/Buildup variant — the opt target's combo metric selects
+ * which variant is summed. The stored value is the DMG variant when it
+ * exists, else the first available variant.
+ */
 export function useComboFormulaGroups(): CascaderData {
   const calc = useZzzCalcContext()
   return useMemo(() => {
     if (!calc) return []
-    const byCat = new Map<string, Array<{ value: string; label: string }>>()
+    const byKey = new Map<
+      string,
+      { sheet: string; name: string; label: string; rank: number; cat: string }
+    >()
     for (const { tag } of calc.listFormulas(own.listing.formulas)) {
       const sheet = tag.sheet ?? ''
       const name = tag.name ?? ''
       if (!sheet || !name) continue
       const parsed = parseSkillVariant(tag as never)
-      const base = skillVariantBase(tag as never) ?? name
-      const suffix = parsed ? variantSuffix[parsed.kind] : ''
-      const label = suffix ? `${base} ${suffix}` : base
+      const key = parsed
+        ? `${sheet}|||${parsed.abilityKey}|||${parsed.hitIdx}`
+        : `${sheet}|||${name}`
+      const rank = parsed ? variantPreference.indexOf(parsed.kind) : 0
+      const prev = byKey.get(key)
+      if (prev && prev.rank <= rank) continue
+      const label = skillVariantBase(tag as never) ?? name
       const rawDamageType = (tag as { damageType1?: string }).damageType1 ?? ''
-      const cat = categorizeDamageType(rawDamageType)
+      byKey.set(key, {
+        sheet,
+        name,
+        label,
+        rank,
+        cat: categorizeDamageType(rawDamageType),
+      })
+    }
+    const byCat = new Map<string, Array<{ value: string; label: string }>>()
+    for (const { sheet, name, label, cat } of byKey.values()) {
       const list = byCat.get(cat) ?? []
       list.push({ value: hitValue(sheet, name), label })
       byCat.set(cat, list)
@@ -64,6 +94,32 @@ export function useComboFormulaGroups(): CascaderData {
         options: byCat.get(cat)!,
       }))
   }, [calc])
+}
+
+/**
+ * Resolve a stored hit to its picker option value. Legacy hits that
+ * reference a Daze/Buildup variant map onto the collapsed ability+hit
+ * entry; unknown formulas pass through unchanged.
+ */
+export function hitOptionValue(
+  groups: CascaderData,
+  sheet: string,
+  name: string
+): string {
+  const values = new Set<string>()
+  for (const group of groups)
+    for (const option of group.options) values.add(option.value)
+  const exact = hitValue(sheet, name)
+  if (values.has(exact)) return exact
+  const match = name.match(hitVariantRe)
+  if (match) {
+    const [, ability, idx] = match
+    for (const kind of variantPreference) {
+      const candidate = hitValue(sheet, `${ability}_${idx}_${kind}`)
+      if (values.has(candidate)) return candidate
+    }
+  }
+  return exact
 }
 
 function categorizeDamageType(damageType1: string): string {
@@ -126,6 +182,7 @@ type ComboDrawerStore = {
   reset: () => void
   setHits: (hits: ComboHit[]) => void
   setHitAbility: (index: number, sheet: string, name: string) => void
+  appendHit: (sheet: string, name: string) => void
   removeHit: (index: number) => void
   setDefault: (hash: string, value: number) => void
   /**
@@ -240,6 +297,16 @@ export const useComboDrawerStore = create<ComboDrawerStore>()((set) => ({
     set((s) => ({
       hits: s.hits.map((h, i) => (i === index ? { ...h, sheet, name } : h)),
     })),
+  appendHit: (sheet, name) =>
+    set((s) => {
+      if (s.hits.length >= MAX_COMBO_HITS) return s
+      const hits = [...s.hits, { sheet, name }]
+      // New hits inherit the frame defaults (mirrors initializeComboState).
+      const values: Record<string, number[]> = {}
+      for (const [hash, arr] of Object.entries(s.values))
+        values[hash] = [...arr, s.defaults[hash] ?? arr[arr.length - 1] ?? 0]
+      return { hits, values }
+    }),
   removeHit: (index) =>
     set((s) => {
       const hits = s.hits.filter((_, i) => i !== index)

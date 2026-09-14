@@ -37,9 +37,12 @@ export function ActionBreakdown({
 }) {
   const { targetInfo } = analysisData
 
+  // Combo order: perActionDamage already follows the rotation sequence.
+  // (Sorting by value would scramble hits and duplicate formula names need
+  // index-suffixed keys below so React removes the correct row.)
   const displayActions = useMemo(() => {
     if (!targetInfo?.perActionDamage.length) return []
-    return [...targetInfo.perActionDamage].sort((a, b) => b.value - a.value)
+    return targetInfo.perActionDamage
   }, [targetInfo])
 
   const actionStats =
@@ -79,7 +82,7 @@ export function ActionBreakdown({
                 const pct = totalDmg > 0 ? (entry.value / totalDmg) * 100 : 0
                 return (
                   <Box
-                    key={entry.name}
+                    key={`${entry.name}_${i}`}
                     mb="xs"
                     style={{
                       borderRadius: 4,
@@ -97,6 +100,15 @@ export function ActionBreakdown({
                           flexShrink: 0,
                         }}
                       />
+                      {isRotation && (
+                        <Text
+                          size="xs"
+                          c="dimmed"
+                          style={{ width: 20, flexShrink: 0 }}
+                        >
+                          {i + 1}.
+                        </Text>
+                      )}
                       <Box style={{ flex: 1 }}>
                         <FormulaLabel tag={entry.tag} />
                       </Box>

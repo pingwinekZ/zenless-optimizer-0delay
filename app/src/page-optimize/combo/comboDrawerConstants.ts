@@ -1,7 +1,10 @@
 import type { CSSProperties } from 'react'
-
 export const abilityGap = 5
+
 export const abilityWidth = 88 - abilityGap
+
+/** Width of the per-hit toggle cells in the grid (headers stay readable). */
+export const comboBoxWidth = 40
 
 export const buttonStyle = {
   fontSize: 20,
