@@ -1,11 +1,9 @@
 import { Box, Flex, HoverCard, Select, Switch, Text } from '@mantine/core'
 import { ImgIcon } from '@zenless-optimizer/common/ui'
 import type { IConditionalData } from '@zenless-optimizer/game-opt/engine'
-import { TagContext } from '@zenless-optimizer/game-opt/formula-ui'
 import type { Field } from '@zenless-optimizer/game-opt/sheet-ui'
-import { TagFieldDisplay } from '@zenless-optimizer/game-opt/sheet-ui'
 import type { ReactNode } from 'react'
-import { memo, Suspense, useContext, useMemo } from 'react'
+import { memo, Suspense, useMemo } from 'react'
 import { discDefIcon } from '../../assets'
 import type { CharacterKey, DiscSetKey } from '../../consts'
 import { discSetNames } from '../../consts'
@@ -22,6 +20,7 @@ import {
   condLabel,
   NumConditionalRow,
 } from './conditionalUtils'
+import { Frame0HoverFields } from './frame0HoverCalc'
 
 export function DiscConditionalsDisplay({
   activeSets,
@@ -303,11 +302,6 @@ const DiscSetConditionalRow = memo(function DiscSetConditionalRow({
   label?: ReactNode
   description?: string
 }) {
-  const outerTag = useContext(TagContext)
-  const tagForFields = useMemo(
-    () => ({ ...outerTag, src: teammateKey }),
-    [outerTag, teammateKey]
-  )
   const currentCond = team?.frames[0]?.conditionals?.find(
     (c) => c.sheet === setKey && c.condKey === condName && c.src === teammateKey
   )
@@ -422,25 +416,16 @@ const DiscSetConditionalRow = memo(function DiscSetConditionalRow({
         {fields && fields.length > 0 && (
           <Box opacity={currentValue === 0 ? 0.5 : undefined}>
             {currentValue > 0 && <hr />}
-            <Box mt={4}>
-              <TagContext.Provider value={tagForFields as any}>
-                {fields.map(
-                  (field, i) =>
-                    'fieldRef' in field && (
-                      <TagFieldDisplay
-                        key={i}
-                        field={field}
-                        showZero={currentValue === 0}
-                        rowSx={{
-                          paddingTop: 1,
-                          paddingBottom: 1,
-                          gap: 6,
-                        }}
-                      />
-                    )
-                )}
-              </TagContext.Provider>
-            </Box>
+            <Frame0HoverFields
+              sheet={setKey}
+              condKey={condName}
+              src={teammateKey}
+              dst={null}
+              currentValue={currentValue}
+              mainCharKey={teamKey}
+              fields={fields}
+              showZero={currentValue === 0}
+            />
           </Box>
         )}
       </HoverCard.Dropdown>

@@ -4,6 +4,7 @@ import { conditionals as allConditionalsMeta } from '../../formula'
 import {
   type ComboMember,
   filterRelevantConditionals,
+  isTeammateConditionalTeamwide,
   synthesizeTeammateConditionals,
 } from './useComboMembers'
 
@@ -56,6 +57,66 @@ describe('filterRelevantConditionals', () => {
     expect(result.map((c) => `${c.sheet}:${c.src}`)).toEqual([
       `${mainKey}:${mainKey}`,
       'Lucy:Lucy',
+    ])
+  })
+})
+
+describe('isTeammateConditionalTeamwide', () => {
+  it('hides self-only teammate buffs but keeps teamwide ones', () => {
+    // Sunna M6 Focused Creation is self CR/CD — hidden in teammate view.
+    expect(isTeammateConditionalTeamwide('Sunna', 'focusedCreation')).toBe(
+      false
+    )
+    // Sunna M1 DEF reduction reaches the enemy — affects main combo damage.
+    expect(isTeammateConditionalTeamwide('Sunna', 'm1DefReductionStacks')).toBe(
+      true
+    )
+    // Thoughtbop stacks grant squad DMG/ATK — teamwide.
+    expect(
+      isTeammateConditionalTeamwide('Thoughtbop', 'physExSpecialUsed')
+    ).toBe(true)
+    // BlazingLaurel assist Impact is self-only; its Wilt CRIT DMG is squad-wide.
+    expect(
+      isTeammateConditionalTeamwide('BlazingLaurel', 'quickOrPerfectAssistUsed')
+    ).toBe(false)
+    expect(isTeammateConditionalTeamwide('BlazingLaurel', 'wilt')).toBe(true)
+    // Lucy Cheer On grants squad ATK — teamwide.
+    expect(isTeammateConditionalTeamwide('Lucy', 'cheerOn')).toBe(true)
+  })
+})
+
+describe('filterRelevantConditionals teammate teamwide', () => {
+  function sunnaMembers(): ComboMember[] {
+    return [
+      {
+        key: mainKey,
+        mindscape: 0,
+        wengineKey: '',
+        wenginePhase: 1,
+        discSets: {},
+      },
+      {
+        key: 'Sunna' as never,
+        mindscape: 6,
+        wengineKey: 'BlazingLaurel',
+        wenginePhase: 1,
+        discSets: {},
+      },
+    ]
+  }
+  it('drops self-only teammate rows but keeps teamwide ones', () => {
+    const conds = [
+      entry('Sunna', 'focusedCreation', 'Sunna', 1),
+      entry('Sunna', 'm1DefReductionStacks', 'Sunna', 1),
+      entry('BlazingLaurel', 'quickOrPerfectAssistUsed', 'Sunna', 1),
+      entry('BlazingLaurel', 'wilt', 'Sunna', 2),
+      entry(mainKey, 'k', mainKey, 1),
+    ]
+    const result = filterRelevantConditionals(conds, sunnaMembers())
+    expect(result.map((c) => `${c.sheet}:${c.condKey}`)).toEqual([
+      'Sunna:m1DefReductionStacks',
+      'BlazingLaurel:wilt',
+      `${mainKey}:k`,
     ])
   })
 })

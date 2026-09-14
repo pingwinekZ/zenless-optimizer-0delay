@@ -34,7 +34,7 @@ export const buffs = {
       sheet: 'Sunna',
       name: 'm1_defRed_',
     },
-    team: false,
+    team: true,
   },
   m2_etherVeil_atk: {
     sheet: 'Sunna',

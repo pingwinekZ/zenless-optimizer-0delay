@@ -306,9 +306,10 @@ export function comboCondFields(sheet: string, condKey: string): Field[] {
  * a description nor buff fields.
  *
  * Buff values follow the drawer row being edited (not the main-form states):
- * bool rows compute as if ON, num/list rows at the row's default value. The
- * override calc is built lazily inside `ComboHoverFields` (mounted on hover
- * open), memoized per row + value.
+ * bool rows compute as if ON, num/list rows at the hovered partition's value
+ * (the default row's value for the default partition). The override calc is
+ * built lazily inside `ComboHoverFields` (mounted on hover open), memoized
+ * per row + value.
  */
 export function CondLabelWithHover({
   sheet,
@@ -318,6 +319,7 @@ export function CondLabelWithHover({
   hash,
   members,
   children,
+  hoverValue,
 }: {
   sheet: string
   condKey: string
@@ -326,6 +328,8 @@ export function CondLabelWithHover({
   hash: string
   members: ComboMember[]
   children: ReactNode
+  /** Explicit buff value for hover (partition rows); defaults to row default. */
+  hoverValue?: number
 }) {
   const description = comboCondDescription(sheet, condKey, members)
   const fields = useMemo(
@@ -359,6 +363,7 @@ export function CondLabelWithHover({
             hash={hash}
             members={members}
             fields={fields}
+            hoverValue={hoverValue}
           />
         )}
       </HoverCard.Dropdown>
@@ -377,7 +382,8 @@ function useCondOverrideCalc(
   src: string,
   dst: string | null,
   hash: string,
-  enabled: boolean
+  enabled: boolean,
+  explicitValue?: number
 ) {
   const { database } = useDatabaseContext()
   const characterKey = useComboDrawerStore((s) => s.characterKey)
@@ -390,8 +396,10 @@ function useCondOverrideCalc(
     if (!enabled) return null
     const meta = getConditional(sheet as never, condKey)
     if (!meta) return null
-    // Bool rows show the active value; other rows follow the row default.
-    const target = meta.type === 'bool' ? 1 : drawerDefaults[hash]
+    // Bool rows show the active value; other rows follow the hovered
+    // partition's value (explicitValue) or fall back to the row default.
+    const target =
+      explicitValue ?? (meta.type === 'bool' ? 1 : drawerDefaults[hash])
     if (target === undefined) return null
     if (!team) return null
     const frame0 = team.frames[0]
@@ -484,6 +492,7 @@ function useCondOverrideCalc(
     dst,
     hash,
     enabled,
+    explicitValue,
     drawerDefaults,
     team,
     teamCondJson,
@@ -503,6 +512,7 @@ function ComboHoverFields({
   hash,
   members,
   fields,
+  hoverValue,
 }: {
   sheet: string
   condKey: string
@@ -511,11 +521,20 @@ function ComboHoverFields({
   hash: string
   members: ComboMember[]
   fields: Field[]
+  hoverValue?: number
 }) {
   // Extra (unequipped) disc sets have no calc entries — description only.
   const isExtraSet =
     isDiscSetKey(sheet) && !members.some((m) => m.discSets[sheet] != null)
-  const calc = useCondOverrideCalc(sheet, condKey, src, dst, hash, !isExtraSet)
+  const calc = useCondOverrideCalc(
+    sheet,
+    condKey,
+    src,
+    dst,
+    hash,
+    !isExtraSet,
+    hoverValue
+  )
   const outerTag = useContext(TagContext)
   // Mirror the page displays: override only src, keep the ambient dst
   // (main character) so teammate buffs addressed to them still match.

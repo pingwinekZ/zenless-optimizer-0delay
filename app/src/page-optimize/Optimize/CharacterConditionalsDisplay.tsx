@@ -43,6 +43,7 @@ import {
   condLabel,
   NumConditionalRow,
 } from './conditionalUtils'
+import { Frame0HoverFields } from './frame0HoverCalc'
 
 const SECTION_ORDER = [
   'unique',
@@ -735,8 +736,6 @@ const CharacterConditionalRow = memo(function CharacterConditionalRow({
   maxByMindscape?: Record<number, number>
   noDimWhenZero?: boolean
 }) {
-  const outerTag = useContext(TagContext)
-  const tagForFields = useMemo(() => ({ ...outerTag, src }), [outerTag, src])
   const currentCond = team?.frames[0]?.conditionals?.find(
     (c) => c.sheet === characterKey && c.condKey === condName && c.src === src
   )
@@ -901,31 +900,26 @@ const CharacterConditionalRow = memo(function CharacterConditionalRow({
             }
           >
             {(isMindscapeDisabled || displayValue > 0) && <hr />}
-            <Box mt={4}>
-              <TagContext.Provider value={tagForFields as any}>
-                {fields.map(
-                  (field, i) =>
-                    'fieldRef' in field && (
-                      <TagFieldDisplay
-                        key={i}
-                        field={field}
-                        showZero={
-                          isMindscapeDisabled
-                            ? true
-                            : displayValue === 0
-                              ? true
-                              : showZeroFields
-                        }
-                        rowSx={{
-                          paddingTop: 1,
-                          paddingBottom: 1,
-                          gap: 6,
-                        }}
-                      />
-                    )
-                )}
-              </TagContext.Provider>
-            </Box>
+            <Frame0HoverFields
+              sheet={characterKey}
+              condKey={condName}
+              src={src}
+              dst={null}
+              currentValue={
+                condData.type === 'num'
+                  ? Math.min(displayValue, displayMax)
+                  : displayValue
+              }
+              mainCharKey={mainCharKey}
+              fields={fields}
+              showZero={
+                isMindscapeDisabled
+                  ? true
+                  : displayValue === 0
+                    ? true
+                    : showZeroFields
+              }
+            />
           </Box>
         )}
       </HoverCard.Dropdown>

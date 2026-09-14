@@ -91,7 +91,9 @@ const sheet = register(
     'm1_defRed_',
     enemyDebuff.common.defRed_.add(
       cmpGE(char.mindscape, 1, prod(m1DefReductionStacks, constant(0.07)))
-    )
+    ),
+    undefined,
+    true
   ),
   registerBuff(
     'm2_etherVeil_atk',

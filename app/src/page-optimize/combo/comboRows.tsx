@@ -261,6 +261,7 @@ function PartitionRow({
             dst={cond.dst}
             hash={hash}
             members={members}
+            hoverValue={partitionValue}
           >
             {condData?.type === 'list' ? (
               <>

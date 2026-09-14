@@ -2,7 +2,9 @@ import { useMemo } from 'react'
 import type { CharacterKey } from '../../consts'
 import type { Team, TeamConditional } from '../../db'
 import { useCharacter, useDiscSets, useDiscs } from '../../db-ui'
-import { conditionals as allConditionalsMeta } from '../../formula'
+import { conditionals as allConditionalsMeta, buffs } from '../../formula'
+import { charSheets, discUiSheets, wengineUiSheets } from '../../formula-ui'
+import { buffAppliesToMainUnit } from '../../formula-ui/teammate'
 
 export type ComboMember = {
   key: CharacterKey
@@ -102,23 +104,176 @@ export function useComboMembers(
 }
 
 /**
+ * Whether a teammate's conditional affects the main unit's combo damage,
+ * mirroring the teammate-card displays (which hide self-only buffs).
+ * Main-member rows always return true — only call this for teammates.
+ *
+ * - Character sheets: any direct teamwide field, or `showInTeammateView`
+ *   (control state gates team buffs defined in other documents). Unlike the
+ *   teammate card's `buff.team` flag check, effect types are also consulted:
+ *   enemy debuffs (e.g. Sunna's M1 DEF shred, flagged `team: false`) still
+ *   reach the main unit's combo damage and must stay.
+ * - W-engine / disc sheets: any direct teamwide field. Rows with no
+ *   buff fields to judge by (e.g. only informational Duration formulas)
+ *   are kept, matching the card's "can't determine → show" fallback.
+ */
+export function isTeammateConditionalTeamwide(
+  sheet: string,
+  condKey: string
+): boolean {
+  const sheetBuffs = (buffs as any)[sheet] as
+    | Record<string, { team?: boolean }>
+    | undefined
+
+  // Character sheet: scan every section for this conditional.
+  const charSheet = (charSheets as Record<string, any>)[sheet]
+  if (charSheet) {
+    for (const section of Object.values(charSheet) as any[]) {
+      for (const doc of (section as any).documents ?? []) {
+        if (
+          doc?.type !== 'conditional' ||
+          doc.conditional?.metadata?.name !== condKey
+        )
+          continue
+        if (doc.conditional.showInTeammateView) return true
+        const fields = ((doc.conditional.fields ?? []) as any[]).filter(
+          (f) => !('minPotential' in f) || (f.minPotential ?? 0) <= 6
+        )
+        for (const f of fields) {
+          if ('team' in f) {
+            if ((f as any).team !== false) return true
+            if ((f as any).fieldRef) {
+              if (buffAppliesToMainUnit((f as any).fieldRef)) return true
+            }
+            continue
+          }
+          if ('fieldRef' in f && (f as any).fieldRef?.name) {
+            const buff = sheetBuffs?.[(f as any).fieldRef.name]
+            if (buff?.team) return true
+            if (buffAppliesToMainUnit((f as any).fieldRef)) return true
+          }
+        }
+      }
+    }
+    return false
+  }
+
+  // W-engine sheet: strict direct-field check (no "any team buff keeps all"
+  // fallback — that would keep self-only rows the drawer should hide).
+  const wengineSheet = (wengineUiSheets as Record<string, any>)[sheet]
+  if (wengineSheet) {
+    let sawBuffField = false
+    for (const doc of wengineSheet.documents ?? []) {
+      if (
+        doc?.type !== 'conditional' ||
+        doc.conditional?.metadata?.name !== condKey
+      )
+        continue
+      for (const f of (doc.conditional.fields ?? []) as any[]) {
+        const isBuffField =
+          'team' in f || (f.fieldRef?.name && sheetBuffs?.[f.fieldRef.name])
+        if (!isBuffField) continue
+        sawBuffField = true
+        if (isWengineBuffFieldTeamWide(f, sheetBuffs)) return true
+      }
+    }
+    // No buff fields to judge by (e.g. only Duration formulas) — keep.
+    return !sawBuffField
+  }
+
+  // Disc sheet: scan both blocks, same strict direct-field check.
+  const discSheet = (discUiSheets as Record<string, any>)[sheet]
+  if (discSheet) {
+    let sawBuffField = false
+    for (const blockKey of ['2', '4'] as const) {
+      for (const doc of discSheet[blockKey]?.documents ?? []) {
+        if (
+          doc?.type !== 'conditional' ||
+          doc.conditional?.metadata?.name !== condKey
+        )
+          continue
+        for (const f of (doc.conditional.fields ?? []) as any[]) {
+          const isBuffField =
+            'team' in f || (f.fieldRef?.name && sheetBuffs?.[f.fieldRef.name])
+          if (!isBuffField) continue
+          sawBuffField = true
+          if (isDiscBuffFieldTeamWide(f, sheetBuffs)) return true
+        }
+      }
+    }
+    return !sawBuffField
+  }
+
+  // Unknown sheet — keep (previous behavior) to avoid hiding content
+  // on lookup failure.
+  return true
+}
+
+function isWengineBuffFieldTeamWide(
+  f: any,
+  sheetBuffs: Record<string, { team?: boolean }> | undefined
+): boolean {
+  if ('team' in f) {
+    if (f.team !== false) return true
+    if (f.fieldRef) return buffAppliesToMainUnit(f.fieldRef)
+    return false
+  }
+  if (sheetBuffs && f.fieldRef?.name) {
+    const buff = sheetBuffs[f.fieldRef.name]
+    if (buff) {
+      if (buff.team) return true
+      return buffAppliesToMainUnit(f.fieldRef)
+    }
+    return buffAppliesToMainUnit(f.fieldRef)
+  }
+  return false
+}
+
+function isDiscBuffFieldTeamWide(
+  f: any,
+  sheetBuffs: Record<string, { team?: boolean }> | undefined
+): boolean {
+  if ('team' in f) {
+    if (f.team !== false) return true
+    if (f.fieldRef) return buffAppliesToMainUnit(f.fieldRef)
+    return false
+  }
+  if (sheetBuffs && f.fieldRef?.name) {
+    const buff = sheetBuffs[f.fieldRef.name]
+    if (buff) {
+      if (buff.team) return true
+      return buffAppliesToMainUnit(f.fieldRef)
+    }
+    return buffAppliesToMainUnit(f.fieldRef)
+  }
+  return false
+}
+
+/**
  * Keep only entries the optimize page actually reads: each member's own
  * character sheet, equipped w-engine sheet and active disc set sheets
  * (matching by `src`, like the page's conditional displays do).
+ * Teammate rows that never reach the main unit (self-only buffs, e.g.
+ * Sunna's Focused Creation CR & CD) are dropped — their per-hit values
+ * can't change combo damage.
  */
 export function filterRelevantConditionals(
   conditionals: TeamConditional[],
   members: ComboMember[]
 ): TeamConditional[] {
-  return conditionals.filter((c) =>
-    members.some(
+  const mainKey = members[0]?.key
+  return conditionals.filter((c) => {
+    const owner = members.find(
       (m) =>
         c.src === m.key &&
         (c.sheet === m.key ||
           (m.wengineKey !== '' && c.sheet === m.wengineKey) ||
           m.discSets[c.sheet] != null)
     )
-  )
+    if (!owner) return false
+    if (owner.key === mainKey) return true
+    return isTeammateConditionalTeamwide(c.sheet, c.condKey)
+  })
 }
 
 /**
@@ -148,6 +303,9 @@ export function synthesizeTeammateConditionals(
     for (const sheet of sheets) {
       const condKeys = Object.keys(meta[sheet] ?? {})
       for (const condKey of condKeys) {
+        // Skip self-only teammate buffs — they never reach the main unit,
+        // so the drawer (and combo damage) has no use for their rows.
+        if (!isTeammateConditionalTeamwide(sheet, condKey)) continue
         const key = `${sheet}:${condKey}:${member.key}:null`
         if (existing.has(key)) continue
         existing.add(key)
