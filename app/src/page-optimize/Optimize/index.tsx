@@ -40,6 +40,7 @@ import {
   getComboFrames,
   getTeamFrame0,
   type ICachedDisc,
+  isComboTarget,
   type maxBuildsToShowList,
   type OptimizerEngine,
   type StatFilters,
@@ -1165,7 +1166,7 @@ function OptimizeWrapper() {
     // Rotations expand via getComboFrames so the selected combo metric
     // (DMG/Daze/Buildup) is reflected in the per-build values.
     const { tag: target } = getTeamFrame0(team)
-    const formulaTag = target?.rotation
+    const formulaTag = isComboTarget(target)
       ? getComboFrames(team)
           .filter((frame) => frame.tag?.sheet && frame.tag?.name)
           .map((frame) => targetTag(frame.tag!))

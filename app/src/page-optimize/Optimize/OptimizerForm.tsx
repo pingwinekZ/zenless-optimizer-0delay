@@ -15,7 +15,7 @@ import type { MutableRefObject } from 'react'
 import { useCallback, useContext, useState } from 'react'
 import type { CharacterKey, DiscSlotKey, WengineKey } from '../../consts'
 import type { ICachedCharacter, ICachedDisc, StatFilters, Team } from '../../db'
-import { getTeamFrame0 } from '../../db'
+import { getTeamFrame0, isComboTarget } from '../../db'
 import { OptConfigContext, useDatabaseContext } from '../../db-ui'
 import { AfterShockToggleButton } from '../AfterShockToggleButton'
 import { AppliedBuffStats } from '../AppliedBuffStats'
@@ -73,7 +73,7 @@ export function OptimizerForm({
 }) {
   const { database } = useDatabaseContext()
   const { tag: target } = getTeamFrame0(team)
-  const isRotation = !!target?.rotation
+  const isRotation = isComboTarget(target)
   const isAftershock = target?.damageType2 === 'aftershock'
   const setAftershock = useCallback(
     (aftershock: boolean) =>

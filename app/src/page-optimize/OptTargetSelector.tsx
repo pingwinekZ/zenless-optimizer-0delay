@@ -10,6 +10,7 @@ import {
   comboKindKeys,
   getTeamFrame0,
   type ICachedCharacter,
+  isComboTarget,
   type Team,
   targetTag,
 } from '../db'
@@ -151,18 +152,39 @@ export function OptTargetSelector({
     return calc.listFormulas(own.listing.formulas)
   }, [calc])
 
+  // Picking a single target stages (but preserves) any stored rotation —
+  // the combo card stays editable and the rotation resumes when a Combo
+  // metric is selected again.
   const handleFormulaSelect = useCallback(
     (sheet: string, name: string) => {
-      database.teams.setFrame0(characterKey, { tag: { sheet, name } })
+      database.teams.setFrame0(characterKey, (frame) => ({
+        tag: {
+          ...frame.tag,
+          sheet,
+          name,
+          damageType1: undefined,
+          damageType2: undefined,
+          q: undefined,
+          qt: undefined,
+        },
+      }))
     },
     [database, characterKey]
   )
 
   const handleStatSelect = useCallback(
     (q: string, qt: string) => {
-      database.teams.setFrame0(characterKey, {
-        tag: { q: q as TargetTag['q'], qt: qt as 'final' },
-      })
+      database.teams.setFrame0(characterKey, (frame) => ({
+        tag: {
+          ...frame.tag,
+          q: q as TargetTag['q'],
+          qt: qt as 'final',
+          sheet: undefined,
+          name: undefined,
+          damageType1: undefined,
+          damageType2: undefined,
+        },
+      }))
     },
     [database, characterKey]
   )
@@ -171,10 +193,11 @@ export function OptTargetSelector({
   // sheet/name of its own, so it is represented as explicit Combo entries
   // in the Other category — one per metric (DMG/Daze/Buildup). Each hit is
   // stored once (ability+hit) and the selected kind picks which per-hit
-  // variant (`_dmg` / `_daze` / `_anomBuildup`) is summed.
+  // variant (`_dmg` / `_daze` / `_anomBuildup`) is summed. Selecting a Combo
+  // metric activates a staged rotation; the single target is cleared.
   const rotation = target?.rotation
   const rotationCount = rotation?.length ?? 0
-  const isRotation = rotationCount > 0
+  const isRotation = isComboTarget(target)
   const comboKind: ComboKindKey = target?.comboKind ?? 'dmg'
 
   const handleComboSelect = useCallback(
@@ -183,9 +206,8 @@ export function OptTargetSelector({
       if (isRotation && comboKind === kind) return
       // Convert the current single-formula target into a 1-hit rotation so
       // no configured target is lost. Otherwise seed from the first formula.
-      const seed = isRotation
-        ? undefined
-        : target?.sheet && target?.name
+      const seed =
+        target?.sheet && target?.name
           ? { sheet: target.sheet, name: target.name }
           : (() => {
               const first = formulaOptions.find(
@@ -203,8 +225,12 @@ export function OptTargetSelector({
           tag: {
             ...frame.tag,
             rotation: nextRotation,
-            comboType: frame.tag?.comboType,
-            comboStateJson: frame.tag?.comboStateJson,
+            sheet: undefined,
+            name: undefined,
+            damageType1: undefined,
+            damageType2: undefined,
+            q: undefined,
+            qt: undefined,
             comboKind: kind === 'dmg' ? undefined : kind,
           },
         }

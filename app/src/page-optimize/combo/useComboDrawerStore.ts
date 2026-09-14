@@ -165,6 +165,7 @@ export function derivePartitions(
 
 type ComboDrawerStore = {
   initialized: boolean
+  characterKey: string
   hits: ComboHit[]
   conditionals: TeamConditional[]
   members: ComboMember[]
@@ -174,6 +175,7 @@ type ComboDrawerStore = {
   /** Hashes the user actually edited — only these are materialized on save. */
   dirty: Record<string, true>
   initialize: (
+    characterKey: string,
     hits: ComboHit[],
     conditionals: TeamConditional[],
     comboStateJson: string | undefined,
@@ -204,6 +206,7 @@ type ComboDrawerStore = {
 
 export const useComboDrawerStore = create<ComboDrawerStore>()((set) => ({
   initialized: false,
+  characterKey: '',
   hits: [],
   conditionals: [],
   members: [],
@@ -212,7 +215,7 @@ export const useComboDrawerStore = create<ComboDrawerStore>()((set) => ({
   extraValues: {},
   dirty: {},
   extraSets: [],
-  initialize: (hits, conditionals, comboStateJson, members) => {
+  initialize: (characterKey, hits, conditionals, comboStateJson, members) => {
     const parsed = parseComboState(comboStateJson, hits.length)
     const defaults: Record<string, number> = {}
     const values: Record<string, number[]> = {}
@@ -227,6 +230,7 @@ export const useComboDrawerStore = create<ComboDrawerStore>()((set) => ({
     }
     set({
       initialized: true,
+      characterKey,
       hits: hits.map((h) => ({ ...h })),
       conditionals,
       members,
@@ -240,6 +244,7 @@ export const useComboDrawerStore = create<ComboDrawerStore>()((set) => ({
   reset: () =>
     set({
       initialized: false,
+      characterKey: '',
       hits: [],
       conditionals: [],
       members: [],

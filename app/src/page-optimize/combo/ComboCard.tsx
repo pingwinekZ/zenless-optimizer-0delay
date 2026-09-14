@@ -164,20 +164,29 @@ function useComboWriter(
     [database, characterKey]
   )
 
-  /** Write a new rotation, preserving advanced per-hit values by position. */
+  const groups = useComboFormulaGroups()
+  const firstFormula: ComboHit | undefined = (() => {
+    const g = groups[0]?.options[0]?.value
+    const parsed = parseHitValue(g ?? null)
+    return parsed ? { sheet: parsed.sheet, name: parsed.name } : undefined
+  })()
+
+  /**
+   * Write a new rotation, preserving advanced per-hit values by position.
+   * The single-target selection is never touched (HSR-style detachment) —
+   * clearing all hits only drops the rotation fields, and validation clears
+   * the tag only when nothing targetable remains.
+   */
   const writeRotation = useCallback(
     (hits: ComboHit[], type: ComboTypeKey) => {
-      if (hits.length === 0) {
-        database.teams.setFrame0(characterKey, { tag: undefined })
-        return
-      }
       database.teams.setFrame0(characterKey, (frame) => ({
         tag: {
           ...frame.tag,
-          rotation: hits,
-          comboType: type === 'advanced' ? 'advanced' : undefined,
+          rotation: hits.length > 0 ? hits : undefined,
+          comboType:
+            type === 'advanced' && hits.length > 0 ? 'advanced' : undefined,
           comboStateJson:
-            type === 'advanced'
+            type === 'advanced' && hits.length > 0
               ? remapComboState(
                   filterRelevantConditionals(frame.conditionals, members),
                   frame.tag?.comboStateJson,
@@ -191,8 +200,23 @@ function useComboWriter(
   )
 
   const setType = useCallback(
-    (type: ComboTypeKey) => writeRotation(rotation, type),
-    [writeRotation, rotation]
+    (type: ComboTypeKey) => {
+      // Switching to Advanced seeds a 1-hit rotation (from the current
+      // single target when possible) so the opt target selection survives.
+      if (type === 'advanced' && rotation.length === 0) {
+        const seed =
+          target?.sheet && target?.name
+            ? { sheet: target.sheet, name: target.name }
+            : firstFormula
+        if (seed) {
+          writeRotation([seed], 'advanced')
+          return
+        }
+        return
+      }
+      writeRotation(rotation, type)
+    },
+    [writeRotation, rotation, target, firstFormula]
   )
 
   return { rotation, comboType, comboKind, writeRotation, setType, setKind }

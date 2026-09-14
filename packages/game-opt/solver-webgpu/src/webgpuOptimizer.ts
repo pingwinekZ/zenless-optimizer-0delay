@@ -244,6 +244,29 @@ function encodeCandidates(candidates: Candidate<string | number>[][]): {
 export async function optimize<ID>(
   cfg: OptimizationConfig<ID>
 ): Promise<BuildResult<ID>[]> {
+  // WebGPU validation errors (invalid shader, bad bind groups, failed
+  // dispatches) do NOT throw — without this scope they fail silently
+  // downstream as empty results with no CPU fallback. Capture them and throw
+  // so WebGpuSolver falls back to the CPU solver instead of showing nothing.
+  // The device promise is cached, so this is the same device `optimizeInner`
+  // uses below; scopes nest as a stack, so concurrent solves must not share
+  // a device (the app only ever runs one solve at a time).
+  const { device } = await getWebgpuDevice(cfg.f16)
+  device.pushErrorScope('validation')
+  let scopeError: GPUError | null = null
+  let result: BuildResult<ID>[]
+  try {
+    result = await optimizeInner(cfg)
+  } finally {
+    scopeError = await device.popErrorScope()
+  }
+  if (scopeError && !cfg.isAborted()) throw scopeError
+  return result
+}
+
+async function optimizeInner<ID>(
+  cfg: OptimizationConfig<ID>
+): Promise<BuildResult<ID>[]> {
   const { candidates, nodes, minimum, topN, isAborted } = cfg
   const { workgroupSize, cyclesPerInvocation, targetChunks, chunkMs } =
     sanitizeTuning(cfg)

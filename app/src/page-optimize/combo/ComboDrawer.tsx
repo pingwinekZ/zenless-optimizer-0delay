@@ -114,6 +114,7 @@ export function ComboDrawer({
       useComboDrawerStore
         .getState()
         .initialize(
+          currentCharacterKey,
           hits,
           sortRelevantConditionals(
             synthesizeTeammateConditionals(relevant, currentMembers).concat(

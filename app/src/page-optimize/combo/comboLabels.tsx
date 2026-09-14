@@ -1,21 +1,41 @@
-import { HoverCard, Text } from '@mantine/core'
-import { type ReactNode, Suspense } from 'react'
+import { Box, HoverCard, Text } from '@mantine/core'
+import { correctConditionalValue } from '@zenless-optimizer/game-opt/engine'
+import { CalcContext, TagContext } from '@zenless-optimizer/game-opt/formula-ui'
+import {
+  type Field,
+  TagFieldDisplay,
+} from '@zenless-optimizer/game-opt/sheet-ui'
+import { type ReactNode, Suspense, useContext, useMemo } from 'react'
 import { characterAsset, discDefIcon, wengineAsset } from '../../assets'
 import {
   allCharacterKeys,
   type CharacterKey,
   type DiscSetKey,
+  type DiscSlotKey,
   isDiscSetKey,
   isWengineKey,
   type WengineKey,
 } from '../../consts'
-import { conditionals as allConditionalsMeta } from '../../formula'
+import {
+  comboCondHash,
+  type ICachedDisc,
+  type Team,
+  type TeamConditional,
+} from '../../db'
+import { useDatabaseContext } from '../../db-ui'
+import {
+  conditionals as allConditionalsMeta,
+  getConditional,
+  zzzCalculatorWithEntries,
+} from '../../formula'
 import { charSheets, discUiSheets, wengineUiSheets } from '../../formula-ui'
 import { GameDesc } from '../../i18n'
 import { CharacterName } from '../../ui/Character/CharacterTrans'
 import { DiscSetName } from '../../ui/Disc/DiscTrans'
 import { WengineName } from '../../ui/Wengine/WengineTrans'
 import { condLabel } from '../Optimize/conditionalUtils'
+import { buildCalculatorEntries } from '../Util/buildStatsUtils'
+import { useComboDrawerStore } from './useComboDrawerStore'
 import type { ComboMember } from './useComboMembers'
 
 type UiDoc = {
@@ -23,6 +43,7 @@ type UiDoc = {
   conditional?: {
     metadata: { name: string }
     label?: unknown
+    fields?: Field[]
   }
 }
 
@@ -221,23 +242,97 @@ export function comboCondDescription(
   return undefined
 }
 
+function extractFields(
+  docs: readonly UiDoc[] | undefined,
+  condKey: string
+): Field[] {
+  const out: Field[] = []
+  // Dedup fields merged from linked docs split across sections (mirrors the
+  // character display); text fields are always kept.
+  const seen = new Set<string>()
+  for (const doc of docs ?? []) {
+    if (
+      doc.type !== 'conditional' ||
+      doc.conditional?.metadata.name !== condKey
+    )
+      continue
+    for (const field of doc.conditional.fields ?? []) {
+      if ('fieldRef' in field) {
+        const key = `${field.fieldRef?.q ?? ''}|${field.fieldRef?.damageType1 ?? ''}|${field.fieldRef?.damageType2 ?? ''}|${field.fieldRef?.name ?? ''}`
+        if (!key || seen.has(key)) continue
+        seen.add(key)
+      }
+      out.push(field)
+    }
+  }
+  return out
+}
+
 /**
- * Label with the same hover doc as the page's conditional displays.
- * Renders children directly when there is no description.
+ * Buff value fields for a conditional, mirroring the page's conditional
+ * displays: character/w-engine/disc UI sheet docs for the row's condKey.
+ */
+export function comboCondFields(sheet: string, condKey: string): Field[] {
+  if (isCharacterKey(sheet)) {
+    const sections = charSheets[sheet]
+    if (!sections) return []
+    return extractFields(
+      Object.values(sections).flatMap(
+        (section) => section.documents as UiDoc[]
+      ),
+      condKey
+    )
+  }
+  if (isWengineKey(sheet)) {
+    return extractFields(
+      wengineUiSheets[sheet]?.documents as UiDoc[] | undefined,
+      condKey
+    )
+  }
+  if (isDiscSetKey(sheet)) {
+    return (['2', '4'] as const).flatMap((block) =>
+      extractFields(
+        discUiSheets[sheet]?.[block]?.documents as UiDoc[] | undefined,
+        condKey
+      )
+    )
+  }
+  return []
+}
+
+/**
+ * Label with the same hover doc as the page's conditional displays, plus
+ * the computed buff values. Renders children directly when there is neither
+ * a description nor buff fields.
+ *
+ * Buff values follow the drawer row being edited (not the main-form states):
+ * bool rows compute as if ON, num/list rows at the row's default value. The
+ * override calc is built lazily inside `ComboHoverFields` (mounted on hover
+ * open), memoized per row + value.
  */
 export function CondLabelWithHover({
   sheet,
   condKey,
+  src,
+  dst,
+  hash,
   members,
   children,
 }: {
   sheet: string
   condKey: string
+  src: string
+  dst: string | null
+  hash: string
   members: ComboMember[]
   children: ReactNode
 }) {
   const description = comboCondDescription(sheet, condKey, members)
-  if (!description)
+  const fields = useMemo(
+    () => comboCondFields(sheet, condKey),
+    [sheet, condKey]
+  )
+  if (!description && fields.length === 0)
     return <span style={{ display: 'contents' }}>{children}</span>
   return (
     <HoverCard
@@ -255,8 +350,199 @@ export function CondLabelWithHover({
           {comboCondLabel(sheet, condKey)}
         </Text>
         <Suspense fallback={null}>{description}</Suspense>
+        {fields.length > 0 && (
+          <ComboHoverFields
+            sheet={sheet}
+            condKey={condKey}
+            src={src}
+            dst={dst}
+            hash={hash}
+            members={members}
+            fields={fields}
+          />
+        )}
       </HoverCard.Dropdown>
     </HoverCard>
+  )
+}
+
+/**
+ * Calculator with a single drawer-row conditional overridden (see
+ * `CondLabelWithHover`). Returns null when no override applies — callers
+ * fall back to the ambient page calc.
+ */
+function useCondOverrideCalc(
+  sheet: string,
+  condKey: string,
+  src: string,
+  dst: string | null,
+  hash: string,
+  enabled: boolean
+) {
+  const { database } = useDatabaseContext()
+  const characterKey = useComboDrawerStore((s) => s.characterKey)
+  const drawerDefaults = useComboDrawerStore((s) => s.defaults)
+  const team = database.teams.get(characterKey as CharacterKey)
+  const teamCondJson = JSON.stringify(team?.frames[0]?.conditionals ?? null)
+  const teamBlobJson = team?.frames[0]?.tag?.comboStateJson ?? null
+
+  return useMemo(() => {
+    if (!enabled) return null
+    const meta = getConditional(sheet as never, condKey)
+    if (!meta) return null
+    // Bool rows show the active value; other rows follow the row default.
+    const target = meta.type === 'bool' ? 1 : drawerDefaults[hash]
+    if (target === undefined) return null
+    if (!team) return null
+    const frame0 = team.frames[0]
+    if (!frame0) return null
+    const character = database.chars.get(characterKey as CharacterKey)
+    if (!character) return null
+
+    const eff = correctConditionalValue(meta as never, target)
+    // Base every conditional on the drawer's current defaults (not just the
+    // committed frame states), so companion toggles made in the drawer —
+    // e.g. a bool gating this row's num buff — are respected. The hovered
+    // row itself is forced to the override value below.
+    const correct = (c: TeamConditional, value: number) => {
+      const m = getConditional(c.sheet as never, c.condKey)
+      return m ? correctConditionalValue(m as never, value) : value
+    }
+    const withBase = frame0.conditionals.map((c) => {
+      const h = comboCondHash(c.sheet, c.condKey, c.src, c.dst)
+      const d = drawerDefaults[h]
+      return d === undefined ? c : { ...c, condValue: correct(c, d) }
+    })
+    const matched = withBase.some(
+      (c) => c.sheet === sheet && c.condKey === condKey && c.src === src
+    )
+    const conditionals: TeamConditional[] = matched
+      ? withBase.map((c) =>
+          c.sheet === sheet && c.condKey === condKey && c.src === src
+            ? { ...c, condValue: eff }
+            : c
+        )
+      : [
+          ...withBase,
+          { sheet, src, dst, condKey, condValue: eff } as TeamConditional,
+        ]
+
+    // Flatten this row's advanced per-hit overrides to the override value so
+    // a dirty blob does not mask it (preset0 reads hit 0's blob value).
+    let tag = frame0.tag
+    if (tag?.comboStateJson) {
+      try {
+        const blob = JSON.parse(tag.comboStateJson) as {
+          values?: Record<string, number[]>
+        }
+        if (blob?.values && Array.isArray(blob.values[hash])) {
+          tag = {
+            ...tag,
+            comboStateJson: JSON.stringify({
+              ...blob,
+              values: {
+                ...blob.values,
+                [hash]: blob.values[hash].map(() => eff),
+              },
+            }),
+          }
+        }
+      } catch {
+        // Keep the original blob.
+      }
+    }
+
+    const overridden: Team = {
+      ...team,
+      frames: team.frames.map((f, i) =>
+        i === 0 ? { ...f, conditionals, tag } : f
+      ),
+    }
+    const discs = {} as Record<DiscSlotKey, ICachedDisc | undefined>
+    for (const [slot, id] of Object.entries(character.equippedDiscs ?? {})) {
+      discs[slot as DiscSlotKey] = id
+        ? (database.discs.get(id) ?? undefined)
+        : undefined
+    }
+    const entries = buildCalculatorEntries(
+      character,
+      discs,
+      overridden,
+      (key) => database.chars.get(key) ?? undefined,
+      (id) => database.discs.get(id) ?? undefined
+    )
+    return zzzCalculatorWithEntries(entries)
+    // teamCondJson/teamBlobJson re-snapshot committed states; `team` itself
+    // is only read for stable references (character/teammates/enemy).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    database,
+    characterKey,
+    sheet,
+    condKey,
+    src,
+    dst,
+    hash,
+    enabled,
+    drawerDefaults,
+    team,
+    teamCondJson,
+    teamBlobJson,
+  ])
+}
+
+/**
+ * Buff value fields for a drawer row, computed with the row's override calc.
+ * Mounted on hover open, so the calc build only runs for hovered rows.
+ */
+function ComboHoverFields({
+  sheet,
+  condKey,
+  src,
+  dst,
+  hash,
+  members,
+  fields,
+}: {
+  sheet: string
+  condKey: string
+  src: string
+  dst: string | null
+  hash: string
+  members: ComboMember[]
+  fields: Field[]
+}) {
+  // Extra (unequipped) disc sets have no calc entries — description only.
+  const isExtraSet =
+    isDiscSetKey(sheet) && !members.some((m) => m.discSets[sheet] != null)
+  const calc = useCondOverrideCalc(sheet, condKey, src, dst, hash, !isExtraSet)
+  const outerTag = useContext(TagContext)
+  // Mirror the page displays: override only src, keep the ambient dst
+  // (main character) so teammate buffs addressed to them still match.
+  const tagForFields = useMemo(() => ({ ...outerTag, src }), [outerTag, src])
+  if (isExtraSet || fields.length === 0) return null
+  const list = (
+    <Box mt={4}>
+      <TagContext.Provider value={tagForFields as any}>
+        {fields.map(
+          (field, i) =>
+            'fieldRef' in field && (
+              <TagFieldDisplay
+                key={i}
+                field={field}
+                showZero
+                rowSx={{ paddingTop: 1, paddingBottom: 1, gap: 6 }}
+              />
+            )
+        )}
+      </TagContext.Provider>
+    </Box>
+  )
+  // Without an override calc, TagFieldDisplay falls through to the ambient
+  // page calc (previous behavior).
+  if (!calc) return list
+  return (
+    <CalcContext.Provider value={calc as never}>{list}</CalcContext.Provider>
   )
 }
 

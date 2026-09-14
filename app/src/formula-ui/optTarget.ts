@@ -1,4 +1,4 @@
-import type { TargetTag } from '../db'
+import { isComboTarget, type TargetTag } from '../db'
 import type { Tag } from '../formula'
 
 export function isOptTargetTag(
@@ -6,7 +6,9 @@ export function isOptTargetTag(
   target: TargetTag | undefined
 ): boolean {
   if (!target) return false
-  if (target.rotation) {
+  // An active combo target highlights its hits; a staged rotation under a
+  // single-target selection highlights only the single target.
+  if (isComboTarget(target)) {
     return target.rotation.some(
       ({ sheet, name }) => tag.sheet === sheet && tag.name === name
     )

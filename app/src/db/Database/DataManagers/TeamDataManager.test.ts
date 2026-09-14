@@ -11,6 +11,7 @@ import {
   comboHitTarget,
   getComboFrames,
   initializeComboState,
+  isComboTarget,
   MAX_COMBO_HITS,
   parseComboState,
   remapComboState,
@@ -633,6 +634,144 @@ describe('TeamDataManager', () => {
     expect(frames[0]?.tag).toEqual({ sheet, name: daze })
     // Override comes from rotation index 1, not the dense frame index 0.
     expect(frames[0]?.conditionals[0]?.condValue).toBe(1)
+  })
+
+  it('isComboTarget is true only for rotations without single-target fields', () => {
+    const rotation = [{ sheet: 'S', name: 'n' }]
+    expect(isComboTarget(undefined)).toBe(false)
+    expect(isComboTarget({})).toBe(false)
+    expect(isComboTarget({ rotation })).toBe(true)
+    expect(isComboTarget({ rotation: [] })).toBe(false)
+    // Staged rotations under a single-target selection are not active.
+    expect(isComboTarget({ rotation, sheet: 'S', name: 'n' })).toBe(false)
+    expect(isComboTarget({ rotation, q: 'atk', qt: 'final' })).toBe(false)
+    expect(isComboTarget({ sheet: 'S', name: 'n' })).toBe(false)
+  })
+
+  it('should keep a staged rotation alongside a single-target selection', () => {
+    const { sheet, name } = firstFormula()
+    const team = {
+      teammates: [{ characterKey: mainKey }],
+      frames: [
+        {
+          tag: {
+            sheet,
+            name,
+            rotation: [
+              { sheet, name },
+              { sheet, name },
+            ],
+            comboType: 'advanced' as const,
+          },
+          multiplier: 1,
+          critMode: 'avg' as const,
+          bonusStats: [],
+          conditionals: [],
+          enemyStats: [],
+        },
+      ],
+      enemyLvl: 60,
+      enemyDef: 0,
+      enemyStunMultiplier: 1,
+    }
+    const result = teams['validate'](team, mainKey)
+    const tag = result?.frames[0]?.tag
+    // Both survive validation: the single target stays selected while the
+    // rotation remains stored and editable.
+    expect(tag?.sheet).toBe(sheet)
+    expect(tag?.name).toBe(name)
+    expect(tag?.rotation).toHaveLength(2)
+    expect(tag?.comboType).toBe('advanced')
+    expect(isComboTarget(tag)).toBe(false)
+  })
+
+  it('should drop only the invalid side of a coexisting target', () => {
+    const { sheet, name } = firstFormula()
+    const base = {
+      teammates: [{ characterKey: mainKey }],
+      frames: [
+        {
+          multiplier: 1,
+          critMode: 'avg' as const,
+          bonusStats: [],
+          conditionals: [],
+          enemyStats: [],
+        },
+      ],
+      enemyLvl: 60,
+      enemyDef: 0,
+      enemyStunMultiplier: 1,
+    }
+    // Invalid formula name: rotation survives, single target is dropped
+    // (and the combo becomes active).
+    const badSingle = teams['validate'](
+      {
+        ...base,
+        frames: [
+          {
+            ...base.frames[0],
+            tag: {
+              sheet: 'NOPE',
+              name: 'missing',
+              rotation: [{ sheet, name }],
+            },
+          },
+        ],
+      },
+      mainKey
+    )
+    expect(badSingle?.frames[0]?.tag?.sheet).toBeUndefined()
+    expect(badSingle?.frames[0]?.tag?.rotation).toHaveLength(1)
+    // Invalid rotation hits: single target survives on its own.
+    const badRotation = teams['validate'](
+      {
+        ...base,
+        frames: [
+          {
+            ...base.frames[0],
+            tag: {
+              sheet,
+              name,
+              rotation: [{ sheet: 'NOPE', name: 'missing' }],
+            },
+          },
+        ],
+      },
+      mainKey
+    )
+    expect(badRotation?.frames[0]?.tag?.sheet).toBe(sheet)
+    expect(badRotation?.frames[0]?.tag?.rotation).toBeUndefined()
+  })
+
+  it('getComboFrames ignores staged rotations under a single target', () => {
+    const { sheet, name } = firstFormula()
+    const team = {
+      teammates: [{ characterKey: mainKey }],
+      frames: [
+        {
+          tag: {
+            sheet,
+            name,
+            rotation: [
+              { sheet, name },
+              { sheet, name },
+            ],
+          },
+          multiplier: 1,
+          critMode: 'avg' as const,
+          bonusStats: [],
+          conditionals: [],
+          enemyStats: [],
+        },
+      ],
+      enemyLvl: 60,
+      enemyDef: 0,
+      enemyStunMultiplier: 1,
+    } as unknown as Team
+    // Single target wins: the stored frames pass through untouched.
+    const frames = getComboFrames(team)
+    expect(frames).toHaveLength(1)
+    expect(frames[0]?.tag?.sheet).toBe(sheet)
   })
 
   it('should backfill conditionals for teams loaded from storage', () => {

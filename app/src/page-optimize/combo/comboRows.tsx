@@ -167,6 +167,9 @@ function BooleanRow({
           <CondLabelWithHover
             sheet={cond.sheet}
             condKey={cond.condKey}
+            src={cond.src}
+            dst={cond.dst}
+            hash={hash}
             members={members}
           >
             <Switch
@@ -254,6 +257,9 @@ function PartitionRow({
           <CondLabelWithHover
             sheet={cond.sheet}
             condKey={cond.condKey}
+            src={cond.src}
+            dst={cond.dst}
+            hash={hash}
             members={members}
           >
             {condData?.type === 'list' ? (

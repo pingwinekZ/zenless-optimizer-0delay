@@ -421,43 +421,36 @@ export class TeamDataManager extends DataManager<
       })
       .filter(notEmpty)
   }
-
+  /**
+   * Validate a frame0 target tag. The single-target part (formula or stat)
+   * and the rotation part validate independently and coexist: a stored
+   * rotation stays editable while a single target is selected (HSR-style
+   * detachment). The solver sums the rotation only when it is the *active*
+   * target — see `isComboTarget`.
+   */
   private validateTargetTag(
     rawTarget: TargetTag | undefined
   ): TargetTag | undefined {
     if (!rawTarget) return undefined
 
-    if (rawTarget.rotation) {
-      const rotation = rawTarget.rotation
-        .filter(({ sheet, name }) => {
-          const formula = getFormula({ sheet, name })
-          return !!formula
-        })
-        .slice(0, MAX_COMBO_HITS)
-        .map(({ sheet, name, multiplier }) =>
-          removeUndefinedFields({
-            sheet,
-            name,
-            multiplier: multiplier && multiplier !== 1 ? multiplier : undefined,
+    const rotation = rawTarget.rotation
+      ? rawTarget.rotation
+          .filter(({ sheet, name }) => {
+            const formula = getFormula({ sheet, name })
+            return !!formula
           })
-        )
-      if (rotation.length > 0)
-        return removeUndefinedFields({
-          rotation,
-          comboType:
-            rawTarget.comboType === 'advanced' ? 'advanced' : undefined,
-          comboKind:
-            rawTarget.comboKind === 'daze' || rawTarget.comboKind === 'buildup'
-              ? rawTarget.comboKind
-              : undefined,
-          comboStateJson: validateComboStateJson(
-            rawTarget.comboStateJson,
-            rotation.length
-          ),
-        }) as TargetTag
-      return undefined
-    }
+          .slice(0, MAX_COMBO_HITS)
+          .map(({ sheet, name, multiplier }) =>
+            removeUndefinedFields({
+              sheet,
+              name,
+              multiplier:
+                multiplier && multiplier !== 1 ? multiplier : undefined,
+            })
+          )
+      : []
 
+    let single: TargetTag | undefined
     if (rawTarget.name) {
       const formula = getFormula(rawTarget)
       if (formula) {
@@ -478,21 +471,36 @@ export class TeamDataManager extends DataManager<
           )
             damageType2 = rawTarget.damageType2
         }
-        return removeUndefinedFields({
+        single = removeUndefinedFields({
           sheet: formula.sheet,
           name: formula.name,
           damageType1,
           damageType2,
         }) as TargetTag
       }
-      return undefined
+    } else {
+      const { q, qt } = rawTarget
+      if (q && qt && targetQ.includes(q) && targetQt.includes(qt)) {
+        single = { q, qt }
+      }
     }
 
-    const { q, qt } = rawTarget
-    if (q && qt && targetQ.includes(q) && targetQt.includes(qt)) {
-      return { q, qt }
+    if (rotation.length === 0 && !single) return undefined
+    const merged: Record<string, unknown> = { ...single }
+    if (rotation.length > 0) {
+      merged.rotation = rotation
+      merged.comboType =
+        rawTarget.comboType === 'advanced' ? 'advanced' : undefined
+      merged.comboKind =
+        rawTarget.comboKind === 'daze' || rawTarget.comboKind === 'buildup'
+          ? rawTarget.comboKind
+          : undefined
+      merged.comboStateJson = validateComboStateJson(
+        rawTarget.comboStateJson,
+        rotation.length
+      )
     }
-    return undefined
+    return removeUndefinedFields(merged) as TargetTag
   }
 
   private validateConditionals(
@@ -1068,9 +1076,29 @@ export function comboHitTarget(
 }
 
 /**
+ * Whether the rotation is the *active* optimization target. A stored
+ * rotation coexists with a single-target selection (staged, still editable
+ * in the combo card) — only a rotation with no single-target fields of its
+ * own is summed by the solver.
+ */
+export function isComboTarget(
+  tag: TargetTag | undefined
+): tag is TargetTag & { rotation: ComboHit[] } {
+  return (
+    !!tag?.rotation &&
+    tag.rotation.length > 0 &&
+    !tag.sheet &&
+    !tag.name &&
+    !tag.q &&
+    !tag.qt
+  )
+}
+
+/**
  * Expand the team's optimization frames for combo calculation.
  *
- * - No rotation → the stored frames (unchanged legacy behavior).
+ * - No active rotation → the stored frames (unchanged legacy behavior,
+ *   including staged rotations under a single-target selection).
  * - Simple rotation → one frame per hit sharing frame0's buff state.
  * - Advanced rotation → one frame per hit with per-hit conditional values
  *   from `comboStateJson` (missing/stale entries fall back to frame0).
@@ -1083,9 +1111,10 @@ export function comboHitTarget(
  */
 export function getComboFrames(team: Team): OptFrame[] {
   const frame0 = getTeamFrame0(team)
-  const rotation = frame0.tag?.rotation
-  if (!rotation || rotation.length === 0)
+  const tag = frame0.tag
+  if (!isComboTarget(tag))
     return team.frames.length > 0 ? team.frames : [frame0]
+  const rotation = tag.rotation
 
   const kind = frame0.tag?.comboKind ?? 'dmg'
   const isAdvanced = frame0.tag?.comboType === 'advanced'

@@ -6,6 +6,7 @@ import type { TargetTag } from '../../db'
 import {
   getTeamFrame0,
   type ICachedCharacter,
+  isComboTarget,
   type Team,
   targetTag,
 } from '../../db'
@@ -40,7 +41,7 @@ export function OptSelector({
     return targetTag(target)
   }, [target])
 
-  const isRotation = !!target?.rotation
+  const isRotation = isComboTarget(target)
   const isAdvanced = target?.comboType === 'advanced'
   const rotationCount = target?.rotation?.length ?? 0
 
@@ -74,7 +75,7 @@ export function OptSelector({
         variant={tag ? 'outline' : undefined}
         style={{ height: '100%', flexGrow: 1 }}
       >
-        {isRotation && (
+        {rotationCount > 0 && (
           <MenuItem onClick={openAdvanced}>Advanced rotation…</MenuItem>
         )}
         {calc?.listFormulas(own.listing.formulas).map(({ tag }, i) => {
@@ -84,12 +85,17 @@ export function OptSelector({
             <MenuItem
               key={`${i}_${tag.sheet}_${tag.name}`}
               onClick={() =>
-                database.teams.setFrame0(characterKey, {
+                database.teams.setFrame0(characterKey, (frame) => ({
                   tag: {
+                    ...frame.tag,
                     sheet,
                     name,
+                    damageType1: undefined,
+                    damageType2: undefined,
+                    q: undefined,
+                    qt: undefined,
                   },
-                })
+                }))
               }
             >
               <Box style={{ display: 'flex', gap: 1 }}>
@@ -105,12 +111,17 @@ export function OptSelector({
             <MenuItem
               key={`${i}_${q}_${qt}`}
               onClick={() =>
-                database.teams.setFrame0(characterKey, {
+                database.teams.setFrame0(characterKey, (frame) => ({
                   tag: {
+                    ...frame.tag,
                     q: q as TargetTag['q'],
                     qt: qt as 'final',
+                    sheet: undefined,
+                    name: undefined,
+                    damageType1: undefined,
+                    damageType2: undefined,
                   },
-                })
+                }))
               }
             >
               <Box style={{ display: 'flex', gap: 1 }}>

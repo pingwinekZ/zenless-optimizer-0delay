@@ -15,7 +15,12 @@ import type {
   Team,
   TeammateDatum,
 } from '../../db'
-import { getComboFrames, getTeamFrame0, targetTag } from '../../db'
+import {
+  getComboFrames,
+  getTeamFrame0,
+  isComboTarget,
+  targetTag,
+} from '../../db'
 import type { Tag } from '../../formula'
 import { convert, ownTag, Read, zzzCalculatorWithEntries } from '../../formula'
 import type { ISubstat } from '../../schema/disc'
@@ -253,7 +258,7 @@ function buildTargetInfo(
     }
   }
 
-  if (frame.tag.rotation) {
+  if (isComboTarget(frame.tag)) {
     // Each combo frame is bound to preset${i}, so per-hit buff overrides
     // (advanced mode) are reflected here, matching the solver summation.
     const comboFrames = getComboFrames(team)
