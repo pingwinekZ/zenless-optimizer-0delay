@@ -690,10 +690,11 @@ function OptimizeWrapper() {
     (wengineKey: string | undefined) => {
       database.chars.set(characterKey, {
         wengineKey: (wengineKey ?? '') as any,
-        wenginePhase: 1,
+        // Preserve the character's refinement when swapping engines
+        wenginePhase: character.wenginePhase ?? 1,
       })
     },
-    [database.chars, characterKey]
+    [database.chars, characterKey, character.wenginePhase]
   )
 
   const onOptimize = useCallback(

@@ -7,6 +7,7 @@
 
 import type { DBStorage } from '@zenless-optimizer/common/database'
 import type { CharacterKey } from '../../consts'
+import { allWengineKeys } from '../../consts'
 import type { ICharacter } from '../../zood'
 import type {
   ICharMeta,
@@ -14,7 +15,7 @@ import type {
   IZZZDatabase,
 } from '../Interfaces'
 
-export const currentDBVersion = 4
+export const currentDBVersion = 5
 
 export function migrateZOOD(
   zood: IZenlessObjectDescription & IZZZDatabase
@@ -210,6 +211,29 @@ export function migrateStorage(storage: DBStorage) {
           delete char.potential
           storage.set(key, char)
         }
+      }
+    }
+  })
+
+  // Remove persisted wengine catalog entries. The catalog is static and
+  // rebuilt in memory on every load, so these bare-key entries only waste
+  // space. Only remove values that look like catalog entries, to avoid
+  // touching anything unexpected.
+  migrateVersion(5, () => {
+    for (const key of allWengineKeys) {
+      const raw = storage.getString(key)
+      if (raw === undefined) continue
+      try {
+        const val = JSON.parse(raw) as unknown
+        if (
+          val &&
+          typeof val === 'object' &&
+          (val as { key?: unknown }).key === key
+        ) {
+          storage.remove(key)
+        }
+      } catch {
+        // Not a catalog entry; leave it alone.
       }
     }
   })

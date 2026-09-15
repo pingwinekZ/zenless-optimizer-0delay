@@ -62,8 +62,7 @@ function DataCard({ index }: { index: number }) {
   const { t } = useTranslation('page_settings')
   const numChar = useDataManagerKeys(database.chars).length
   const numDiscs = useDataManagerKeys(database.discs).length
-  const numWengines = useDataManagerKeys(database.wengines).length
-  const hasData = Boolean(numChar || numDiscs || numWengines)
+  const hasData = Boolean(numChar || numDiscs)
   const copyToClipboard = useCallback(
     () =>
       navigator.clipboard
@@ -157,10 +156,6 @@ function DataCard({ index }: { index: number }) {
             </Text>
             <Text>
               <Trans t={t} i18nKey="count.discs" /> <strong>{numDiscs}</strong>
-            </Text>
-            <Text>
-              <Trans t={t} i18nKey="count.wengines" />{' '}
-              <strong>{numWengines}</strong>
             </Text>
           </Box>
           <Box>

@@ -5,9 +5,16 @@ import type { ZzzDatabase } from '../Database'
 import { DataManager } from '../DataManager'
 
 /**
- * WengineDataManager is a catalog of all wengine keys, auto-populated at
- * level 60, modification 5, phase 1. No per-instance inventory — characters
- * reference wengine key + phase directly from their own data.
+ * WengineDataManager is an in-memory catalog of all wengine keys,
+ * auto-populated at level 60, modification 5, phase 1. No per-instance
+ * inventory — characters reference wengine key + phase directly from their
+ * own data, and selection UIs read the static key list, so nothing here is
+ * persisted to storage or exports: the catalog is rebuilt from scratch on
+ * every load.
+ *
+ * `importZOOD` is intentionally kept functional so importing a ZOOD file
+ * (including its `wengines` array) behaves exactly as before; entries only
+ * ever land in memory.
  *
  * The `data` entries contain ICachedWengine objects keyed by WengineKey
  * (the string value of the key). Each wengine is always at max level/refinement.
@@ -53,6 +60,16 @@ export class WengineDataManager extends DataManager<
   override remove(key: string): ICachedWengine | undefined {
     // Wengine catalog entries cannot be removed; they are always present
     return this.get(key)
+  }
+
+  override saveStorageEntry(): void {
+    // Catalog is static and rebuilt on every load; never persist it.
+  }
+  override removeStorageEntry(): void {
+    // Nothing is ever persisted, so there is nothing to remove.
+  }
+  override exportZOOD(): void {
+    // Catalog is static and rebuilt on every load; keep it out of exports.
   }
 }
 
