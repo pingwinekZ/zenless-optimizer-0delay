@@ -48,7 +48,7 @@ export default function App() {
     >
       <DatabaseProvider>
         <ModalsProvider>
-          <Notifications />
+          <Notifications position="top-right" />
           <NavigateContextProvider>
             <Content />
             <ScrollTop />
