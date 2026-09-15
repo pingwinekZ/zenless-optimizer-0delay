@@ -6,7 +6,6 @@ import {
   IconSun,
 } from '@tabler/icons-react'
 import { useCallback, useMemo, useState } from 'react'
-import type { CharacterKey } from '../../consts'
 import { DEFAULT_CONFIG } from '../color/colorPipelineConfig'
 import { withAlpha } from '../color/colorUtils'
 import {
@@ -14,14 +13,12 @@ import {
   ShowcaseColorMode,
 } from '../color/showcaseColorService'
 import { cardTotalW, defaultGap, defaultPadding } from '../constantsUi'
-import { CharacterBuildPanel } from './CharacterBuildPanel'
 import classes from './ShowcaseCustomizationSidebar.module.css'
 
 export type ShowcasePreset = 'shine' | 'natural'
 
 interface ShowcaseCustomizationSidebarProps {
   id: string
-  characterKey: CharacterKey
   seedColor: string
   effectiveColorMode: ShowcaseColorMode
   portraitSwatches: string[]
@@ -36,7 +33,6 @@ interface ShowcaseCustomizationSidebarProps {
 
 export function ShowcaseCustomizationSidebar({
   id,
-  characterKey: _characterKey,
   seedColor,
   effectiveColorMode,
   portraitSwatches,
@@ -68,7 +64,6 @@ export function ShowcaseCustomizationSidebar({
         onDarkModeChange={onDarkModeChange}
         onPresetChange={onPresetChange}
       />
-      <CharacterBuildPanel characterKey={_characterKey} />
     </Flex>
   )
 }

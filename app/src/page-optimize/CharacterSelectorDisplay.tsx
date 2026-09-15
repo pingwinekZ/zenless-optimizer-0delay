@@ -21,7 +21,6 @@ import {
   WengineSelectionModal,
 } from '../ui'
 import { HeaderText } from './layout/HeaderText'
-import { CharacterBuildSelector } from './Optimize/CharacterBuildSelector'
 import { PresetsButton } from './PresetsButton'
 
 const defaultGap = 5
@@ -203,12 +202,6 @@ export function CharacterSelectorDisplay({
             />
           )}
         </Flex>
-
-        {/* Saved Builds section */}
-        <Flex justify="space-between" align="center" style={{ marginTop: 20 }}>
-          <HeaderText>Saved Builds</HeaderText>
-        </Flex>
-        <CharacterBuildSelector characterKey={characterKey} compact />
 
         {/* Presets section — no tooltip icon, matching fribbels */}
         <Flex justify="space-between" align="center" style={{ marginTop: 20 }}>

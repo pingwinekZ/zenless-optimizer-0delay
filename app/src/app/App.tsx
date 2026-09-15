@@ -48,7 +48,12 @@ export default function App() {
     >
       <DatabaseProvider>
         <ModalsProvider>
-          <Notifications position="top-right" />
+          {/* `width: fit-content` keeps short messages narrow instead of
+              always occupying the full `containerWidth` (440px) */}
+          <Notifications
+            position="top-right"
+            styles={{ root: { width: 'fit-content' } }}
+          />
           <NavigateContextProvider>
             <Content />
             <ScrollTop />

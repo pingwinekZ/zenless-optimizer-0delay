@@ -2,6 +2,7 @@ import '@fontsource-variable/inter'
 // Wrap Mantine in @layer so our unlayered overrides below always win,
 // regardless of how Vite orders CSS chunks in dev vs prod builds.
 import '@mantine/core/styles.layer.css'
+import '@mantine/notifications/styles.layer.css'
 import './fonts.css'
 import './tokens.css'
 import './styles.scss'
