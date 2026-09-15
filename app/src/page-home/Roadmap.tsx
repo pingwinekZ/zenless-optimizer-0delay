@@ -11,7 +11,7 @@ type RoadmapItem = {
 const items: RoadmapItem[] = [
   { label: 'Refactor all characters', done: true },
   { label: 'Minor UI adjustments to 1.6+ characters', done: false },
-  { label: 'Combo DMG optimization target / Advanced rotation', done: false },
+  { label: 'Combo DMG optimization target / Advanced rotation', done: true },
   { label: 'Recommended Presets for all characters', done: false },
   { label: 'Clean up any slop left', done: false },
 ]
