@@ -6,17 +6,17 @@ import { useCallback, useEffect, useState } from 'react'
 export type CustomNumberInputProps = {
   value?: number | undefined
   onChange: (newValue: number | undefined) => void
-  disabled?: boolean
-  float?: boolean
-  allowEmpty?: boolean
-  disableNegative?: boolean
-  min?: number
-  max?: number
-  color?: string
-  sx?: Record<string, any>
-  placeholder?: string
-  endAdornment?: string
-  inputProps?: Record<string, any>
+  disabled?: boolean | undefined
+  float?: boolean | undefined
+  allowEmpty?: boolean | undefined
+  disableNegative?: boolean | undefined
+  min?: number | undefined
+  max?: number | undefined
+  color?: string | undefined
+  sx?: Record<string, any> | undefined
+  placeholder?: string | undefined
+  endAdornment?: string | undefined
+  inputProps?: Record<string, any> | undefined
 }
 
 const Wrapper = Button.withProps({

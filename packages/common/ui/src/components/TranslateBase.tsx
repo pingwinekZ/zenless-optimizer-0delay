@@ -16,9 +16,9 @@ export function TranslateBase({
 }: {
   ns: string
   key18: string
-  values?: Record<string, string | number>
+  values?: Record<string, string | number> | undefined
   children?: ReactNode
-  components?: Record<string, React.ReactElement>
+  components?: Record<string, React.ReactElement> | undefined
 }) {
   const { t } = useTranslation(ns)
   const textKey = `${ns}:${key18}`
@@ -27,7 +27,12 @@ export function TranslateBase({
     : t(textKey, { returnObjects: true })
   return typeof textObj === 'string' ? (
     <span>
-      <Trans i18nKey={textKey} t={t} components={components} values={values}>
+      <Trans
+        i18nKey={textKey}
+        t={t}
+        {...(components ? { components } : {})}
+        {...(values ? { values } : {})}
+      >
         {children}
       </Trans>
     </span>
@@ -58,19 +63,19 @@ function T({
 }: {
   key18: string
   obj: any
-  li?: boolean
+  li?: boolean | undefined
   t: TFunction<string, undefined>
-  values?: any
-  components?: Record<string, React.ReactElement>
+  values?: any | undefined
+  components?: Record<string, React.ReactElement> | undefined
 }) {
   if (typeof obj === 'string')
     return (
       <Trans
         i18nKey={key18}
-        components={components}
+        {...(components ? { components } : {})}
         parent={Para}
         t={t}
-        values={values}
+        {...(values ? { values } : {})}
       />
     )
   if (Array.isArray(obj))
@@ -107,10 +112,10 @@ function T({
         <Trans
           key={key as any}
           i18nKey={`${key18}.${key}`}
-          components={components}
+          {...(components ? { components } : {})}
           parent={Para}
           t={t}
-          values={values}
+          {...(values ? { values } : {})}
         />
       )
       return li ? <li key={key as any}>{trans}</li> : trans

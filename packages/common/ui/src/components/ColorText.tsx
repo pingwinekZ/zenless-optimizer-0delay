@@ -1,7 +1,7 @@
 import type { HTMLAttributes } from 'react'
 
 interface ColorTextProps extends HTMLAttributes<HTMLSpanElement> {
-  color?: string
+  color?: string | undefined
 }
 
 export function ColorText({
