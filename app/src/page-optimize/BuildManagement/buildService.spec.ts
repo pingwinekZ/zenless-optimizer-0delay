@@ -1,7 +1,12 @@
 import { createTestDBStorage } from '@zenless-optimizer/common/database'
 import { objKeyMap } from '@zenless-optimizer/common/util'
-import type { CharacterKey } from '../../consts'
-import { allCharacterKeys, allDiscSetKeys, allDiscSlotKeys } from '../../consts'
+import type { CharacterKey, WengineKey } from '../../consts'
+import {
+  allCharacterKeys,
+  allDiscSetKeys,
+  allDiscSlotKeys,
+  allWengineKeys,
+} from '../../consts'
 import { ZzzDatabase } from '../../db/Database/Database'
 import { initialTeam } from '../../db/Database/DataManagers/TeamDataManager'
 import { formulas } from '../../formula'
@@ -17,6 +22,8 @@ import {
 
 const charKey = allCharacterKeys[0] as CharacterKey
 const charKey2 = allCharacterKeys[1] as CharacterKey
+const wengineA = allWengineKeys[0] as WengineKey
+const wengineB = allWengineKeys[1] as WengineKey
 
 function firstFormula(): { sheet: string; name: string } {
   for (const [sheet, sheetFormulas] of Object.entries(
@@ -236,6 +243,85 @@ describe('equip', () => {
     expect(database.discs.get(discId)?.location).toBe(charKey)
     expect(database.chars.get(charKey)?.equippedDiscs['1']).toBe(discId)
     expect(buildEquipConflicts(database, charKey, build)).toEqual([])
+  })
+})
+
+describe('teammate gear', () => {
+  function mateDisc(database: ReturnType<typeof testDB>['database']) {
+    const discId = database.discs.new({
+      setKey: allDiscSetKeys[0],
+      rarity: 'S',
+      level: 15,
+      slotKey: '1',
+      mainStatKey: 'hp',
+      substats: [
+        { key: 'atk_', upgrades: 2 },
+        { key: 'def_', upgrades: 2 },
+        { key: 'crit_', upgrades: 2 },
+        { key: 'crit_dmg_', upgrades: 1 },
+      ],
+      location: charKey2,
+      lock: false,
+      trash: false,
+    })
+    expect(discId).toBeTruthy()
+    return discId as string
+  }
+
+  it('snapshots teammate gear per build and restores it on load', () => {
+    const { database, optConfigId } = testDB()
+    database.chars.getOrCreate(charKey2)
+    database.chars.set(charKey2, {
+      wengineKey: wengineA,
+      wenginePhase: 2,
+      mindscape: 1,
+    })
+    const discId = mateDisc(database)
+    const liveTeam = database.teams.get(charKey)
+    database.teams.set(charKey, {
+      ...initialTeam(charKey),
+      frames: liveTeam?.frames ?? [],
+      teammates: [{ characterKey: charKey }, { characterKey: charKey2 }],
+    })
+
+    saveBuild(database, {
+      name: 'a',
+      characterKey: charKey,
+      optConfigId,
+      source: BuildSource.Optimizer,
+    })
+    const build = database.chars.get(charKey)?.builds?.[0]
+    expect(build).toBeDefined()
+    if (!build) return
+    const mate = build.teamSnapshot?.teammates?.[1] as {
+      wengineKey?: string
+      wenginePhase?: number
+      mindscape?: number
+      discIds?: Record<string, string | undefined>
+    }
+    expect(mate?.wengineKey).toBe(wengineA)
+    expect(mate?.wenginePhase).toBe(2)
+    expect(mate?.mindscape).toBe(1)
+    expect(mate?.discIds?.['1']).toBe(discId)
+
+    // Diverge live teammate gear, then load
+    database.chars.set(charKey2, {
+      wengineKey: wengineB,
+      wenginePhase: 5,
+      mindscape: 6,
+    })
+    database.discs.set(discId, { location: charKey })
+    loadBuildInOptimizer(database, build, {
+      characterKey: charKey,
+      optConfigId,
+    })
+
+    // Teammate setup mirrors the saved values (HSR teammate parity)
+    expect(database.chars.get(charKey2)?.wengineKey).toBe(wengineA)
+    expect(database.chars.get(charKey2)?.wenginePhase).toBe(2)
+    expect(database.chars.get(charKey2)?.mindscape).toBe(1)
+    // Disc locations are untouched — moving discs is Equip's job
+    expect(database.discs.get(discId)?.location).toBe(charKey)
   })
 })
 

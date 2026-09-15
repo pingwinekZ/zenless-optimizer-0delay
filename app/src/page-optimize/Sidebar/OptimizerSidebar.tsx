@@ -125,7 +125,7 @@ export function OptimizerSidebar({
               onClearPins={onClearPins}
             />
             <Divider />
-            <BuildsSection />
+            <BuildsSection isFullSize={isFullSize} />
           </Flex>
         </Flex>
       </Flex>

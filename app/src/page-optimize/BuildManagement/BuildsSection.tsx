@@ -1,19 +1,22 @@
 import { Button, Flex } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-import { IconDownload, IconUpload } from '@tabler/icons-react'
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { CharacterKey } from '../../consts'
 import type { GeneratedBuild } from '../../db'
+import { useCharacterContext } from '../../db-ui'
 import { HeaderText, TooltipImage } from '../layout'
-import { ExportImportSection } from './ExportImportSection'
 import { LoadBuildModal } from './LoadBuildModal'
 import { SaveBuildModal } from './SaveBuildModal'
 
+const defaultGap = 5
+
 export const BuildsSection = memo(function BuildsSection({
+  isFullSize,
   selectedBuild = null,
   characterKey = null,
 }: {
+  isFullSize?: boolean
   selectedBuild?: GeneratedBuild | null
   characterKey?: CharacterKey | null
 }) {
@@ -22,12 +25,15 @@ export const BuildsSection = memo(function BuildsSection({
     useDisclosure(false)
   const [loadOpened, { open: openLoad, close: closeLoad }] =
     useDisclosure(false)
-  const [_exportOpened, { open: _openExport, close: _closeExport }] =
-    useDisclosure(false)
+
+  const contextKey = useCharacterContext()?.key
+  const key = characterKey ?? contextKey ?? null
+
+  if (!isFullSize || !key) return null
 
   return (
     <>
-      <Flex direction="column" gap={5}>
+      <Flex direction="column">
         <Flex justify="space-between" align="center">
           <HeaderText>{t('buildsSection.header', 'Builds')}</HeaderText>
           <TooltipImage
@@ -52,39 +58,26 @@ export const BuildsSection = memo(function BuildsSection({
             }}
           />
         </Flex>
-        <Flex gap={5} wrap="wrap">
-          <Button
-            size="compact-sm"
-            variant="default"
-            leftSection={<IconDownload size={14} />}
-            onClick={openSave}
-            style={{ flex: 1 }}
-          >
+        <Flex gap={defaultGap} justify="space-around">
+          <Button variant="default" style={{ flex: 1 }} onClick={openSave}>
             {t('buildsSection.save', 'Save')}
           </Button>
-          <Button
-            size="compact-sm"
-            variant="default"
-            leftSection={<IconUpload size={14} />}
-            onClick={openLoad}
-            style={{ flex: 1 }}
-          >
+          <Button variant="default" style={{ flex: 1 }} onClick={openLoad}>
             {t('buildsSection.load', 'Load')}
           </Button>
         </Flex>
-        <ExportImportSection characterKey={characterKey} />
       </Flex>
 
       <SaveBuildModal
         opened={saveOpened}
         onClose={closeSave}
         selectedBuild={selectedBuild}
-        characterKey={characterKey}
+        characterKey={key}
       />
       <LoadBuildModal
         opened={loadOpened}
         onClose={closeLoad}
-        characterKey={characterKey}
+        characterKey={key}
       />
     </>
   )

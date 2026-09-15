@@ -1,6 +1,7 @@
 import { createTestDBStorage } from '@zenless-optimizer/common/database'
+import { objKeyMap } from '@zenless-optimizer/common/util'
 import type { CharacterKey, WengineKey } from '../../consts'
-import { allCharacterKeys, allWengineKeys } from '../../consts'
+import { allCharacterKeys, allDiscSlotKeys, allWengineKeys } from '../../consts'
 import type { Team } from '../../db'
 import { ZzzDatabase } from '../../db/Database/Database'
 import { initialTeam } from '../../db/Database/DataManagers/TeamDataManager'
@@ -8,6 +9,7 @@ import { formulas } from '../../formula'
 import { BuildSource } from '../../zood'
 import {
   deserializeBuild,
+  previewOverrideFromBuild,
   resolveFlexibleWengine,
   resolveMindscape,
   serializeFromCharacterTab,
@@ -15,6 +17,7 @@ import {
 } from './buildConverter'
 
 const charKey = allCharacterKeys[0] as CharacterKey
+const mateKey = allCharacterKeys[1] as CharacterKey
 const wengineA = allWengineKeys[0] as WengineKey
 const wengineB = allWengineKeys[1] as WengineKey
 
@@ -141,5 +144,143 @@ describe('serialize/deserialize round-trip', () => {
     expect(patch.teamPatch).toBeUndefined()
     expect(patch.optimizerSettings).toBeUndefined()
     expect(patch.charPatch.mindscape).toBe(char.mindscape)
+  })
+})
+
+describe('previewOverrideFromBuild', () => {
+  it('shows saved values as-is without max-merging', () => {
+    const database = testDB()
+    const char = database.chars.getOrCreate(charKey)
+    database.chars.set(charKey, {
+      ...char,
+      mindscape: 6,
+      wengineKey: wengineA,
+      wenginePhase: 5,
+    })
+    const live = database.chars.get(charKey)!
+    const team = database.teams.getOrCreate(charKey)
+
+    const build = serializeFromOptimizer(
+      'preview',
+      charKey,
+      { ...live, mindscape: 2, wengineKey: wengineB, wenginePhase: 1 },
+      team,
+      undefined,
+      { discIds: { ...live.equippedDiscs } }
+    )
+
+    const override = previewOverrideFromBuild(
+      charKey,
+      { char: live, team },
+      build
+    )
+    expect(override?.character.mindscape).toBe(2)
+    expect(override?.character.wengineKey).toBe(wengineB)
+    expect(override?.character.wenginePhase).toBe(1)
+    expect(override?.discIds).toEqual(build.discIds)
+    expect(override?.team.frames).toHaveLength(team.frames.length)
+  })
+
+  it('returns null without live character and setup', () => {
+    const database = testDB()
+    const team = database.teams.getOrCreate(charKey)
+    const char = database.chars.getOrCreate(charKey)
+    const build = serializeFromOptimizer(
+      'preview',
+      charKey,
+      char,
+      team,
+      undefined,
+      { discIds: { ...char.equippedDiscs } }
+    )
+    delete (build as { charSetup?: unknown }).charSetup
+    expect(previewOverrideFromBuild(charKey, { team }, build)).toBeNull()
+  })
+})
+
+describe('teammate gear snapshot', () => {
+  it('captures save-time teammate gear and exposes it for preview', () => {
+    const database = testDB()
+    const char = database.chars.getOrCreate(charKey)
+    const team = {
+      ...initialTeam(charKey),
+      teammates: [{ characterKey: charKey }, { characterKey: mateKey }],
+    } as Team
+    const mateDiscIds = objKeyMap(allDiscSlotKeys, (slot) =>
+      slot === '1' ? 'mate-disc-1' : undefined
+    )
+
+    const build = serializeFromOptimizer(
+      'gear',
+      charKey,
+      char,
+      team,
+      undefined,
+      { discIds: { ...char.equippedDiscs } },
+      {
+        main: {
+          wengineKey: char.wengineKey,
+          wenginePhase: char.wenginePhase,
+          mindscape: char.mindscape,
+          discIds: { ...char.equippedDiscs },
+        },
+        of: (key) =>
+          key === mateKey
+            ? {
+                wengineKey: wengineA,
+                wenginePhase: 2,
+                mindscape: 4,
+                discIds: mateDiscIds,
+              }
+            : undefined,
+      }
+    )
+
+    const mate = build.teamSnapshot?.teammates?.[1] as {
+      wengineKey?: string
+      wenginePhase?: number
+      mindscape?: number
+      discIds?: Record<string, string | undefined>
+    }
+    expect(mate?.wengineKey).toBe(wengineA)
+    expect(mate?.wenginePhase).toBe(2)
+    expect(mate?.mindscape).toBe(4)
+    expect(mate?.discIds?.['1']).toBe('mate-disc-1')
+    // Slot 0 carries the main character's saved gear too
+    expect(
+      (
+        build.teamSnapshot?.teammates?.[0] as {
+          discIds?: Record<string, string | undefined>
+        }
+      )?.discIds
+    ).toEqual(char.equippedDiscs)
+
+    const override = previewOverrideFromBuild(charKey, { char, team }, build)
+    expect(override?.teammateGear?.[mateKey]?.wengineKey).toBe(wengineA)
+    expect(override?.teammateGear?.[mateKey]?.discIds?.['1']).toBe(
+      'mate-disc-1'
+    )
+    expect(override?.teammateGear?.[charKey]).toBeUndefined()
+
+    // The load patch keeps teammate gear for restore
+    const patch = deserializeBuild(build, charKey, { char, team })
+    expect(patch.teamPatch?.teammates[1].wengineKey).toBe(wengineA)
+    expect(patch.teamPatch?.teammates[1].discIds?.['1']).toBe('mate-disc-1')
+  })
+
+  it('omits teammateGear when the snapshot has no gear', () => {
+    const database = testDB()
+    const char = database.chars.getOrCreate(charKey)
+    const team = database.teams.getOrCreate(charKey)
+    const build = serializeFromOptimizer(
+      'gearless',
+      charKey,
+      char,
+      team,
+      undefined,
+      { discIds: { ...char.equippedDiscs } }
+    )
+    const override = previewOverrideFromBuild(charKey, { char, team }, build)
+    expect(override?.teammateGear).toBeUndefined()
   })
 })

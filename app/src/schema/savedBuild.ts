@@ -74,6 +74,19 @@ export type SavedBuildTeamSnapshot = z.infer<typeof teamSnapshotSchema>
 export type SavedBuildCharSetup = z.infer<typeof charSetupSchema>
 export type SavedBuildWengineSetup = z.infer<typeof wengineSetupSchema>
 
+/**
+ * Per-teammate gear captured at save time (HSR parity: SavedTeammate carries
+ * eidolon + lightCone + sets). Stored on teamSnapshot.teammates entries,
+ * which are otherwise loosely typed, so old builds without gear simply
+ * fall back to live database state.
+ */
+export type SavedTeammateGear = {
+  wengineKey?: string
+  wenginePhase?: number
+  mindscape?: number
+  discIds?: DiscIds
+}
+
 export function parseSavedBuild(obj: unknown): SavedBuild | undefined {
   const result = savedBuildSchema.safeParse(obj)
   return result.success ? result.data : undefined

@@ -4,7 +4,9 @@
 }
 
 .outerFlex {
-  height: 900px;
+  /* Matches the showcase card height (page-characters/constantsUi parentH).
+     HSR uses 900px for its own card. */
+  height: 880px;
 }
 
 .leftColumn {

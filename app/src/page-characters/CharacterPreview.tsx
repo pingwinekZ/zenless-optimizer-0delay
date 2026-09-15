@@ -4,11 +4,12 @@ import { TagContext } from '@zenless-optimizer/game-opt/formula-ui'
 import { useCallback, useEffect, useMemo } from 'react'
 import { characterAsset } from '../assets'
 import type { CharacterKey, DiscSlotKey, PhaseKey } from '../consts'
-import type { ICachedDisc } from '../db'
+import type { DiscIds, ICachedCharacter, ICachedDisc, Team } from '../db'
 import { useCharacter, useDatabaseContext, useDiscs, useTeam } from '../db-ui'
 import type { Tag } from '../formula'
 import { own } from '../formula'
 import { CharCalcProvider, useZzzCalcContext } from '../formula-ui'
+import type { SavedTeammateGear } from '../schema/savedBuild'
 import { getCharStat } from '../stats'
 import {
   DiscEditorModal,
@@ -70,10 +71,17 @@ export function CharacterPreview({
   characterKey,
   onEdit,
   onDelete,
+  buildOverride,
 }: {
   characterKey: CharacterKey | null
   onEdit?: () => void
   onDelete?: () => void
+  /**
+   * HSR parity (`savedBuildOverride`): render a saved build instead of the
+   * live database state. Stats, score, discs and W-Engine all follow the
+   * override, and every edit interaction is disabled.
+   */
+  buildOverride?: BuildPreviewOverride | null
 }) {
   if (!characterKey) return <PreviewPlaceholder />
   return (
@@ -81,8 +89,16 @@ export function CharacterPreview({
       characterKey={characterKey}
       onEdit={onEdit}
       onDelete={onDelete}
+      buildOverride={buildOverride}
     />
   )
+}
+
+export type BuildPreviewOverride = {
+  character: ICachedCharacter
+  team: Team
+  discIds: DiscIds
+  teammateGear?: Record<string, SavedTeammateGear>
 }
 
 function PreviewPlaceholder() {
@@ -111,24 +127,31 @@ function PreviewCalcWrapper({
   characterKey,
   onEdit,
   onDelete,
+  buildOverride,
 }: {
   characterKey: CharacterKey
   onEdit?: () => void
   onDelete?: () => void
+  buildOverride?: BuildPreviewOverride | null
 }) {
   const { database } = useDatabaseContext()
-  const character = useCharacter(characterKey)
-  const team = useTeam(characterKey)
+  const dbCharacter = useCharacter(characterKey)
+  const dbTeam = useTeam(characterKey)
+  const character = buildOverride?.character ?? dbCharacter
+  const team = buildOverride?.team ?? dbTeam
 
   // Ensure the character and team records exist — use effects to avoid
   // synchronously mutating the store during render (which can cascade
   // through useSyncExternalStore subscribers into infinite re-renders).
+  // Skipped for build overrides, which never touch the database.
   useEffect(() => {
-    if (characterKey && !character) database.chars.getOrCreate(characterKey)
-  }, [characterKey, character, database.chars])
+    if (!buildOverride && characterKey && !dbCharacter)
+      database.chars.getOrCreate(characterKey)
+  }, [buildOverride, characterKey, dbCharacter, database.chars])
   useEffect(() => {
-    if (characterKey && !team) database.teams.getOrCreate(characterKey)
-  }, [characterKey, team, database.teams])
+    if (!buildOverride && characterKey && !dbTeam)
+      database.teams.getOrCreate(characterKey)
+  }, [buildOverride, characterKey, dbTeam, database.teams])
 
   const tag = useMemo<Tag>(
     () => ({
@@ -141,17 +164,26 @@ function PreviewCalcWrapper({
 
   if (!character || !team) return <PreviewPlaceholder />
 
+  const discIds = buildOverride?.discIds ?? character.equippedDiscs
+  // Previewing a saved build is read-only: no edit/delete actions, no
+  // customization sidebar, no disc editor (HSR BUILDS_MODAL parity).
+  const preview = !!buildOverride
+
   return (
     <TagContext.Provider value={tag}>
       <CharCalcProvider
         character={character}
         team={team}
-        discIds={character.equippedDiscs}
+        discIds={discIds}
+        teammateGear={buildOverride?.teammateGear}
       >
         <PreviewContent
           characterKey={characterKey}
-          onEdit={onEdit}
-          onDelete={onDelete}
+          character={character}
+          discIds={discIds}
+          onEdit={preview ? undefined : onEdit}
+          onDelete={preview ? undefined : onDelete}
+          preview={preview}
         />
       </CharCalcProvider>
     </TagContext.Provider>
@@ -160,30 +192,30 @@ function PreviewCalcWrapper({
 
 function PreviewContent({
   characterKey,
+  character,
+  discIds,
   onEdit,
   onDelete,
+  preview,
 }: {
   characterKey: CharacterKey
+  character: ICachedCharacter
+  discIds: DiscIds
   onEdit?: () => void
   onDelete?: () => void
+  preview: boolean
 }) {
   const calc = useZzzCalcContext()
-  const character = useCharacter(characterKey)
   const charStat = getCharStat(characterKey)
   const { attribute } = charStat
 
-  const discIds = useMemo(
-    () =>
-      character?.equippedDiscs ??
-      ({} as Record<DiscSlotKey, string | undefined>),
-    [character]
-  )
   const discs = useDiscs(discIds)
 
   const openEditorModal = useDiscEditorModalStore((s) => s.openOverlay)
 
   const handleDiscSlotClick = useCallback(
     (slot: DiscSlotKey) => {
+      if (preview) return
       const disc = discs[slot]
       openEditorModal({
         selectedDisc: disc ?? null,
@@ -192,7 +224,7 @@ function PreviewContent({
         onOk: () => {},
       })
     },
-    [discs, openEditorModal, characterKey]
+    [preview, discs, openEditorModal, characterKey]
   )
 
   const stats = useMemo<ComputedStats | null>(() => {
@@ -327,27 +359,33 @@ function PreviewContent({
     [setShowcasePreset]
   )
 
-  if (!character || !stats) return null
+  if (!stats) return null
 
   const cardBorderColor = theme.cardBorderColor
-  const previewId = `char-preview-${characterKey}`
+  // Previewing a build inside a modal can mount alongside the character tab
+  // preview — use a distinct id (HSR uses 'buildPreview' for the same reason).
+  const previewId = preview
+    ? `build-preview-${characterKey}`
+    : `char-preview-${characterKey}`
 
   return (
     <Flex direction="column" w={cardTotalW} style={{ position: 'relative' }}>
-      <ShowcaseCustomizationSidebar
-        id={previewId}
-        characterKey={characterKey}
-        seedColor={seedColor}
-        effectiveColorMode={effectiveColorMode}
-        portraitSwatches={portraitSwatches}
-        cardBgAlpha={cardBgAlpha}
-        showcaseDarkMode={showcaseDarkMode}
-        showcasePreset={showcasePreset}
-        onColorModeChange={handleColorModeChange}
-        onColorChange={handleColorChange}
-        onDarkModeChange={handleDarkModeChange}
-        onPresetChange={handlePresetChange}
-      />
+      {!preview && (
+        <ShowcaseCustomizationSidebar
+          id={previewId}
+          characterKey={characterKey}
+          seedColor={seedColor}
+          effectiveColorMode={effectiveColorMode}
+          portraitSwatches={portraitSwatches}
+          cardBgAlpha={cardBgAlpha}
+          showcaseDarkMode={showcaseDarkMode}
+          showcasePreset={showcasePreset}
+          onColorModeChange={handleColorModeChange}
+          onColorChange={handleColorChange}
+          onDarkModeChange={handleDarkModeChange}
+          onPresetChange={handlePresetChange}
+        />
+      )}
       <Box
         id={previewId}
         className="characterPreview"
@@ -496,7 +534,7 @@ function PreviewContent({
       </Box>
 
       {/* Disc editor modal */}
-      <DiscEditorModal />
+      {!preview && <DiscEditorModal />}
     </Flex>
   )
 }

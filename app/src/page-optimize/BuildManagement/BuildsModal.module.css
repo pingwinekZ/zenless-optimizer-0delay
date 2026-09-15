@@ -10,8 +10,10 @@
 }
 
 .emptyPreview {
-  width: 656px;
-  height: 900px;
+  /* Matches the showcase card size (page-characters/constantsUi:
+     cardTotalW x parentH). HSR uses 656px x 900px for its own card. */
+  width: 1100px;
+  height: 880px;
   border: 1px solid var(--border-default);
 }
 

@@ -23,7 +23,12 @@ import { constant } from '@zenless-optimizer/pando/engine'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
 import type { CharacterKey, PhaseKey } from '../../consts'
-import { allDiscSetKeys, allDiscSlotKeys, allWengineKeys } from '../../consts'
+import {
+  allDiscSetKeys,
+  allDiscSlotKeys,
+  allWengineKeys,
+  isWengineKey,
+} from '../../consts'
 import type { DiscIds, ICachedCharacter, Team, TeamConditional } from '../../db'
 import { getComboFrames, teamCharacterKeys } from '../../db'
 import { useCharacter, useDiscs } from '../../db-ui'
@@ -45,6 +50,7 @@ import {
   withPreset,
   zzzCalculatorWithEntries,
 } from '../../formula'
+import type { SavedTeammateGear } from '../../schema/savedBuild'
 import { allStats } from '../../stats'
 import { FullTagDisplay, TagDisplay } from '../components'
 import { formulaText } from '../formulaText'
@@ -53,11 +59,17 @@ export function CharCalcProvider({
   character,
   team,
   discIds,
+  teammateGear,
   children,
 }: {
   character: ICachedCharacter
   team: Team
   discIds: DiscIds
+  /**
+   * Save-time teammate gear (wengine + discs) by character key. When absent
+   * for a teammate, its live database state is used.
+   */
+  teammateGear?: Record<string, SavedTeammateGear>
   children: ReactNode
 }) {
   const member0 = useCharacterAndEquipment(character, discIds)
@@ -71,13 +83,15 @@ export function CharCalcProvider({
     teammate1Key,
     character.key,
     teammate1Phase,
-    teammate1Mindscape
+    teammate1Mindscape,
+    teammate1Key ? teammateGear?.[teammate1Key] : undefined
   )
   const teammate2Entries = useTeammateMemberEntries(
     teammate2Key,
     character.key,
     teammate2Phase,
-    teammate2Mindscape
+    teammate2Mindscape,
+    teammate2Key ? teammateGear?.[teammate2Key] : undefined
   )
 
   const calc = useMemo(() => {
@@ -198,26 +212,32 @@ function useTeammateMemberEntries(
   teammateKey: CharacterKey | undefined,
   mainCharacterKey: CharacterKey,
   wenginePhaseOverride?: number,
-  mindscapeOverride?: number
+  mindscapeOverride?: number,
+  gearOverride?: SavedTeammateGear
 ) {
   const character = useCharacter(teammateKey)
-  const discs = useDiscs(character?.equippedDiscs)
+  const discs = useDiscs(gearOverride?.discIds ?? character?.equippedDiscs)
   const phase = (wenginePhaseOverride ??
     character?.wenginePhase ??
     1) as PhaseKey
+  const overrideWengineKey =
+    gearOverride?.wengineKey && isWengineKey(gearOverride.wengineKey)
+      ? gearOverride.wengineKey
+      : undefined
+  const wengineKey = overrideWengineKey ?? character?.wengineKey
   const wengineTagEntries = useMemo(
     () =>
       wengineTagMapNodeEntries(
-        character?.wengineKey
+        wengineKey
           ? {
-              key: character.wengineKey,
+              key: wengineKey,
               level: 60,
               modification: 5,
               phase,
             }
           : undefined
       ),
-    [character?.wengineKey, phase]
+    [wengineKey, phase]
   )
   const discTagEntries = useMemo(
     () => discsToTagMapNodeEntries(Object.values(discs).filter(notEmpty)),

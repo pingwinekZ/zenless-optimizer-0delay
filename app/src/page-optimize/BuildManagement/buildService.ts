@@ -1,7 +1,7 @@
 import type { CharacterKey } from '../../consts'
 import { isWengineKey } from '../../consts'
 import type { ZzzDatabase } from '../../db'
-import { BuildSource, type SavedBuild } from '../../zood'
+import { BuildSource, type ICharacter, type SavedBuild } from '../../zood'
 import type { EquippedSelection } from './buildConverter'
 import {
   deserializeBuild,
@@ -41,7 +41,25 @@ export function saveBuild(
       char,
       team,
       optConfig,
-      equipped
+      equipped,
+      {
+        main: {
+          wengineKey: char.wengineKey,
+          wenginePhase: char.wenginePhase,
+          mindscape: char.mindscape,
+          discIds: { ...equipped.discIds },
+        },
+        of: (key) => {
+          const mate = database.chars.get(key)
+          if (!mate) return undefined
+          return {
+            wengineKey: mate.wengineKey,
+            wenginePhase: mate.wenginePhase,
+            mindscape: mate.mindscape,
+            discIds: { ...mate.equippedDiscs },
+          }
+        },
+      }
     )
   } else {
     build = serializeFromCharacterTab(trimmed, characterKey, char)
@@ -85,6 +103,26 @@ export function loadBuildInOptimizer(
       enemyDef: patch.teamPatch.enemyDef,
       enemyStunMultiplier: patch.teamPatch.enemyStunMultiplier,
     })
+    // Restore save-time teammate setup (slots 1-2; slot 0 is the main
+    // character, handled by charPatch). W-Engines are plain references and
+    // mindscapes merge upward nowhere, so these mirror the saved values.
+    // Disc locations are intentionally untouched — moving discs is Equip's
+    // job, for the main character and teammates alike.
+    for (const mate of patch.teamPatch.teammates.slice(1)) {
+      if (!mate?.characterKey) continue
+      const update: Partial<
+        Pick<ICharacter, 'wengineKey' | 'wenginePhase' | 'mindscape'>
+      > = {}
+      if (mate.wengineKey && isWengineKey(mate.wengineKey))
+        update.wengineKey = mate.wengineKey
+      if (mate.wenginePhase !== undefined)
+        update.wenginePhase = mate.wenginePhase
+      if (mate.mindscape !== undefined) update.mindscape = mate.mindscape
+      if (Object.keys(update).length > 0) {
+        database.chars.getOrCreate(mate.characterKey)
+        database.chars.set(mate.characterKey, update)
+      }
+    }
   }
 
   if (patch.optimizerSettings)

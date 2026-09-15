@@ -1,12 +1,4 @@
-import {
-  Button,
-  Divider,
-  Flex,
-  Modal,
-  Text,
-  TextInput,
-  Tooltip,
-} from '@mantine/core'
+import { Button, Divider, Flex, Modal, TextInput, Tooltip } from '@mantine/core'
 import { modals } from '@mantine/modals'
 import { memo, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -18,6 +10,7 @@ import {
   useDatabaseContext,
   useTeam,
 } from '../../db-ui'
+import { Message } from '../../ui'
 import { BuildSource } from '../../zood'
 import { BuildList } from './BuildList'
 import { BuildPreview } from './BuildPreview'
@@ -44,13 +37,11 @@ export const SaveBuildModal = memo(function SaveBuildModal({
 
   const [selectedName, setSelectedName] = useState<string | null>(null)
   const [inputName, setInputName] = useState('')
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (opened) {
       setSelectedName(null)
       setInputName('')
-      setError(null)
     }
   }, [opened])
 
@@ -62,7 +53,6 @@ export const SaveBuildModal = memo(function SaveBuildModal({
 
   const setSelectedWrapped = (name: string | null) => {
     setSelectedName(name)
-    setError(null)
     if (name !== null) {
       const build = builds.find((b) => b.name === name)
       setInputName(build?.name ?? '')
@@ -128,9 +118,18 @@ export const SaveBuildModal = memo(function SaveBuildModal({
       }),
     })
     if (result.error) {
-      setError(result.error)
+      Message.error(result.error)
       return
     }
+    Message.success(
+      mode === 'overwrite'
+        ? t('buildsSection.successOverwrite', 'Overwrote build {{name}}', {
+            name: inputName.trim(),
+          })
+        : t('buildsSection.successSave', 'Saved build {{name}}', {
+            name: inputName.trim(),
+          })
+    )
     onClose()
   }
 
@@ -151,32 +150,19 @@ export const SaveBuildModal = memo(function SaveBuildModal({
   }
 
   return (
-    <Modal
-      opened={opened}
-      onClose={onClose}
-      title={t('buildsSection.saveBuild', 'Save Build')}
-      size={1550}
-      centered
-    >
+    <Modal opened={opened} onClose={onClose} size={1550} centered>
       <Flex gap={10} className={styles.outerFlex}>
         <Flex direction="column" className={styles.leftColumn}>
           <TextInput
             label={t('buildsSection.label', 'Build name')}
-            placeholder={t('buildsSection.namePlaceholder', 'My Build')}
             value={inputName}
             onChange={(e) => {
               const value = e.currentTarget.value
               setInputName(value)
-              setError(null)
               const match = builds.find((b) => b.name === value)
               setSelectedName(match ? match.name : null)
             }}
           />
-          {error && (
-            <Text size="xs" c="red" mt={4}>
-              {error}
-            </Text>
-          )}
           <Divider className={styles.divider} />
           <Button
             variant="default"

@@ -8,10 +8,12 @@ import type {
   Team,
   TeammateDatum,
 } from '../../db'
+import type { BuildPreviewOverride } from '../../page-characters/CharacterPreview'
 import {
   BuildSource,
   type SavedBuild,
   type SavedBuildTeamSnapshot,
+  type SavedTeammateGear,
 } from '../../zood'
 
 export type EquippedSelection = {
@@ -19,6 +21,9 @@ export type EquippedSelection = {
   wengineKey?: string
   value?: number
 }
+
+/** A team member with its save-time gear attached. */
+export type SnapshottedTeammate = TeammateDatum & SavedTeammateGear
 
 /** Max phase wins when the W-Engine matches, otherwise take the saved one. */
 export function resolveFlexibleWengine(
@@ -44,10 +49,29 @@ export function resolveMindscape(
   return Math.max(savedMindscape ?? 0, currentMindscape)
 }
 
-function snapshotTeam(team: Team | undefined): SavedBuildTeamSnapshot {
+function snapshotTeam(
+  team: Team | undefined,
+  gear?: {
+    /** Save-time gear of the main character (slot 0). */
+    main: SavedTeammateGear
+    /** Save-time gear of a teammate by character key. */
+    of: (key: CharacterKey) => SavedTeammateGear | undefined
+  }
+): SavedBuildTeamSnapshot {
   if (!team) return {}
   return {
-    teammates: structuredClone(team.teammates),
+    teammates: team.teammates.map((member, i) => {
+      const saved = i === 0 ? gear?.main : gear?.of(member.characterKey)
+      const clone = structuredClone(member) as SnapshottedTeammate
+      if (!saved) return clone
+      if (saved.wengineKey !== undefined) clone.wengineKey = saved.wengineKey
+      if (saved.wenginePhase !== undefined)
+        clone.wenginePhase = clone.wenginePhase ?? saved.wenginePhase
+      if (saved.mindscape !== undefined)
+        clone.mindscape = clone.mindscape ?? saved.mindscape
+      if (saved.discIds) clone.discIds = structuredClone(saved.discIds)
+      return clone
+    }),
     frames: structuredClone(team.frames),
     enemyLvl: team.enemyLvl,
     enemyDef: team.enemyDef,
@@ -72,7 +96,11 @@ export function serializeFromOptimizer(
   char: ICachedCharacter,
   team: Team | undefined,
   optConfig: OptConfig | undefined,
-  equipped: EquippedSelection
+  equipped: EquippedSelection,
+  teammateGear?: {
+    main: SavedTeammateGear
+    of: (key: CharacterKey) => SavedTeammateGear | undefined
+  }
 ): SavedBuild {
   const now = Date.now()
   return {
@@ -97,7 +125,7 @@ export function serializeFromOptimizer(
       wenginePhase: char.wenginePhase,
     },
     ...(equipped.value !== undefined && { value: equipped.value }),
-    teamSnapshot: snapshotTeam(team),
+    teamSnapshot: snapshotTeam(team, teammateGear),
     optimizerSettings: snapshotOptimizerSettings(optConfig),
     createdAt: now,
     updatedAt: now,
@@ -151,9 +179,9 @@ export type DeserializedBuild = {
     wengineKey: WengineKey | ''
     wenginePhase: number
   }
-  /** Team patch (teammates, frames incl. combo, enemy stats). */
+  /** Team patch (teammates with save-time gear, frames incl. combo, enemy stats). */
   teamPatch?: {
-    teammates: TeammateDatum[]
+    teammates: SnapshottedTeammate[]
     frames: Team['frames']
     enemyLvl: number
     enemyDef: number
@@ -215,7 +243,7 @@ export function deserializeBuild(
   const teamPatch =
     snap && (snap.teammates || snap.frames)
       ? {
-          teammates: structuredClone(teammates) as TeammateDatum[],
+          teammates: structuredClone(teammates) as SnapshottedTeammate[],
           frames: structuredClone(snap.frames ?? []) as Team['frames'],
           enemyLvl: snap.enemyLvl ?? 80,
           enemyDef: snap.enemyDef ?? 953,
@@ -230,5 +258,80 @@ export function deserializeBuild(
       ? { ...build.optimizerSettings }
       : undefined,
     generatedBuild,
+  }
+}
+
+/**
+ * Build a read-only preview override for the showcase CharacterPreview from
+ * a saved build (HSR parity: CharacterPreview + savedBuildOverride).
+ * Everything is shown exactly as saved — unlike the load path, nothing is
+ * max-merged against the live character.
+ */
+export function previewOverrideFromBuild(
+  characterKey: CharacterKey,
+  current: { char?: ICachedCharacter; team?: Team },
+  build: SavedBuild
+): BuildPreviewOverride | null {
+  const { char, team } = current
+  const setup = build.charSetup
+  if (!char && !setup) return null
+
+  const wengineKey = build.wengineSetup?.wengineKey ?? build.wengineKey ?? ''
+  const character: ICachedCharacter = {
+    key: characterKey,
+    level: setup?.level ?? char?.level ?? 60,
+    promotion: (setup?.promotion ?? char?.promotion ?? 5) as MilestoneKey,
+    mindscape: setup?.mindscape ?? char?.mindscape ?? 0,
+    core: setup?.core ?? char?.core ?? 0,
+    dodge: setup?.dodge ?? char?.dodge ?? 1,
+    basic: setup?.basic ?? char?.basic ?? 1,
+    chain: setup?.chain ?? char?.chain ?? 1,
+    special: setup?.special ?? char?.special ?? 1,
+    assist: setup?.assist ?? char?.assist ?? 1,
+    wengineKey: (isWengineKey(wengineKey) ? wengineKey : '') as WengineKey | '',
+    wenginePhase: build.wengineSetup?.wenginePhase ?? 1,
+    builds: char?.builds ?? [],
+    equippedDiscs: structuredClone(build.discIds),
+  }
+
+  const snap = build.teamSnapshot
+  const previewTeam: Team = {
+    teammates: (snap?.teammates?.length
+      ? structuredClone(snap.teammates)
+      : team
+        ? structuredClone(team.teammates)
+        : [{ characterKey }]) as TeammateDatum[],
+    frames: structuredClone(
+      snap?.frames ?? team?.frames ?? []
+    ) as Team['frames'],
+    enemyLvl: snap?.enemyLvl ?? team?.enemyLvl ?? 80,
+    enemyDef: snap?.enemyDef ?? team?.enemyDef ?? 953,
+    enemyStunMultiplier:
+      snap?.enemyStunMultiplier ?? team?.enemyStunMultiplier ?? 150,
+  }
+
+  // Save-time teammate gear for the calculator (slots 1-2; slot 0 is the
+  // main character, already covered by the character override).
+  const teammateGear: Record<string, SavedTeammateGear> = {}
+  for (const member of previewTeam.teammates.slice(
+    1
+  ) as SnapshottedTeammate[]) {
+    if (!member?.characterKey) continue
+    if (member.wengineKey !== undefined || member.discIds !== undefined)
+      teammateGear[member.characterKey] = {
+        ...(member.wengineKey !== undefined && {
+          wengineKey: member.wengineKey,
+        }),
+        ...(member.discIds !== undefined && {
+          discIds: structuredClone(member.discIds),
+        }),
+      }
+  }
+
+  return {
+    character,
+    team: previewTeam,
+    discIds: structuredClone(build.discIds),
+    ...(Object.keys(teammateGear).length > 0 && { teammateGear }),
   }
 }

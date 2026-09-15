@@ -1400,6 +1400,7 @@ function OptimizeWrapper() {
                     onClearPins={onClearPins}
                   />
                   <BuildsSection
+                    isFullSize={true}
                     selectedBuild={selectedBuild}
                     characterKey={characterKey}
                   />

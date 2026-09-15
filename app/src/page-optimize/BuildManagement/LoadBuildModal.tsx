@@ -1,10 +1,11 @@
-import { Button, Flex, Modal, Stack, Text, TextInput } from '@mantine/core'
+import { Button, Flex, Modal } from '@mantine/core'
 import { modals } from '@mantine/modals'
-import { IconSearch } from '@tabler/icons-react'
+import i18next from 'i18next'
 import { memo, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { CharacterKey } from '../../consts'
 import { OptConfigContext, useCharacter, useDatabaseContext } from '../../db-ui'
+import { Message } from '../../ui'
 import type { SavedBuild } from '../../zood'
 import { BuildList } from './BuildList'
 import { BuildPreview } from './BuildPreview'
@@ -31,34 +32,18 @@ export const LoadBuildModal = memo(function LoadBuildModal({
   const { optConfigId } = useContext(OptConfigContext)
   const character = useCharacter(characterKey ?? '')
   const [selectedName, setSelectedName] = useState<string | null>(null)
-  const [search, setSearch] = useState('')
 
-  const allBuilds = useMemo(
+  const builds = useMemo(
     () =>
       [...(character?.builds ?? [])].sort((a, b) => b.updatedAt - a.updatedAt),
     [character]
   )
 
   useEffect(() => {
-    if (opened) {
-      setSelectedName(allBuilds[0]?.name ?? null)
-      setSearch('')
-    }
-    // Select the first build when opened; allBuilds identity changes on save
+    if (opened) setSelectedName(builds[0]?.name ?? null)
+    // Select the first build when opened
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [opened])
-
-  const builds = useMemo(
-    () =>
-      search
-        ? allBuilds.filter(
-            (b) =>
-              b.name.toLowerCase().includes(search.toLowerCase()) ||
-              b.description?.toLowerCase().includes(search.toLowerCase())
-          )
-        : allBuilds,
-    [allBuilds, search]
-  )
 
   const build =
     selectedName !== null
@@ -79,6 +64,11 @@ export const LoadBuildModal = memo(function LoadBuildModal({
     const apply = () => {
       if (!characterKey) return
       equipBuild(database, characterKey, target)
+      Message.success(
+        t('buildsSection.successEquip', 'Equipped {{buildName}}', {
+          buildName: target.name,
+        })
+      )
       onClose()
     }
     if (conflicts.length === 0) {
@@ -117,11 +107,14 @@ export const LoadBuildModal = memo(function LoadBuildModal({
       centered: true,
       onConfirm: () => {
         deleteBuild(database, key, name)
-        setSelectedName((prev) => {
-          if (prev !== name) return prev
-          const remaining = allBuilds.filter((b) => b.name !== name)
-          return remaining[0]?.name ?? null
-        })
+        Message.success(
+          t('buildsSection.successDeleteSingle', 'Deleted build {{name}}', {
+            name,
+          })
+        )
+        const remaining = builds.filter((b) => b.name !== name)
+        setSelectedName(remaining[0]?.name ?? null)
+        if (remaining.length === 0) onClose()
       },
     })
   }
@@ -143,6 +136,17 @@ export const LoadBuildModal = memo(function LoadBuildModal({
       confirmProps: { color: 'red' },
       onConfirm: () => {
         clearBuilds(database, key)
+        Message.success(
+          t(
+            'buildsSection.successDeleteAll',
+            'Deleted all builds for {{character}}',
+            {
+              character: i18next.t(`charNames_gen:${key}`, {
+                defaultValue: key,
+              }),
+            }
+          )
+        )
         setSelectedName(null)
         onClose()
       },
@@ -158,59 +162,34 @@ export const LoadBuildModal = memo(function LoadBuildModal({
     <Modal
       opened={opened}
       onClose={handleCancel}
-      title={t('buildsSection.loadBuild', 'Load Build')}
-      size={allBuilds.length > 0 ? 1550 : 300}
+      size={builds.length > 0 ? 1550 : 300}
       centered
     >
-      {allBuilds.length === 0 ? (
-        <Text size="sm" c="dimmed" ta="center" py="xl">
-          {t('buildsSection.noBuilds', 'No saved builds yet.')}
-        </Text>
+      {builds.length === 0 ? (
+        <>{t('buildsSection.noBuilds', 'No saved builds yet.')}</>
       ) : (
         <>
-          <Stack gap="sm">
-            <TextInput
-              placeholder={t(
-                'buildsSection.searchPlaceholder',
-                'Search builds...'
-              )}
-              leftSection={<IconSearch size={14} />}
-              value={search}
-              onChange={(e) => setSearch(e.currentTarget.value)}
+          <Flex gap={10}>
+            <BuildList
+              builds={builds}
+              selectedName={selectedName}
+              onSelect={setSelectedName}
+              onLoad={handleLoad}
+              onEquip={handleEquip}
+              onDelete={handleDelete}
             />
-          </Stack>
-          {builds.length === 0 ? (
-            <Text size="sm" c="dimmed" ta="center" py="xl">
-              {t(
-                'buildsSection.noSearchResults',
-                'No builds match your search.'
-              )}
-            </Text>
-          ) : (
-            <>
-              <Flex gap={10} mt="sm">
-                <BuildList
-                  builds={builds}
-                  selectedName={selectedName}
-                  onSelect={setSelectedName}
-                  onLoad={handleLoad}
-                  onEquip={handleEquip}
-                  onDelete={handleDelete}
-                />
-                {characterKey && (
-                  <BuildPreview build={build} characterKey={characterKey} />
-                )}
-              </Flex>
-              <Flex justify="flex-end" gap={8} className={styles.footerActions}>
-                <Button color="red" onClick={handleDeleteAll}>
-                  {t('buildsSection.deleteAll', 'Delete All')}
-                </Button>
-                <Button variant="default" onClick={handleCancel}>
-                  {t('buildsSection.cancel', 'Cancel')}
-                </Button>
-              </Flex>
-            </>
-          )}
+            {characterKey && (
+              <BuildPreview build={build} characterKey={characterKey} />
+            )}
+          </Flex>
+          <Flex justify="flex-end" gap={8} className={styles.footerActions}>
+            <Button color="red" onClick={handleDeleteAll}>
+              {t('buildsSection.deleteAll', 'Delete All')}
+            </Button>
+            <Button variant="default" onClick={handleCancel}>
+              {t('buildsSection.cancel', 'Cancel')}
+            </Button>
+          </Flex>
         </>
       )}
     </Modal>
