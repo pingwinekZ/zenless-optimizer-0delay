@@ -1,18 +1,21 @@
-import {
-  Button,
-  Card,
-  CloseButton,
-  Group,
-  Modal,
-  Stack,
-  Text,
-  TextInput,
-} from '@mantine/core'
+import { Button, Flex, Modal, Stack, Text, TextInput } from '@mantine/core'
+import { modals } from '@mantine/modals'
 import { IconSearch } from '@tabler/icons-react'
-import { memo, useCallback, useContext, useMemo, useState } from 'react'
+import { memo, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { CharacterKey } from '../../consts'
-import { OptConfigContext, useDatabaseContext } from '../../db-ui'
+import { OptConfigContext, useCharacter, useDatabaseContext } from '../../db-ui'
+import type { SavedBuild } from '../../zood'
+import { BuildList } from './BuildList'
+import { BuildPreview } from './BuildPreview'
+import styles from './BuildsModal.module.css'
+import {
+  buildEquipConflicts,
+  clearBuilds,
+  deleteBuild,
+  equipBuild,
+  loadBuildInOptimizer,
+} from './buildService'
 
 export const LoadBuildModal = memo(function LoadBuildModal({
   opened,
@@ -26,154 +29,190 @@ export const LoadBuildModal = memo(function LoadBuildModal({
   const { t } = useTranslation('page_optimize')
   const { database } = useDatabaseContext()
   const { optConfigId } = useContext(OptConfigContext)
+  const character = useCharacter(characterKey ?? '')
+  const [selectedName, setSelectedName] = useState<string | null>(null)
   const [search, setSearch] = useState('')
 
-  // Get all saved builds - we use the data manager's keys to access entries
-  const savedBuildKeys = useMemo(
-    () => database.savedBuilds.keys,
-    [database.savedBuilds]
-  )
-
-  const savedBuilds = useMemo(
+  const allBuilds = useMemo(
     () =>
-      savedBuildKeys
-        .map((key) => {
-          const build = database.savedBuilds.get(key)
-          return build ? { id: key, ...build } : null
-        })
-        .filter((b): b is NonNullable<typeof b> => b !== null)
-        .filter(
-          (b) =>
-            !search ||
-            b.name.toLowerCase().includes(search.toLowerCase()) ||
-            b.description?.toLowerCase().includes(search.toLowerCase())
-        )
-        .sort((a, b) => b.updatedAt - a.updatedAt),
-    [savedBuildKeys, database.savedBuilds, search]
+      [...(character?.builds ?? [])].sort((a, b) => b.updatedAt - a.updatedAt),
+    [character]
   )
 
-  const handleLoad = useCallback(
-    (buildId: string) => {
-      const savedBuild = database.savedBuilds.get(buildId)
-      if (!savedBuild || !characterKey) return
+  useEffect(() => {
+    if (opened) {
+      setSelectedName(allBuilds[0]?.name ?? null)
+      setSearch('')
+    }
+    // Select the first build when opened; allBuilds identity changes on save
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [opened])
 
-      // 1. Restore optimizer settings (filters, slots, set filters, wengine options, etc.)
-      if (savedBuild.optimizerSettings) {
-        database.optConfigs.set(optConfigId, {
-          ...savedBuild.optimizerSettings,
-        })
-      }
+  const builds = useMemo(
+    () =>
+      search
+        ? allBuilds.filter(
+            (b) =>
+              b.name.toLowerCase().includes(search.toLowerCase()) ||
+              b.description?.toLowerCase().includes(search.toLowerCase())
+          )
+        : allBuilds,
+    [allBuilds, search]
+  )
 
-      // 2. Restore team snapshot (teammates with overrides, frames, enemy stats)
-      if (savedBuild.teamSnapshot) {
-        database.teams.set(characterKey, {
-          teammates: savedBuild.teamSnapshot.teammates ?? [{ characterKey }],
-          frames: savedBuild.teamSnapshot.frames ?? [],
-          enemyLvl: savedBuild.teamSnapshot.enemyLvl ?? 80,
-          enemyDef: savedBuild.teamSnapshot.enemyDef ?? 953,
-          enemyStunMultiplier:
-            savedBuild.teamSnapshot.enemyStunMultiplier ?? 150,
-        })
-      }
+  const build =
+    selectedName !== null
+      ? (builds.find((b) => b.name === selectedName) ?? null)
+      : null
 
-      // 3. Create a generated build list from the saved build and link it to the optConfig
-      database.optConfigs.newOrSetGeneratedBuildList(optConfigId, {
-        builds: [
-          {
-            wengineKey: savedBuild.wengineKey,
-            discIds: savedBuild.discIds,
-            value: savedBuild.value,
-          },
-        ],
-        buildDate: Date.now(),
-      })
+  if (!characterKey) return null
 
+  function handleLoad(target: SavedBuild) {
+    if (!characterKey) return
+    loadBuildInOptimizer(database, target, { characterKey, optConfigId })
+    onClose()
+  }
+
+  function handleEquip(target: SavedBuild) {
+    if (!characterKey) return
+    const conflicts = buildEquipConflicts(database, characterKey, target)
+    const apply = () => {
+      if (!characterKey) return
+      equipBuild(database, characterKey, target)
       onClose()
-    },
-    [database, characterKey, optConfigId, onClose]
-  )
-
-  const handleDelete = useCallback(
-    (buildId: string) => {
-      database.savedBuilds.remove(buildId)
-    },
-    [database.savedBuilds]
-  )
-
-  const formatDate = (timestamp: number) => {
-    const date = new Date(timestamp)
-    return date.toLocaleDateString(undefined, {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    }
+    if (conflicts.length === 0) {
+      apply()
+      return
+    }
+    const owners = [...new Set(conflicts.map((c) => c.owner))].join(', ')
+    modals.openConfirmModal({
+      title: t('buildsSection.equip', 'Equip'),
+      children: `${t(
+        'buildsSection.confirmEquip',
+        'Some discs are equipped by other characters. Equip them anyway?'
+      )} (${owners})`,
+      labels: {
+        confirm: t('buildsSection.equip', 'Equip'),
+        cancel: t('buildsSection.cancel', 'Cancel'),
+      },
+      centered: true,
+      onConfirm: apply,
     })
+  }
+
+  function handleDelete(name: string) {
+    if (!characterKey) return
+    const key = characterKey
+    modals.openConfirmModal({
+      title: t('buildsSection.delete', 'Delete'),
+      children: t('buildsSection.confirmDeleteSingle', {
+        defaultValue: 'Are you sure you want to delete build {{name}}?',
+        name,
+      }),
+      labels: {
+        confirm: t('buildsSection.delete', 'Delete'),
+        cancel: t('buildsSection.cancel', 'Cancel'),
+      },
+      centered: true,
+      onConfirm: () => {
+        deleteBuild(database, key, name)
+        setSelectedName((prev) => {
+          if (prev !== name) return prev
+          const remaining = allBuilds.filter((b) => b.name !== name)
+          return remaining[0]?.name ?? null
+        })
+      },
+    })
+  }
+
+  function handleDeleteAll() {
+    if (!characterKey) return
+    const key = characterKey
+    modals.openConfirmModal({
+      title: t('buildsSection.deleteAll', 'Delete All'),
+      children: t(
+        'buildsSection.confirmDeleteAll',
+        'Are you sure you want to delete all builds?'
+      ),
+      labels: {
+        confirm: t('buildsSection.deleteAll', 'Delete All'),
+        cancel: t('buildsSection.cancel', 'Cancel'),
+      },
+      centered: true,
+      confirmProps: { color: 'red' },
+      onConfirm: () => {
+        clearBuilds(database, key)
+        setSelectedName(null)
+        onClose()
+      },
+    })
+  }
+
+  function handleCancel() {
+    setSelectedName(null)
+    onClose()
   }
 
   return (
     <Modal
       opened={opened}
-      onClose={onClose}
+      onClose={handleCancel}
       title={t('buildsSection.loadBuild', 'Load Build')}
-      size="md"
+      size={allBuilds.length > 0 ? 1550 : 300}
+      centered
     >
-      <Stack gap="sm">
-        <TextInput
-          placeholder={t('buildsSection.searchPlaceholder', 'Search builds...')}
-          leftSection={<IconSearch size={14} />}
-          value={search}
-          onChange={(e) => setSearch(e.currentTarget.value)}
-        />
-        {savedBuilds.length === 0 ? (
-          <Text size="sm" c="dimmed" ta="center" py="xl">
-            {search
-              ? t(
-                  'buildsSection.noSearchResults',
-                  'No builds match your search.'
-                )
-              : t(
-                  'buildsSection.noSavedBuilds',
-                  'No saved builds yet. Run an optimization and save a build!'
+      {allBuilds.length === 0 ? (
+        <Text size="sm" c="dimmed" ta="center" py="xl">
+          {t('buildsSection.noBuilds', 'No saved builds yet.')}
+        </Text>
+      ) : (
+        <>
+          <Stack gap="sm">
+            <TextInput
+              placeholder={t(
+                'buildsSection.searchPlaceholder',
+                'Search builds...'
+              )}
+              leftSection={<IconSearch size={14} />}
+              value={search}
+              onChange={(e) => setSearch(e.currentTarget.value)}
+            />
+          </Stack>
+          {builds.length === 0 ? (
+            <Text size="sm" c="dimmed" ta="center" py="xl">
+              {t(
+                'buildsSection.noSearchResults',
+                'No builds match your search.'
+              )}
+            </Text>
+          ) : (
+            <>
+              <Flex gap={10} mt="sm">
+                <BuildList
+                  builds={builds}
+                  selectedName={selectedName}
+                  onSelect={setSelectedName}
+                  onLoad={handleLoad}
+                  onEquip={handleEquip}
+                  onDelete={handleDelete}
+                />
+                {characterKey && (
+                  <BuildPreview build={build} characterKey={characterKey} />
                 )}
-          </Text>
-        ) : (
-          savedBuilds.map((build) => (
-            <Card key={build.id} padding="sm" withBorder>
-              <Group justify="space-between" align="flex-start">
-                <Stack gap={2} style={{ flex: 1 }}>
-                  <Text size="sm" fw={600}>
-                    {build.name}
-                  </Text>
-                  <Text size="xs" c="dimmed">
-                    {formatDate(build.updatedAt)} — Val:{' '}
-                    {build.value.toLocaleString()}
-                  </Text>
-                  {build.description && (
-                    <Text size="xs" c="dimmed" lineClamp={1}>
-                      {build.description}
-                    </Text>
-                  )}
-                </Stack>
-                <Group gap={4}>
-                  <Button
-                    size="compact-xs"
-                    variant="light"
-                    onClick={() => handleLoad(build.id!)}
-                  >
-                    {t('buildsSection.load', 'Load')}
-                  </Button>
-                  <CloseButton
-                    size="sm"
-                    onClick={() => handleDelete(build.id!)}
-                    aria-label={t('buildsSection.delete', 'Delete')}
-                  />
-                </Group>
-              </Group>
-            </Card>
-          ))
-        )}
-      </Stack>
+              </Flex>
+              <Flex justify="flex-end" gap={8} className={styles.footerActions}>
+                <Button color="red" onClick={handleDeleteAll}>
+                  {t('buildsSection.deleteAll', 'Delete All')}
+                </Button>
+                <Button variant="default" onClick={handleCancel}>
+                  {t('buildsSection.cancel', 'Cancel')}
+                </Button>
+              </Flex>
+            </>
+          )}
+        </>
+      )}
     </Modal>
   )
 })

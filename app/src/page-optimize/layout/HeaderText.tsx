@@ -8,14 +8,17 @@ import type { CSSProperties, ReactNode } from 'react'
 export function HeaderText({
   children,
   style,
+  className,
 }: {
   children: ReactNode
   style?: CSSProperties
+  className?: string
 }) {
   return (
     <Text
       fw={700}
       size="sm"
+      className={className}
       style={{
         textDecoration: 'underline',
         textDecorationColor: 'var(--mantine-color-blue-6)',

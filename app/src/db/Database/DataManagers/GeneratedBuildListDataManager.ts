@@ -6,9 +6,14 @@ import type { DiscIds, ZzzDatabase } from '../..'
 import { DataManager } from '../DataManager'
 
 const discIdValueSchema = z.union([z.string(), z.undefined()])
-const discIdsSchema = zodTypedRecord(
-  allDiscSlotKeys,
-  discIdValueSchema
+// JSON drops undefined values, so stored discIds may omit empty slots.
+// Fill them before validation, otherwise entries with empty slots vanish.
+const discIdsSchema = z.preprocess(
+  (v) => ({
+    ...objKeyMap(allDiscSlotKeys, () => undefined),
+    ...((v ?? {}) as Record<string, string | undefined>),
+  }),
+  zodTypedRecord(allDiscSlotKeys, discIdValueSchema)
 ) as z.ZodType<DiscIds>
 
 const generatedBuildSchema = z.object({

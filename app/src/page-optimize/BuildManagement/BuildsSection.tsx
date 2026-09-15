@@ -1,10 +1,11 @@
-import { Button, Flex, Text } from '@mantine/core'
+import { Button, Flex } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { IconDownload, IconUpload } from '@tabler/icons-react'
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { CharacterKey } from '../../consts'
 import type { GeneratedBuild } from '../../db'
+import { HeaderText, TooltipImage } from '../layout'
 import { ExportImportSection } from './ExportImportSection'
 import { LoadBuildModal } from './LoadBuildModal'
 import { SaveBuildModal } from './SaveBuildModal'
@@ -27,13 +28,34 @@ export const BuildsSection = memo(function BuildsSection({
   return (
     <>
       <Flex direction="column" gap={5}>
-        <Text fw={700} size="sm">
-          {t('buildsSection.title', 'Build Management')}
-        </Text>
+        <Flex justify="space-between" align="center">
+          <HeaderText>{t('buildsSection.header', 'Builds')}</HeaderText>
+          <TooltipImage
+            type={{
+              title: t('buildsSection.hintTitle', 'Builds'),
+              content: (
+                <Flex direction="column" gap={10}>
+                  <p>
+                    {t(
+                      'buildsSection.hintSave',
+                      'Save - Save the currently selected build as well as all the optimizer settings'
+                    )}
+                  </p>
+                  <p>
+                    {t(
+                      'buildsSection.hintLoad',
+                      'Load - Load a saved build into the optimizer. This includes teammates, conditionals, and combo settings'
+                    )}
+                  </p>
+                </Flex>
+              ),
+            }}
+          />
+        </Flex>
         <Flex gap={5} wrap="wrap">
           <Button
             size="compact-sm"
-            variant="light"
+            variant="default"
             leftSection={<IconDownload size={14} />}
             onClick={openSave}
             style={{ flex: 1 }}
@@ -42,7 +64,7 @@ export const BuildsSection = memo(function BuildsSection({
           </Button>
           <Button
             size="compact-sm"
-            variant="light"
+            variant="default"
             leftSection={<IconUpload size={14} />}
             onClick={openLoad}
             style={{ flex: 1 }}
@@ -50,7 +72,7 @@ export const BuildsSection = memo(function BuildsSection({
             {t('buildsSection.load', 'Load')}
           </Button>
         </Flex>
-        <ExportImportSection />
+        <ExportImportSection characterKey={characterKey} />
       </Flex>
 
       <SaveBuildModal

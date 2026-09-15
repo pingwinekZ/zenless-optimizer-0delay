@@ -237,6 +237,7 @@ function useTeammateMemberEntries(
       ...DEFAULT_TEAMMATE_CHAR,
       wengineKey: '',
       wenginePhase: 1,
+      builds: [],
       equippedDiscs: objKeyMap(allDiscSlotKeys, () => ''),
     }
     // Apply mindscape override: if the user set a team-level mindscape

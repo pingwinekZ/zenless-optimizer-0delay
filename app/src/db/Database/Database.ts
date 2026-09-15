@@ -18,7 +18,6 @@ import { CharacterBuildDataManager } from './DataManagers/CharacterBuildDataMana
 import { CharacterDataManager } from './DataManagers/CharacterDataManager'
 import { GeneratedBuildListDataManager } from './DataManagers/GeneratedBuildListDataManager'
 import { OptConfigDataManager } from './DataManagers/OptConfigDataManager'
-import { SavedBuildDataManager } from './DataManagers/SavedBuildDataManager'
 import { TeamDataManager } from './DataManagers/TeamDataManager'
 import { WengineDataManager } from './DataManagers/WengineDataManager'
 import type { ImportResult } from './exim'
@@ -38,7 +37,6 @@ export class ZzzDatabase extends Database {
   displayWengine: DisplayWengineEntry
   generatedBuildList: GeneratedBuildListDataManager
   characterBuilds: CharacterBuildDataManager
-  savedBuilds: SavedBuildDataManager
   dbIndex: 1 | 2 | 3 | 4
   dbVer: number
 
@@ -69,9 +67,6 @@ export class ZzzDatabase extends Database {
 
     // Character build loadouts manager
     this.characterBuilds = new CharacterBuildDataManager(this)
-
-    // Depends on discs and wengines (references existing database items)
-    this.savedBuilds = new SavedBuildDataManager(this)
 
     // Depends on optConfigs
     this.teams = new TeamDataManager(this)
@@ -114,7 +109,6 @@ export class ZzzDatabase extends Database {
       this.statWeights,
       this.generatedBuildList,
       this.optConfigs,
-      this.savedBuilds,
       this.teams,
     ] as const
   }

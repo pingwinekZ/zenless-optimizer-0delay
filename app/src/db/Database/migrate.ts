@@ -7,15 +7,16 @@
 
 import type { DBStorage } from '@zenless-optimizer/common/database'
 import type { CharacterKey } from '../../consts'
-import { allWengineKeys } from '../../consts'
-import type { ICharacter } from '../../zood'
+import { allCharacterKeys, allWengineKeys } from '../../consts'
+import type { ICharacter, SavedBuild } from '../../zood'
+import { parseSavedBuild } from '../../zood'
 import type {
   ICharMeta,
   IZenlessObjectDescription,
   IZZZDatabase,
 } from '../Interfaces'
 
-export const currentDBVersion = 5
+export const currentDBVersion = 6
 
 export function migrateZOOD(
   zood: IZenlessObjectDescription & IZZZDatabase
@@ -103,6 +104,34 @@ export function migrateZOOD(
         if ('potential' in char) delete (char as any).potential
       }
     }
+  })
+
+  // Move global savedBuilds onto their character's `builds` array
+  // (HSR parity: builds live on the character, upserted by name)
+  migrateVersion(6, () => {
+    const saved = zood['savedBuilds'] as unknown[] | undefined
+    if (saved && Array.isArray(saved)) {
+      const chars = (zood['characters'] ??= []) as (ICharacter & {
+        id?: string
+      })[]
+      for (const raw of saved) {
+        const build = parseSavedBuild(raw)
+        if (!build) continue
+        if (
+          !(allCharacterKeys as readonly string[]).includes(build.characterKey)
+        )
+          continue
+        const char = chars.find((c) => c.key === build.characterKey)
+        if (!char) continue
+        char.builds ??= []
+        const idx = char.builds.findIndex((b) => b.name === build.name)
+        const existing = idx === -1 ? undefined : char.builds[idx]
+        if (!existing) char.builds.push(build)
+        else if ((build.updatedAt ?? 0) >= (existing.updatedAt ?? 0))
+          char.builds[idx] = build
+      }
+    }
+    delete zood['savedBuilds']
   })
 
   zood.dbVersion = currentDBVersion
@@ -235,6 +264,40 @@ export function migrateStorage(storage: DBStorage) {
       } catch {
         // Not a catalog entry; leave it alone.
       }
+    }
+  })
+
+  // Move global `zzz_savedBuild_*` entries onto their character's
+  // `builds` array (HSR parity), then drop the old keys.
+  migrateVersion(6, () => {
+    const prefix = 'zzz_savedBuild_'
+    const byChar = new Map<string, SavedBuild[]>()
+    for (const key of storage.keys) {
+      if (!key.startsWith(prefix)) continue
+      const build = parseSavedBuild(storage.get(key))
+      storage.remove(key)
+      if (!build) continue
+      if (!(allCharacterKeys as readonly string[]).includes(build.characterKey))
+        continue
+      const list = byChar.get(build.characterKey) ?? []
+      list.push(build)
+      byChar.set(build.characterKey, list)
+    }
+    for (const [charKey, builds] of byChar) {
+      const storageKey = `zzz_character_${charKey}`
+      const char = (storage.get(storageKey) ?? { key: charKey }) as Omit<
+        ICharacter,
+        'builds'
+      > & { builds?: SavedBuild[] }
+      char.builds ??= []
+      for (const build of builds) {
+        const idx = char.builds.findIndex((b) => b.name === build.name)
+        const existing = idx === -1 ? undefined : char.builds[idx]
+        if (!existing) char.builds.push(build)
+        else if ((build.updatedAt ?? 0) >= (existing.updatedAt ?? 0))
+          char.builds[idx] = build
+      }
+      storage.set(storageKey, char)
     }
   })
 

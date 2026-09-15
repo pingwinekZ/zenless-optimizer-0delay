@@ -8,8 +8,9 @@ import { useTranslation } from 'react-i18next'
  * SimulationManager — provides Save / Overwrite / Delete All controls
  * for persisting simulation configurations.
  *
- * TODO: Wire these buttons to the database (SavedBuildDataManager or a new
- * SimulationDataManager) so simulations persist across sessions.
+ * TODO: Wire these buttons to the database (per-character builds in
+ * BuildManagement, or a new SimulationDataManager) so simulations persist
+ * across sessions.
  */
 export const SimulationManager = memo(function SimulationManager({
   hasUnsavedChanges,

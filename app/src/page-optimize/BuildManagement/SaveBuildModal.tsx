@@ -1,23 +1,29 @@
 import {
   Button,
-  Group,
+  Divider,
+  Flex,
   Modal,
-  Stack,
   Text,
-  Textarea,
   TextInput,
+  Tooltip,
 } from '@mantine/core'
-import { useForm } from '@mantine/form'
-import { memo, useCallback, useContext } from 'react'
+import { modals } from '@mantine/modals'
+import { memo, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { CharacterKey } from '../../consts'
 import type { GeneratedBuild } from '../../db'
 import {
   OptConfigContext,
-  useCharacterContext,
+  useCharacter,
   useDatabaseContext,
   useTeam,
 } from '../../db-ui'
+import { BuildSource } from '../../zood'
+import { BuildList } from './BuildList'
+import { BuildPreview } from './BuildPreview'
+import { serializeFromOptimizer } from './buildConverter'
+import { saveBuild } from './buildService'
+import styles from './SaveBuildModal.module.css'
 
 export const SaveBuildModal = memo(function SaveBuildModal({
   opened,
@@ -32,117 +38,207 @@ export const SaveBuildModal = memo(function SaveBuildModal({
 }) {
   const { t } = useTranslation('page_optimize')
   const { database } = useDatabaseContext()
-  const { optConfig } = useContext(OptConfigContext)
-  const character = useCharacterContext()
+  const { optConfigId } = useContext(OptConfigContext)
+  const character = useCharacter(characterKey ?? '')
   const team = useTeam(characterKey ?? '')
 
-  const form = useForm({
-    initialValues: {
-      name: '',
-      description: '',
-    },
-    validate: {
-      name: (value) =>
-        value.trim().length < 1
-          ? t('buildsSection.nameRequired', 'Name is required')
-          : null,
-    },
-  })
+  const [selectedName, setSelectedName] = useState<string | null>(null)
+  const [inputName, setInputName] = useState('')
+  const [error, setError] = useState<string | null>(null)
 
-  const handleSave = useCallback(
-    (values: { name: string; description: string }) => {
-      if (!selectedBuild) return
-      const characterKey = character?.key ?? ''
+  useEffect(() => {
+    if (opened) {
+      setSelectedName(null)
+      setInputName('')
+      setError(null)
+    }
+  }, [opened])
 
-      // Capture full optimizer settings
-      const optimizerSettings: Record<string, unknown> = {
-        statFilters: optConfig.statFilters,
-        maxBuildsToShow: optConfig.maxBuildsToShow,
-        levelLow: optConfig.levelLow,
-        levelHigh: optConfig.levelHigh,
-        slot4: optConfig.slot4,
-        slot5: optConfig.slot5,
-        slot6: optConfig.slot6,
-        setFilter2: optConfig.setFilter2,
-        setFilter4: optConfig.setFilter4,
-        useEquipped: optConfig.useEquipped,
-        useCharacterPriority: optConfig.useCharacterPriority,
-        includeOffsets: optConfig.includeOffsets,
-        optWengine: optConfig.optWengine,
-        wlevelLow: optConfig.wlevelLow,
-        wlevelHigh: optConfig.wlevelHigh,
-        wEngineTypes: optConfig.wEngineTypes,
-        useEquippedWengine: optConfig.useEquippedWengine,
-      }
-
-      // Capture team snapshot (teammates, conditionals, frames, enemy stats)
-      const teamSnapshot = team
-        ? {
-            teammates: team.teammates,
-            frames: team.frames,
-            enemyLvl: team.enemyLvl,
-            enemyDef: team.enemyDef,
-            enemyStunMultiplier: team.enemyStunMultiplier,
-          }
-        : undefined
-
-      database.savedBuilds.new({
-        name: values.name,
-        description: values.description,
-        value: selectedBuild.value,
-        wengineKey: selectedBuild.wengineKey,
-        discIds: selectedBuild.discIds,
-        characterKey,
-        optimizerSettings,
-        teamSnapshot,
-      })
-
-      form.reset()
-      onClose()
-    },
-    [selectedBuild, optConfig, team, database, form, onClose, character?.key]
+  const builds = useMemo(
+    () =>
+      [...(character?.builds ?? [])].sort((a, b) => b.updatedAt - a.updatedAt),
+    [character]
   )
+
+  const setSelectedWrapped = (name: string | null) => {
+    setSelectedName(name)
+    setError(null)
+    if (name !== null) {
+      const build = builds.find((b) => b.name === name)
+      setInputName(build?.name ?? '')
+    } else {
+      setInputName('')
+    }
+  }
+
+  // Live preview: the selected saved build, or the current form serialized
+  const previewBuild = useMemo(() => {
+    if (!character || !characterKey) return null
+    if (selectedName !== null)
+      return builds.find((b) => b.name === selectedName) ?? null
+    const optConfig = database.optConfigs.get(optConfigId)
+    return serializeFromOptimizer(
+      '',
+      characterKey,
+      character,
+      team,
+      optConfig,
+      selectedBuild
+        ? {
+            discIds: selectedBuild.discIds,
+            wengineKey: selectedBuild.wengineKey,
+            value: selectedBuild.value,
+          }
+        : {
+            discIds: { ...character.equippedDiscs },
+            wengineKey: character.wengineKey || undefined,
+          }
+    )
+  }, [
+    selectedName,
+    builds,
+    character,
+    characterKey,
+    team,
+    database,
+    optConfigId,
+    selectedBuild,
+  ])
+
+  if (!characterKey) return null
+
+  const nameTaken = builds.some((b) => b.name === inputName.trim())
+  const saveDisabled = nameTaken || inputName.trim() === ''
+  const overwriteDisabled = !nameTaken || inputName.trim() === ''
+
+  function handleSave(mode: 'overwrite' | 'save') {
+    if (!characterKey) return
+    const result = saveBuild(database, {
+      name: inputName,
+      characterKey,
+      optConfigId,
+      source: BuildSource.Optimizer,
+      overwrite: mode === 'overwrite',
+      ...(selectedBuild && {
+        equipped: {
+          discIds: selectedBuild.discIds,
+          wengineKey: selectedBuild.wengineKey,
+          value: selectedBuild.value,
+        },
+      }),
+    })
+    if (result.error) {
+      setError(result.error)
+      return
+    }
+    onClose()
+  }
+
+  function handleOverwrite() {
+    modals.openConfirmModal({
+      title: t('buildsSection.overwrite', 'Overwrite'),
+      children: t(
+        'buildsSection.confirmOverwrite',
+        'Overwrite the existing build with the current setup?'
+      ),
+      labels: {
+        confirm: t('buildsSection.overwrite', 'Overwrite'),
+        cancel: t('buildsSection.cancel', 'Cancel'),
+      },
+      centered: true,
+      onConfirm: () => handleSave('overwrite'),
+    })
+  }
 
   return (
     <Modal
       opened={opened}
       onClose={onClose}
       title={t('buildsSection.saveBuild', 'Save Build')}
-      size="sm"
+      size={1550}
+      centered
     >
-      <form onSubmit={form.onSubmit(handleSave)}>
-        <Stack gap="sm">
-          <Text size="xs" c="dimmed">
-            {t(
-              'buildsSection.saveDescription',
-              'Save the current generated build list with a name so you can load it later.'
-            )}
-          </Text>
+      <Flex gap={10} className={styles.outerFlex}>
+        <Flex direction="column" className={styles.leftColumn}>
           <TextInput
-            label={t('buildsSection.buildName', 'Build Name')}
+            label={t('buildsSection.label', 'Build name')}
             placeholder={t('buildsSection.namePlaceholder', 'My Build')}
-            required
-            {...form.getInputProps('name')}
+            value={inputName}
+            onChange={(e) => {
+              const value = e.currentTarget.value
+              setInputName(value)
+              setError(null)
+              const match = builds.find((b) => b.name === value)
+              setSelectedName(match ? match.name : null)
+            }}
           />
-          <Textarea
-            label={t('buildsSection.description', 'Description (optional)')}
-            placeholder={t(
-              'buildsSection.descPlaceholder',
-              'Some notes about this build...'
-            )}
-            autosize
-            minRows={2}
-            maxRows={4}
-            {...form.getInputProps('description')}
-          />
-          <Group justify="flex-end" mt="md">
-            <Button variant="default" onClick={onClose}>
-              {t('buildsSection.cancel', 'Cancel')}
+          {error && (
+            <Text size="xs" c="red" mt={4}>
+              {error}
+            </Text>
+          )}
+          <Divider className={styles.divider} />
+          <Button
+            variant="default"
+            onClick={onClose}
+            className={styles.actionButton}
+          >
+            {t('buildsSection.cancel', 'Cancel')}
+          </Button>
+          <Tooltip
+            label={
+              saveDisabled
+                ? nameTaken
+                  ? t(
+                      'buildsSection.saveDisabledNameTaken',
+                      'A build with this name already exists — use Overwrite to replace it'
+                    )
+                  : t(
+                      'buildsSection.saveDisabledNoName',
+                      'Enter a name to save the build'
+                    )
+                : ''
+            }
+            position="right"
+          >
+            <Button
+              onClick={() => handleSave('save')}
+              className={styles.actionButton}
+              disabled={saveDisabled}
+            >
+              {t('buildsSection.save', 'Save')}
             </Button>
-            <Button type="submit">{t('buildsSection.save', 'Save')}</Button>
-          </Group>
-        </Stack>
-      </form>
+          </Tooltip>
+          <Tooltip
+            label={
+              overwriteDisabled
+                ? t(
+                    'buildsSection.overwriteDisabled',
+                    'No saved build matches this name'
+                  )
+                : ''
+            }
+            position="right"
+          >
+            <Button
+              onClick={handleOverwrite}
+              className={styles.actionButton}
+              disabled={overwriteDisabled}
+            >
+              {t('buildsSection.overwrite', 'Overwrite')}
+            </Button>
+          </Tooltip>
+          <Divider className={styles.divider} />
+          <BuildList
+            preview
+            builds={builds}
+            selectedName={selectedName}
+            onSelect={setSelectedWrapped}
+            style={{ height: '100%' }}
+          />
+        </Flex>
+        <BuildPreview build={previewBuild} characterKey={characterKey} />
+      </Flex>
     </Modal>
   )
 })

@@ -94,9 +94,21 @@ export class DiscDataManager extends DataManager<
   }
   override remove(key: string, notify = true): ICachedDisc | undefined {
     const disc = super.remove(key, notify)
-    if (disc)
-      disc.location &&
-        this.database.chars.setEquippedDisc(disc.location, disc.slotKey, '')
+    if (!disc) return disc
+    if (disc.location)
+      this.database.chars.setEquippedDisc(disc.location, disc.slotKey, '')
+    // Strip the deleted disc from saved builds so they never dangle
+    for (const char of this.database.chars.values) {
+      if (!(char.builds ?? []).some((b) => b.discIds[disc.slotKey] === key))
+        continue
+      this.database.chars.set(char.key, {
+        builds: (char.builds ?? []).map((b) =>
+          b.discIds[disc.slotKey] === key
+            ? { ...b, discIds: { ...b.discIds, [disc.slotKey]: undefined } }
+            : b
+        ),
+      })
+    }
     return disc
   }
   override importZOOD(

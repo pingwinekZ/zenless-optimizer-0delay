@@ -3,9 +3,16 @@ import { useDisclosure } from '@mantine/hooks'
 import { IconFileExport, IconFileImport } from '@tabler/icons-react'
 import { memo, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { CharacterKey } from '../../consts'
+import { allCharacterKeys } from '../../consts'
 import { useDatabaseContext } from '../../db-ui'
+import { parseSavedBuild } from '../../zood'
 
-export const ExportImportSection = memo(function ExportImportSection() {
+export const ExportImportSection = memo(function ExportImportSection({
+  characterKey,
+}: {
+  characterKey?: CharacterKey | null
+}) {
   const { t } = useTranslation('page_optimize')
   const { database } = useDatabaseContext()
   const [exportOpened, { open: openExport, close: closeExport }] =
@@ -13,40 +20,60 @@ export const ExportImportSection = memo(function ExportImportSection() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleExport = useCallback(() => {
-    const keys = database.savedBuilds.keys
-    const builds = keys
-      .map((key) => database.savedBuilds.exportBuild(key))
-      .filter((b): b is object => b !== undefined)
-
+    if (!characterKey) return
+    const character = database.chars.get(characterKey)
+    const builds = [...(character?.builds ?? [])]
     if (builds.length === 0) {
       alert(t('buildsSection.noBuildsToExport', 'No saved builds to export.'))
       return
     }
 
-    const json = JSON.stringify({ builds, exportVersion: 1 }, null, 2)
+    const json = JSON.stringify(
+      { builds, exportVersion: 1, characterKey },
+      null,
+      2
+    )
     const blob = new Blob([json], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `zzz-builds-export-${Date.now()}.json`
+    a.download = `zzz-builds-${characterKey}-${Date.now()}.json`
     a.click()
     URL.revokeObjectURL(url)
     closeExport()
-  }, [database.savedBuilds, t, closeExport])
+  }, [database, characterKey, t, closeExport])
 
   const handleImport = useCallback(
     (jsonStr: string) => {
       try {
         const data = JSON.parse(jsonStr)
-        const builds = data.builds ?? (Array.isArray(data) ? data : [data])
+        const rawBuilds = data.builds ?? (Array.isArray(data) ? data : [data])
         let imported = 0
-        for (const build of builds) {
-          const id = database.savedBuilds.importBuild(build)
-          if (id) imported++
+        for (const raw of rawBuilds) {
+          const build = parseSavedBuild(raw)
+          if (!build || !build.name) continue
+          const targetKey =
+            (allCharacterKeys as readonly string[]).includes(
+              build.characterKey
+            ) && build.characterKey !== characterKey
+              ? (build.characterKey as CharacterKey)
+              : characterKey
+          if (!targetKey) continue
+          const char = database.chars.getOrCreate(targetKey)
+          const builds = [...(char.builds ?? [])]
+          const idx = builds.findIndex((b) => b.name === build.name)
+          if (idx === -1) builds.push({ ...build, characterKey: targetKey })
+          else
+            builds[idx] = {
+              ...build,
+              characterKey: targetKey,
+              createdAt: builds[idx].createdAt,
+              updatedAt: Date.now(),
+            }
+          database.chars.set(targetKey, { builds })
+          imported++
         }
-        if (imported > 0) {
-          // Import succeeded, no modal to close
-        } else {
+        if (imported === 0) {
           alert(
             t(
               'buildsSection.importFailed',
@@ -63,7 +90,7 @@ export const ExportImportSection = memo(function ExportImportSection() {
         )
       }
     },
-    [database.savedBuilds, t]
+    [database, characterKey, t]
   )
 
   const handleFileUpload = useCallback(

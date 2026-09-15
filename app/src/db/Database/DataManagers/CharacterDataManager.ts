@@ -1,8 +1,8 @@
 import type { TriggerString } from '@zenless-optimizer/common/database'
 import { deepClone, objKeyMap } from '@zenless-optimizer/common/util'
 import type { CharacterKey, DiscSlotKey } from '../../../consts'
-import { allDiscSlotKeys } from '../../../consts'
-import type { ICharacter } from '../../../zood'
+import { allDiscSlotKeys, allWengineKeys } from '../../../consts'
+import type { ICharacter, SavedBuild } from '../../../zood'
 import { parseCharacter } from '../../../zood'
 import type { ICachedCharacter } from '../../Interfaces'
 import type { ZzzDatabase } from '../Database'
@@ -18,7 +18,36 @@ export class CharacterDataManager extends DataManager<
     super(database, 'characters')
   }
   override validate(obj: unknown) {
-    return parseCharacter(obj)
+    const char = parseCharacter(obj)
+    if (!char) return undefined
+    // Sanitize saved builds: drop disc references that no longer exist
+    // (or sit in the wrong slot) and unknown w-engine keys, so a stale
+    // build can never invalidate the whole character.
+    if (char.builds.length > 0) {
+      char.builds = char.builds
+        .map((build) => this.sanitizeBuild(build))
+        .filter((b): b is SavedBuild => b !== undefined)
+    }
+    return char
+  }
+
+  private sanitizeBuild(build: SavedBuild): SavedBuild | undefined {
+    if (!build.name) return undefined
+    // `discs` may not exist yet while the Database is being constructed
+    // (characters are instantiated first); sanitize on later writes.
+    const discs = this.database.discs
+    if (!discs) return build
+    const discIds = objKeyMap(allDiscSlotKeys, (slotKey) =>
+      discs.get(build.discIds[slotKey])?.slotKey === slotKey
+        ? build.discIds[slotKey]
+        : undefined
+    )
+    const wengineKey =
+      build.wengineKey &&
+      (allWengineKeys as readonly string[]).includes(build.wengineKey)
+        ? build.wengineKey
+        : undefined
+    return { ...build, discIds, wengineKey }
   }
 
   override toCache(storageObj: ICharacter, id: CharacterKey): ICachedCharacter {
@@ -152,6 +181,7 @@ export function initialCharacterData(key: CharacterKey): ICachedCharacter {
     assist: 11,
     wengineKey: '',
     wenginePhase: 1,
+    builds: [],
     equippedDiscs: objKeyMap(allDiscSlotKeys, () => ''),
   }
 }

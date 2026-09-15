@@ -10,6 +10,7 @@ import {
   validateLevelMilestone,
   type WengineKey,
 } from '../consts'
+import { savedBuildSchema } from './savedBuild'
 
 export const characterSchema = z
   .object({
@@ -27,6 +28,10 @@ export const characterSchema = z
       .or(z.literal(''))
       .catch('' as WengineKey),
     wenginePhase: zodBoundedNumber(1, 5, 1),
+    // Optimizer saved builds, keyed by name (HSR parity: builds live on
+    // the character). Validated loosely here; disc references are
+    // sanitized against the database in CharacterDataManager.
+    builds: z.array(savedBuildSchema).catch([]),
   })
   .transform((data) => {
     const { sanitizedLevel: level, milestone: promotion } =
