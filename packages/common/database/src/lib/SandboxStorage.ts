@@ -9,6 +9,7 @@ export class SandboxStorage implements DBStorage {
   protected storage: Record<string, string> = {}
   dbVersionKey: DbVersionKey
   dbIndexKey: DbIndexKey
+  readonly writeThrough = false
 
   constructor(obj?: Record<string, string>, storageType: StorageType = 'go') {
     if (obj) this.storage = obj

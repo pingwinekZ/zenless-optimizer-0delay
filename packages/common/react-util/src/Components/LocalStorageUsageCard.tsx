@@ -29,6 +29,12 @@ const DISPLAY_PERCENT_THRESH = 1
 const WARNING_PERCENT_THRESH = 75
 const ERROR_PERCENT_THRESH = 90
 
+/** Database slot the app will open next visit (`zzz_dbIndex`) */
+function getActiveSlot(): number {
+  const parsed = parseInt(localStorage.getItem('zzz_dbIndex') ?? '1')
+  return parsed >= 1 && parsed <= 4 ? parsed : 1
+}
+
 function scanStorage(): {
   totalBytes: number
   bytesByCategory: Record<Category, number>
@@ -89,6 +95,10 @@ export function LocalStorageUsageCard() {
     // Dependency doubles as the re-scan trigger (refresh button / other tabs)
     void refreshCount
     return scanStorage()
+  }, [refreshCount])
+  const activeSlot = useMemo(() => {
+    void refreshCount
+    return getActiveSlot()
   }, [refreshCount])
   const MBByCategory = objMap(bytesByCategory, (v) => v / 1024 / 1024)
   const percentByCategory = objMap(
@@ -209,7 +219,12 @@ export function LocalStorageUsageCard() {
                               border: '1px solid var(--border-subtle)',
                             }}
                           />
-                          <Text size="sm">{t(`storage.${key}`)}</Text>
+                          <Text size="sm">
+                            {t(`storage.${key}`)}
+                            {key === `zoDb${activeSlot}`
+                              ? ` (${t('storage.active')})`
+                              : ''}
+                          </Text>
                         </Group>
                       </Table.Td>
                       <Table.Td style={{ textAlign: 'right' }}>

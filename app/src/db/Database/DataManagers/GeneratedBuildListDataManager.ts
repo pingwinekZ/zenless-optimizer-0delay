@@ -31,6 +31,18 @@ const generatedBuildListSchema = z.object({
 
 export type GeneratedBuildList = z.infer<typeof generatedBuildListSchema>
 
+/**
+ * How many generated builds are kept in storage per optimizer result set.
+ *
+ * The solver can return up to `maxBuildsToShow` rows (as many as 50000), and
+ * the whole list is regenerable by re-running the optimizer, so persisting all
+ * of them - for every character - is one of the fastest ways to exhaust the
+ * 5MB localStorage budget. The full list stays in memory and in exports; only
+ * the stored copy is capped, so a reload restores the top rows of the last
+ * run instead of all of it.
+ */
+export const maxPersistedGeneratedBuilds = 100
+
 export class GeneratedBuildListDataManager extends DataManager<
   string,
   'generatedBuildList',
@@ -73,6 +85,18 @@ export class GeneratedBuildListDataManager extends DataManager<
       buildDate,
     }
   }
+  override saveStorageEntry(key: string, cached: GeneratedBuildList): void {
+    super.saveStorageEntry(
+      key,
+      cached.builds.length > maxPersistedGeneratedBuilds
+        ? {
+            ...cached,
+            builds: cached.builds.slice(0, maxPersistedGeneratedBuilds),
+          }
+        : cached
+    )
+  }
+
   new(data: GeneratedBuildList) {
     const id = this.generateKey()
     this.set(id, { ...data })

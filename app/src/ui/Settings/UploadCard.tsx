@@ -3,6 +3,7 @@ import {
   Button,
   Divider,
   Group,
+  LoadingOverlay,
   SimpleGrid,
   Text,
   Tooltip,
@@ -18,7 +19,7 @@ import {
 import { SandboxStorage } from '@zenless-optimizer/common/database'
 import { iconInlineProps } from '@zenless-optimizer/common/svgicons'
 import { CardThemed } from '@zenless-optimizer/common/ui'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useDeferredValue, useMemo, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import type { ImportResult, ImportResultCounter } from '../../db'
 import { ZzzDatabase } from '../../db'
@@ -36,47 +37,43 @@ export function UploadCard({
   const { t } = useTranslation('page_settings')
   const [data, setData] = useState('')
   const [filename, setFilename] = useState('')
-  const [errorMsg, setErrorMsg] = useState('')
   const [keepNotInImport, setKeepNotInImport] = useState(false)
   const [ignoreDups, setIgnoreDups] = useState(false)
-  const { importResult, importedDatabase } =
-    useMemo(() => {
-      if (!data) return undefined
-      let parsed: any
-      try {
-        parsed = JSON.parse(data)
-        if (typeof parsed !== 'object') {
-          setErrorMsg('uploadCard.error.jsonParse')
-          return undefined
-        }
-      } catch (e) {
-        setErrorMsg('uploadCard.error.jsonParse')
-        return undefined
-      }
-      // Figure out the file format
-      if (parsed.format === 'ZOOD' || parsed.format === 'ZOD') {
-        // Parse as ZOOD format
-        const copyStorage = new SandboxStorage(undefined, 'zzz')
-        copyStorage.copyFrom(database.storage)
-        const importedDatabase = new ZzzDatabase(
-          (index + 1) as 1 | 2 | 3 | 4,
-          copyStorage
-        )
-        const importResult = importedDatabase.importZOOD(
-          parsed,
-          keepNotInImport,
-          ignoreDups
-        )
-        if (!importResult) {
-          setErrorMsg('uploadCard.error.sroInvalid')
-          return undefined
-        }
+  // Importing reads the whole database plus the whole file, so it must not run
+  // on every keystroke (a pasted save can be a megabyte long). The deferred
+  // value lets React keep the textarea responsive while it re-imports once the
+  // text settles.
+  const deferredData = useDeferredValue(data)
+  const importing = data !== deferredData
+  const { importResult, importedDatabase, errorMsg } = useMemo(() => {
+    if (!deferredData) return {}
+    let parsed: any
+    try {
+      parsed = JSON.parse(deferredData)
+      if (typeof parsed !== 'object') return { errorMsg: 'uploadCard.error.jsonParse' }
+    } catch (e) {
+      return { errorMsg: 'uploadCard.error.jsonParse' }
+    }
+    // Figure out the file format
+    if (parsed.format === 'ZOOD' || parsed.format === 'ZOD') {
+      // Parse as ZOOD format
+      const copyStorage = new SandboxStorage(undefined, 'zzz')
+      copyStorage.copyFrom(database.storage)
+      const importedDatabase = new ZzzDatabase(
+        (index + 1) as 1 | 2 | 3 | 4,
+        copyStorage
+      )
+      const importResult = importedDatabase.importZOOD(
+        parsed,
+        keepNotInImport,
+        ignoreDups
+      )
+      if (!importResult) return { errorMsg: 'uploadCard.error.sroInvalid' }
 
-        return { importResult, importedDatabase }
-      }
-      setErrorMsg('uploadCard.error.unknown')
-      return undefined
-    }, [data, database, keepNotInImport, ignoreDups, index]) ?? {}
+      return { importResult, importedDatabase }
+    }
+    return { errorMsg: 'uploadCard.error.unknown' }
+  }, [deferredData, database, keepNotInImport, ignoreDups, index])
   const reset = () => {
     setData('')
     setFilename('')
@@ -197,13 +194,15 @@ export function UploadCard({
           value={data}
           onChange={(e) => setData(e.target.value)}
         />
-        {importResult && importedDatabase ? (
+        {importing ? (
+          <LoadingOverlay visible loaderProps={{ size: 'sm' }} />
+        ) : importResult && importedDatabase ? (
           <ZOODUploadInfo
             importResult={importResult}
             importedDatabase={importedDatabase}
           />
         ) : (
-          <Text>{t(errorMsg)}</Text>
+          errorMsg && <Text>{t(errorMsg)}</Text>
         )}
       </Box>
       <ZOUploadAction
@@ -339,9 +338,12 @@ function ZOUploadAction({
   const { t } = useTranslation('page_settings')
   const replaceDB = useCallback(() => {
     if (!importedDatabase) return
+    // Hands the slot (and its compressed key) over to the imported database; the
+    // replaced database is left on a detached in-memory storage, so it can
+    // never write its old contents back over the import.
     importedDatabase.swapStorage(database)
     setDatabase(index, importedDatabase)
-    importedDatabase.toExtraLocalDB()
+    importedDatabase.persistSlot({ allowEmpty: true })
     reset()
   }, [database, index, importedDatabase, reset, setDatabase])
 

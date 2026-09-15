@@ -75,7 +75,7 @@ function DataCard({ index }: { index: number }) {
   const onDelete = useCallback(() => {
     if (!window.confirm(`Are you sure you want to delete "${name}"?`)) return
     database.clear()
-    database.toExtraLocalDB()
+    database.persistSlot({ allowEmpty: true })
   }, [database, name])
 
   const download = useCallback(() => {
@@ -99,8 +99,10 @@ function DataCard({ index }: { index: number }) {
 
   const onSwap = useCallback(() => {
     if (current) return
-    mainDB.toExtraLocalDB()
-    database.swapStorage(mainDB)
+    // Both databases keep their own slot; swapping only decides which slot the
+    // app opens next time. Write both now so a reload lands on the new one.
+    mainDB.persistSlot()
+    database.activateSlot()
     setDatabase(index, database)
   }, [index, setDatabase, mainDB, current, database])
 
@@ -126,7 +128,7 @@ function DataCard({ index }: { index: number }) {
           style={{ borderRadius: 4, padding: '0 4px', flexGrow: 1 }}
           onChange={(name) => {
             database.dbMeta.set({ name })
-            database.toExtraLocalDB()
+            database.persistSlot()
           }}
         />
         {!current && (

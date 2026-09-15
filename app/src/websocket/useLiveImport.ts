@@ -94,7 +94,9 @@ export function useLiveImport(): LiveImportState {
           const result = importedDatabase.importZOOD(zood, false, false)
           importedDatabase.swapStorage(current)
           setDatabaseRef.current(index, importedDatabase)
-          importedDatabase.toExtraLocalDB()
+          // Blocked when the snapshot would empty the database (e.g. a failed
+          // capture), which leaves the last good inventory in place.
+          importedDatabase.persistSlot()
           setLastImport({
             result,
             dbTotal: importedDatabase.discs.values.length,

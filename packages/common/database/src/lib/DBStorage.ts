@@ -11,6 +11,13 @@ export interface DBStorage {
   entries: [key: string, value: string][]
   dbVersionKey: DbVersionKey
   dbIndexKey: DbIndexKey
+  /**
+   * `true` when `set`/`setString`/`remove` hit a real, persistent store
+   * immediately (browser localStorage). In-memory storages - including ones
+   * seeded from persisted data - are `false`: they only reach persistent
+   * storage when the database explicitly persists them (e.g. `persistSlot`).
+   */
+  readonly writeThrough: boolean
 
   get(key: string): any | undefined
   set(key: string, value: any): void

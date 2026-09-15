@@ -5,6 +5,7 @@ export class DBLocalStorage implements DBStorage {
   private storage: Storage
   dbVersionKey: DbVersionKey
   dbIndexKey: DbIndexKey
+  readonly writeThrough = true
 
   constructor(storage: Storage, storageType: StorageType = 'go') {
     this.storage = storage
@@ -63,7 +64,9 @@ export class DBLocalStorage implements DBStorage {
     this.storage.clear()
   }
   removeForKeys(shouldRemove: (key: string) => boolean) {
-    for (const key in this.storage) {
+    // Snapshot the keys first: deleting while enumerating a Storage is not
+    // required to visit every remaining key.
+    for (const key of this.keys) {
       if (shouldRemove(key)) this.storage.removeItem(key)
     }
   }

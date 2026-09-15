@@ -1,3 +1,4 @@
+import { notEmpty } from '@zenless-optimizer/common/util'
 import type { IDisc } from '../../../zood'
 import { validateDisc } from '../../../zood'
 import type {
@@ -114,7 +115,7 @@ export class DiscDataManager extends DataManager<
   override importZOOD(
     zood: IZenlessObjectDescription & IZZZDatabase,
     result: ImportResult
-  ) {
+  ): void {
     result.discs.beforeMerge = this.values.length
 
     // Match discs for counter, metadata, and locations
@@ -135,6 +136,12 @@ export class DiscDataManager extends DataManager<
     result.discs.import = discs.length
     const idsToRemove = new Set(this.values.map((r) => r.id))
     const hasEquipment = discs.some((r) => r.location)
+    // Candidates for a duplicate/upgrade must match on set, rarity, slot and
+    // main stat, so indexing the stored discs by those four fields once turns
+    // the per-disc scan below into a lookup of a small bucket. Scanning every
+    // stored disc per imported disc made imports of a full inventory
+    // quadratic - tens of seconds for a few thousand discs.
+    const matchBuckets = discMatchBuckets(this.values)
     discs.forEach((r): void => {
       const disc = this.validate(r)
       if (!disc) {
@@ -146,9 +153,9 @@ export class DiscDataManager extends DataManager<
       let importId: string | undefined = (r as ICachedDisc).id
       let foundDupOrUpgrade = false
       if (!result.ignoreDups) {
-        const { duplicated, upgraded } = this.findDups(
+        const { duplicated, upgraded } = findDupCandidates(
           disc,
-          Array.from(idsToRemove)
+          discCandidates(disc, matchBuckets, idsToRemove, (id) => this.get(id))
         )
         if (duplicated[0] || upgraded[0]) {
           foundDupOrUpgrade = true
@@ -192,6 +199,14 @@ export class DiscDataManager extends DataManager<
             if (idsToRemove.has(importId)) {
               idsToRemove.delete(importId)
               idsToRemove.add(newId)
+              // The re-keyed disc is still stored, so later imported discs must
+              // still be able to match against it
+              const rekeyed = this.get(newId)
+              if (rekeyed) {
+                const bucket = matchBuckets.get(discMatchKey(rekeyed))
+                bucket?.delete(importId)
+                bucket?.add(newId)
+              }
             }
           }
         }
@@ -210,80 +225,134 @@ export class DiscDataManager extends DataManager<
     editorDisc: IDisc,
     idList = this.keys
   ): { duplicated: ICachedDisc[]; upgraded: ICachedDisc[] } {
-    const {
-      setKey,
-      rarity,
-      level = 0,
-      slotKey,
-      mainStatKey,
-      substats = [],
-    } = editorDisc
+    const discs = idList.map((id) => this.get(id)).filter(notEmpty)
+    return findDupCandidates(editorDisc, discs)
+  }
+}
 
-    const discs = idList
-      .map((id) => this.get(id))
-      .filter((r) => r) as ICachedDisc[]
-    const candidates = discs.filter(
+/** Fields two discs must share to be a duplicate of (or an upgrade to) each other */
+function discMatchKey(
+  disc: Pick<IDisc, 'setKey' | 'rarity' | 'slotKey' | 'mainStatKey'>
+): string {
+  return `${disc.setKey}|${disc.rarity}|${disc.slotKey}|${disc.mainStatKey}`
+}
+
+/** Index stored discs by {@link discMatchKey} to keep duplicate checks off the full inventory */
+function discMatchBuckets(
+  discs: Iterable<ICachedDisc>
+): Map<string, Set<string>> {
+  const buckets = new Map<string, Set<string>>()
+  for (const disc of discs) {
+    const key = discMatchKey(disc)
+    const bucket = buckets.get(key)
+    if (bucket) bucket.add(disc.id)
+    else buckets.set(key, new Set([disc.id]))
+  }
+  return buckets
+}
+
+/**
+ * The stored discs {@link findDupCandidates} may match against, restricted to
+ * the bucket sharing the imported disc's set/rarity/slot/main stat and still
+ * awaiting a match. Values are read from the live cache because earlier
+ * iterations can move a disc's location or re-key it.
+ */
+function discCandidates(
+  disc: IDisc,
+  buckets: Map<string, Set<string>>,
+  removableIds: Set<string>,
+  getStoredDisc: (id: string) => ICachedDisc | undefined
+): ICachedDisc[] {
+  const bucket = buckets.get(discMatchKey(disc))
+  if (!bucket) return []
+  const candidates: ICachedDisc[] = []
+  for (const id of bucket) {
+    if (!removableIds.has(id)) continue
+    const candidate = getStoredDisc(id)
+    if (candidate) candidates.push(candidate)
+  }
+  return candidates
+}
+
+/**
+ * Find the discs `editorDisc` duplicates or strictly upgrades. Callers pass
+ * candidate discs that already share the set/rarity/slot/main-stat fields
+ * (see {@link discMatchKey}) - the checks below are on top of that.
+ */
+function findDupCandidates(
+  editorDisc: IDisc,
+  discs: ICachedDisc[]
+): { duplicated: ICachedDisc[]; upgraded: ICachedDisc[] } {
+  const {
+    setKey,
+    rarity,
+    level = 0,
+    slotKey,
+    mainStatKey,
+    substats = [],
+  } = editorDisc
+
+  const candidates = discs.filter(
+    (candidate) =>
+      setKey === candidate.setKey &&
+      rarity === candidate.rarity &&
+      slotKey === candidate.slotKey &&
+      mainStatKey === candidate.mainStatKey &&
+      level >= candidate.level &&
+      substats.every(
+        (substat, i) =>
+          !candidate.substats[i]?.key || // Candidate doesn't have anything on this slot
+          (substat.key === candidate.substats[i]?.key && // Or editor simply has better substat
+            substat.upgrades >= candidate.substats[i]?.upgrades)
+      )
+  )
+
+  // Strictly upgraded disc
+  const upgraded = candidates
+    .filter(
       (candidate) =>
-        setKey === candidate.setKey &&
-        rarity === candidate.rarity &&
-        slotKey === candidate.slotKey &&
-        mainStatKey === candidate.mainStatKey &&
-        level >= candidate.level &&
+        level > candidate.level &&
+        (Math.floor(level / 3) === Math.floor(candidate.level / 3) // Check for extra rolls
+          ? substats.every(
+              (
+                substat,
+                i // Has no extra roll
+              ) =>
+                substat.key === candidate.substats[i]?.key &&
+                substat.upgrades === candidate.substats[i]?.upgrades
+            )
+          : substats.some(
+              (
+                substat,
+                i // Has extra rolls
+              ) =>
+                candidate.substats[i]?.key
+                  ? substat.upgrades > candidate.substats[i]?.upgrades // Extra roll to existing substat
+                  : substat.key // Extra roll to new substat
+            ))
+    )
+    .sort((candidates) =>
+      candidates.location === editorDisc.location ? -1 : 1
+    )
+  // Strictly duplicated disc
+  const duplicated = candidates
+    .filter(
+      (candidate) =>
+        level === candidate.level &&
         substats.every(
           (substat, i) =>
-            !candidate.substats[i]?.key || // Candidate doesn't have anything on this slot
-            (substat.key === candidate.substats[i]?.key && // Or editor simply has better substat
-              substat.upgrades >= candidate.substats[i]?.upgrades)
+            substat.key === candidate.substats[i]?.key &&
+            candidate.substats.some(
+              (candidateSubstat) =>
+                substat.key === candidateSubstat.key && // Or same slot
+                substat.upgrades === candidateSubstat.upgrades
+            )
         )
     )
-
-    // Strictly upgraded disc
-    const upgraded = candidates
-      .filter(
-        (candidate) =>
-          level > candidate.level &&
-          (Math.floor(level / 3) === Math.floor(candidate.level / 3) // Check for extra rolls
-            ? substats.every(
-                (
-                  substat,
-                  i // Has no extra roll
-                ) =>
-                  substat.key === candidate.substats[i]?.key &&
-                  substat.upgrades === candidate.substats[i]?.upgrades
-              )
-            : substats.some(
-                (
-                  substat,
-                  i // Has extra rolls
-                ) =>
-                  candidate.substats[i]?.key
-                    ? substat.upgrades > candidate.substats[i]?.upgrades // Extra roll to existing substat
-                    : substat.key // Extra roll to new substat
-              ))
-      )
-      .sort((candidates) =>
-        candidates.location === editorDisc.location ? -1 : 1
-      )
-    // Strictly duplicated disc
-    const duplicated = candidates
-      .filter(
-        (candidate) =>
-          level === candidate.level &&
-          substats.every(
-            (substat, i) =>
-              substat.key === candidate.substats[i]?.key &&
-              candidate.substats.some(
-                (candidateSubstat) =>
-                  substat.key === candidateSubstat.key && // Or same slot
-                  substat.upgrades === candidateSubstat.upgrades
-              )
-          )
-      )
-      .sort((candidates) =>
-        candidates.location === editorDisc.location ? -1 : 1
-      )
-    return { duplicated, upgraded }
-  }
+    .sort((candidates) =>
+      candidates.location === editorDisc.location ? -1 : 1
+    )
+  return { duplicated, upgraded }
 }
 
 // Re-export validation functions for backward compatibility
