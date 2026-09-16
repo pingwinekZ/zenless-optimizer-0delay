@@ -12,7 +12,7 @@ import {
   Text,
 } from '@mantine/core'
 import { getUnitStr } from '@zenless-optimizer/common/util'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type {
   CharacterKey,
@@ -62,6 +62,15 @@ export function StatWeightEditorModal({
     mainStats: {},
   })
   const [dirty, setDirty] = useState(false)
+
+  // Sync to the page's scoring character each time the modal opens.
+  // (useState initial value only applies on first mount, so reopening would
+  // otherwise keep a stale selection.)
+  const prevOpened = useRef(opened)
+  useEffect(() => {
+    if (opened && !prevOpened.current) setSelectedChar(focusCharacter ?? null)
+    prevOpened.current = opened
+  }, [opened, focusCharacter])
 
   // Load overrides when character changes
   useEffect(() => {

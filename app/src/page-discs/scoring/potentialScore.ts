@@ -1,6 +1,6 @@
 import type { DiscSubStatKey } from '../../consts'
 import { discMaxLevel, discSubstatRollData } from '../../consts'
-import { computeMaxPossibleWeighted } from '../../util'
+import { computeMaxPossibleWeighted, getDiscAbsoluteMax } from '../../util'
 import type { IDisc } from '../../zood'
 
 type SubstatWithKey = { key: DiscSubStatKey; upgrades: number }
@@ -49,9 +49,10 @@ function applyRolls(
       weightedEffective += sub.upgrades * (weights[sub.key] ?? 1)
   }
   if (total === 0) return 0
+  const { maxRolls, maxSubstats } = getDiscAbsoluteMax(disc.rarity)
   const maxPossible = computeMaxPossibleWeighted(
-    total,
-    next.length,
+    maxRolls,
+    maxSubstats,
     effectiveStats,
     weights
   )

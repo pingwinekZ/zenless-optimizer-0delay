@@ -3,8 +3,9 @@ import type {
   ICellRendererParams,
   ValueFormatterParams,
 } from 'ag-grid-community'
-import { discDefIcon } from '../../assets'
+import { characterAsset, discDefIcon } from '../../assets'
 import {
+  type CharacterKey,
   type DiscRarityKey,
   rarityColor as discRarityColor,
   statKeyTextMap,
@@ -104,12 +105,29 @@ export class EquippedByCellRenderer implements ICellRendererComp {
   init(params: ICellRendererParams) {
     const data = params.data as { disc?: { location?: string } } | undefined
     const location = data?.disc?.location
+    const div = centeredDiv()
+    if (location) {
+      try {
+        const url = characterAsset(location as CharacterKey, 'circle')
+        if (url) {
+          const img = createImg(url)
+          img.style.borderRadius = '50%'
+          img.title = location
+          img.alt = location
+          div.appendChild(img)
+          this.eGui = div
+          return
+        }
+      } catch {
+        // fall through to text fallback
+      }
+    }
     const span = document.createElement('span')
-    span.style.cssText = CENTER_CSS
     span.style.fontSize = '11px'
     span.style.opacity = location ? '1' : '0.45'
     span.textContent = location || '—'
-    this.eGui = span
+    div.appendChild(span)
+    this.eGui = div
   }
   getGui() {
     return this.eGui
