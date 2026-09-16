@@ -1,7 +1,7 @@
 import { Box, Center, Flex, Text } from '@mantine/core'
 import { IconUser } from '@tabler/icons-react'
 import { TagContext } from '@zenless-optimizer/game-opt/formula-ui'
-import { useCallback, useEffect, useMemo, memo } from 'react'
+import { memo, useCallback, useEffect, useMemo } from 'react'
 import { characterAsset } from '../assets'
 import type { CharacterKey, DiscSlotKey, PhaseKey } from '../consts'
 import type { DiscIds, ICachedCharacter, ICachedDisc, Team } from '../db'

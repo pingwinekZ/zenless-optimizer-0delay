@@ -23,9 +23,7 @@ function isValidHex(color: unknown): color is string {
   }
 }
 
-function sanitizeColorMap(
-  map: unknown
-): Partial<Record<CharacterKey, string>> {
+function sanitizeColorMap(map: unknown): Partial<Record<CharacterKey, string>> {
   if (!map || typeof map !== 'object') return {}
   const out: Partial<Record<CharacterKey, string>> = {}
   for (const [key, value] of Object.entries(map)) {
@@ -79,12 +77,10 @@ export const useShowcaseColorStore = create<ShowcaseColorState>()(
       merge: (persisted, current) => ({
         ...current,
         portraitColorByCharKey: sanitizeColorMap(
-          (persisted as Partial<ShowcaseColorState>)
-            ?.portraitColorByCharKey
+          (persisted as Partial<ShowcaseColorState>)?.portraitColorByCharKey
         ),
         portraitPaletteByCharKey: sanitizePaletteMap(
-          (persisted as Partial<ShowcaseColorState>)
-            ?.portraitPaletteByCharKey
+          (persisted as Partial<ShowcaseColorState>)?.portraitPaletteByCharKey
         ),
       }),
     }

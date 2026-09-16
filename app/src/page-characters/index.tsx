@@ -25,8 +25,8 @@ import {
   StatHighlightContext,
   useCharacterTabStore,
 } from '../ui'
-import { CharacterEditModal } from './CharacterEditModal'
 import { CharacterDragList } from './CharacterDragList'
+import { CharacterEditModal } from './CharacterEditModal'
 import { CharacterPreview } from './CharacterPreview'
 import { cardTotalW, defaultGap } from './constantsUi'
 import { FilterBar } from './FilterBar'

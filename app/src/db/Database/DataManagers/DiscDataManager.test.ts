@@ -1,7 +1,7 @@
 import { createTestDBStorage } from '@zenless-optimizer/common/database'
 import {
-  allDiscSlotKeys,
   allDiscSetKeys,
+  allDiscSlotKeys,
   discSlotToMainStatKeys,
 } from '../../../consts'
 import { ZzzDatabase } from '../Database'
@@ -107,7 +107,11 @@ describe('DiscDataManager import deduplication', () => {
   })
 
   it('keeps discs that are not in the import only when asked', () => {
-    database.importZOOD(zood([importableDisc(allDiscSetKeys[0], '1')]), true, false)
+    database.importZOOD(
+      zood([importableDisc(allDiscSetKeys[0], '1')]),
+      true,
+      false
+    )
     const other = importableDisc(allDiscSetKeys[1], '2')
 
     const kept = database.importZOOD(zood([other]), true, false)

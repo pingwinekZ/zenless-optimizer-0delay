@@ -1,6 +1,6 @@
 import { Box, CloseButton, Flex, TextInput } from '@mantine/core'
 import { ImgIcon } from '@zenless-optimizer/common/ui'
-import { memo, type ChangeEvent } from 'react'
+import { type ChangeEvent, memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { rarityDefIcon, specialityDefIcon } from '../assets'
 import type { AttributeKey, CharacterRarityKey, SpecialityKey } from '../consts'

@@ -14,8 +14,8 @@ import {
 import { IconX } from '@tabler/icons-react'
 import { DropdownButton, ImgIcon } from '@zenless-optimizer/common/ui'
 import { range } from '@zenless-optimizer/common/util'
-import { Suspense, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
+import { Suspense, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { commonDefIcon, wengineAsset } from '../assets'
 import {

@@ -4,12 +4,9 @@ import type { CharacterKey } from '../../consts'
 import { useCharacterTabStore } from '../../ui'
 import { extractPaletteInWorker } from './colorExtractionService'
 import { DEFAULT_CONFIG } from './colorPipelineConfig'
-import { oklchCharacterListColor } from './colorUtilsOklch'
 import { pickBestSeed } from './colorUtils'
-import {
-  resolveShowcaseColor,
-  ShowcaseColorMode,
-} from './showcaseColorService'
+import { oklchCharacterListColor } from './colorUtilsOklch'
+import { resolveShowcaseColor, ShowcaseColorMode } from './showcaseColorService'
 import { useShowcaseColorStore } from './showcaseColorStore'
 
 /**

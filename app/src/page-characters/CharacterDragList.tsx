@@ -24,19 +24,19 @@ import { CSS } from '@dnd-kit/utilities'
 import { Box } from '@mantine/core'
 import { useMergedRef } from '@mantine/hooks'
 import {
-  memo,
+  OverlayScrollbarsComponent,
+  type OverlayScrollbarsComponentRef,
+} from 'overlayscrollbars-react'
+import {
   type CSSProperties,
   type MutableRefObject,
+  memo,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react'
-import {
-  OverlayScrollbarsComponent,
-  type OverlayScrollbarsComponentRef,
-} from 'overlayscrollbars-react'
 import type { CharacterKey } from '../consts'
 import { useDatabaseContext } from '../db-ui'
 import { CharacterRow, DragOverlayRow } from '../ui'

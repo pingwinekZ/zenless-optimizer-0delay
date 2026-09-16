@@ -90,7 +90,8 @@ export const useCharacterTabStore = create<CharacterTabState>()(
       setFocusCharacter: (key) => set({ focusCharacter: key }),
       clearFocusCharacter: () => set({ focusCharacter: null }),
       setDensity: (density) => set({ density }),
-      setNameFilter: (name) => set((s) => ({ filters: { ...s.filters, name } })),
+      setNameFilter: (name) =>
+        set((s) => ({ filters: { ...s.filters, name } })),
       setElementFilter: (element) =>
         set((s) => ({ filters: { ...s.filters, element } })),
       setSpecialtyFilter: (specialty) =>
