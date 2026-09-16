@@ -1,19 +1,20 @@
 import {
-  Box,
   Button,
+  CheckIcon,
   Divider,
   Flex,
-  Group,
   Modal,
   MultiSelect,
   NumberInput,
-  ScrollArea,
   Select,
   Text,
 } from '@mantine/core'
+import { type UseFormReturnType, useForm } from '@mantine/form'
+import { modals } from '@mantine/modals'
 import { getUnitStr } from '@zenless-optimizer/common/util'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { characterAsset } from '../../assets'
 import type {
   CharacterKey,
   DiscMainStatKey,
@@ -24,21 +25,171 @@ import {
   allCharacterKeys,
   allDiscSubStatKeys,
   discSlotToMainStatKeys,
-  statKeyTextMap,
 } from '../../consts'
+import type { StatWeightOverride } from '../../db'
 import { useDatabaseContext } from '../../db-ui'
 import { StatIcon } from '../../svgicons'
+import { CharIconCircle } from '../../ui'
 import {
-  getCharacterEffectiveStats,
+  getCharacterEffectiveMainStats,
   getCharacterSubstatWeights,
 } from '../../util'
 import { useDiscTabStore } from '../discGrid/useDiscTabStore'
+import classes from './StatWeightEditorModal.module.css'
 
+/** Disc slots 4/5/6 are the only ones with selectable main stats. */
 const SCORING_SLOTS: DiscSlotKey[] = ['4', '5', '6']
 
-type FormState = {
-  substatWeights: Partial<Record<DiscSubStatKey, number | null>>
+const panelWidth = 220
+
+/**
+ * Substat weights are relative: 1.5 means "this roll is worth 1.5 rolls".
+ * Anything above 0 is valid, and an empty field disables the substat entirely.
+ */
+const maxStatWeight = 3
+
+type ScoringAlgorithmForm = {
+  characterId: CharacterKey | null
+  substatWeights: Partial<Record<DiscSubStatKey, number | ''>>
   mainStats: Partial<Record<DiscSlotKey, DiscMainStatKey[]>>
+}
+
+function VerticalDivider() {
+  return (
+    <Flex direction="column">
+      <Divider orientation="vertical" style={{ flexGrow: 1, margin: '10px' }} />
+    </Flex>
+  )
+}
+
+const statRenderOption: React.ComponentProps<
+  typeof MultiSelect
+>['renderOption'] = ({ option, checked }) => (
+  <Flex align="center" gap={10} justify="space-between" w="100%">
+    <Flex align="center" gap={10}>
+      <StatIcon
+        statKey={String(option.value)}
+        iconProps={{ className: classes.optionIcon }}
+      />
+      {option.label}
+    </Flex>
+    {checked && <CheckIcon size={12} />}
+  </Flex>
+)
+
+/**
+ * Merges the character's default plan with any stored override so the modal
+ * shows real numbers instead of placeholders. An override entry of `null`
+ * (or a cleared field) means the substat is not scored, which displays as ''.
+ */
+function getScoringValuesForDisplay(
+  characterId: CharacterKey,
+  override: StatWeightOverride
+): ScoringAlgorithmForm {
+  const defaultWeights = getCharacterSubstatWeights(characterId)
+  const defaultMainStats = getCharacterEffectiveMainStats(characterId)
+
+  const substatWeights: Partial<Record<DiscSubStatKey, number | ''>> = {}
+  for (const stat of allDiscSubStatKeys) {
+    const value = override.substatWeights[stat]
+    if (value === null) substatWeights[stat] = ''
+    else if (typeof value === 'number') substatWeights[stat] = value
+    else substatWeights[stat] = defaultWeights[stat] ?? ''
+  }
+
+  const mainStats: Partial<Record<DiscSlotKey, DiscMainStatKey[]>> = {}
+  for (const slot of SCORING_SLOTS) {
+    const overrideMainStats = override.mainStats[slot] as
+      | DiscMainStatKey[]
+      | undefined
+    mainStats[slot] = overrideMainStats ?? defaultMainStats[slot] ?? []
+  }
+
+  return { characterId, substatWeights, mainStats }
+}
+
+/** Turns the form values back into a stored override (`null` = not scored). */
+function getOverrideFromForm(values: ScoringAlgorithmForm): StatWeightOverride {
+  const substatWeights: Record<string, number | null> = {}
+  for (const stat of allDiscSubStatKeys) {
+    const value = values.substatWeights[stat]
+    const weight = typeof value === 'number' ? value : Number(value)
+    substatWeights[stat] = Number.isFinite(weight) && weight > 0 ? weight : null
+  }
+
+  const mainStats: Record<string, string[]> = {}
+  for (const slot of SCORING_SLOTS)
+    mainStats[slot] = values.mainStats[slot] ?? []
+
+  return { substatWeights, mainStats }
+}
+
+function StatValueRow({
+  stat,
+  label,
+  form,
+}: {
+  stat: DiscSubStatKey
+  label: string
+  form: UseFormReturnType<ScoringAlgorithmForm>
+}) {
+  return (
+    <Flex style={{ width: panelWidth }} align="center" gap={5}>
+      <NumberInput
+        size="xs"
+        w={62}
+        hideControls
+        min={0}
+        max={maxStatWeight}
+        decimalScale={2}
+        step={0.05}
+        {...form.getInputProps(`substatWeights.${stat}`)}
+      />
+      <Flex align="center">
+        <StatIcon statKey={stat} iconProps={{ className: classes.statIcon }} />
+        <div className={classes.statText}>{label}</div>
+      </Flex>
+    </Flex>
+  )
+}
+
+function MainStatsColumn({
+  form,
+  statLabel,
+}: {
+  form: UseFormReturnType<ScoringAlgorithmForm>
+  statLabel: (statKey: string) => string
+}) {
+  const { t } = useTranslation('discTab')
+
+  return (
+    <Flex direction="column" style={{ flex: 1 }}>
+      <Flex direction="column" gap={10} style={{ width: '100%' }}>
+        {SCORING_SLOTS.map((slot) => (
+          <Flex key={slot} direction="column" gap={1}>
+            <div className={classes.partLabel}>
+              {t('Scoring.SlotLabel', { slot })}
+            </div>
+            <MultiSelect
+              className={classes.partMultiSelect}
+              size="xs"
+              clearable
+              searchable
+              style={{ width: '100%' }}
+              placeholder={t('Scoring.SlotLabel', { slot })}
+              renderOption={statRenderOption}
+              comboboxProps={{ keepMounted: false }}
+              data={discSlotToMainStatKeys[slot].map((key) => ({
+                value: key,
+                label: statLabel(key),
+              }))}
+              {...form.getInputProps(`mainStats.${slot}`)}
+            />
+          </Flex>
+        ))}
+      </Flex>
+    </Flex>
+  )
 }
 
 export function StatWeightEditorModal({
@@ -48,269 +199,200 @@ export function StatWeightEditorModal({
   opened: boolean
   onClose: () => void
 }) {
-  const { database } = useDatabaseContext()
-  const focusCharacter = useDiscTabStore((s) => s.focusCharacter)
-  const { t: tChar } = useTranslation('charNames_gen')
-  const { t: tk } = useTranslation('statKey_gen')
-  const { t } = useTranslation('discTab')
-
-  const [selectedChar, setSelectedChar] = useState<CharacterKey | null>(
-    focusCharacter ?? null
-  )
-  const [form, setForm] = useState<FormState>({
-    substatWeights: {},
-    mainStats: {},
-  })
-  const [dirty, setDirty] = useState(false)
-
-  // Sync to the page's scoring character each time the modal opens.
-  // (useState initial value only applies on first mount, so reopening would
-  // otherwise keep a stale selection.)
-  const prevOpened = useRef(opened)
-  useEffect(() => {
-    if (opened && !prevOpened.current) setSelectedChar(focusCharacter ?? null)
-    prevOpened.current = opened
-  }, [opened, focusCharacter])
-
-  // Load overrides when character changes
-  useEffect(() => {
-    if (!selectedChar) {
-      setForm({ substatWeights: {}, mainStats: {} })
-      return
-    }
-    const override = database.statWeights.get(selectedChar)
-    setForm({
-      substatWeights: { ...override.substatWeights },
-      mainStats: { ...override.mainStats },
-    })
-    setDirty(false)
-  }, [selectedChar, database])
-
-  const handleWeightChange = useCallback(
-    (key: DiscSubStatKey, value: number | null) => {
-      setForm((prev) => ({
-        ...prev,
-        substatWeights: { ...prev.substatWeights, [key]: value },
-      }))
-      setDirty(true)
-    },
-    []
-  )
-
-  const handleMainStatsChange = useCallback(
-    (slot: DiscSlotKey, values: string[]) => {
-      setForm((prev) => ({
-        ...prev,
-        mainStats: { ...prev.mainStats, [slot]: values as DiscMainStatKey[] },
-      }))
-      setDirty(true)
-    },
-    []
-  )
-
-  const handleSave = useCallback(() => {
-    if (!selectedChar) return
-    database.statWeights.set(selectedChar, {
-      substatWeights: form.substatWeights,
-      mainStats: form.mainStats,
-    })
-    setDirty(false)
-  }, [selectedChar, form, database])
-
-  const handleResetChar = useCallback(() => {
-    if (!selectedChar) return
-    database.statWeights.resetCharacter(selectedChar)
-    setForm({ substatWeights: {}, mainStats: {} })
-    setDirty(false)
-  }, [selectedChar, database])
-
-  const handleResetAll = useCallback(() => {
-    database.statWeights.resetAll()
-    if (selectedChar) {
-      setForm({ substatWeights: {}, mainStats: {} })
-    }
-    setDirty(false)
-  }, [database, selectedChar])
-
-  const handleClose = useCallback(() => {
-    onClose()
-  }, [onClose])
-
-  // Get available main stats for each slot
-  const availableMainStats = useMemo(
-    () =>
-      Object.fromEntries(
-        SCORING_SLOTS.map((slot) => [
-          slot,
-          discSlotToMainStatKeys[slot].map((key) => ({
-            value: key,
-            label: statKeyTextMap[key] ?? key,
-          })),
-        ])
-      ) as Record<string, { value: string; label: string }[]>,
-    []
-  )
-
-  const currentDefaultWeights = useMemo(
-    () => (selectedChar ? getCharacterSubstatWeights(selectedChar) : {}),
-    [selectedChar]
-  )
-
-  const currentDefaultStats = useMemo(
-    () => (selectedChar ? getCharacterEffectiveStats(selectedChar) : []),
-    [selectedChar]
-  )
-
-  const effectiveSet = useMemo(
-    () => new Set(currentDefaultStats as string[]),
-    [currentDefaultStats]
-  )
-
   return (
     <Modal
       opened={opened}
-      onClose={handleClose}
-      title={<Text fw={700}>{t('RelicFilterBar.ScoringButton')}</Text>}
-      size="xl"
+      onClose={onClose}
+      size={1000}
+      centered
       closeOnClickOutside={false}
     >
-      <Flex gap="md">
-        {/* Left column: character selector and stats list */}
-        <Box style={{ width: 240, flexShrink: 0 }}>
-          <Select
-            size="xs"
-            placeholder="Character"
-            data={allCharacterKeys.map((ck) => ({
-              value: ck,
-              label: tChar(ck) || ck,
-            }))}
-            value={selectedChar}
-            onChange={(v) => {
-              setSelectedChar(v as CharacterKey | null)
-            }}
-            searchable
-            clearable
-            mb="xs"
-          />
-          <Divider label="Stat weights" labelPosition="center" mb="xs" />
-          <ScrollArea h={400}>
-            <Flex direction="column" gap={4}>
-              {allDiscSubStatKeys.map((key) => {
-                const defaultValue = currentDefaultWeights[key] ?? null
-                const currentValue = form.substatWeights[key]
-                const isEffective = effectiveSet.has(key)
-                return (
-                  <Flex key={key} align="center" gap={6}>
-                    <NumberInput
-                      size="xs"
-                      style={{ width: 62 }}
-                      decimalScale={2}
-                      min={0}
-                      max={3}
-                      step={0.05}
-                      placeholder={defaultValue?.toFixed(2) ?? ''}
-                      value={currentValue ?? ''}
-                      onChange={(v) => {
-                        const num =
-                          typeof v === 'number'
-                            ? v
-                            : v === '' || v === undefined || v === null
-                              ? null
-                              : Number(v)
-                        handleWeightChange(
-                          key,
-                          isNaN(num as number) ? null : num
-                        )
-                      }}
-                    />
-                    <StatIcon
-                      statKey={key}
-                      iconProps={{ style: { fontSize: 14 } }}
-                    />
-                    <Text
-                      size="xs"
-                      style={{
-                        flex: 1,
-                        color: isEffective
-                          ? undefined
-                          : 'var(--mantine-color-dimmed)',
-                      }}
-                    >
-                      {(tk(key) || key) + getUnitStr(key)}
-                    </Text>
-                    {defaultValue !== undefined && defaultValue !== null && (
-                      <Text size="xs" c="dimmed" style={{ minWidth: 20 }}>
-                        {defaultValue.toFixed(2)}
-                      </Text>
-                    )}
-                  </Flex>
-                )
-              })}
-            </Flex>
-          </ScrollArea>
-        </Box>
+      {opened && <StatWeightEditorModalContent close={onClose} />}
+    </Modal>
+  )
+}
 
-        <Divider orientation="vertical" />
+function StatWeightEditorModalContent({ close }: { close: () => void }) {
+  const { database } = useDatabaseContext()
+  const focusCharacter = useDiscTabStore((s) => s.focusCharacter)
+  const { t } = useTranslation('discTab')
+  const { t: tc } = useTranslation('charNames_gen')
+  const { t: tk } = useTranslation('statKey_gen')
 
-        {/* Right column: per-slot main stat selectors */}
-        <Box style={{ flex: 1 }}>
-          <Text fw={600} size="sm" mb="xs">
-            Recommended Main Stats
-          </Text>
-          <Flex direction="column" gap={8}>
-            {SCORING_SLOTS.map((slot) => (
-              <Box key={slot}>
-                <Text size="xs" c="dimmed" mb={2}>
-                  Slot {slot}
-                </Text>
-                <MultiSelect
-                  size="xs"
-                  data={availableMainStats[slot]}
-                  value={form.mainStats[slot] ?? []}
-                  onChange={(vals) => handleMainStatsChange(slot, vals)}
-                  placeholder={`Slot ${slot} main stats`}
-                  clearable
-                  searchable
-                  comboboxProps={{ keepMounted: false }}
-                />
-              </Box>
+  // The modal only mounts while open, so the focus character is read once.
+  const initialCharacter = focusCharacter ?? allCharacterKeys[0]
+
+  const scoringAlgorithmForm = useForm<ScoringAlgorithmForm>({
+    initialValues: getScoringValuesForDisplay(
+      initialCharacter,
+      database.statWeights.get(initialCharacter)
+    ),
+  })
+
+  const focusCharacterId = scoringAlgorithmForm.getValues().characterId
+
+  const statLabel = useCallback(
+    (statKey: string) => (tk(statKey) || statKey) + getUnitStr(statKey),
+    [tk]
+  )
+
+  const characterOptions = useMemo(
+    () =>
+      allCharacterKeys.map((ck) => ({
+        value: ck,
+        label: tc(ck, { defaultValue: ck }),
+      })),
+    [tc]
+  )
+
+  function loadCharacter(characterId: CharacterKey) {
+    scoringAlgorithmForm.setValues(
+      getScoringValuesForDisplay(
+        characterId,
+        database.statWeights.get(characterId)
+      )
+    )
+  }
+
+  function onModalOk() {
+    if (!focusCharacterId) return
+    database.statWeights.set(
+      focusCharacterId,
+      getOverrideFromForm(scoringAlgorithmForm.getValues())
+    )
+    close()
+  }
+
+  function handleResetDefault() {
+    if (!focusCharacterId) return
+    database.statWeights.resetCharacter(focusCharacterId)
+    loadCharacter(focusCharacterId)
+  }
+
+  function handleResetAll() {
+    const characterId = focusCharacterId
+    modals.openConfirmModal({
+      title: t('Scoring.ResetAllConfirm.Title'),
+      children: t('Scoring.ResetAllConfirm.Description'),
+      labels: {
+        confirm: t('Scoring.Footer.ResetAll'),
+        cancel: t('Scoring.Footer.Cancel'),
+      },
+      confirmProps: { color: 'red' },
+      centered: true,
+      onConfirm: () => {
+        database.statWeights.resetAll()
+        if (characterId) loadCharacter(characterId)
+      },
+    })
+  }
+
+  const previewSrc = focusCharacterId
+    ? characterAsset(focusCharacterId, 'circle')
+    : ''
+
+  return (
+    <>
+      <div>
+        <Divider
+          my={10}
+          label={t('Scoring.StatWeightsHeader')}
+          labelPosition="center"
+        />
+
+        <Flex gap={20}>
+          <Flex direction="column" gap={5}>
+            <Select
+              placeholder={t('RelicFilterBar.SelectCharacter')}
+              data={characterOptions}
+              value={focusCharacterId}
+              onChange={(value) =>
+                value && loadCharacter(value as CharacterKey)
+              }
+              searchable
+              clearable={false}
+              // The modal focuses the first input on open, and a searchable
+              // Select with openOnFocus would pop its dropdown unprompted.
+              openOnFocus={false}
+              comboboxProps={{ keepMounted: false }}
+              checkIconPosition="right"
+              renderOption={({ option }) => (
+                <Flex align="center" gap={8}>
+                  <CharIconCircle characterKey={option.value as CharacterKey} />
+                  {option.label}
+                </Flex>
+              )}
+            />
+            <div
+              className={classes.previewContainer}
+              style={{ height: 230, width: panelWidth }}
+            >
+              <img
+                className={classes.previewImage}
+                src={previewSrc}
+                alt={focusCharacterId ? tc(focusCharacterId) : ''}
+              />
+            </div>
+          </Flex>
+
+          <VerticalDivider />
+
+          <Flex direction="column" style={{ flex: 1 }}>
+            <MainStatsColumn
+              form={scoringAlgorithmForm}
+              statLabel={statLabel}
+            />
+          </Flex>
+
+          <VerticalDivider />
+
+          <Flex direction="column" gap={3}>
+            {allDiscSubStatKeys.map((stat) => (
+              <StatValueRow
+                key={stat}
+                stat={stat}
+                label={statLabel(stat)}
+                form={scoringAlgorithmForm}
+              />
             ))}
           </Flex>
-        </Box>
+        </Flex>
+
+        <Divider
+          className={classes.bottomDivider}
+          label={
+            <span style={{ fontSize: 15 }}>
+              <Text
+                component="a"
+                href="https://github.com/fribbels/hsr-optimizer/blob/main/docs/guides/en/stat-score.md"
+                target="_blank"
+                rel="noreferrer"
+                size="sm"
+                td="underline"
+                c="var(--mantine-color-anchor)"
+              >
+                {/* Hardcoded — same as hsr-optimizer, the guide itself is not localized */}
+                How are substat weights used?
+              </Text>
+            </span>
+          }
+          labelPosition="center"
+        />
+      </div>
+      <Flex justify="flex-end" gap={8} className={classes.footerActions}>
+        <Button variant="default" onClick={close}>
+          {t('Scoring.Footer.Cancel')}
+        </Button>
+        <Button variant="default" onClick={handleResetDefault}>
+          {t('Scoring.Footer.Reset')}
+        </Button>
+        <Button color="red" onClick={handleResetAll}>
+          {t('Scoring.Footer.ResetAll')}
+        </Button>
+        <Button onClick={onModalOk} disabled={!focusCharacterId}>
+          {t('Scoring.Footer.Save')}
+        </Button>
       </Flex>
-
-      <Divider
-        my="sm"
-        label={
-          <Text
-            component="a"
-            href="https://github.com/fribbels/hsr-optimizer/blob/main/docs/guides/en/stat-score.md"
-            target="_blank"
-            rel="noreferrer"
-            size="xs"
-            td="underline"
-            c="var(--mantine-color-anchor)"
-          >
-            How is Substat Score calculated?
-          </Text>
-        }
-        labelPosition="center"
-      />
-
-      <Group justify="flex-end" gap="xs">
-        <Button variant="default" size="xs" onClick={handleClose}>
-          Cancel
-        </Button>
-        <Button variant="default" size="xs" onClick={handleResetChar}>
-          Reset to default
-        </Button>
-        <Button color="red" size="xs" onClick={handleResetAll}>
-          Reset all characters
-        </Button>
-        <Button size="xs" onClick={handleSave} disabled={!dirty}>
-          Save changes
-        </Button>
-      </Group>
-    </Modal>
+    </>
   )
 }
