@@ -3,7 +3,7 @@ import { ImgIcon } from '@zenless-optimizer/common/ui'
 import { Trans, useTranslation } from 'react-i18next'
 import { discDefIcon } from '../../assets'
 import type { CharacterKey } from '../../consts'
-import { rarityColor as discRarityColor } from '../../consts'
+import { rarityColor as discRarityColor, themeColorVar } from '../../consts'
 import { useDatabaseContext } from '../../db-ui'
 import { DiscSetName } from '../../ui'
 import type { IDisc } from '../../zood'
@@ -59,7 +59,7 @@ export function DiscPreview({
     : {}
   const current = scoreCurrent(disc, effectiveStats)
   const max = computeMaxPotential(disc, effectiveStats, weights)
-  const rarityHex = discRarityColor[disc.rarity] as string
+  const rarityColorVar = themeColorVar(discRarityColor[disc.rarity])
 
   return (
     <Box
@@ -80,7 +80,7 @@ export function DiscPreview({
             width: 56,
             height: 56,
             borderRadius: '50%',
-            border: `3px solid ${rarityHex}`,
+            border: `3px solid ${rarityColorVar}`,
             overflow: 'hidden',
             background: 'var(--layer-2)',
             display: 'flex',

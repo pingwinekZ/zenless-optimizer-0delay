@@ -1,35 +1,10 @@
-import {
-  closestCenter,
-  DndContext,
-  type DragEndEvent,
-  DragOverlay,
-  type DragStartEvent,
-  type DropAnimation,
-  defaultDropAnimationSideEffects,
-  PointerSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core'
-import {
-  restrictToParentElement,
-  restrictToVerticalAxis,
-} from '@dnd-kit/modifiers'
-import {
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
 import { Box, Flex, SegmentedControl } from '@mantine/core'
-import { useMergedRef } from '@mantine/hooks'
 import {
   useDataEntryBase,
   useDataManagerKeys,
 } from '@zenless-optimizer/common/database-ui'
 import { filterFunction, sortFunction } from '@zenless-optimizer/common/util'
 import {
-  memo,
   Suspense,
   useCallback,
   useDeferredValue,
@@ -42,33 +17,19 @@ import type { CharacterKey } from '../consts'
 import { useDatabaseContext } from '../db-ui'
 import {
   CharacterMenu,
-  CharacterRow,
   CharacterSingleSelectionModal,
   characterFilterConfigs,
   characterSortConfigs,
   characterSortMap,
-  DragOverlayRow,
   precomputedCssVars,
   StatHighlightContext,
   useCharacterTabStore,
 } from '../ui'
+import { CharacterDragList } from './CharacterDragList'
 import { CharacterEditModal } from './CharacterEditModal'
 import { CharacterPreview } from './CharacterPreview'
-import { getCharacterShowcaseColor } from './color/characterShowcaseColors'
-import { DEFAULT_CONFIG } from './color/colorPipelineConfig'
-import { oklchCharacterListColor } from './color/colorUtilsOklch'
 import { cardTotalW, defaultGap } from './constantsUi'
 import { FilterBar } from './FilterBar'
-
-const dropAnimationDuration = 200
-
-const dropAnimationConfig: DropAnimation = {
-  duration: 0,
-  easing: 'ease',
-  sideEffects: defaultDropAnimationSideEffects({
-    styles: { active: { opacity: '0' } },
-  }),
-}
 
 export default function PageCharacter({
   onNavigateToOptimize,
@@ -94,11 +55,13 @@ export default function PageCharacter({
 
   const [newCharacter, setnewCharacter] = useState(false)
 
+  // Stable callbacks (HSR parity: stable references keep the memoized rows
+  // from re-rendering when the parent does). State is read via functional
+  // updates / getState so no per-render deps are needed.
   const editCharacter = useCallback(
     (characterKey: CharacterKey | null) => {
       if (characterKey === null) return
-      const character = database.chars.get(characterKey)
-      if (!character) {
+      if (!database.chars.get(characterKey)) {
         database.chars.getOrCreate(characterKey)
       }
       setEditCharacterKey(characterKey)
@@ -110,14 +73,12 @@ export default function PageCharacter({
     (charKey: CharacterKey) => {
       if (!window.confirm(`Remove ${charKey}?`)) return
       database.chars.remove(charKey)
-      if (editCharacterKey === charKey) {
-        setEditCharacterKey(null)
-      }
-      if (focusCharacter === charKey) {
-        setFocusCharacter(null)
+      setEditCharacterKey((prev) => (prev === charKey ? null : prev))
+      if (useCharacterTabStore.getState().focusCharacter === charKey) {
+        useCharacterTabStore.getState().setFocusCharacter(null)
       }
     },
-    [database.chars, editCharacterKey, focusCharacter, setFocusCharacter]
+    [database.chars]
   )
 
   const charKeys = useDataManagerKeys(database.chars)
@@ -166,93 +127,6 @@ export default function PageCharacter({
 
   const { specialtyType, attribute, rarity } = displayCharacter
 
-  // DnD state
-  const gridRef = useRef<HTMLDivElement>(null)
-  const [activeId, setActiveId] = useState<string | null>(null)
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 3 } }),
-    useSensor(TouchSensor, {
-      activationConstraint: { delay: 200, tolerance: 5 },
-    })
-  )
-
-  const handleDragStart = useCallback((event: DragStartEvent) => {
-    setActiveId(event.active.id as string)
-    gridRef.current?.setAttribute('data-dragging-active', '')
-  }, [])
-
-  const handleDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      gridRef.current?.removeAttribute('data-dragging-active')
-
-      // Suppress row transitions for one paint to prevent "float from top" glitch
-      const container = gridRef.current
-      if (container) {
-        container.setAttribute('data-suppress-transition', 'true')
-        requestAnimationFrame(() =>
-          container.removeAttribute('data-suppress-transition')
-        )
-      }
-
-      // Clear activeId immediately — since we update the order synchronously,
-      // keeping the overlay or 0.4-opacity ghost visible would let the overlay
-      // (high z-index) cover the item in its new position.
-      setActiveId(null)
-
-      const { active, over } = event
-      if (!over || active.id === over.id) return
-
-      // Read the current displayed order from the ref — this always matches
-      // what the user sees, unlike the closure-captured customSortOrder which
-      // can be stale or differ when sortType is not 'custom'.
-      const currentOrder = filteredCharKeysRef.current
-      const oldIndex = currentOrder.indexOf(active.id as CharacterKey)
-      const newIndex = currentOrder.indexOf(over.id as CharacterKey)
-      if (oldIndex === -1 || newIndex === -1) return
-
-      const reordered = [...currentOrder]
-      reordered.splice(oldIndex, 1)
-      reordered.splice(newIndex, 0, active.id as CharacterKey)
-
-      // If filters are active, currentOrder may be a subset of the full
-      // customSortOrder. Preserve any filtered-out characters at the end so
-      // they don't get silently dropped from the priority order.
-      const fullExisting = database.displayCharacter.get().customSortOrder
-      if (fullExisting?.length) {
-        const newSet = new Set(reordered)
-        const preserved = fullExisting.filter(
-          (ck) => !newSet.has(ck as CharacterKey)
-        )
-        reordered.push(...(preserved as CharacterKey[]))
-      }
-
-      // Update synchronously — @dnd-kit hasn't started its drop animation yet,
-      // so changing SortableContext.items now is safe and matches the working
-      // pattern used by Fribbels (insertCharacter inside onDragEnd).
-      database.displayCharacter.set({
-        sortType: 'custom',
-        customSortOrder: reordered,
-      })
-    },
-    [database.displayCharacter]
-  )
-
-  const handleDragCancel = useCallback(() => {
-    gridRef.current?.removeAttribute('data-dragging-active')
-    setTimeout(() => setActiveId(null), dropAnimationDuration)
-  }, [])
-
-  // Keep a ref so handleDragEnd always reads the latest displayed order
-  // (matching Fribbels' pattern of reading from the store synchronously).
-  const filteredCharKeysRef = useRef(filteredCharKeys)
-  filteredCharKeysRef.current = filteredCharKeys
-
-  const itemIds = useMemo(
-    () => filteredCharKeys as string[],
-    [filteredCharKeys]
-  )
-
   const density = useCharacterTabStore((s) => s.density)
   const setDensity = useCharacterTabStore((s) => s.setDensity)
 
@@ -274,9 +148,45 @@ export default function PageCharacter({
   }, [focusCharacter])
   const displayFocus = localFocus ?? focusCharacter
 
-  const rankMap = useMemo(
-    () => new Map(filteredCharKeys.map((ck, i) => [ck, i])),
-    [filteredCharKeys]
+  // Stable row callbacks (HSR parity) — constant references keep the memoized
+  // rows inside CharacterDragList from re-rendering when the page does.
+  const handleRowClick = useCallback(
+    (charKey: CharacterKey) => {
+      setLocalFocus(charKey)
+      setFocusCharacter(charKey)
+    },
+    [setFocusCharacter]
+  )
+
+  const handleRowDoubleClick = useCallback(
+    (charKey: CharacterKey) => {
+      setFocusCharacter(charKey)
+      onNavigateToOptimize?.(charKey)
+    },
+    [setFocusCharacter, onNavigateToOptimize]
+  )
+
+  // Stable preview/filter callbacks — constant references let the memoized
+  // CharacterPreview and FilterBar skip re-render on unrelated page commits
+  // such as drag-reorder writes to displayCharacter.
+  const handlePreviewEdit = useCallback(() => {
+    if (focusCharacter) editCharacter(focusCharacter)
+  }, [focusCharacter, editCharacter])
+  const handlePreviewDelete = useCallback(() => {
+    if (focusCharacter) deleteCharacter(focusCharacter)
+  }, [focusCharacter, deleteCharacter])
+  const handleSpecialtyChange = useCallback(
+    (v: typeof specialtyType) =>
+      database.displayCharacter.set({ specialtyType: v }),
+    [database.displayCharacter]
+  )
+  const handleAttributeChange = useCallback(
+    (v: typeof attribute) => database.displayCharacter.set({ attribute: v }),
+    [database.displayCharacter]
+  )
+  const handleRarityChange = useCallback(
+    (v: typeof rarity) => database.displayCharacter.set({ rarity: v }),
+    [database.displayCharacter]
   )
 
   return (
@@ -298,8 +208,8 @@ export default function PageCharacter({
         />
       </Suspense>
 
-      {/* Root flex: fixed-width row matching HSR CharacterTab */}
-      <Flex style={{ width: 1640, height: '100%' }} gap={defaultGap}>
+      {/* Root flex: list + preview columns */}
+      <Flex style={{ width: '100%', height: '100%' }} gap={defaultGap}>
         {/* Left: CharacterMenu + Grid + Density */}
         <Box
           miw={300}
@@ -328,72 +238,17 @@ export default function PageCharacter({
             }}
           />
 
-          {/* Character Grid with DnD + ScrollArea */}
-          <Box
-            style={{
-              overflow: 'auto',
-              overscrollBehavior: 'contain',
-              maxHeight: 'calc(100vh - 160px)',
-              border: '1px solid var(--layer-2)',
-              borderRadius: 'var(--mantine-radius-sm)',
-            }}
-          >
-            <Box
-              ref={gridRef}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 'var(--cr-row-gap, 1px)',
-                width: '100%',
-                ...rowCssVars,
-              }}
-            >
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                modifiers={[restrictToVerticalAxis, restrictToParentElement]}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-                onDragCancel={handleDragCancel}
-              >
-                <SortableContext
-                  items={itemIds}
-                  strategy={verticalListSortingStrategy}
-                >
-                  {filteredCharKeys.map((charKey) => (
-                    <SortableCharacterRow
-                      key={charKey}
-                      characterKey={charKey}
-                      isFocused={charKey === displayFocus}
-                      rank={rankMap.get(charKey) ?? 0}
-                      onClick={() => {
-                        setLocalFocus(charKey)
-                        setFocusCharacter(charKey)
-                      }}
-                      onDoubleClick={() => {
-                        setFocusCharacter(charKey)
-                        onNavigateToOptimize?.(charKey)
-                      }}
-                      onEdit={(ck) => editCharacter(ck)}
-                      onDelete={(ck) => deleteCharacter(ck)}
-                      isDragging={activeId === charKey}
-                    />
-                  ))}
-                </SortableContext>
-                <DragOverlay
-                  dropAnimation={dropAnimationConfig}
-                  modifiers={[restrictToVerticalAxis]}
-                >
-                  {activeId && (
-                    <DragOverlayRow
-                      characterKey={activeId as CharacterKey}
-                      rank={rankMap.get(activeId as CharacterKey) ?? 0}
-                    />
-                  )}
-                </DragOverlay>
-              </DndContext>
-            </Box>
-          </Box>
+          {/* Character Grid with DnD + ScrollArea (isolated component owns
+              drag state so pickup/drop never re-renders the preview) */}
+          <CharacterDragList
+            charKeys={filteredCharKeys}
+            displayFocus={displayFocus}
+            rowCssVars={rowCssVars}
+            onRowClick={handleRowClick}
+            onRowDoubleClick={handleRowDoubleClick}
+            onEditCharacter={editCharacter}
+            onDeleteCharacter={deleteCharacter}
+          />
 
           {/* Density toggle */}
           <SegmentedControl
@@ -404,32 +259,31 @@ export default function PageCharacter({
             value={density}
             onChange={(v) => setDensity(v as 'default' | 'compact')}
             fullWidth
-            size="xs"
           />
         </Box>
 
         {/* Right: Filter toggles + Preview */}
         <Box
           style={{
-            width: cardTotalW,
-            flexShrink: 0,
+            flex: 1,
+            minWidth: cardTotalW,
             display: 'flex',
             flexDirection: 'column',
             gap: 8,
             position: 'relative',
+            // Reserve room for the absolutely-positioned customize sidebar
+            // (130px wide + 8px offset + 8px breathing room) so the fluid
+            // card never slides underneath it and causes page scroll.
+            marginRight: 146,
           }}
         >
           <FilterBar
             specialtyType={specialtyType}
-            onSpecialtyChange={(v) =>
-              database.displayCharacter.set({ specialtyType: v })
-            }
+            onSpecialtyChange={handleSpecialtyChange}
             attribute={attribute}
-            onAttributeChange={(v) =>
-              database.displayCharacter.set({ attribute: v })
-            }
+            onAttributeChange={handleAttributeChange}
             rarity={rarity}
-            onRarityChange={(v) => database.displayCharacter.set({ rarity: v })}
+            onRarityChange={handleRarityChange}
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
           />
@@ -437,116 +291,13 @@ export default function PageCharacter({
           {/* CharacterPreview — always visible */}
           <CharacterPreview
             characterKey={focusCharacter}
-            onEdit={
-              focusCharacter ? () => editCharacter(focusCharacter) : undefined
-            }
-            onDelete={
-              focusCharacter ? () => deleteCharacter(focusCharacter) : undefined
-            }
+            onEdit={focusCharacter ? handlePreviewEdit : undefined}
+            onDelete={focusCharacter ? handlePreviewDelete : undefined}
           />
         </Box>
       </Flex>
     </Box>
   )
 }
-
-const SortableCharacterRow = memo(function SortableCharacterRow({
-  characterKey,
-  isFocused,
-  rank,
-  onClick,
-  onDoubleClick,
-  onEdit,
-  onDelete,
-  isDragging,
-}: {
-  characterKey: CharacterKey
-  isFocused: boolean
-  rank: number
-  onClick: () => void
-  onDoubleClick?: () => void
-  onEdit?: (ck: CharacterKey) => void
-  onDelete?: (ck: CharacterKey) => void
-  isDragging: boolean
-}) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({
-      id: characterKey,
-      animateLayoutChanges: () => false,
-    })
-
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const mergedRef = useMergedRef(setNodeRef, scrollRef)
-
-  // Load-once via IntersectionObserver
-  const [loadImages, setLoadImages] = useState(false)
-
-  useEffect(() => {
-    if (isFocused) {
-      scrollRef.current?.scrollIntoView({ block: 'nearest' })
-    }
-  }, [isFocused])
-
-  useEffect(() => {
-    const el = scrollRef.current
-    if (!el) return
-    const observer = new IntersectionObserver(
-      ([entry], obs) => {
-        if (entry.isIntersecting) {
-          setLoadImages(true)
-          obs.disconnect()
-        }
-      },
-      { rootMargin: '500px 0px', threshold: 0 }
-    )
-    observer.observe(el)
-    return () => {
-      observer.disconnect()
-    }
-  }, [characterKey])
-
-  const showcaseColor = useMemo(
-    () =>
-      oklchCharacterListColor(
-        getCharacterShowcaseColor(characterKey),
-        true,
-        DEFAULT_CONFIG
-      ),
-    [characterKey]
-  )
-
-  const style = {
-    transform: CSS.Translate.toString(transform),
-    transition: transform ? transition : undefined,
-    opacity: isDragging ? 0.4 : undefined,
-  }
-
-  const handleClick = useCallback(() => onClick(), [onClick])
-  const handleDoubleClick = useCallback(
-    () => onDoubleClick?.(),
-    [onDoubleClick]
-  )
-  const handleEdit = useCallback((ck: CharacterKey) => onEdit?.(ck), [onEdit])
-  const handleDelete = useCallback(
-    (ck: CharacterKey) => onDelete?.(ck),
-    [onDelete]
-  )
-
-  return (
-    <Box ref={mergedRef} style={style} {...attributes} {...listeners}>
-      <CharacterRow
-        characterKey={characterKey}
-        isFocused={isFocused}
-        rank={rank}
-        loadImages={loadImages || isFocused}
-        onClick={handleClick}
-        onDoubleClick={handleDoubleClick}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        showcaseColor={showcaseColor}
-      />
-    </Box>
-  )
-})
 
 export { ShowcaseDiscCard, ShowcaseDiscPanel } from './card/ShowcaseDiscPanel'

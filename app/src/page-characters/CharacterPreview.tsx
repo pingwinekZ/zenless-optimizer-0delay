@@ -1,7 +1,7 @@
 import { Box, Center, Flex, Text } from '@mantine/core'
 import { IconUser } from '@tabler/icons-react'
 import { TagContext } from '@zenless-optimizer/game-opt/formula-ui'
-import { useCallback, useEffect, useMemo } from 'react'
+import { memo, useCallback, useEffect, useMemo } from 'react'
 import { characterAsset } from '../assets'
 import type { CharacterKey, DiscSlotKey, PhaseKey } from '../consts'
 import type { DiscIds, ICachedCharacter, ICachedDisc, Team } from '../db'
@@ -24,7 +24,7 @@ import {
   gradeColor,
 } from '../util'
 import {
-  ShadowRings,
+  ShowcaseBackgroundBlur,
   showcaseShadow,
   showcaseShadowInsetAddition,
   showcaseTransition,
@@ -42,13 +42,7 @@ import {
   ShowcaseColorMode,
 } from './color/showcaseColorService'
 import { useShowcaseColorStore } from './color/showcaseColorStore'
-import {
-  cardTotalW,
-  defaultGap,
-  middleColumnWidth,
-  parentH,
-  parentW,
-} from './constantsUi'
+import { defaultGap, middleColumnWidth, parentH, parentW } from './constantsUi'
 import type { ShowcasePreset } from './customization/ShowcaseCustomizationSidebar'
 import { ShowcaseCustomizationSidebar } from './customization/ShowcaseCustomizationSidebar'
 
@@ -67,7 +61,11 @@ type ComputedStats = {
   dmg_: number
 }
 
-export function CharacterPreview({
+// Memoized so page-level re-renders that don't touch the focused character
+// (e.g. drag-reorder commits to displayCharacter) skip the whole preview
+// subtree — HSR parity, where the preview subscribes narrowly and reorder
+// doesn't touch it.
+export const CharacterPreview = memo(function CharacterPreview({
   characterKey,
   onEdit,
   onDelete,
@@ -92,7 +90,7 @@ export function CharacterPreview({
       buildOverride={buildOverride}
     />
   )
-}
+})
 
 export type BuildPreviewOverride = {
   character: ICachedCharacter
@@ -105,15 +103,13 @@ function PreviewPlaceholder() {
   return (
     <Box
       style={{
-        backgroundColor: 'var(--layer-2)',
-        borderRadius: 'var(--radius-md)',
-        boxShadow: 'var(--shadow-card)',
-        overflow: 'hidden',
+        height: parentH,
         width: '100%',
-        minHeight: 400,
+        borderRadius: 6,
+        border: '1px solid rgba(255, 255, 255, 0.1)',
       }}
     >
-      <Center h={400}>
+      <Center h={parentH}>
         <Flex direction="column" align="center" gap={8} c="dark.2">
           <IconUser size={48} opacity={0.3} />
           <Text size="sm">Select a character</Text>
@@ -369,11 +365,10 @@ function PreviewContent({
     : `char-preview-${characterKey}`
 
   return (
-    <Flex direction="column" w={cardTotalW} style={{ position: 'relative' }}>
+    <Flex direction="column" w="100%" style={{ position: 'relative' }}>
       {!preview && (
         <ShowcaseCustomizationSidebar
           id={previewId}
-          characterKey={characterKey}
           seedColor={seedColor}
           effectiveColorMode={effectiveColorMode}
           portraitSwatches={portraitSwatches}
@@ -390,26 +385,32 @@ function PreviewContent({
         id={previewId}
         className="characterPreview"
         style={{
-          '--showcase-card-bg': withAlpha(
+          '--showcase-card-bg-bridge-high': withAlpha(
             theme.cardBackgroundColor,
             cardBgAlpha
           ),
-          '--showcase-card-border': cardBorderColor,
+          '--showcase-card-edge-medium': cardBorderColor,
           '--showcase-shadow': 'rgba(0, 0, 0, 0.25) 0px 2px 16px',
           '--showcase-shadow-inset':
             ', inset rgba(255, 255, 255, 0.1) 0px 0px 2px',
           position: 'relative',
           display: 'flex',
           height: parentH,
-          background: 'var(--layer-2)',
+          width: '100%',
+          background: 'var(--layer-inset)',
           overflow: 'hidden',
           borderRadius: 6,
           gap: defaultGap,
           color: 'rgba(240, 240, 240, 1)',
           textShadow: '0 1px 4px rgba(0, 0, 0, 0.6)',
-          fontFamily: 'var(--font-showcase, sans-serif)',
+          fontFamily: 'var(--font-showcase)',
         }}
       >
+        <ShowcaseBackgroundBlur
+          seedColor={seedColor}
+          cardBgColor={theme.cardBackgroundColor}
+          cardBgAlpha={cardBgAlpha}
+        />
         {/* === LEFT COLUMN: Portrait === */}
         <ShowcasePortrait
           portraitUrl={portraitUrl}
@@ -424,8 +425,8 @@ function PreviewContent({
             flexDirection: 'column',
             justifyContent: 'space-between',
             gap: 8,
-            width: middleColumnWidth,
-            flexShrink: 0,
+            flex: 1,
+            minWidth: middleColumnWidth,
           }}
         >
           <Box
@@ -437,19 +438,19 @@ function PreviewContent({
               height: '100%',
               borderRadius: 6,
               zIndex: 10,
-              backgroundColor: 'var(--showcase-card-bg)',
+              backgroundColor: 'var(--showcase-card-bg-bridge-high)',
               transition: showcaseTransition,
               flex: 1,
               paddingRight: 2,
               paddingLeft: 2,
               paddingBottom: 3,
               boxShadow: showcaseShadow + showcaseShadowInsetAddition,
-              border: '1px solid var(--showcase-card-border)',
+              border: '1px solid var(--showcase-card-edge-medium)',
+              backgroundClip: 'padding-box',
+              boxSizing: 'border-box',
               position: 'relative',
             }}
           >
-            <ShadowRings />
-
             {/* Character header: element, rarity, specialty, name, level, actions */}
             <ShowcaseCharacterHeader
               characterKey={characterKey}

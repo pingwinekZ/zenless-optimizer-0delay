@@ -85,15 +85,8 @@
   color: transparent;
 }
 
-.hide-scrollbar {
-  overflow-y: scroll;
-
-  /* Hide scrollbar for Chrome, Safari and Opera */
-  -webkit-scrollbar {
-    display: none;
-  }
-
-  /* Hide scrollbar for IE, Edge and Firefox */
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+/* Overlay scrollbars — matches hsr-optimizer */
+.os-scrollbar {
+  --os-handle-bg: #95959552 !important;
+  --os-size: 8px !important;
 }

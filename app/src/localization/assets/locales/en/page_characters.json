@@ -50,18 +50,5 @@
       "shine": "Shine",
       "natural": "Natural"
     }
-  },
-  "characterBuilds": {
-    "title": "Builds",
-    "saveCurrent": "Save Current",
-    "load": "Load",
-    "delete": "Delete",
-    "buildName": "Build Name",
-    "saveAs": "Save as Build",
-    "noBuilds": "No saved builds",
-    "confirmDelete": "Delete this build?",
-    "buildSaved": "Build saved",
-    "buildLoaded": "Build loaded",
-    "defaultName": "My Build"
   }
 }

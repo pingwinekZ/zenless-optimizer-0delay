@@ -14,7 +14,6 @@ import {
   DiscDataManager,
   StatWeightDataManager,
 } from './DataManagers/'
-import { CharacterBuildDataManager } from './DataManagers/CharacterBuildDataManager'
 import { CharacterDataManager } from './DataManagers/CharacterDataManager'
 import { GeneratedBuildListDataManager } from './DataManagers/GeneratedBuildListDataManager'
 import { OptConfigDataManager } from './DataManagers/OptConfigDataManager'
@@ -92,7 +91,6 @@ export class ZzzDatabase extends Database {
   displayCharacter: DisplayCharacterEntry
   displayWengine: DisplayWengineEntry
   generatedBuildList: GeneratedBuildListDataManager
-  characterBuilds: CharacterBuildDataManager
   dbIndex: 1 | 2 | 3 | 4
   dbVer: number
 
@@ -120,9 +118,6 @@ export class ZzzDatabase extends Database {
 
     // Depends on discs and characters
     this.optConfigs = new OptConfigDataManager(this)
-
-    // Character build loadouts manager
-    this.characterBuilds = new CharacterBuildDataManager(this)
 
     // Depends on optConfigs
     this.teams = new TeamDataManager(this)
@@ -162,7 +157,6 @@ export class ZzzDatabase extends Database {
       this.chars,
       this.discs,
       this.wengines,
-      this.characterBuilds,
       this.charMeta,
       this.statWeights,
       this.generatedBuildList,

@@ -12,12 +12,6 @@ export type CharacterGridPreset = {
   portraitY: number
   lcSize: number
   lcStripWidth: number
-  fontSize: number
-  lineHeight: number
-  subtitleGap: number
-  subtitleFontFamily: string
-  subtitleFontSize: number
-  subtitleLineHeight: number
   frostFadeEnd: number
   frostMaskSolid: number
 }
@@ -37,13 +31,7 @@ export const characterGridPresets: Record<
     portraitY: 30,
     lcSize: 52,
     lcStripWidth: 54,
-    fontSize: 13,
-    lineHeight: 1.4,
-    subtitleGap: 1,
-    subtitleFontFamily: 'Consolas, Menlo, Monaco, monospace',
-    subtitleFontSize: 12,
-    subtitleLineHeight: 1.4,
-    frostFadeEnd: 35,
+    frostFadeEnd: 27,
     frostMaskSolid: 77,
   },
   compact: {
@@ -57,13 +45,7 @@ export const characterGridPresets: Record<
     portraitY: 32,
     lcSize: 48,
     lcStripWidth: 52,
-    fontSize: 12,
-    lineHeight: 1.4,
-    subtitleGap: 0,
-    subtitleFontFamily: 'Consolas, Menlo, Monaco, monospace',
-    subtitleFontSize: 11,
-    subtitleLineHeight: 1.2,
-    frostFadeEnd: 45,
+    frostFadeEnd: 35,
     frostMaskSolid: 67,
   },
 }
@@ -80,12 +62,6 @@ function presetToCssVars(preset: CharacterGridPreset): CSSProperties {
     '--cr-portrait-y': `${preset.portraitY}%`,
     '--cr-lc-size': `${preset.lcSize}px`,
     '--cr-lc-strip-width': `${preset.lcStripWidth}px`,
-    '--cr-font-size': `${preset.fontSize}px`,
-    '--cr-line-height': `${preset.lineHeight}`,
-    '--cr-subtitle-gap': `${preset.subtitleGap}px`,
-    '--cr-subtitle-font-family': preset.subtitleFontFamily,
-    '--cr-subtitle-font-size': `${preset.subtitleFontSize}px`,
-    '--cr-subtitle-line-height': `${preset.subtitleLineHeight}`,
     '--cr-frost-fade-end': `${preset.frostFadeEnd}%`,
     '--cr-frost-mask-solid': `${preset.frostMaskSolid}%`,
   } as CSSProperties

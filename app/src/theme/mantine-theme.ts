@@ -98,7 +98,11 @@ export function createMantineTheme(seed: string): MantineThemeOverride {
       primary: derivePrimaryPalette(safeSeed),
       dark: deriveDarkPalette(h),
 
-      // ZZZ-specific static colors
+      // ZZZ-specific static colors. Mantine derives the whole
+      // `--mantine-color-<name>-{text,filled,light,outline,...}` family from
+      // these tuples; only `rankS/rankA/rankB` (disc + wengine rarity) and
+      // `mindscapeActive/Inactive` are referenced by components, the element
+      // colors are used through `ColorText`.
       fire: hexToShades('#FF5623'),
       ice: hexToShades('#95EAE9'),
       electric: hexToShades('#2EB6FF'),
@@ -112,27 +116,8 @@ export function createMantineTheme(seed: string): MantineThemeOverride {
       rankA: hexToShades('#E900FF'),
       rankB: hexToShades('#14a9fe'),
 
-      roll1: hexToShades('#a3a7a9'),
-      roll2: hexToShades('#6fa376'),
-      roll3: hexToShades('#8eea83'),
-      roll4: hexToShades('#31e09d'),
-      roll5: hexToShades('#27bbe4'),
-      roll6: hexToShades('#de79f0'),
-
-      rarity1: hexToShades('#838f99'),
-      rarity2: hexToShades('#5e966c'),
-      rarity3: hexToShades('#499fb3'),
-      rarity4: hexToShades('#b886ca'),
-      rarity5: hexToShades('#e6ac54'),
-
       mindscapeActive: hexToShades('#22D7C1'),
       mindscapeInactive: hexToShades('#5D5D5D'),
-
-      discord: hexToShades('#5663F7'),
-      patreon: hexToShades('#f96854'),
-      twitch: hexToShades('#6441a5'),
-      twitter: hexToShades('#55acee'),
-      paypal: hexToShades('#00457C'),
     },
     other: layers,
     fontFamily: 'inherit',
@@ -178,6 +163,7 @@ export function createMantineTheme(seed: string): MantineThemeOverride {
       },
       TextInput: { defaultProps: { size: 'xs' } },
       NumberInput: { defaultProps: { size: 'xs', allowDecimal: true } },
+      ColorInput: { defaultProps: { size: 'xs' } },
       Checkbox: { defaultProps: { size: 'xs' } },
       Switch: { defaultProps: { size: 'sm' } },
       Pill: {

@@ -1,27 +1,25 @@
-import { ColorInput, Flex, SegmentedControl, Text } from '@mantine/core'
+import { ColorInput, Flex, SegmentedControl } from '@mantine/core'
 import {
   IconCircleHalf2,
   IconMoon,
   IconPalette,
   IconSun,
 } from '@tabler/icons-react'
+import { HorizontalDivider } from '@zenless-optimizer/common/ui'
 import { useCallback, useMemo, useState } from 'react'
-import type { CharacterKey } from '../../consts'
 import { DEFAULT_CONFIG } from '../color/colorPipelineConfig'
 import { withAlpha } from '../color/colorUtils'
 import {
   resolveShowcaseTheme,
   ShowcaseColorMode,
 } from '../color/showcaseColorService'
-import { cardTotalW, defaultGap, defaultPadding } from '../constantsUi'
-import { CharacterBuildPanel } from './CharacterBuildPanel'
+import { defaultGap, defaultPadding } from '../constantsUi'
 import classes from './ShowcaseCustomizationSidebar.module.css'
 
 export type ShowcasePreset = 'shine' | 'natural'
 
 interface ShowcaseCustomizationSidebarProps {
   id: string
-  characterKey: CharacterKey
   seedColor: string
   effectiveColorMode: ShowcaseColorMode
   portraitSwatches: string[]
@@ -36,7 +34,6 @@ interface ShowcaseCustomizationSidebarProps {
 
 export function ShowcaseCustomizationSidebar({
   id,
-  characterKey: _characterKey,
   seedColor,
   effectiveColorMode,
   portraitSwatches,
@@ -53,7 +50,7 @@ export function ShowcaseCustomizationSidebar({
       direction="column"
       gap={defaultGap + 2}
       className={classes.sidebarContainer}
-      style={{ marginLeft: cardTotalW + 8 }}
+      style={{ left: '100%', marginLeft: 8 }}
     >
       <CustomizationPanel
         id={id}
@@ -68,7 +65,6 @@ export function ShowcaseCustomizationSidebar({
         onDarkModeChange={onDarkModeChange}
         onPresetChange={onPresetChange}
       />
-      <CharacterBuildPanel characterKey={_characterKey} />
     </Flex>
   )
 }
@@ -116,10 +112,14 @@ const CustomizationPanel = ({
       const el = document.getElementById(id)
       if (el) {
         el.style.setProperty(
-          '--showcase-card-bg',
+          '--showcase-card-bg-bridge-high',
           withAlpha(theme.cardBackgroundColor, cardBgAlpha)
         )
-        el.style.setProperty('--showcase-card-border', theme.cardBorderColor)
+        el.style.setProperty(
+          '--showcase-card-edge-medium',
+          theme.cardBorderColor
+        )
+        el.style.setProperty('--showcase-seed-color', newColor)
       }
     },
     [id, showcaseDarkMode, cardBgAlpha]
@@ -135,9 +135,11 @@ const CustomizationPanel = ({
 
   return (
     <Flex direction="column" gap={6} style={cardStyle}>
-      <Text ta="center" fw={600} size="sm">
+      <div className={classes.headerCentered} style={headerTextStyle}>
         Customize
-      </Text>
+      </div>
+
+      <HorizontalDivider />
 
       {/* Color picker */}
       <ColorInput
@@ -151,6 +153,8 @@ const CustomizationPanel = ({
           colorPreview: { '--cs-radius': '4px' } as React.CSSProperties,
         }}
       />
+
+      <HorizontalDivider />
 
       {/* Preset toggle: Shine / Natural */}
       <SegmentedControl
@@ -174,6 +178,8 @@ const CustomizationPanel = ({
         onChange={(value) => onDarkModeChange(value === 'true')}
       />
 
+      <HorizontalDivider />
+
       {/* Color mode: Auto / Custom / Standard */}
       <SegmentedControl
         orientation="vertical"
@@ -190,8 +196,15 @@ const CustomizationPanel = ({
   )
 }
 
+const headerTextStyle = {
+  textDecoration: 'underline',
+  textDecorationColor: 'var(--color-accent)',
+  textUnderlineOffset: 2,
+  whiteSpace: 'nowrap',
+} as const
+
 const cardStyle = {
-  backgroundColor: 'var(--layer-inset)',
+  backgroundColor: 'var(--layer-1)',
   boxShadow: 'var(--shadow-card)',
   borderRadius: 'var(--radius-md)',
   padding: defaultPadding,

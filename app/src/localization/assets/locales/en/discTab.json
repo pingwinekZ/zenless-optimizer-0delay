@@ -14,6 +14,20 @@
     "ExcludedCharacters": "Exclude characters",
     "ValueColumns": "Value columns"
   },
+  "Scoring": {
+    "StatWeightsHeader": "Stat weights",
+    "SlotLabel": "Slot {{slot}}",
+    "Footer": {
+      "Cancel": "Cancel",
+      "Reset": "Reset to default",
+      "ResetAll": "Reset all characters",
+      "Save": "Save changes"
+    },
+    "ResetAllConfirm": {
+      "Title": "Reset all characters",
+      "Description": "This clears the custom stat weights for every character and restores the defaults. This cannot be undone."
+    }
+  },
   "RelicGrid": {
     "Headers": {
       "EquippedBy": "Owner",

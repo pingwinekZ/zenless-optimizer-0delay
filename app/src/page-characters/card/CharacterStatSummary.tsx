@@ -1,6 +1,7 @@
 import { Flex, Text } from '@mantine/core'
 import { getEnerRegenLabel, statKeyTextMap } from '../../consts'
 import { StatIcon } from '../../svgicons'
+import { separatorColor } from '../constantsUi'
 import classes from './CharacterStatSummary.module.css'
 import { StatText } from './StatText'
 
@@ -20,7 +21,7 @@ export function CharacterStatSummary({
   return (
     <StatText className={classes.statSummary}>
       <div
-        style={{ display: 'flex', flexDirection: 'column', gap: 5 }}
+        style={{ display: 'flex', flexDirection: 'column', gap: 3 }}
         className={zebra ? classes.zebra : undefined}
       >
         <CharacterStatRow statKey="hp" value={stats?.hp ?? 0} />
@@ -43,6 +44,19 @@ export function CharacterStatSummary({
         )}
       </div>
     </StatText>
+  )
+}
+
+export function StatRowDivider() {
+  return (
+    <span
+      role="separator"
+      style={{
+        margin: 'auto 10px',
+        flexGrow: 1,
+        borderBottom: `1px dashed ${separatorColor}`,
+      }}
+    />
   )
 }
 
@@ -73,7 +87,7 @@ export function CharacterStatRow({
       <Flex gap={2} align="center" style={{ minWidth: 0 }}>
         <StatIcon
           statKey={statKey}
-          iconProps={{ style: { fontSize: 22, fill: '#fff' } }}
+          iconProps={{ style: { fontSize: 22, fill: '#fff', marginRight: 3 } }}
         />
         <span
           style={{
@@ -85,8 +99,8 @@ export function CharacterStatRow({
           {displayName}
         </span>
       </Flex>
-      <span role="separator" />
-      <Text fw={600} style={{ whiteSpace: 'nowrap', marginLeft: 4 }}>
+      <StatRowDivider />
+      <Text style={{ whiteSpace: 'nowrap', marginLeft: 4 }}>
         {displayValue}
       </Text>
     </div>

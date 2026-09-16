@@ -9,7 +9,7 @@ import {
 import type { ReactNode } from 'react'
 import { Suspense, useCallback, useContext } from 'react'
 import { wengineAsset, wenginePhaseIcon } from '../../assets'
-import { rarityColor } from '../../consts'
+import { rarityColor, themeColorVar } from '../../consts'
 import { useWengine } from '../../db-ui'
 import { getWengineStat, getWengineStats } from '../../stats'
 import { StatIcon } from '../../svgicons'
@@ -85,7 +85,7 @@ export function CompactWengineCard({
                 alt="Wengine Image"
                 src={wengineAsset(wengine.key)}
                 style={{
-                  border: `4px solid ${rarityColor[wengineStat.rarity]}`,
+                  border: `4px solid ${themeColorVar(rarityColor[wengineStat.rarity])}`,
                   borderRadius: '12px',
                   background: 'var(--mantine-color-gray-1)',
                   width: `${COMPACT_CARD_HEIGHT_PX - 40}px`,

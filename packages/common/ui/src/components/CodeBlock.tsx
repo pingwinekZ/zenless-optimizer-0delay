@@ -67,15 +67,32 @@ export function CodeBlock({ text }: { text: string }) {
           return (
             <span
               key={index}
-              className="codeLine"
               style={{
-                counterIncrement: 'lineNumber',
                 margin: 0,
                 display: 'block',
+                position: 'relative',
                 paddingLeft: `${numSpaces * 7.5 + 20}px`,
                 textIndent: `-${numSpaces * 7.5 + 20}px`,
               }}
             >
+              {/* Line number, drawn inside the left gutter reserved above */}
+              <span
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  width: 16,
+                  textAlign: 'right',
+                  // `text-indent` is inherited; without this the negative
+                  // indent of the line would also pull the number left
+                  textIndent: 0,
+                  whiteSpace: 'nowrap',
+                  opacity: 0.4,
+                  userSelect: 'none',
+                }}
+              >
+                {index + 1}
+              </span>
               {l}
             </span>
           )

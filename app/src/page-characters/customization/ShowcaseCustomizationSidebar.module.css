@@ -1,4 +1,8 @@
 .sidebarContainer {
   position: absolute;
-  width: 210px;
+  width: 130px;
+}
+
+.headerCentered {
+  text-align: center;
 }

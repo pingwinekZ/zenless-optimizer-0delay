@@ -46,7 +46,7 @@ i18n
     // fallbackLng: 'dev', // Switch to this to force the fallback value on missing strings.
 
     // List all translation namespaces.
-    ns: ['discTab', 'languages', 'ui'],
+    ns: ['discTab', 'languages', 'sidebar', 'ui'],
     // Specify the default namespace.
     defaultNS: 'ui',
 

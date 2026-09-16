@@ -5,7 +5,7 @@
   overflow: hidden;
   cursor: pointer;
   box-shadow: var(--showcase-shadow, none);
-  background: var(--showcase-card-bg);
+  background: var(--showcase-card-bg-bridge-high);
   min-height: 240px;
 }
 

@@ -1,9 +1,11 @@
 import type {
   CharacterKey,
   DiscMainStatKey,
+  DiscRarityKey,
   DiscSlotKey,
   DiscSubStatKey,
 } from '../../consts'
+import { discMaxLevel, discSubstatRollData } from '../../consts'
 import type { IDisc } from '../../zood'
 import {
   getCharacterEffectiveMainStats,
@@ -18,6 +20,23 @@ export type CharacterScoreResult = {
   grade: string
   mainStatMatchCount: number
   mainStatTotal: number
+}
+
+/**
+ * Absolute ceiling for a disc of a given rarity: the best distribution a
+ * max-level disc could achieve (e.g. S-rank = 9 total rolls across 4 substats).
+ * Scoring normalizes against this so a 3-initial disc (max 8 rolls) can never
+ * reach 1.0 / SSS+ Crown.
+ */
+export function getDiscAbsoluteMax(rarity: DiscRarityKey = 'S'): {
+  maxRolls: number
+  maxSubstats: number
+} {
+  const { high } = discSubstatRollData[rarity]
+  return {
+    maxRolls: high + Math.floor(discMaxLevel[rarity] / 3),
+    maxSubstats: 4,
+  }
 }
 
 /**
@@ -122,17 +141,19 @@ export function calculateDiscScore(
     }
   }
 
+  const { maxRolls, maxSubstats } = getDiscAbsoluteMax(disc.rarity)
+
   const efficiency =
     totalRolls > 0
       ? substatWeights && effectiveStats.length > 0
         ? weightedEffectiveRolls /
           computeMaxPossibleWeighted(
-            totalRolls,
-            disc.substats.filter((s) => s.key && s.upgrades > 0).length,
+            maxRolls,
+            maxSubstats,
             effectiveStats,
             substatWeights
           )
-        : effectiveRolls / totalRolls
+        : effectiveRolls / maxRolls
       : 0
 
   return {
@@ -157,15 +178,13 @@ export function calculateSubstatEfficiency(
   for (const disc of discs) {
     if (!disc) continue
 
-    // Per-disc aggregation for max possible normalization
+    // Per-disc aggregation for absolute-max normalization
     let discRolls = 0
-    let discNumSubstats = 0
 
     for (const substat of disc.substats) {
       if (!substat.key || substat.upgrades === 0) continue
 
       discRolls += substat.upgrades
-      discNumSubstats++
       totalRolls += substat.upgrades
 
       if (effectiveStats.includes(substat.key as DiscSubStatKey)) {
@@ -178,25 +197,28 @@ export function calculateSubstatEfficiency(
       }
     }
 
-    if (
-      substatWeights &&
-      discRolls > 0 &&
-      discNumSubstats > 0 &&
-      effectiveStats.length > 0
-    )
+    if (substatWeights && discRolls > 0 && effectiveStats.length > 0) {
+      const { maxRolls, maxSubstats } = getDiscAbsoluteMax(disc.rarity)
       sumMaxPossible += computeMaxPossibleWeighted(
-        discRolls,
-        discNumSubstats,
+        maxRolls,
+        maxSubstats,
         effectiveStats,
         substatWeights
       )
+    }
   }
 
   const substatEfficiency =
     totalRolls > 0
       ? substatWeights && effectiveStats.length > 0
-        ? weightedEffectiveRolls / sumMaxPossible
-        : effectiveRolls / totalRolls
+        ? sumMaxPossible > 0
+          ? weightedEffectiveRolls / sumMaxPossible
+          : 0
+        : effectiveRolls /
+          discs.reduce(
+            (sum, d) => sum + (d ? getDiscAbsoluteMax(d.rarity).maxRolls : 0),
+            0
+          )
       : 0
 
   // Main stat validation for slots 4, 5, 6

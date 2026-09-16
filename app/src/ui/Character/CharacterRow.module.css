@@ -66,14 +66,12 @@
 
 .portraitBg img {
   position: absolute;
-  width: var(--cr-portrait-scale, 66%);
-  height: auto;
-  left: calc(50% + 5px);
+  width: auto;
+  height: 100%;
+  left: auto;
+  right: var(--cr-lc-strip-width, 54px);
   top: 50%;
-  transform: translate(
-    calc(-1 * var(--cr-portrait-x, 40%)),
-    calc(-1 * var(--cr-portrait-y, 30%))
-  );
+  transform: translateY(-50%);
   display: block;
   opacity: 0;
 }
@@ -190,24 +188,6 @@
   background: var(--text-secondary);
 }
 
-.subtitle {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: var(--cr-subtitle-gap, 1px);
-}
-
-.subtitleBadge {
-  font-size: var(--cr-subtitle-font-size, 12px);
-  line-height: var(--cr-subtitle-line-height, 1.4);
-  font-weight: 500;
-  font-family: var(
-    --cr-subtitle-font-family,
-    var(--mantine-font-family-monospace, monospace)
-  );
-  color: var(--text-secondary);
-}
-
 .lcWrap {
   position: relative;
   width: var(--cr-lc-size, 48px);
@@ -232,7 +212,6 @@
 }
 
 .rank {
-  font-family: var(--mantine-font-family-monospace, monospace);
   font-size: 11px;
   font-weight: 500;
   color: var(--text-tertiary);
@@ -242,23 +221,6 @@
 .info {
   flex: 1;
   min-width: 0;
-}
-
-.info[data-name-shadow="true"] .name {
-  text-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.8),
-    0 0 6px rgba(0, 0, 0, 0.5);
-}
-
-.name {
-  font-size: var(--cr-font-size, calc(var(--mantine-font-size-sm) - 0.5px));
-  line-height: var(--cr-line-height, 1.4);
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: #e7e7e7;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .actions {
@@ -301,14 +263,6 @@
   transition: none;
 }
 
-.equipDot {
-  display: inline-block;
-  border-radius: 50%;
-  flex-shrink: 0;
-  vertical-align: middle;
-  margin-left: 3px;
-}
-
 /* Drag suppression — triggered by data attributes on the grid container parent */
 [data-suppress-transition] .frame {
   transition: none !important;
@@ -322,6 +276,38 @@
 [data-dragging-active] .root:hover .frame {
   transform: none;
   box-shadow: inset 0 0 0 1px transparent;
+}
+
+[data-dragging-active] .portraitBg {
+  transition: none;
+}
+
+[data-dragging-active] .root:hover .portraitBg {
+  filter: brightness(var(--cr-hover-rest-brightness, 1))
+    saturate(var(--cr-hover-rest-saturate, 1));
+}
+
+[data-dragging-active] .scrim {
+  transition: none;
+}
+
+[data-dragging-active] .actions,
+[data-dragging-active] .root:hover .actions {
+  transition: none;
+  opacity: 0;
+}
+
+[data-dragging-active] .rankGripSlot .rank,
+[data-dragging-active] .rankGripSlot .dragGrip {
+  transition: none;
+}
+
+[data-dragging-active] .root:hover .rankGripSlot .rank {
+  opacity: 1;
+}
+
+[data-dragging-active] .root:hover .rankGripSlot .dragGrip {
+  opacity: 0;
 }
 
 [data-dragging-active] .portraitBg {

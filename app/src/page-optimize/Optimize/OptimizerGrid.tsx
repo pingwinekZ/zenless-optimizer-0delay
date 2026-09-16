@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next'
 import type { SpecialityKey } from '../../consts'
 import { getEnerRegenShortLabel } from '../../consts'
 import type { GeneratedBuild } from '../../db'
+import { Gradient } from '../../rendering/gradient'
 import type { StatDisplay } from '../Sidebar/StatsViewSelect'
 import { useOptimizerDisplayStore } from '../stores/useOptimizerDisplayStore'
 import {
@@ -24,46 +25,6 @@ import { DiscSetCellRenderer } from './gridCellRenderers'
 
 // AG Grid v35+ requires explicit module registration
 ModuleRegistry.registerModules([AllCommunityModule])
-
-// ── Gradient helpers (like fribbels' gradient.ts) ──
-// Gradient color from dark red (low) through neutral to green (high)
-const STAT_COLORS = [
-  '#5A1A06', // low  (red)
-  '#343127', // mid  (neutral)
-  '#38821F', // high (green)
-]
-
-function getGradientColor(
-  value: number,
-  min: number,
-  max: number
-): string | undefined {
-  if (value == null || min == null || max == null) return undefined
-  if (max === min) return `#343127`
-  const t = Math.max(0, Math.min(1, (value - min) / (max - min)))
-  // Interpolate between the 3 colors
-  if (t < 0.5) {
-    const u = t / 0.5
-    return lerpColor(STAT_COLORS[0], STAT_COLORS[1], u)
-  }
-  const u = (t - 0.5) / 0.5
-  return lerpColor(STAT_COLORS[1], STAT_COLORS[2], u)
-}
-
-function lerpColor(a: string, b: string, t: number): string {
-  const ah = parseInt(a.replace('#', ''), 16)
-  const bh = parseInt(b.replace('#', ''), 16)
-  const ar = (ah >> 16) & 0xff,
-    ag = (ah >> 8) & 0xff,
-    ab = ah & 0xff
-  const br = (bh >> 16) & 0xff,
-    bg = (bh >> 8) & 0xff,
-    bb = bh & 0xff
-  const rr = Math.round(ar + (br - ar) * t)
-  const rg = Math.round(ag + (bg - ag) * t)
-  const rb = Math.round(ab + (bb - ab) * t)
-  return `#${((1 << 24) | (rr << 16) | (rg << 8) | rb).toString(16).slice(1)}`
-}
 
 // ── Constants ──
 const GRID_HEIGHT = 600
@@ -198,13 +159,11 @@ function gradientCellStyle(
   field: string,
   aggregations: { min: Record<string, number>; max: Record<string, number> }
 ) {
-  if (params.value == null) return undefined
-  const min = aggregations.min[field]
-  const max = aggregations.max[field]
-  if (min == null || max == null) return undefined
-  const color = getGradientColor(params.value, min, max)
-  if (!color) return undefined
-  return { '--cell-bg': color }
+  return Gradient.getOptimizerCellStyle(
+    params.value,
+    aggregations.min[field],
+    aggregations.max[field]
+  )
 }
 
 // ── Stat column definitions builder ──

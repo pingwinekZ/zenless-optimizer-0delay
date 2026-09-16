@@ -1,6 +1,6 @@
 import { Box, CloseButton, Flex, TextInput } from '@mantine/core'
 import { ImgIcon } from '@zenless-optimizer/common/ui'
-import type { ChangeEvent } from 'react'
+import { type ChangeEvent, memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { rarityDefIcon, specialityDefIcon } from '../assets'
 import type { AttributeKey, CharacterRarityKey, SpecialityKey } from '../consts'
@@ -12,7 +12,10 @@ import {
 import { ElementIcon } from '../svgicons'
 import { SegmentedFilterRow } from '../ui'
 
-export function FilterBar({
+// Memoized — filter arrays keep referential identity across unrelated
+// displayCharacter writes (e.g. drag-reorder commits), so with stable
+// callbacks this skips re-render on drop.
+export const FilterBar = memo(function FilterBar({
   specialtyType,
   onSpecialtyChange,
   attribute,
@@ -63,6 +66,7 @@ export function FilterBar({
             key: sk,
             display: <ImgIcon src={specialityDefIcon(sk)} size={1.5} />,
           }))}
+          flexBasis="14.2%"
           currentFilter={specialtyType}
           setCurrentFilters={onSpecialtyChange}
         />
@@ -78,6 +82,7 @@ export function FilterBar({
               />
             ),
           }))}
+          flexBasis="14.2%"
           currentFilter={attribute}
           setCurrentFilters={onAttributeChange}
         />
@@ -88,10 +93,11 @@ export function FilterBar({
             key: rk,
             display: <ImgIcon src={rarityDefIcon(rk)} size={1.2} />,
           }))}
+          flexBasis="50%"
           currentFilter={rarity}
           setCurrentFilters={onRarityChange}
         />
       </Box>
     </Flex>
   )
-}
+})

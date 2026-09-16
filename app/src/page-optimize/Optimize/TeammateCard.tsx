@@ -36,7 +36,6 @@ import {
   WengineName,
   WengineSelectionModal,
 } from '../../ui'
-import { CharacterBuildSelector } from './CharacterBuildSelector'
 import { CharacterConditionalsDisplay } from './CharacterConditionalsDisplay'
 import { DiscConditionalsDisplay } from './DiscConditionalsDisplay'
 import classes from './TeammateCard.module.css'
@@ -225,11 +224,6 @@ export function TeammateCard({
                 className={classes.segmented}
                 mb={4}
               />
-
-              {/* Saved Builds selector — compact inline */}
-              <Box mb={4}>
-                <CharacterBuildSelector characterKey={characterKey} compact />
-              </Box>
 
               {/* Character conditionals */}
               <Box style={{ flex: 1, overflow: 'auto' }}>

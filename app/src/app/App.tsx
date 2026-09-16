@@ -18,9 +18,8 @@ import PageHome from '../page-home'
 import PageOptimize from '../page-optimize'
 import PageSettings from '../page-settings'
 import PageWengines from '../page-wengines'
+import { Gradient } from '../rendering/gradient'
 import { createMantineTheme, themeResolver, useThemeStore } from '../theme'
-import Footer from './Footer'
-import Header from './Header'
 import { LayoutSider } from './LayoutSider'
 import { NavigateContextProvider, useNavigateContext } from './NavigateContext'
 import { type TabKey, useTabStore } from './useTabStore'
@@ -36,9 +35,24 @@ const TAB_MOUNT_PRIORITY: TabKey[] = [
 ]
 const TAB_MOUNT_DELAY = 200 // ms between each tab mount
 
+// Initial gradient setup before first render. The Discs grid colors score
+// columns from a theme-derived scale, so it needs a value before the first
+// paint rather than on the first effect.
+{
+  const initTheme = createMantineTheme(useThemeStore.getState().seedColor)
+  Gradient.setTheme(initTheme.colors!.dark![8], initTheme.colors!.primary![4])
+}
+
 export default function App() {
   const seedColor = useThemeStore((s) => s.seedColor)
   const mantineTheme = useMemo(() => createMantineTheme(seedColor), [seedColor])
+
+  useEffect(() => {
+    Gradient.setTheme(
+      mantineTheme.colors!.dark![8],
+      mantineTheme.colors!.primary![4]
+    )
+  }, [mantineTheme])
 
   return (
     <MantineProvider
@@ -48,7 +62,12 @@ export default function App() {
     >
       <DatabaseProvider>
         <ModalsProvider>
-          <Notifications position="top-right" />
+          {/* `width: fit-content` keeps short messages narrow instead of
+              always occupying the full `containerWidth` (440px) */}
+          <Notifications
+            position="top-right"
+            styles={{ root: { width: 'fit-content' } }}
+          />
           <NavigateContextProvider>
             <Content />
             <ScrollTop />
@@ -163,8 +182,7 @@ function Content() {
   }, [setActiveTab])
 
   return (
-    <Flex direction="column" mih="100vh" pos="relative">
-      <Header anchor="back-to-top-anchor" />
+    <Flex direction="column" mih="100vh" pos="relative" id="back-to-top-anchor">
       <Flex gap={8} style={{ flex: 1 }}>
         <LayoutSider />
         <Box
@@ -178,11 +196,6 @@ function Content() {
           <TabRenderer />
         </Box>
       </Flex>
-
-      {/* make sure footer is always at bottom */}
-      <div style={{ flexGrow: 1 }} />
-
-      <Footer />
     </Flex>
   )
 }
