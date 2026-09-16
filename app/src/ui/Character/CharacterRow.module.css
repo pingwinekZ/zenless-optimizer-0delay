@@ -331,6 +331,38 @@
   transition: none;
 }
 
+[data-dragging-active] .actions,
+[data-dragging-active] .root:hover .actions {
+  transition: none;
+  opacity: 0;
+}
+
+[data-dragging-active] .rankGripSlot .rank,
+[data-dragging-active] .rankGripSlot .dragGrip {
+  transition: none;
+}
+
+[data-dragging-active] .root:hover .rankGripSlot .rank {
+  opacity: 1;
+}
+
+[data-dragging-active] .root:hover .rankGripSlot .dragGrip {
+  opacity: 0;
+}
+
+[data-dragging-active] .portraitBg {
+  transition: none;
+}
+
+[data-dragging-active] .root:hover .portraitBg {
+  filter: brightness(var(--cr-hover-rest-brightness, 1))
+    saturate(var(--cr-hover-rest-saturate, 1));
+}
+
+[data-dragging-active] .scrim {
+  transition: none;
+}
+
 [data-dragging-active] .actions {
   transition: none;
   opacity: 0;

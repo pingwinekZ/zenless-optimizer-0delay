@@ -1,7 +1,7 @@
 import { Box, Center, Flex, Text } from '@mantine/core'
 import { IconUser } from '@tabler/icons-react'
 import { TagContext } from '@zenless-optimizer/game-opt/formula-ui'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, memo } from 'react'
 import { characterAsset } from '../assets'
 import type { CharacterKey, DiscSlotKey, PhaseKey } from '../consts'
 import type { DiscIds, ICachedCharacter, ICachedDisc, Team } from '../db'
@@ -61,7 +61,11 @@ type ComputedStats = {
   dmg_: number
 }
 
-export function CharacterPreview({
+// Memoized so page-level re-renders that don't touch the focused character
+// (e.g. drag-reorder commits to displayCharacter) skip the whole preview
+// subtree — HSR parity, where the preview subscribes narrowly and reorder
+// doesn't touch it.
+export const CharacterPreview = memo(function CharacterPreview({
   characterKey,
   onEdit,
   onDelete,
@@ -86,7 +90,7 @@ export function CharacterPreview({
       buildOverride={buildOverride}
     />
   )
-}
+})
 
 export type BuildPreviewOverride = {
   character: ICachedCharacter
