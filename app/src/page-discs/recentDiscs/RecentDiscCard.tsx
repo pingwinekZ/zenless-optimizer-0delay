@@ -12,6 +12,7 @@ import {
   getDiscMainStatVal,
   getDiscSubStatBaseVal,
   statKeyTextMap,
+  themeColorVar,
 } from '../../consts'
 import { StatIcon } from '../../svgicons'
 import { DiscSetName } from '../../ui'
@@ -43,7 +44,7 @@ export function RecentDiscCard({
     : {}
   const current = computeCurrentScore(disc, effectiveStats)
   const max = computeMaxPotential(disc, effectiveStats, weights)
-  const rarityHex = discRarityColor[disc.rarity] as string
+  const rarityColorVar = themeColorVar(discRarityColor[disc.rarity])
 
   return (
     <Box
@@ -69,7 +70,7 @@ export function RecentDiscCard({
             width: 36,
             height: 36,
             borderRadius: '50%',
-            border: `2px solid ${rarityHex}`,
+            border: `2px solid ${rarityColorVar}`,
             overflow: 'hidden',
             background: 'var(--layer-2)',
             display: 'flex',

@@ -262,6 +262,17 @@ export const rarityColor = {
   B: 'rankB',
 } as const
 
+/**
+ * Wraps a theme color key in the CSS variable holding its solid shade, so it
+ * can be used inside style objects (e.g. `border: \`4px solid ${...}\``).
+ *
+ * A bare key like `'rankS'` is a Mantine color name, not a CSS color - using
+ * it directly in a CSS value is invalid and the declaration gets dropped.
+ */
+export function themeColorVar(color: string, shade = 5): string {
+  return `var(--mantine-color-${color}-${shade})`
+}
+
 export const allRaritykeys = ['S', 'A', 'B'] as const
 export type Raritykey = (typeof allRaritykeys)[number]
 

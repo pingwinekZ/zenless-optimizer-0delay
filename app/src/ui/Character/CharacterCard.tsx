@@ -230,19 +230,18 @@ export function CharacterCard({
         {rank !== undefined && (
           <>
             <Box
+              className="character-card-rank pre-font"
               style={{
                 position: 'absolute',
                 top: 4,
                 left: 4,
                 zIndex: 2,
-                fontFamily: 'Consolas, Menlo, Monaco, monospace',
                 fontSize: 12,
                 fontWeight: 700,
                 color: 'rgba(255,255,255,0.8)',
                 textShadow: '0 1px 3px rgba(0,0,0,0.6)',
                 lineHeight: 1,
               }}
-              className="character-card-rank"
             >
               {rank + 1}
             </Box>

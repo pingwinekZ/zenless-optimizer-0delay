@@ -2,7 +2,7 @@ import { Box, Text } from '@mantine/core'
 import { useMemo } from 'react'
 import { characterAsset, commonDefImages, discDefIcon } from '../../../assets'
 import type { CharacterKey, DiscSlotKey } from '../../../consts'
-import { allDiscSlotKeys, rarityColor } from '../../../consts'
+import { allDiscSlotKeys, rarityColor, themeColorVar } from '../../../consts'
 import type { ICachedDisc } from '../../../db'
 import { useDatabaseContext } from '../../../db-ui'
 
@@ -115,7 +115,9 @@ function Discs({ discs }: { discs: ICachedDisc[] }) {
             <Box
               style={{
                 border: `2px solid ${
-                  discInfo.disc?.rarity ? rarityColor[discInfo.disc.rarity] : ''
+                  discInfo.disc?.rarity
+                    ? themeColorVar(rarityColor[discInfo.disc.rarity])
+                    : 'transparent'
                 }`,
                 ...discInfo.styles,
               }}

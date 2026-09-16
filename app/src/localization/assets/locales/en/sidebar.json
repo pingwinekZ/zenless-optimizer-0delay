@@ -1,0 +1,16 @@
+{
+  "Tools": {
+    "Title": "Tools"
+  },
+  "Optimization": {
+    "Title": "Optimization",
+    "Optimizer": "Optimize",
+    "Characters": "Characters",
+    "Discs": "Discs",
+    "Settings": "Settings"
+  },
+  "Links": {
+    "Title": "Links",
+    "Home": "Home"
+  }
+}

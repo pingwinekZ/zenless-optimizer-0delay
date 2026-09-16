@@ -15,7 +15,6 @@
   --ag-border-color: var(--border-default);
   --ag-row-hover-color: rgba(255, 255, 255, 0.03);
   --ag-selected-row-background-color: transparent;
-  --ag-floating-top-background-color: var(--layer-2);
   --ag-header-foreground-color: var(--text-primary);
   --ag-foreground-color: var(--text-primary);
   --ag-secondary-foreground-color: var(--text-secondary);
@@ -28,8 +27,10 @@
    ═══════════════════════════════════════════ */
 
 /* Override smooth scrolling — it causes jank with AG Grid's row virtualization
-   by splitting one scroll event into many small animated frames */
-.ag-body-viewport {
+   by splitting one scroll event into many small animated frames.
+   `.ag-grid-viewport` is the v36 name for the row scroll container
+   (`.ag-body-viewport` before the v33 pinned-rows rename). */
+.ag-grid-viewport {
   scroll-behavior: auto;
 }
 
@@ -103,14 +104,6 @@
 .ag-theme-balham .ag-header-group-cell {
   padding-left: 2px;
   padding-right: 2px;
-  font-family:
-    Calibri,
-    Candara,
-    Segoe,
-    Segoe UI,
-    Optima,
-    Arial,
-    sans-serif;
   font-size: 14px;
   font-weight: 600;
   text-align: center;
@@ -130,6 +123,13 @@
   justify-content: space-around;
   align-items: center;
   text-overflow: clip;
+  width: 40px;
+}
+
+.ag-header-group-cell-label {
+  justify-content: space-around;
+  text-overflow: clip;
+  width: 40px;
 }
 
 .ag-header-cell-label .ag-header-cell-text {
@@ -235,13 +235,13 @@
     var(--cell-bg, transparent);
 }
 
-.ag-floating-top:hover .ag-cell {
+.ag-grid-pinned-top-rows:hover .ag-cell {
   background:
     linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)),
     var(--cell-bg, var(--layer-2));
 }
 
-/* Selection — subtle left accent + faint white lift */
+/* Selection — left accent + theme-tinted cells */
 .ag-row-selected {
   outline: none !important;
   z-index: 1 !important;
@@ -250,19 +250,27 @@
 }
 
 .ag-row-selected:before {
-  background: transparent !important;
+  background: none !important;
 }
 
 .ag-row-selected .ag-cell {
   background:
-    linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05)),
+    linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1)),
+    linear-gradient(
+      color-mix(in srgb, var(--primary-hover) 10%, transparent),
+      color-mix(in srgb, var(--primary-hover) 10%, transparent)
+    ),
     var(--cell-bg, transparent);
 }
 
-/* Selected + hovered — slightly brighter */
+/* Selected + hovered — both tints stack */
 .ag-row-selected.ag-row-hover .ag-cell {
   background:
-    linear-gradient(rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08)),
+    linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)),
+    linear-gradient(
+      color-mix(in srgb, var(--primary-hover) 30%, transparent),
+      color-mix(in srgb, var(--primary-hover) 30%, transparent)
+    ),
     var(--cell-bg, transparent);
 }
 
@@ -325,7 +333,12 @@
 
 /* ═══════════════════════════════════════════
    Misc
-   ═══════════════════════════════════════════ */
+   ═══════════════════════════════════════════
+   Rules ported from hsr-optimizer that targeted pre-v33 AG Grid class names
+   (`.ag-floating-top`, `.ag-floating-top-container`, `.ag-body-viewport`,
+   `.ag-horizontal-right-spacer`, `--ag-floating-top-background-color`) are
+   deliberately NOT copied: AG Grid v36 renamed or removed them, so they would
+   be inert here. Their live equivalents are used instead. */
 
 .ag-root-wrapper {
   border-radius: var(--radius-md) !important;
@@ -349,25 +362,18 @@
   background-color: var(--layer-3);
 }
 
-/* Floating top (equipped build row) — visible separator and subtle lift.
-   The equipped build row should be visually distinct from generated builds.
-   We use a CSS class added via getRowClass since overflow:hidden on the
-   container clips pseudo-elements and box-shadows. */
-.ag-floating-top {
-  position: relative;
-  z-index: 2 !important;
-}
+/* Equipped/pinned row separator.
+   The pinned rows are transparent by default, so the `--ag-data-background-color`
+   we set above (layer-2) already gives the strip its background; all that is
+   missing is a separator from the generated builds below.
 
-.ag-floating-top-container {
-  background-color: var(--layer-2);
-}
+   Applied only to the LAST pinned top row: AG Grid maintains `ag-row-last` on
+   the final row inside `.ag-grid-pinned-top-rows-container`, so this follows
+   pin/unpin automatically (no getRowClass JS needed).
 
-/* Equipped/pinned row separator — applied only to the LAST pinned top row.
-   AG Grid maintains `ag-row-last` on the final row inside
-   `.ag-grid-pinned-top-rows-container`, so this follows pin/unpin
-   automatically (no getRowClass JS needed).
-   Uses a thick dark bottom border to create a visible separator/shadow
-   between the pinned section and generated builds below. */
+   This is the v36 equivalent of the `.ag-floating-top` box-shadow separator
+   used before the v33 pinned-rows rename — see the note at the top of the
+   "Misc" section. */
 .ag-grid-pinned-top-rows-container > .ag-row.ag-row-last {
   border-bottom: 3px solid rgba(0, 0, 0, 0.55) !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4) !important;
@@ -378,6 +384,29 @@
     --ag-modal-overlay-background-color,
     hsla(0, 0%, 100%, 0.05)
   );
+}
+
+/* ═══════════════════════════════════════════
+   #discGrid — Discs grid only
+   ═══════════════════════════════════════════
+   The Discs grid uses a 48px header (headerHeight={48}) with a compact
+   `#discGrid .ag-header-cell` font. `headerHeight` sets the row height but
+   not the cell font, which would otherwise fall back to the balham theme's
+   12px/600 header defaults.
+
+   hsr-optimizer's `.relicsTableHeader` font-size and its `#relicGrid` paging
+   rules are not carried over: the former was already dead upstream (both it
+   and `#relicGrid .ag-header-cell` are `!important`, and the id-scoped rule
+   below wins), and this grid doesn't paginate. */
+
+#discGrid .ag-header {
+  height: 48px !important;
+  min-height: 48px !important;
+}
+
+#discGrid .ag-header-cell {
+  font-size: 10px !important;
+  font-weight: 400;
 }
 
 /* ═══════════════════════════════════════════

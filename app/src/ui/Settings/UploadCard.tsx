@@ -50,7 +50,8 @@ export function UploadCard({
     let parsed: any
     try {
       parsed = JSON.parse(deferredData)
-      if (typeof parsed !== 'object') return { errorMsg: 'uploadCard.error.jsonParse' }
+      if (typeof parsed !== 'object')
+        return { errorMsg: 'uploadCard.error.jsonParse' }
     } catch (e) {
       return { errorMsg: 'uploadCard.error.jsonParse' }
     }
@@ -184,9 +185,9 @@ export function UploadCard({
         </Text>
         <Box
           component="textarea"
+          className="pre-font"
           style={{
             width: '100%',
-            fontFamily: 'monospace',
             minHeight: '10em',
             marginBottom: 8,
             resize: 'vertical',
@@ -308,9 +309,9 @@ function MergeResult({
             </Text>
             <Box
               component="textarea"
+              className="pre-font"
               style={{
                 width: '100%',
-                fontFamily: 'monospace',
                 minHeight: '10em',
                 resize: 'vertical',
               }}

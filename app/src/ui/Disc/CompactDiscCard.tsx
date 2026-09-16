@@ -19,6 +19,7 @@ import {
   getDiscMainStatVal,
   getDiscSubStatBaseVal,
   rarityColor,
+  themeColorVar,
 } from '../../consts'
 import type { ICachedDisc } from '../../db'
 import { SlotIcon, StatIcon } from '../../svgicons'
@@ -107,7 +108,7 @@ export function CompactDiscCard({
                     <ImgIcon
                       src={characterAsset(location, 'circle')}
                       style={{
-                        border: `4px solid ${rarityColor[disc.rarity]}`,
+                        border: `4px solid ${themeColorVar(rarityColor[disc.rarity])}`,
                         borderRadius: '50%',
                         width: '40px',
                         height: '40px',
@@ -116,7 +117,7 @@ export function CompactDiscCard({
                   ) : (
                     <Box
                       style={{
-                        border: `4px solid ${rarityColor[disc.rarity]}`,
+                        border: `4px solid ${themeColorVar(rarityColor[disc.rarity])}`,
                         borderRadius: '50%',
                         width: '40px',
                         height: '40px',
@@ -133,7 +134,7 @@ export function CompactDiscCard({
                 </Box>
                 <Box
                   style={{
-                    border: `4px solid ${rarityColor[disc.rarity]}`,
+                    border: `4px solid ${themeColorVar(rarityColor[disc.rarity])}`,
                     borderRadius: '50%',
                   }}
                 >
@@ -191,7 +192,7 @@ export function CompactDiscCard({
                             background: '#1B263B',
                             borderRadius: '20px',
                             fontSize: '2.5rem',
-                            fill: rarityColor[disc.rarity],
+                            fill: themeColorVar(rarityColor[disc.rarity]),
                           },
                         }}
                       />

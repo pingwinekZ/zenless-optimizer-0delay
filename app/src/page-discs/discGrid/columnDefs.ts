@@ -6,6 +6,7 @@ import type {
 } from 'ag-grid-community'
 import type { TFunction } from 'i18next'
 import { allDiscSubStatKeys } from '../../consts'
+import { Gradient } from '../../rendering/gradient'
 import type { ScoredDisc } from '../scoring/types'
 import {
   DiscSetCellRenderer,
@@ -15,35 +16,6 @@ import {
   MainStatCellRenderer,
   RarityCellRenderer,
 } from './cellRenderers'
-
-const STAT_COLORS = ['#5A1A06', '#343127', '#38821F']
-
-function getGradientColor(
-  value: number,
-  min: number,
-  max: number
-): string | undefined {
-  if (value == null || min == null || max == null) return undefined
-  if (max === min) return STAT_COLORS[1]
-  const t = Math.max(0, Math.min(1, (value - min) / (max - min)))
-  if (t < 0.5) return lerpColor(STAT_COLORS[0], STAT_COLORS[1], t / 0.5)
-  return lerpColor(STAT_COLORS[1], STAT_COLORS[2], (t - 0.5) / 0.5)
-}
-
-function lerpColor(a: string, b: string, t: number): string {
-  const ah = parseInt(a.replace('#', ''), 16)
-  const bh = parseInt(b.replace('#', ''), 16)
-  const ar = (ah >> 16) & 0xff,
-    ag = (ah >> 8) & 0xff,
-    ab = ah & 0xff
-  const br = (bh >> 16) & 0xff,
-    bg = (bh >> 8) & 0xff,
-    bb = bh & 0xff
-  const rr = Math.round(ar + (br - ar) * t)
-  const rg = Math.round(ag + (bg - ag) * t)
-  const rb = Math.round(ab + (bb - ab) * t)
-  return `#${((1 << 24) | (rr << 16) | (rg << 8) | rb).toString(16).slice(1)}`
-}
 
 const VALUE_KEYS = ['scoreCurrent', 'scoreMaxPotential'] as const
 type ValueKey = (typeof VALUE_KEYS)[number]
@@ -73,13 +45,7 @@ function gradientCellStyle(
   field: ValueKey,
   aggs: ReturnType<typeof buildDiscAggregations>
 ): Record<string, string> | undefined {
-  if (value == null) return undefined
-  const min = aggs.min[field]
-  const max = aggs.max[field]
-  if (min == null || max == null) return undefined
-  const color = getGradientColor(value, min, max)
-  if (!color) return undefined
-  return { '--cell-bg': color }
+  return Gradient.getDiscCellStyle(value, aggs.min[field], aggs.max[field])
 }
 
 export const defaultDiscColDef: ColDef<ScoredDisc> = {

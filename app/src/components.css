@@ -1,0 +1,35 @@
+/* Global component helpers, ported from hsr-optimizer's
+   `src/style/components.css`. Rules that reference HSR-only components
+   (`.custom-grid`, `.lightConeCard`, `.character-build-portrait`,
+   `.layout-sider-scroll`) are not carried over — this app has no equivalent
+   elements for them. */
+
+/* Monospace text for pre-formatted values: IDs, import data, codes. */
+.pre-font {
+  font-family: var(--font-mono) !important;
+}
+
+.centered-placeholder::placeholder {
+  text-align: center;
+}
+
+.hide-scrollbar {
+  overflow-y: scroll;
+
+  /* Hide scrollbar for Chrome, Safari and Opera.
+   * The `&` is required: without it this nesting compiles to a descendant
+   * selector (`.hide-scrollbar -webkit-scrollbar`) that never matches. */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Recharts renders focusable SVG nodes; suppress the focus ring on pointer
+   clicks without removing it for keyboard users. */
+.recharts-wrapper *:focus:not(:focus-visible) {
+  outline: none !important;
+}

@@ -25,6 +25,7 @@ import {
   getDiscMainStatVal,
   getDiscSubStatBaseVal,
   rarityColor,
+  themeColorVar,
 } from '../../consts'
 import { useDatabaseContext, useDisc } from '../../db-ui'
 import type { IDisc, ISubstat } from '../../zood'
@@ -170,7 +171,7 @@ export function DiscCardObj({
               </Box>
               <Box
                 style={{
-                  border: `4px solid ${rarityColor[rarity]}`,
+                  border: `4px solid ${themeColorVar(rarityColor[rarity])}`,
                   borderRadius: '50%',
                 }}
               >
