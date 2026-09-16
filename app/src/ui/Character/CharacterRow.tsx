@@ -4,9 +4,7 @@ import { memo, useCallback, useMemo } from 'react'
 import { characterAsset, wengineAsset } from '../../assets'
 import type { CharacterKey } from '../../consts'
 import { useCharacter } from '../../db-ui'
-import { equipDotColor } from '../store'
 import classes from './CharacterRow.module.css'
-import { CharacterName } from './CharacterTrans'
 
 const noop = () => {}
 
@@ -35,12 +33,6 @@ export const CharacterRow = memo(function CharacterRow({
 }: CharacterRowProps) {
   const character = useCharacter(characterKey)
   const wengineKey = character?.wengineKey
-
-  const dotColor = character ? equipDotColor(character.equippedDiscs) : null
-
-  const mindscape = character?.mindscape ?? 0
-  const level = character?.level ?? 0
-  const promotion = character?.promotion ?? 0
 
   const hasActions = !!(onEdit || onDelete)
 
@@ -116,28 +108,8 @@ export const CharacterRow = memo(function CharacterRow({
             </Box>
           </Box>
 
-          {/* Name + subtitle */}
-          <Box className={classes.info} data-name-shadow="true">
-            <Text className={classes.name}>
-              <CharacterName characterKey={characterKey} />
-            </Text>
-            <Box className={classes.subtitle}>
-              <Text className={classes.subtitleBadge}>M{mindscape}</Text>
-              <Text size="10" c="dimmed">
-                Lv.{level}/{promotion}
-              </Text>
-              {dotColor && (
-                <Box
-                  className={classes.equipDot}
-                  style={{
-                    width: 5,
-                    height: 5,
-                    backgroundColor: dotColor === 'red' ? '#903040' : '#b89040',
-                  }}
-                />
-              )}
-            </Box>
-          </Box>
+          {/* Spacer keeps the W-Engine icon pinned right */}
+          <Box className={classes.info} />
 
           {/* W-Engine icon */}
           {wengineKey && (

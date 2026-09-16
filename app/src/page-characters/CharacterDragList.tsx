@@ -41,9 +41,7 @@ import type { CharacterKey } from '../consts'
 import { useDatabaseContext } from '../db-ui'
 import { CharacterRow, DragOverlayRow } from '../ui'
 import classes from './CharacterGrid.module.css'
-import { getCharacterShowcaseColor } from './color/characterShowcaseColors'
-import { DEFAULT_CONFIG } from './color/colorPipelineConfig'
-import { oklchCharacterListColor } from './color/colorUtilsOklch'
+import { useShowcaseRowColor } from './color/useShowcaseRowTheme'
 
 const dropAnimationDuration = 200
 
@@ -170,16 +168,8 @@ export const CharacterDragList = memo(function CharacterDragList({
     [charKeys]
   )
 
-  const activeShowcaseColor = useMemo(
-    () =>
-      activeId
-        ? oklchCharacterListColor(
-            getCharacterShowcaseColor(activeId as CharacterKey),
-            true,
-            DEFAULT_CONFIG
-          )
-        : undefined,
-    [activeId]
+  const activeShowcaseColor = useShowcaseRowColor(
+    (activeId as CharacterKey) ?? ''
   )
 
   return (
@@ -295,15 +285,7 @@ const SortableCharacterRow = memo(function SortableCharacterRow({
     }
   }, [characterKey])
 
-  const showcaseColor = useMemo(
-    () =>
-      oklchCharacterListColor(
-        getCharacterShowcaseColor(characterKey),
-        true,
-        DEFAULT_CONFIG
-      ),
-    [characterKey]
-  )
+  const showcaseColor = useShowcaseRowColor(characterKey)
 
   const style = {
     transform: CSS.Translate.toString(transform),
