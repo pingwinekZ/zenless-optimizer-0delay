@@ -389,15 +389,21 @@
 /* ═══════════════════════════════════════════
    #discGrid — Discs grid only
    ═══════════════════════════════════════════
-   The Discs grid uses a 48px header (headerHeight={48}) with a compact
-   `#discGrid .ag-header-cell` font. `headerHeight` sets the row height but
-   not the cell font, which would otherwise fall back to the balham theme's
-   12px/600 header defaults.
+   1:1 port of hsr-optimizer's `#relicGrid` section (fixed 48px header,
+   compact header font, pagination footer rules). The paging footer fills
+   the bottom of the fixed-height viewport so short result sets don't read
+   as a large blank area — same as upstream.
 
-   hsr-optimizer's `.relicsTableHeader` font-size and its `#relicGrid` paging
-   rules are not carried over: the former was already dead upstream (both it
-   and `#relicGrid .ag-header-cell` are `!important`, and the id-scoped rule
-   below wins), and this grid doesn't paginate. */
+   hsr-optimizer's `.relicsTableHeader` font-size is kept as
+   `.discsTableHeader` (referenced by `defaultDiscColDef.headerClass`).
+   `headerHeight` sets the row height but not the cell font, which would
+   otherwise fall back to the balham theme's 12px/600 header defaults. */
+
+#discGrid .ag-horizontal-right-spacer {
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+}
 
 #discGrid .ag-header {
   height: 48px !important;
@@ -407,6 +413,19 @@
 #discGrid .ag-header-cell {
   font-size: 10px !important;
   font-weight: 400;
+}
+
+.discsTableHeader {
+  font-size: 9px !important;
+  font-weight: 400 !important;
+}
+
+#discGrid .ag-paging-page-summary-panel {
+  display: none !important;
+}
+
+#discGrid .ag-paging-row-summary-panel {
+  padding-right: 10px !important;
 }
 
 /* ═══════════════════════════════════════════

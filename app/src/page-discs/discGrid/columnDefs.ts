@@ -50,8 +50,12 @@ function gradientCellStyle(
 
 export const defaultDiscColDef: ColDef<ScoredDisc> = {
   sortable: true,
+  width: 46,
+  headerClass: 'discsTableHeader',
   sortingOrder: ['desc', 'asc'],
+  filterParams: { maxNumConditions: 200 },
   wrapHeaderText: true,
+  autoHeaderHeight: true,
   suppressHeaderMenuButton: true,
 }
 

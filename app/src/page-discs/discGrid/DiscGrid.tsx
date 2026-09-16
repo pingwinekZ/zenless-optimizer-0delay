@@ -7,7 +7,7 @@ import {
   type IsExternalFilterPresentParams,
   ModuleRegistry,
 } from 'ag-grid-community'
-import { AgGridReact } from 'ag-grid-react'
+import { AgGridReact, type AgGridReactProps } from 'ag-grid-react'
 import { useCallback, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useShallow } from 'zustand/react/shallow'
@@ -32,6 +32,12 @@ const gridOptions: GridOptions<ScoredDisc> = {
   suppressMultiSort: true,
   suppressNoRowsOverlay: true,
   getRowId: (params: GetRowIdParams<ScoredDisc>) => params.data.id,
+}
+
+const paginationSettings: AgGridReactProps<ScoredDisc> = {
+  pagination: true,
+  paginationPageSizeSelector: false,
+  paginationPageSize: 3100,
 }
 
 export function DiscGrid() {
@@ -117,6 +123,7 @@ export function DiscGrid() {
           headerCheckbox: false,
           enableClickSelection: true,
         }}
+        {...paginationSettings}
       />
     </div>
   )
