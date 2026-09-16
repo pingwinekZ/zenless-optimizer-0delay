@@ -20,8 +20,6 @@ import PageSettings from '../page-settings'
 import PageWengines from '../page-wengines'
 import { Gradient } from '../rendering/gradient'
 import { createMantineTheme, themeResolver, useThemeStore } from '../theme'
-import Footer from './Footer'
-import Header from './Header'
 import { LayoutSider } from './LayoutSider'
 import { NavigateContextProvider, useNavigateContext } from './NavigateContext'
 import { type TabKey, useTabStore } from './useTabStore'
@@ -184,8 +182,7 @@ function Content() {
   }, [setActiveTab])
 
   return (
-    <Flex direction="column" mih="100vh" pos="relative">
-      <Header anchor="back-to-top-anchor" />
+    <Flex direction="column" mih="100vh" pos="relative" id="back-to-top-anchor">
       <Flex gap={8} style={{ flex: 1 }}>
         <LayoutSider />
         <Box
@@ -199,11 +196,6 @@ function Content() {
           <TabRenderer />
         </Box>
       </Flex>
-
-      {/* make sure footer is always at bottom */}
-      <div style={{ flexGrow: 1 }} />
-
-      <Footer />
     </Flex>
   )
 }

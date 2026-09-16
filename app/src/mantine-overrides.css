@@ -84,3 +84,9 @@
   .mantine-PillsInputField-field::placeholder {
   color: transparent;
 }
+
+/* Overlay scrollbars — matches hsr-optimizer */
+.os-scrollbar {
+  --os-handle-bg: #95959552 !important;
+  --os-size: 8px !important;
+}

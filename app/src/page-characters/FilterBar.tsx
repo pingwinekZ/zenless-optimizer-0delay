@@ -63,6 +63,7 @@ export function FilterBar({
             key: sk,
             display: <ImgIcon src={specialityDefIcon(sk)} size={1.5} />,
           }))}
+          flexBasis="14.2%"
           currentFilter={specialtyType}
           setCurrentFilters={onSpecialtyChange}
         />
@@ -78,6 +79,7 @@ export function FilterBar({
               />
             ),
           }))}
+          flexBasis="14.2%"
           currentFilter={attribute}
           setCurrentFilters={onAttributeChange}
         />
@@ -88,6 +90,7 @@ export function FilterBar({
             key: rk,
             display: <ImgIcon src={rarityDefIcon(rk)} size={1.2} />,
           }))}
+          flexBasis="50%"
           currentFilter={rarity}
           setCurrentFilters={onRarityChange}
         />

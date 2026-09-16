@@ -1,5 +1,5 @@
 import { Box } from '@mantine/core'
-import { OuterShadowRingWrapper } from '../CharacterPreviewComponents'
+import { showcaseShadow } from '../CharacterPreviewComponents'
 import styles from './ShowcasePortrait.module.css'
 
 export function ShowcasePortrait({
@@ -22,22 +22,23 @@ export function ShowcasePortrait({
         flexShrink: 0,
       }}
     >
-      <OuterShadowRingWrapper>
-        <Box className={styles.portraitContainer} style={{ height: parentH }}>
-          <Box
-            component="img"
-            src={portraitUrl}
-            alt=""
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'contain',
-              objectPosition: 'center top',
-              display: 'block',
-            }}
-          />
-        </Box>
-      </OuterShadowRingWrapper>
+      <Box
+        className={styles.portraitContainer}
+        style={{ height: parentH, boxShadow: showcaseShadow }}
+      >
+        <Box
+          component="img"
+          src={portraitUrl}
+          alt=""
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+            objectPosition: 'center top',
+            display: 'block',
+          }}
+        />
+      </Box>
     </Box>
   )
 }

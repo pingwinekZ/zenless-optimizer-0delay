@@ -15,7 +15,6 @@ export type CharacterGridPreset = {
   fontSize: number
   lineHeight: number
   subtitleGap: number
-  subtitleFontFamily: string
   subtitleFontSize: number
   subtitleLineHeight: number
   frostFadeEnd: number
@@ -40,7 +39,6 @@ export const characterGridPresets: Record<
     fontSize: 13,
     lineHeight: 1.4,
     subtitleGap: 1,
-    subtitleFontFamily: 'Consolas, Menlo, Monaco, monospace',
     subtitleFontSize: 12,
     subtitleLineHeight: 1.4,
     frostFadeEnd: 35,
@@ -60,7 +58,6 @@ export const characterGridPresets: Record<
     fontSize: 12,
     lineHeight: 1.4,
     subtitleGap: 0,
-    subtitleFontFamily: 'Consolas, Menlo, Monaco, monospace',
     subtitleFontSize: 11,
     subtitleLineHeight: 1.2,
     frostFadeEnd: 45,
@@ -83,7 +80,6 @@ function presetToCssVars(preset: CharacterGridPreset): CSSProperties {
     '--cr-font-size': `${preset.fontSize}px`,
     '--cr-line-height': `${preset.lineHeight}`,
     '--cr-subtitle-gap': `${preset.subtitleGap}px`,
-    '--cr-subtitle-font-family': preset.subtitleFontFamily,
     '--cr-subtitle-font-size': `${preset.subtitleFontSize}px`,
     '--cr-subtitle-line-height': `${preset.subtitleLineHeight}`,
     '--cr-frost-fade-end': `${preset.frostFadeEnd}%`,

@@ -66,14 +66,12 @@
 
 .portraitBg img {
   position: absolute;
-  width: var(--cr-portrait-scale, 66%);
-  height: auto;
-  left: calc(50% + 5px);
+  width: auto;
+  height: 100%;
+  left: auto;
+  right: calc(var(--cr-lc-strip-width, 54px) - 27px);
   top: 50%;
-  transform: translate(
-    calc(-1 * var(--cr-portrait-x, 40%)),
-    calc(-1 * var(--cr-portrait-y, 30%))
-  );
+  transform: translateY(-50%);
   display: block;
   opacity: 0;
 }
@@ -201,10 +199,7 @@
   font-size: var(--cr-subtitle-font-size, 12px);
   line-height: var(--cr-subtitle-line-height, 1.4);
   font-weight: 500;
-  font-family: var(
-    --cr-subtitle-font-family,
-    var(--mantine-font-family-monospace, monospace)
-  );
+  font-family: inherit;
   color: var(--text-secondary);
 }
 
@@ -232,7 +227,6 @@
 }
 
 .rank {
-  font-family: var(--mantine-font-family-monospace, monospace);
   font-size: 11px;
   font-weight: 500;
   color: var(--text-tertiary);

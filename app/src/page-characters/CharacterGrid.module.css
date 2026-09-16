@@ -1,0 +1,18 @@
+.gridContainer {
+  width: var(--cr-list-width, 300px);
+  height: 100%;
+  outline: none;
+  font-family: var(--font-showcase);
+}
+
+/* OverlayScrollbars injects wrapper divs; target the content container for flex layout */
+.gridContainer :global([data-overlayscrollbars-contents]) {
+  display: flex !important;
+  flex-direction: column;
+  gap: var(--cr-row-gap, 1px);
+}
+
+.gridContainer[data-container-border="true"] {
+  border: 1px solid var(--layer-2);
+  border-radius: var(--mantine-radius-sm);
+}

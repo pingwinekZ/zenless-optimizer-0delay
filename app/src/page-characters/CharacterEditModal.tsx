@@ -2,8 +2,8 @@ import {
   ActionIcon,
   Box,
   Button,
+  Flex,
   Grid,
-  Group,
   Image,
   Menu,
   Modal,
@@ -15,6 +15,7 @@ import { IconX } from '@tabler/icons-react'
 import { DropdownButton, ImgIcon } from '@zenless-optimizer/common/ui'
 import { range } from '@zenless-optimizer/common/util'
 import { Suspense, useEffect, useMemo, useState } from 'react'
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { commonDefIcon, wengineAsset } from '../assets'
 import {
@@ -47,6 +48,21 @@ type CharacterEditForm = {
   special: number
   chain: number
   core: number
+}
+
+export function HeaderText({ children }: { children: ReactNode }) {
+  return (
+    <div
+      style={{
+        textDecoration: 'underline',
+        textDecorationColor: 'var(--color-accent)',
+        textUnderlineOffset: 2,
+        whiteSpace: 'nowrap',
+      }}
+    >
+      {children}
+    </div>
+  )
 }
 
 export function CharacterEditModal({
@@ -149,141 +165,128 @@ export function CharacterEditModal({
       <Modal
         opened={!!characterKey}
         onClose={onClose}
-        size={500}
+        size={400}
         centered
-        withCloseButton={false}
-        padding="md"
+        title={
+          characterKey ? (
+            <CharacterName characterKey={characterKey} />
+          ) : undefined
+        }
       >
         <Suspense fallback={<Skeleton height={300} />}>
-          <Group mb="md">
-            <Text fw={700} size="lg">
-              {characterKey && <CharacterName characterKey={characterKey} />}
-            </Text>
-            <ActionIcon onClick={onClose} style={{ marginLeft: 'auto' }}>
-              <IconX />
-            </ActionIcon>
-          </Group>
+          <Flex direction="column" gap={10}>
+            <Flex direction="column" gap={5}>
+              <HeaderText>{t('mindscapeTitle')}</HeaderText>
+              <SegmentedControl
+                data={[0, 1, 2, 3, 4, 5, 6].map((m) => ({
+                  value: String(m),
+                  label: `M${m}`,
+                }))}
+                value={String(form.mindscape)}
+                onChange={(v) =>
+                  setForm((f) => ({ ...f, mindscape: Number(v) }))
+                }
+                fullWidth
+              />
+            </Flex>
 
-          <Text fw={600} mb="xs">
-            {t('mindscapeTitle')}
-          </Text>
-          <Box mb="md">
-            <SegmentedControl
-              data={[0, 1, 2, 3, 4, 5, 6].map((m) => ({
-                value: String(m),
-                label: `M${m}`,
-              }))}
-              value={String(form.mindscape)}
-              onChange={(v) => setForm((f) => ({ ...f, mindscape: Number(v) }))}
-              fullWidth
-              size="xs"
-            />
-          </Box>
-
-          <Text fw={600} mb={4}>
-            {t('editCharacter.skillLevels')}
-          </Text>
-          <Box mb="md">
-            <Grid columns={3}>
-              {allSkillKeys.map((sk) => (
-                <Grid.Col span={1} key={sk}>
-                  <SkillLevelButton
-                    skillKey={sk}
-                    value={form[sk]}
-                    maxLevel={skillByLevel(form.level)}
-                    onChange={(v) => setForm((f) => ({ ...f, [sk]: v }))}
+            <Flex direction="column" gap={5}>
+              <HeaderText>{t('editCharacter.skillLevels')}</HeaderText>
+              <Grid columns={2}>
+                {allSkillKeys.map((sk) => (
+                  <Grid.Col span={1} key={sk}>
+                    <SkillLevelButton
+                      skillKey={sk}
+                      value={form[sk]}
+                      maxLevel={skillByLevel(form.level)}
+                      onChange={(v) => setForm((f) => ({ ...f, [sk]: v }))}
+                    />
+                  </Grid.Col>
+                ))}
+                <Grid.Col span={1}>
+                  <CoreLevelButton
+                    value={form.core}
+                    maxLevel={coreByLevel(form.level)}
+                    onChange={(v) => setForm((f) => ({ ...f, core: v }))}
                   />
                 </Grid.Col>
-              ))}
-              <Grid.Col span={1}>
-                <CoreLevelButton
-                  value={form.core}
-                  maxLevel={coreByLevel(form.level)}
-                  onChange={(v) => setForm((f) => ({ ...f, core: v }))}
-                />
-              </Grid.Col>
-            </Grid>
-          </Box>
+              </Grid>
+            </Flex>
 
-          <Text fw={600} mb="xs">
-            {t('editCharacter.wengine')}
-          </Text>
-          <Box mb="md">
-            {form.wengineKey ? (
-              <Box
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  marginBottom: 8,
-                }}
-              >
-                <Image
-                  src={wengineAsset(form.wengineKey)}
-                  w={48}
-                  h={48}
-                  fit="contain"
-                />
-                <Box>
-                  <Text fw={500}>
-                    <WengineName wKey={form.wengineKey} />
-                  </Text>
-                  <Button
-                    variant="subtle"
-                    size="xs"
-                    onClick={() => setWengineSelectOpen(true)}
-                  >
-                    {t('editCharacter.change')}
-                  </Button>
-                </Box>
-                <ActionIcon
-                  style={{ marginLeft: 'auto' }}
-                  onClick={() => setForm((f) => ({ ...f, wengineKey: null }))}
+            <Flex direction="column" gap={5}>
+              <HeaderText>{t('editCharacter.wengine')}</HeaderText>
+              {form.wengineKey ? (
+                <Box
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    marginBottom: 8,
+                  }}
                 >
-                  <IconX />
-                </ActionIcon>
-              </Box>
-            ) : (
-              <Button
-                variant="default"
-                fullWidth
-                onClick={() => setWengineSelectOpen(true)}
-              >
-                {t('editCharacter.selectWengine')}
-              </Button>
-            )}
-            {form.wengineKey && (
-              <>
-                <Text size="sm" fw={500} mb={4}>
-                  {t('editCharacter.phase')}
-                </Text>
-                <SegmentedControl
-                  data={allPhaseKeys.map((p) => ({
-                    value: String(p),
-                    label: `P${p}`,
-                  }))}
-                  value={String(form.wenginePhase)}
-                  onChange={(v) =>
-                    setForm((f) => ({
-                      ...f,
-                      wenginePhase: Number(v) as PhaseKey,
-                    }))
-                  }
+                  <Image
+                    src={wengineAsset(form.wengineKey)}
+                    w={48}
+                    h={48}
+                    fit="contain"
+                  />
+                  <Box>
+                    <Text fw={500}>
+                      <WengineName wKey={form.wengineKey} />
+                    </Text>
+                    <Button
+                      variant="subtle"
+                      size="xs"
+                      onClick={() => setWengineSelectOpen(true)}
+                    >
+                      {t('editCharacter.change')}
+                    </Button>
+                  </Box>
+                  <ActionIcon
+                    style={{ marginLeft: 'auto' }}
+                    onClick={() => setForm((f) => ({ ...f, wengineKey: null }))}
+                  >
+                    <IconX />
+                  </ActionIcon>
+                </Box>
+              ) : (
+                <Button
+                  variant="default"
                   fullWidth
-                  size="xs"
-                />
-              </>
-            )}
-          </Box>
-
-          <Group justify="flex-end" mt="lg">
+                  onClick={() => setWengineSelectOpen(true)}
+                >
+                  {t('editCharacter.selectWengine')}
+                </Button>
+              )}
+              {form.wengineKey && (
+                <>
+                  <HeaderText>{t('editCharacter.phase')}</HeaderText>
+                  <SegmentedControl
+                    data={allPhaseKeys.map((p) => ({
+                      value: String(p),
+                      label: `P${p}`,
+                    }))}
+                    value={String(form.wenginePhase)}
+                    onChange={(v) =>
+                      setForm((f) => ({
+                        ...f,
+                        wenginePhase: Number(v) as PhaseKey,
+                      }))
+                    }
+                    fullWidth
+                  />
+                </>
+              )}
+            </Flex>
+          </Flex>
+          <Flex justify="flex-end" gap={8} style={{ marginTop: 16 }}>
             <Button variant="default" onClick={onClose}>
               {t('editCharacter.cancel')}
             </Button>
             <Button onClick={onSave} disabled={!hasChanges}>
               {t('editCharacter.save')}
             </Button>
-          </Group>
+          </Flex>
         </Suspense>
       </Modal>
     </>

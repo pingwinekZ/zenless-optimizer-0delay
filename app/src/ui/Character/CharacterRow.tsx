@@ -1,5 +1,5 @@
 import { ActionIcon, Box, Text, Tooltip } from '@mantine/core'
-import { IconEdit, IconTrash } from '@tabler/icons-react'
+import { IconPencil, IconX } from '@tabler/icons-react'
 import { memo, useCallback, useMemo } from 'react'
 import { characterAsset, wengineAsset } from '../../assets'
 import type { CharacterKey } from '../../consts'
@@ -7,41 +7,6 @@ import { useCharacter } from '../../db-ui'
 import { equipDotColor } from '../store'
 import classes from './CharacterRow.module.css'
 import { CharacterName } from './CharacterTrans'
-
-export type CharacterRowDensity = 'default' | 'compact'
-
-export const rowPresets: Record<CharacterRowDensity, Record<string, string>> = {
-  default: {
-    '--cr-list-width': '300px',
-    '--cr-row-height': '68px',
-    '--cr-font-size': '13px',
-    '--cr-subtitle-font-size': '12px',
-    '--cr-lc-size': '52px',
-    '--cr-lc-strip-width': '54px',
-    '--cr-portrait-scale': '66%',
-    '--cr-portrait-x': '40%',
-    '--cr-portrait-y': '30%',
-    '--cr-padding': '8px',
-    '--cr-gap': '10px',
-    '--cr-frost-fade-end': '35%',
-    '--cr-frost-mask-solid': '77%',
-  },
-  compact: {
-    '--cr-list-width': '300px',
-    '--cr-row-height': '48px',
-    '--cr-font-size': '12px',
-    '--cr-subtitle-font-size': '11px',
-    '--cr-lc-size': '48px',
-    '--cr-lc-strip-width': '52px',
-    '--cr-portrait-scale': '50%',
-    '--cr-portrait-x': '40%',
-    '--cr-portrait-y': '32%',
-    '--cr-padding': '8px',
-    '--cr-gap': '8px',
-    '--cr-frost-fade-end': '45%',
-    '--cr-frost-mask-solid': '67%',
-  },
-}
 
 const noop = () => {}
 
@@ -103,19 +68,16 @@ export const CharacterRow = memo(function CharacterRow({
   )
 
   const frameStyle = useMemo(
-    () =>
-      showcaseColor
-        ? {
-            backgroundColor: `color-mix(in srgb, ${showcaseColor} 70%, transparent)`,
-          }
-        : undefined,
+    () => (showcaseColor ? { backgroundColor: showcaseColor } : undefined),
     [showcaseColor]
   )
 
   return (
     <Box
       className={classes.root}
+      data-character-id={characterKey}
       data-selected={isFocused || undefined}
+      data-scrim-mode="frosted"
       onClick={onClickHandler}
       onDoubleClick={onDoubleClickHandler}
     >
@@ -131,15 +93,6 @@ export const CharacterRow = memo(function CharacterRow({
               decoding="async"
               onLoad={(e) => {
                 e.currentTarget.style.opacity = '1'
-              }}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'contain',
-                objectPosition: 'center',
-                left: 0,
-                top: 0,
-                transform: 'none',
               }}
             />
           )}
@@ -217,7 +170,7 @@ export const CharacterRow = memo(function CharacterRow({
                   aria-label={`Edit ${characterKey}`}
                   onClick={onEditHandler}
                 >
-                  <IconEdit size={12} />
+                  <IconPencil size={12} />
                 </ActionIcon>
               </Tooltip>
             )}
@@ -230,7 +183,7 @@ export const CharacterRow = memo(function CharacterRow({
                   aria-label={`Delete ${characterKey}`}
                   onClick={onDeleteHandler}
                 >
-                  <IconTrash size={12} />
+                  <IconX size={12} />
                 </ActionIcon>
               </Tooltip>
             )}
@@ -245,14 +198,17 @@ export const CharacterRow = memo(function CharacterRow({
 export function DragOverlayRow({
   characterKey,
   rank,
+  showcaseColor,
 }: {
   characterKey: CharacterKey
   rank: number
+  showcaseColor?: string
 }) {
   return (
     <Box
       className={classes.root}
       data-dragging="true"
+      data-scrim-mode="frosted"
       style={{ cursor: 'grabbing' }}
     >
       <CharacterRow
@@ -263,6 +219,7 @@ export function DragOverlayRow({
         onClick={noop}
         onEdit={noop}
         onDelete={noop}
+        showcaseColor={showcaseColor}
       />
     </Box>
   )

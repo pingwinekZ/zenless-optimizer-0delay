@@ -43,5 +43,6 @@
   --showcase-outline: rgba(255, 255, 255, 0.4) solid 1px;
   --showcase-outline-light: rgba(255, 255, 255, 0.2) solid 1px;
   --text-shadow-showcase: 0px 0px 10px black;
+  --backdrop-blur: blur(5px);
   --showcase-backdrop: blur(3px);
 }

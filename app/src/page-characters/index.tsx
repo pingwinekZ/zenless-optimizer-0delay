@@ -30,6 +30,7 @@ import {
 import { filterFunction, sortFunction } from '@zenless-optimizer/common/util'
 import {
   memo,
+  type MutableRefObject,
   Suspense,
   useCallback,
   useDeferredValue,
@@ -38,6 +39,10 @@ import {
   useRef,
   useState,
 } from 'react'
+import {
+  OverlayScrollbarsComponent,
+  type OverlayScrollbarsComponentRef,
+} from 'overlayscrollbars-react'
 import type { CharacterKey } from '../consts'
 import { useDatabaseContext } from '../db-ui'
 import {
@@ -53,6 +58,7 @@ import {
   useCharacterTabStore,
 } from '../ui'
 import { CharacterEditModal } from './CharacterEditModal'
+import classes from './CharacterGrid.module.css'
 import { CharacterPreview } from './CharacterPreview'
 import { getCharacterShowcaseColor } from './color/characterShowcaseColors'
 import { DEFAULT_CONFIG } from './color/colorPipelineConfig'
@@ -168,6 +174,13 @@ export default function PageCharacter({
 
   // DnD state
   const gridRef = useRef<HTMLDivElement>(null)
+  const osRef = useCallback(
+    (instance: OverlayScrollbarsComponentRef<'div'> | null) => {
+      ;(gridRef as MutableRefObject<HTMLDivElement | null>).current =
+        instance?.getElement() ?? null
+    },
+    []
+  )
   const [activeId, setActiveId] = useState<string | null>(null)
 
   const sensors = useSensors(
@@ -279,6 +292,18 @@ export default function PageCharacter({
     [filteredCharKeys]
   )
 
+  const activeShowcaseColor = useMemo(
+    () =>
+      activeId
+        ? oklchCharacterListColor(
+            getCharacterShowcaseColor(activeId as CharacterKey),
+            true,
+            DEFAULT_CONFIG
+          )
+        : undefined,
+    [activeId]
+  )
+
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       <StatHighlightContext.Provider value={statHLContextObj}>
@@ -298,8 +323,8 @@ export default function PageCharacter({
         />
       </Suspense>
 
-      {/* Root flex: fixed-width row matching HSR CharacterTab */}
-      <Flex style={{ width: 1640, height: '100%' }} gap={defaultGap}>
+      {/* Root flex: list + preview columns */}
+      <Flex style={{ width: '100%', height: '100%' }} gap={defaultGap}>
         {/* Left: CharacterMenu + Grid + Density */}
         <Box
           miw={300}
@@ -329,71 +354,64 @@ export default function PageCharacter({
           />
 
           {/* Character Grid with DnD + ScrollArea */}
-          <Box
+          <OverlayScrollbarsComponent
+            ref={osRef}
+            className={classes.gridContainer}
+            data-container-border="true"
+            options={{
+              scrollbars: { autoHide: 'move', autoHideDelay: 500 },
+            }}
             style={{
-              overflow: 'auto',
-              overscrollBehavior: 'contain',
               maxHeight: 'calc(100vh - 160px)',
-              border: '1px solid var(--layer-2)',
-              borderRadius: 'var(--mantine-radius-sm)',
+              ...rowCssVars,
             }}
           >
-            <Box
-              ref={gridRef}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 'var(--cr-row-gap, 1px)',
-                width: '100%',
-                ...rowCssVars,
-              }}
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDragCancel={handleDragCancel}
             >
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                modifiers={[restrictToVerticalAxis, restrictToParentElement]}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-                onDragCancel={handleDragCancel}
+              <SortableContext
+                items={itemIds}
+                strategy={verticalListSortingStrategy}
               >
-                <SortableContext
-                  items={itemIds}
-                  strategy={verticalListSortingStrategy}
-                >
-                  {filteredCharKeys.map((charKey) => (
-                    <SortableCharacterRow
-                      key={charKey}
-                      characterKey={charKey}
-                      isFocused={charKey === displayFocus}
-                      rank={rankMap.get(charKey) ?? 0}
-                      onClick={() => {
-                        setLocalFocus(charKey)
-                        setFocusCharacter(charKey)
-                      }}
-                      onDoubleClick={() => {
-                        setFocusCharacter(charKey)
-                        onNavigateToOptimize?.(charKey)
-                      }}
-                      onEdit={(ck) => editCharacter(ck)}
-                      onDelete={(ck) => deleteCharacter(ck)}
-                      isDragging={activeId === charKey}
-                    />
-                  ))}
-                </SortableContext>
-                <DragOverlay
-                  dropAnimation={dropAnimationConfig}
-                  modifiers={[restrictToVerticalAxis]}
-                >
-                  {activeId && (
-                    <DragOverlayRow
-                      characterKey={activeId as CharacterKey}
-                      rank={rankMap.get(activeId as CharacterKey) ?? 0}
-                    />
-                  )}
-                </DragOverlay>
-              </DndContext>
-            </Box>
-          </Box>
+                {filteredCharKeys.map((charKey) => (
+                  <SortableCharacterRow
+                    key={charKey}
+                    characterKey={charKey}
+                    isFocused={charKey === displayFocus}
+                    rank={rankMap.get(charKey) ?? 0}
+                    onClick={() => {
+                      setLocalFocus(charKey)
+                      setFocusCharacter(charKey)
+                    }}
+                    onDoubleClick={() => {
+                      setFocusCharacter(charKey)
+                      onNavigateToOptimize?.(charKey)
+                    }}
+                    onEdit={(ck) => editCharacter(ck)}
+                    onDelete={(ck) => deleteCharacter(ck)}
+                    isDragging={activeId === charKey}
+                  />
+                ))}
+              </SortableContext>
+              <DragOverlay
+                dropAnimation={dropAnimationConfig}
+                modifiers={[restrictToVerticalAxis]}
+              >
+                {activeId && (
+                  <DragOverlayRow
+                    characterKey={activeId as CharacterKey}
+                    rank={rankMap.get(activeId as CharacterKey) ?? 0}
+                    showcaseColor={activeShowcaseColor}
+                  />
+                )}
+              </DragOverlay>
+            </DndContext>
+          </OverlayScrollbarsComponent>
 
           {/* Density toggle */}
           <SegmentedControl
@@ -404,19 +422,22 @@ export default function PageCharacter({
             value={density}
             onChange={(v) => setDensity(v as 'default' | 'compact')}
             fullWidth
-            size="xs"
           />
         </Box>
 
         {/* Right: Filter toggles + Preview */}
         <Box
           style={{
-            width: cardTotalW,
-            flexShrink: 0,
+            flex: 1,
+            minWidth: cardTotalW,
             display: 'flex',
             flexDirection: 'column',
             gap: 8,
             position: 'relative',
+            // Reserve room for the absolutely-positioned customize sidebar
+            // (130px wide + 8px offset + 8px breathing room) so the fluid
+            // card never slides underneath it and causes page scroll.
+            marginRight: 146,
           }}
         >
           <FilterBar

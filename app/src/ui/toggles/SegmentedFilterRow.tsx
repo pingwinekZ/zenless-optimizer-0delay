@@ -29,7 +29,7 @@ export function SegmentedFilterRow<T extends string>({
   return (
     <Flex
       style={{
-        flexWrap: 'nowrap',
+        flexWrap: 'wrap',
         flexGrow: 1,
         backgroundColor: 'var(--layer-2)',
         boxShadow: '0px 0px 0px 1px var(--border-default) inset',

@@ -1,4 +1,5 @@
 import { Box, Flex, Text } from '@mantine/core'
+import { IconMedal } from '@tabler/icons-react'
 import { type CSSProperties, useMemo } from 'react'
 import { characterAsset, discDefIcon } from '../../assets'
 import type {
@@ -17,12 +18,11 @@ import type { ICachedDisc } from '../../db'
 import { StatIcon } from '../../svgicons'
 import { calculateDiscScore, gradeColor } from '../../util'
 import {
-  ShadowRings,
   showcaseShadow,
   showcaseShadowInsetAddition,
   showcaseTransition,
 } from '../CharacterPreviewComponents'
-import { defaultGap, discCardH, discCardW, parentW } from '../constantsUi'
+import { defaultGap, discCardH, parentW, separatorColor } from '../constantsUi'
 
 const LEFT_SLOTS: DiscSlotKey[] = ['1', '2', '3']
 const RIGHT_SLOTS: DiscSlotKey[] = ['6', '5', '4']
@@ -46,8 +46,8 @@ export function ShowcaseDiscPanel({
         display: 'flex',
         gap: defaultGap,
         zIndex: 1,
-        width: parentW,
-        flexShrink: 0,
+        flex: 2,
+        minWidth: parentW,
       }}
     >
       <DiscColumn
@@ -143,46 +143,81 @@ export function ShowcaseDiscCard({
         onClick={() => onClick?.()}
         style={{
           position: 'relative',
-          width: discCardW,
+          width: '100%',
           height: discCardH,
           padding: 12,
-          backgroundColor: 'var(--showcase-card-bg)',
-          border: '1px solid var(--showcase-card-border)',
+          backgroundColor: 'var(--showcase-card-bg-bridge-high)',
+          border: '1px solid var(--showcase-card-edge-medium)',
+          backgroundClip: 'padding-box',
+          boxSizing: 'border-box',
           transition: showcaseTransition,
           borderRadius: 6,
           boxShadow: showcaseShadow + showcaseShadowInsetAddition,
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 4,
+          justifyContent: 'space-between',
           cursor: onClick ? 'pointer' : undefined,
           ...style,
         }}
       >
-        <ShadowRings />
-        <Text
+        <Flex justify="space-between" align="center">
+          <Box style={{ width: 50, height: 50, flexShrink: 0 }} />
+          <Flex gap={8} align="center">
+            <Text style={{ fontSize: 13, lineHeight: '22px' }}></Text>
+          </Flex>
+          <Box
+            style={{
+              width: 50,
+              height: 50,
+              borderRadius: '50%',
+              flexShrink: 0,
+            }}
+          />
+        </Flex>
+
+        <Box
           style={{
-            fontSize: 13,
-            lineHeight: '22px',
-            textShadow: '0 1px 4px rgba(0, 0, 0, 0.9)',
+            margin: '6px 0',
+            borderBottom: `1px solid ${separatorColor}`,
           }}
-          c="dimmed"
-          opacity={0.7}
-        >
-          Slot {slot}
-        </Text>
-        <Text
+        />
+
+        <Flex justify="space-between" align="center" style={{ height: 22 }}>
+          <Box style={{ width: 22, height: 22 }} />
+        </Flex>
+
+        <Box
           style={{
-            fontSize: 13,
-            lineHeight: '22px',
-            textShadow: '0 1px 4px rgba(0, 0, 0, 0.9)',
+            margin: '6px 0',
+            borderBottom: `1px solid ${separatorColor}`,
           }}
-          c="dimmed"
-          opacity={0.5}
-        >
-          Empty
-        </Text>
+        />
+
+        <Box style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+          {[0, 1, 2, 3].map((i) => (
+            <Flex
+              key={i}
+              justify="space-between"
+              align="center"
+              style={{ height: 22 }}
+            />
+          ))}
+        </Box>
+
+        <Box
+          style={{
+            margin: '6px 0',
+            borderBottom: `1px solid ${separatorColor}`,
+          }}
+        />
+
+        <Flex justify="space-between" align="center">
+          <Flex gap={0} align="center">
+            <Box style={{ width: 22, height: 22 }} />
+            <Text style={{ fontSize: 13, lineHeight: '22px' }}></Text>
+          </Flex>
+          <Text style={{ fontSize: 13, lineHeight: '22px' }}></Text>
+        </Flex>
       </Box>
     )
   }
@@ -197,11 +232,13 @@ export function ShowcaseDiscCard({
       onClick={() => onClick?.()}
       style={{
         position: 'relative',
-        width: discCardW,
+        width: '100%',
         height: discCardH,
         padding: 12,
-        backgroundColor: 'var(--showcase-card-bg)',
-        border: '1px solid var(--showcase-card-border)',
+        backgroundColor: 'var(--showcase-card-bg-bridge-high)',
+        border: '1px solid var(--showcase-card-edge-medium)',
+        backgroundClip: 'padding-box',
+        boxSizing: 'border-box',
         transition: showcaseTransition,
         borderRadius: 6,
         boxShadow: showcaseShadow + showcaseShadowInsetAddition,
@@ -212,7 +249,6 @@ export function ShowcaseDiscCard({
         ...style,
       }}
     >
-      <ShadowRings />
       {/* Top row: set icon | rarity + level */}
       <Flex justify="space-between" align="center">
         <Box
@@ -241,7 +277,7 @@ export function ShowcaseDiscCard({
             +{disc.level}
           </Text>
         </Flex>
-        {disc.location && (
+        {disc.location ? (
           <Box
             component="img"
             src={characterAsset(disc.location as CharacterKey, 'circle')}
@@ -253,6 +289,16 @@ export function ShowcaseDiscCard({
               objectFit: 'cover',
               border: '1px solid rgba(150, 150, 150, 0.25)',
               backgroundColor: 'rgba(0, 0, 0, 0.1)',
+              flexShrink: 0,
+            }}
+          />
+        ) : (
+          <Box
+            style={{
+              width: 50,
+              height: 50,
+              borderRadius: '50%',
+              flexShrink: 0,
             }}
           />
         )}
@@ -262,7 +308,7 @@ export function ShowcaseDiscCard({
       <Box
         style={{
           margin: '6px 0',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.125)',
+          borderBottom: `1px solid ${separatorColor}`,
         }}
       />
 
@@ -276,7 +322,7 @@ export function ShowcaseDiscCard({
         const mainStatColor = isMainEffective ? '#FFA54C' : '#fff'
         return (
           <Flex justify="space-between" align="center">
-            <Flex gap={0} align="center">
+            <Flex gap={0} align="center" style={{ minWidth: 0 }}>
               <Flex style={{ marginLeft: -3, marginRight: 2 }} align="center">
                 <StatIcon
                   statKey={disc.mainStatKey}
@@ -291,6 +337,9 @@ export function ShowcaseDiscCard({
                   textShadow: isMainEffective
                     ? '0 1px 4px rgba(0, 0, 0, 0.9)'
                     : undefined,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
                 }}
               >
                 {statKeyTextMap[
@@ -321,11 +370,11 @@ export function ShowcaseDiscCard({
       <Box
         style={{
           margin: '6px 0',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.125)',
+          borderBottom: `1px solid ${separatorColor}`,
         }}
       />
 
-      {/* Sub stat rows */}
+      {/* Sub stat rows — always 4 rows like HSR (fillers keep cards uniform) */}
       <Box
         style={{
           display: 'flex',
@@ -342,7 +391,7 @@ export function ShowcaseDiscCard({
           const statTextShadow = '0 1px 4px rgba(0, 0, 0, 0.9)'
           return (
             <Flex key={i} justify="space-between" align="center">
-              <Flex gap={0} align="center">
+              <Flex gap={0} align="center" style={{ minWidth: 0 }}>
                 <Flex style={{ marginLeft: -3, marginRight: 2 }} align="center">
                   <StatIcon
                     statKey={sub.key}
@@ -360,48 +409,71 @@ export function ShowcaseDiscCard({
                     lineHeight: '22px',
                     color: statColor,
                     textShadow: statTextShadow,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
                   }}
                 >
                   {statKeyTextMap[sub.key as keyof typeof statKeyTextMap] ??
                     sub.key}
                 </Text>
               </Flex>
-              <Text
-                style={{
-                  fontSize: 13,
-                  lineHeight: '22px',
-                  color: statColor,
-                  textShadow: statTextShadow,
-                }}
+              <Flex
+                align="center"
+                justify="space-between"
+                style={{ width: '37%' }}
               >
-                {formatStatValue(
-                  sub.key,
-                  getDiscSubStatValue(sub, disc.rarity)
-                )}
-              </Text>
+                <Flex align="center" style={{ color: statColor }}>
+                  {<RollChevrons count={sub.upgrades - 1} />}
+                </Flex>
+                <Text
+                  style={{
+                    fontSize: 13,
+                    lineHeight: '22px',
+                    color: statColor,
+                    textShadow: statTextShadow,
+                  }}
+                >
+                  {formatStatValue(
+                    sub.key,
+                    getDiscSubStatValue(sub, disc.rarity)
+                  )}
+                </Text>
+              </Flex>
             </Flex>
           )
         })}
+        {Array.from({
+          length: Math.max(
+            0,
+            4 - disc.substats.filter((sub) => sub.key).length
+          ),
+        }).map((_, i) => (
+          <Flex
+            key={`filler-${i}`}
+            justify="space-between"
+            align="center"
+            style={{ height: 22 }}
+          />
+        ))}
       </Box>
       {/* Divider */}
       <Box
         style={{
           margin: '6px 0',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.125)',
+          borderBottom: `1px solid ${separatorColor}`,
         }}
       />
 
       {/* Score footer */}
       <Flex justify="space-between" align="center">
-        <Flex gap={4} align="center">
-          <Box
-            style={{
-              width: 10,
-              height: 10,
-              borderRadius: '50%',
-              backgroundColor: gradeColor(discScore.grade),
-            }}
-          />
+        <Flex gap={0} align="center">
+          <Flex style={{ marginLeft: -3, marginRight: 2 }} align="center">
+            <IconMedal
+              size={22}
+              style={{ color: gradeColor(discScore.grade) }}
+            />
+          </Flex>
           <Text
             style={{
               fontSize: 13,
@@ -419,7 +491,7 @@ export function ShowcaseDiscCard({
             textShadow: '0 1px 4px rgba(0, 0, 0, 0.9)',
           }}
         >
-          {discScore.grade} ({(discScore.efficiency * 100).toFixed(0)}%)
+          {(discScore.efficiency * 100).toFixed(1)} ({discScore.grade})
         </Text>
       </Flex>
     </Box>
@@ -455,5 +527,34 @@ function getDiscSubStatValue(
       sub.key as Parameters<typeof getDiscSubStatBaseVal>[0],
       rarity
     ) * sub.upgrades
+  )
+}
+
+// Roll chevrons marking substat enhancement procs after the initial roll
+// (mirrors HSR's RelicStatRow indicators). One chevron per proc, max 5,
+// packed at a tight 5px advance like HSR's precomputed sprites.
+function RollChevrons({ count }: { count: number }) {
+  const n = Math.min(Math.max(count, 0), 5)
+  if (!n) return null
+  const width = 5 * n + 1
+  return (
+    <svg
+      width={width}
+      height={10}
+      viewBox={`0 0 ${width} 10`}
+      style={{ display: 'block', opacity: 0.75 }}
+    >
+      {Array.from({ length: n }).map((_, i) => (
+        <path
+          key={i}
+          d={`M${5 * i + 1.5} 1.5 L${5 * i + 5} 5 L${5 * i + 1.5} 8.5`}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.4}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      ))}
+    </svg>
   )
 }
