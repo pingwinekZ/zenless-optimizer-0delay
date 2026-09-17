@@ -59,7 +59,10 @@ import {
 import { useZzzCalcContext } from '../../formula-ui'
 import { ShowcaseDiscCard } from '../../page-characters'
 import { discCardH, discCardW } from '../../page-characters/constantsUi'
-import { getMergedSubstatWeights } from '../../page-discs/scoring/statWeightUtils'
+import {
+  getMergedEffectiveStats,
+  getMergedSubstatWeights,
+} from '../../page-discs/scoring/statWeightUtils'
 import {
   type BuildRecipe,
   createSolverConfig,
@@ -70,7 +73,7 @@ import {
 import { getCharStat, getWengineStat } from '../../stats'
 import { DiscEditorModal, useDiscEditorModalStore } from '../../ui'
 import { DiscSet2p, DiscSetName } from '../../ui/Disc/DiscTrans'
-import { getCharacterEffectiveStats, hasHigherPriority } from '../../util'
+import { hasHigherPriority } from '../../util'
 import type { AnalysisData } from '../Analysis/ExpandedDataPanelController'
 import { buildAnalysisData } from '../Analysis/ExpandedDataPanelController'
 import { BuildsSection } from '../BuildManagement'
@@ -120,9 +123,14 @@ function SelectedBuildDiscs({
   theoreticalDiscMap?: Record<string, ICachedDisc>
 }) {
   const dbDiscs = useDiscs(discIds)
+  const { database } = useDatabaseContext()
   const effectiveStats = useMemo(
-    () => getCharacterEffectiveStats(characterKey),
-    [characterKey]
+    () => getMergedEffectiveStats(characterKey, database),
+    [characterKey, database]
+  )
+  const substatWeights = useMemo(
+    () => getMergedSubstatWeights(characterKey, database),
+    [characterKey, database]
   )
   const openEditorModal = useDiscEditorModalStore((s) => s.openOverlay)
 
@@ -171,6 +179,7 @@ function SelectedBuildDiscs({
           disc={discs[slotKey]}
           onClick={() => handleDiscClick(slotKey)}
           effectiveStats={effectiveStats}
+          substatWeights={substatWeights}
           style={{
             width: '100%',
             height: 'auto',

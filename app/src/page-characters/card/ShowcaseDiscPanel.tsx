@@ -10,6 +10,7 @@ import type {
   DiscSubStatKey,
 } from '../../consts'
 import {
+  discMaxLevel,
   getDiscMainStatVal,
   getDiscSubStatBaseVal,
   statKeyTextMap,
@@ -481,7 +482,9 @@ export function ShowcaseDiscCard({
         }}
       />
 
-      {/* Score footer: current vs max-potential, same as the discs tab */}
+      {/* Score footer: current vs max-potential, same as the discs tab.
+          Max potential is hidden at max level — no rolls remain, so it
+          would just duplicate the current score. */}
       <Flex direction="column" gap={2}>
         <Flex justify="space-between" align="center">
           <Flex gap={0} align="center">
@@ -512,29 +515,31 @@ export function ShowcaseDiscCard({
             {(discScore.efficiency * 100).toFixed(1)} ({discScore.grade})
           </Text>
         </Flex>
-        <Flex justify="space-between" align="center">
-          <Text
-            style={{
-              fontSize: 11,
-              lineHeight: '18px',
-              color: 'rgba(255, 255, 255, 0.6)',
-              textShadow: '0 1px 4px rgba(0, 0, 0, 0.9)',
-            }}
-          >
-            Max potential
-          </Text>
-          <Text
-            style={{
-              fontSize: 11,
-              lineHeight: '18px',
-              color: gradeColor(discScore.maxGrade),
-              textShadow: '0 1px 4px rgba(0, 0, 0, 0.9)',
-            }}
-            title="Best score with remaining rolls"
-          >
-            {(discScore.maxPotential * 100).toFixed(1)} ({discScore.maxGrade})
-          </Text>
-        </Flex>
+        {disc.level < discMaxLevel[disc.rarity] && (
+          <Flex justify="space-between" align="center">
+            <Text
+              style={{
+                fontSize: 11,
+                lineHeight: '18px',
+                color: 'rgba(255, 255, 255, 0.6)',
+                textShadow: '0 1px 4px rgba(0, 0, 0, 0.9)',
+              }}
+            >
+              Max potential
+            </Text>
+            <Text
+              style={{
+                fontSize: 11,
+                lineHeight: '18px',
+                color: gradeColor(discScore.maxGrade),
+                textShadow: '0 1px 4px rgba(0, 0, 0, 0.9)',
+              }}
+              title="Best score with remaining rolls"
+            >
+              {(discScore.maxPotential * 100).toFixed(1)} ({discScore.maxGrade})
+            </Text>
+          </Flex>
+        )}
       </Flex>
     </Box>
   )
