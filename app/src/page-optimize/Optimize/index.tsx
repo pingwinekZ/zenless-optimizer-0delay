@@ -45,8 +45,8 @@ import {
   type maxBuildsToShowList,
   type OptimizerEngine,
   type StatFilters,
-  targetTag,
   type TheoReference,
+  targetTag,
 } from '../../db'
 import {
   OptConfigContext,
@@ -76,6 +76,10 @@ import { buildAnalysisData } from '../Analysis/ExpandedDataPanelController'
 import { BuildsSection } from '../BuildManagement'
 import { useResponsive } from '../hooks'
 import { ResponsiveBottomBar } from '../layout'
+import {
+  buildReferenceProfile,
+  buildTheoContextSnapshot,
+} from '../reference/referenceScoring'
 import type { StatDisplay } from '../Sidebar'
 import {
   OptimizerControlsSection,
@@ -83,10 +87,6 @@ import {
   ResultsSection,
 } from '../Sidebar'
 import { useOptimizerDisplayStore } from '../stores/useOptimizerDisplayStore'
-import {
-  buildReferenceProfile,
-  buildTheoContextSnapshot,
-} from '../reference/referenceScoring'
 import type { EnrichedBuild } from '../Util/buildStatsUtils'
 import {
   batchComputeBuildStats,
@@ -195,6 +195,7 @@ function TheoreticalBuildSummary({
   theoreticalDiscMap,
   value,
   isPinned,
+  pinnedRecipeId,
   onPinReference,
 }: {
   recipeId: string
@@ -202,7 +203,8 @@ function TheoreticalBuildSummary({
   theoreticalDiscMap: Record<string, ICachedDisc>
   value: number
   isPinned: boolean
-  onPinReference: () => void
+  pinnedRecipeId?: string
+  onPinReference: (build?: GeneratedBuild) => void
 }) {
   const allDiscs = allDiscSlotKeys
     .map((sk) => theoreticalDiscMap[`${recipeId}_${sk}`])
@@ -223,6 +225,9 @@ function TheoreticalBuildSummary({
         .filter(([, rolls]) => (rolls ?? 0) > 0)
         .sort(([, a], [, b]) => (b ?? 0) - (a ?? 0))
     : []
+  // Only the exact pinned recipe counts as pinned — value ties (e.g. crit_
+  // vs crit_dmg_ mains) surface sibling builds that must stay pinnable.
+  const isThisPinned = isPinned && pinnedRecipeId === recipeId
 
   return (
     <Box p="sm">
@@ -232,16 +237,18 @@ function TheoreticalBuildSummary({
         </Text>
         <Button
           size="xs"
-          variant={isPinned ? 'filled' : 'default'}
-          disabled={isPinned}
-          onClick={onPinReference}
+          variant={isThisPinned ? 'filled' : 'default'}
+          disabled={isThisPinned}
+          onClick={() => onPinReference()}
           title={
-            isPinned
-              ? 'This character already has a pinned reference from a theoretical run'
-              : 'Pin the top theoretical builds as this character\u2019s perfect reference for future comparisons'
+            isThisPinned
+              ? 'This build is the pinned reference for this character'
+              : isPinned
+                ? 'This character already has a pinned reference — pinning this build replaces it'
+                : 'Pin this theoretical build as this character\u2019s perfect reference for future comparisons'
           }
         >
-          {isPinned ? 'Reference pinned' : 'Pin as reference'}
+          {isThisPinned ? 'Reference pinned' : 'Pin as reference'}
         </Button>
       </Flex>
 
@@ -1306,101 +1313,112 @@ function OptimizeWrapper() {
     removePinnedBuild,
   ])
 
-  // Pin the top theoretical build as this character's perfect reference.
-  const onPinReference = useCallback(() => {
-    const sorted = [...allBuilds].sort((a, b) => b.value - a.value)
-    if (sorted.length === 0 || !(sorted[0].value > 0)) {
-      console.warn('[TheoReference] nothing to pin')
-      return
-    }
-    const best = sorted[0]
-    const rid = best.discIds['1']?.replace(/_\d+$/, '')
-    const bestRecipe = rid ? recipeMetaRef.current(rid) : undefined
-    if (!rid || !bestRecipe) {
-      console.warn('[TheoReference] could not resolve theoretical recipe')
-      return
-    }
-    const profile = buildReferenceProfile(bestRecipe)
-    // Prefer the display-canonical recomputed value for the best build, so
-    // the reference matches what the Analysis panel computes for that exact
-    // build (the solver's raw value can be off by float rounding).
-    const refValue =
-      enrichedValuesRef.current.get(buildRowId(best)) ?? best.value
-    const snapshot = buildTheoContextSnapshot(
-      target,
-      optConfig.setFilter2,
-      optConfig.setFilter4
-    )
-    // Materialize the single best build with stable ids so it survives a
-    // page refresh (the generator's recipe index lives only in memory).
-    // Re-pinning overwrites the same ids.
-    const refIdPrefix = `theoref_${characterKey}`
-    const referenceDiscs = createRecipeDiscs(bestRecipe, refIdPrefix)
-    const refWengineKey = best.wengineKey
-    // In-combat snapshot of the reference build under the current team, so
-    // the comparison panel can show stats without a live calculator.
-    // getDisc must resolve teammate discs too — team-wide set bonuses and
-    // buffs scaling off teammate gear (e.g. team CRIT DMG) are otherwise
-    // silently dropped from the snapshot.
-    let referenceCombatStats = undefined as
-      | TheoReference['referenceCombatStats']
-      | undefined
-    try {
-      const refDiscMap = Object.fromEntries(
-        referenceDiscs.map((d) => [d.slotKey, d])
-      ) as Record<DiscSlotKey, ICachedDisc | undefined>
-      const refCharacter =
-        refWengineKey !== undefined
-          ? ({ ...character, wengineKey: refWengineKey } as typeof character)
-          : character
-      const refFormulaTag = isComboTarget(target)
-        ? getComboFrames(team)
-            .filter((frame) => frame.tag?.sheet && frame.tag?.name)
-            .map((frame) => ({
-              tag: targetTag(frame.tag!),
-              multiplier: frame.multiplier,
-            }))
-        : target
-          ? targetTag(target)
-          : undefined
-      const getDisc = (id: string) =>
-        theoreticalDiscMapRef.current[id] ?? database.discs.get(id) ?? undefined
-      const computed = computeBuildStats(
-        refCharacter,
-        refDiscMap,
-        team,
-        refFormulaTag,
-        (key) => database.chars.get(key) ?? undefined,
-        getDisc
+  // Pin the currently selected theoretical build as this character's perfect
+  // reference. Must use the selection — not sorted[0] — because ties on
+  // build value (e.g. crit_ vs crit_dmg_ mains with equal value) surface
+  // multiple equivalent rows and the user may pick any of them.
+  const onPinReference = useCallback(
+    (build?: GeneratedBuild) => {
+      const toPin = build ?? selectedBuild
+      if (!toPin?.discIds?.['1']?.startsWith('recipe_')) {
+        console.warn('[TheoReference] nothing to pin')
+        return
+      }
+      const rid = toPin.discIds['1']?.replace(/_\d+$/, '')
+      const bestRecipe = rid ? recipeMetaRef.current(rid) : undefined
+      if (!rid || !bestRecipe) {
+        console.warn('[TheoReference] could not resolve theoretical recipe')
+        return
+      }
+      const profile = buildReferenceProfile(bestRecipe)
+      // Prefer the display-canonical recomputed value for the pinned build, so
+      // the reference matches what the Analysis panel computes for that exact
+      // build (the solver's raw value can be off by float rounding).
+      const refValue =
+        enrichedValuesRef.current.get(buildRowId(toPin)) ?? toPin.value
+      if (!(refValue > 0)) {
+        console.warn('[TheoReference] nothing to pin')
+        return
+      }
+      const snapshot = buildTheoContextSnapshot(
+        target,
+        optConfig.setFilter2,
+        optConfig.setFilter4
       )
-      referenceCombatStats = { ...computed.final }
-    } catch (e) {
-      console.warn('[TheoReference] combat snapshot failed:', e)
-    }
-    database.theoReferences.pin(characterKey, {
-      value: refValue,
-      perfectRolls: profile.perfectRolls,
-      mainsBySlot: profile.mainsBySlot,
-      set4: bestRecipe.set4,
-      set2: bestRecipe.set2,
-      wengineKey: refWengineKey,
-      ...snapshot,
-      date: Date.now(),
-      bestRecipe,
-      referenceDiscs,
-      ...(referenceCombatStats ? { referenceCombatStats } : {}),
-    })
-    console.log('[TheoReference] pinned', refValue, 'for', characterKey)
-  }, [
-    allBuilds,
-    database,
-    character,
-    characterKey,
-    target,
-    team,
-    optConfig.setFilter2,
-    optConfig.setFilter4,
-  ])
+      // Materialize the selected build with stable ids so it survives a
+      // page refresh (the generator's recipe index lives only in memory).
+      // Re-pinning overwrites the same ids.
+      const refIdPrefix = `theoref_${characterKey}`
+      const referenceDiscs = createRecipeDiscs(bestRecipe, refIdPrefix)
+      const refWengineKey = toPin.wengineKey
+      // In-combat snapshot of the reference build under the current team, so
+      // the comparison panel can show stats without a live calculator.
+      // getDisc must resolve teammate discs too — team-wide set bonuses and
+      // buffs scaling off teammate gear (e.g. team CRIT DMG) are otherwise
+      // silently dropped from the snapshot.
+      let referenceCombatStats = undefined as
+        | TheoReference['referenceCombatStats']
+        | undefined
+      try {
+        const refDiscMap = Object.fromEntries(
+          referenceDiscs.map((d) => [d.slotKey, d])
+        ) as Record<DiscSlotKey, ICachedDisc | undefined>
+        const refCharacter =
+          refWengineKey !== undefined
+            ? ({ ...character, wengineKey: refWengineKey } as typeof character)
+            : character
+        const refFormulaTag = isComboTarget(target)
+          ? getComboFrames(team)
+              .filter((frame) => frame.tag?.sheet && frame.tag?.name)
+              .map((frame) => ({
+                tag: targetTag(frame.tag!),
+                multiplier: frame.multiplier,
+              }))
+          : target
+            ? targetTag(target)
+            : undefined
+        const getDisc = (id: string) =>
+          theoreticalDiscMapRef.current[id] ??
+          database.discs.get(id) ??
+          undefined
+        const computed = computeBuildStats(
+          refCharacter,
+          refDiscMap,
+          team,
+          refFormulaTag,
+          (key) => database.chars.get(key) ?? undefined,
+          getDisc
+        )
+        referenceCombatStats = { ...computed.final }
+      } catch (e) {
+        console.warn('[TheoReference] combat snapshot failed:', e)
+      }
+      database.theoReferences.pin(characterKey, {
+        value: refValue,
+        perfectRolls: profile.perfectRolls,
+        mainsBySlot: profile.mainsBySlot,
+        set4: bestRecipe.set4,
+        set2: bestRecipe.set2,
+        wengineKey: refWengineKey,
+        ...snapshot,
+        date: Date.now(),
+        bestRecipe,
+        referenceDiscs,
+        ...(referenceCombatStats ? { referenceCombatStats } : {}),
+      })
+      console.log('[TheoReference] pinned', refValue, 'for', characterKey)
+    },
+    [
+      selectedBuild,
+      database,
+      character,
+      characterKey,
+      target,
+      team,
+      optConfig.setFilter2,
+      optConfig.setFilter4,
+    ]
+  )
 
   // Hydrate the in-memory theoretical disc map from the persisted reference
   // build. The generator's recipe index does not survive a refresh, so
@@ -1654,6 +1672,7 @@ function OptimizeWrapper() {
                       theoreticalDiscMap={theoreticalDiscMap}
                       value={displayValue}
                       isPinned={!!pinnedReference}
+                      pinnedRecipeId={pinnedReference?.bestRecipe?.id}
                       onPinReference={onPinReference}
                     />
                   ) : (

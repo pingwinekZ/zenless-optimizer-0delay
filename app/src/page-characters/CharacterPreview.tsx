@@ -23,7 +23,11 @@ import {
   useCharacterTabStore,
   useDiscEditorModalStore,
 } from '../ui'
-import { calculateCharacterScore, efficiencyToGrade, gradeColor } from '../util'
+import {
+  calculateSubstatEfficiency,
+  efficiencyToGrade,
+  gradeColor,
+} from '../util'
 import {
   ShowcaseBackgroundBlur,
   showcaseShadow,
@@ -304,7 +308,7 @@ function PreviewContent({
 
   const score = useMemo(
     () =>
-      calculateCharacterScore(
+      calculateSubstatEfficiency(
         [
           discs['1'],
           discs['2'],
@@ -313,9 +317,11 @@ function PreviewContent({
           discs['5'],
           discs['6'],
         ],
-        characterKey
+        effectiveStats,
+        effectiveMainStats,
+        substatWeights
       ),
-    [discs, characterKey]
+    [discs, effectiveStats, effectiveMainStats, substatWeights]
   )
 
   const portraitUrl = characterAsset(characterKey, 'full')
@@ -526,48 +532,121 @@ function PreviewContent({
               />
             </Box>
 
-            {/* Score - Hoyolab style rating badge */}
+            {/* Score - Hoyolab style rating badge, split side by side:
+                disc (weighted-roll) score | perfect-reference damage ratio */}
             {score && (
-              <Flex direction="column" align="center" gap={2} mb={2}>
-                <Text
-                  style={{
-                    fontSize: 28,
-                    fontWeight: 700,
-                    lineHeight: '34px',
-                    color: gradeColor(score.grade),
-                  }}
+              <Flex direction="column" align="center" gap={4} mb={2}>
+                <Flex
+                  direction="row"
+                  align="stretch"
+                  justify="center"
+                  gap={0}
+                  w="100%"
                 >
-                  {score.grade}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 18,
-                    fontWeight: 500,
-                    color: 'rgba(255,255,255,0.7)',
-                  }}
-                >
-                  {(score.efficiency * 100).toFixed(0)}%
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: 'rgba(255,255,255,0.4)',
-                  }}
-                >
-                  {score.effectiveRolls}/{score.totalRolls} rolls
-                </Text>
-                {referenceScore !== undefined && (
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      color: gradeColor(efficiencyToGrade(referenceScore)),
-                    }}
-                    title="Equipped build value vs the pinned perfect value"
+                  <Flex
+                    direction="column"
+                    align="center"
+                    gap={2}
+                    style={{ flex: 1 }}
                   >
-                    vs Perfect {(referenceScore * 100).toFixed(0)}% (
-                    {efficiencyToGrade(referenceScore)})
-                  </Text>
-                )}
+                    <Text
+                      style={{
+                        fontSize: 11,
+                        color: 'rgba(255,255,255,0.5)',
+                        textTransform: 'uppercase',
+                        letterSpacing: 0.6,
+                      }}
+                    >
+                      Disc score
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 28,
+                        fontWeight: 700,
+                        lineHeight: '34px',
+                        color: gradeColor(score.grade),
+                      }}
+                      title="Weighted substat efficiency + main-stat alignment"
+                    >
+                      {score.grade}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 18,
+                        fontWeight: 500,
+                        color: 'rgba(255,255,255,0.7)',
+                      }}
+                    >
+                      {(score.efficiency * 100).toFixed(0)}%
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        color: 'rgba(255,255,255,0.4)',
+                      }}
+                    >
+                      {score.effectiveRolls}/{score.totalRolls} rolls
+                    </Text>
+                  </Flex>
+                  {referenceScore !== undefined && (
+                    <>
+                      <Box
+                        style={{
+                          width: 1,
+                          backgroundColor: 'rgba(255,255,255,0.15)',
+                          margin: '4px 0',
+                        }}
+                      />
+                      <Flex
+                        direction="column"
+                        align="center"
+                        gap={2}
+                        style={{ flex: 1 }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 11,
+                            color: 'rgba(255,255,255,0.5)',
+                            textTransform: 'uppercase',
+                            letterSpacing: 0.6,
+                          }}
+                        >
+                          vs Perfect
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 28,
+                            fontWeight: 700,
+                            lineHeight: '34px',
+                            color: gradeColor(
+                              efficiencyToGrade(referenceScore)
+                            ),
+                          }}
+                          title="Equipped build value vs the pinned perfect value"
+                        >
+                          {efficiencyToGrade(referenceScore)}
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 18,
+                            fontWeight: 500,
+                            color: 'rgba(255,255,255,0.7)',
+                          }}
+                        >
+                          {(referenceScore * 100).toFixed(0)}%
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            color: 'rgba(255,255,255,0.4)',
+                          }}
+                        >
+                          damage ratio
+                        </Text>
+                      </Flex>
+                    </>
+                  )}
+                </Flex>
               </Flex>
             )}
 

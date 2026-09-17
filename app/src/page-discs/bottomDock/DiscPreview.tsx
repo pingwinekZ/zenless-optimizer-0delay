@@ -57,7 +57,7 @@ export function DiscPreview({
   const weights = focusCharacter
     ? getMergedSubstatWeights(focusCharacter, database)
     : {}
-  const current = scoreCurrent(disc, effectiveStats)
+  const current = scoreCurrent(disc, effectiveStats, weights)
   const max = computeMaxPotential(disc, effectiveStats, weights)
   const rarityColorVar = themeColorVar(discRarityColor[disc.rarity])
 

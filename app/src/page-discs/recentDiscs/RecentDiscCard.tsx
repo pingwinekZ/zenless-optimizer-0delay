@@ -42,7 +42,7 @@ export function RecentDiscCard({
   const weights = focusCharacter
     ? getCharacterSubstatWeights(focusCharacter)
     : {}
-  const current = computeCurrentScore(disc, effectiveStats)
+  const current = computeCurrentScore(disc, effectiveStats, weights)
   const max = computeMaxPotential(disc, effectiveStats, weights)
   const rarityColorVar = themeColorVar(discRarityColor[disc.rarity])
 
