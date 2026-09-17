@@ -1086,6 +1086,8 @@ function OptimizeWrapper() {
       optConfig.slot4,
       optConfig.slot5,
       optConfig.slot6,
+      optConfig.theoreticalApplyDominanceFilter,
+      optConfig.theoreticalMinEffectivePerCombo,
       characterKey,
       character.wenginePhase,
       filteredWengineKeys,

@@ -25,11 +25,11 @@ import { useShowcaseColorStore } from './showcaseColorStore'
 export function useShowcaseRowColor(
   characterKey: CharacterKey | ''
 ): string | undefined {
-  const preferences = useCharacterTabStore(
-    (s) => s.showcasePreferences[characterKey]
+  const preferences = useCharacterTabStore((s) =>
+    characterKey ? s.showcasePreferences[characterKey] : undefined
   )
-  const portraitExtractedColor = useShowcaseColorStore(
-    (s) => s.portraitColorByCharKey[characterKey]
+  const portraitExtractedColor = useShowcaseColorStore((s) =>
+    characterKey ? s.portraitColorByCharKey[characterKey] : undefined
   )
 
   useEffect(() => {

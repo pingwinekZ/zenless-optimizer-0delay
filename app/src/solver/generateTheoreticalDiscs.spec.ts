@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { allDiscSubStatKeys, getDiscSubStatBaseVal } from '../consts'
+import { type allDiscSubStatKeys, getDiscSubStatBaseVal } from '../consts'
 import {
   generateTheoreticalDiscs,
   RECIPE_DESCRIPTOR_STRIDE,
