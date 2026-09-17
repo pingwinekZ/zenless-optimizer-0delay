@@ -2,6 +2,7 @@ import type { CalcMeta } from '@zenless-optimizer/game-opt/engine'
 import type { CalcResult } from '@zenless-optimizer/pando/engine'
 import type {
   CharacterKey,
+  DiscMainStatKey,
   DiscSetKey,
   DiscSlotKey,
   DiscSubStatKey,
@@ -14,6 +15,7 @@ import type {
   OptFrame,
   Team,
   TeammateDatum,
+  TheoReferenceCombatStats,
 } from '../../db'
 import {
   getComboFrames,
@@ -24,6 +26,13 @@ import {
 import type { Tag } from '../../formula'
 import { convert, ownTag, Read, zzzCalculatorWithEntries } from '../../formula'
 import type { ISubstat } from '../../schema/disc'
+import { efficiencyToGrade } from '../../util'
+import type {
+  MainMismatch,
+  SubstatTip,
+  TheoReferenceShape,
+} from '../reference/referenceScoring'
+import { compareToReference } from '../reference/referenceScoring'
 import type { BuildCombatStats, EnrichedBuild } from '../Util/buildStatsUtils'
 import { buildCalculatorEntries } from '../Util/buildStatsUtils'
 
@@ -66,6 +75,30 @@ export type TargetFormulaInfo = {
   buffedStats: BuildCombatStats | null
 }
 
+export type ReferenceComparison = {
+  /** Selected build value / pinned reference value, clamped to [0, 1]. */
+  ratio: number
+  grade: string
+  selectedValue: number
+  referenceValue: number
+  date: number
+  /** True when the current target/filters differ from the pin context. */
+  stale: boolean
+  tips: SubstatTip[]
+  mainMismatches: MainMismatch[]
+  /** The persisted perfect build: sets, wengine, mains and substat rolls. */
+  set4?: DiscSetKey
+  set2?: DiscSetKey
+  wengineKey?: string
+  mainsBySlot?: Partial<Record<DiscSlotKey, DiscMainStatKey>>
+  perfectRolls?: Partial<Record<DiscSubStatKey, number>>
+  /** Selected build's own rolls/mains, for side-by-side comparison. */
+  localRolls?: Partial<Record<DiscSubStatKey, number>>
+  localMains?: Partial<Record<DiscSlotKey, DiscMainStatKey>>
+  /** In-combat snapshot of the reference build, taken at pin time. */
+  combatStats?: TheoReferenceCombatStats
+}
+
 export type AnalysisData = {
   selectedStats: BuildCombatStats | null
   equippedStats: BuildCombatStats | null
@@ -76,6 +109,7 @@ export type AnalysisData = {
   characterKey: CharacterKey
   selectedWengineKey?: string
   targetInfo: TargetFormulaInfo | null
+  referenceComparison: ReferenceComparison | null
 }
 
 export type StatContribution = {
@@ -94,6 +128,17 @@ export function buildAnalysisData(params: {
   team: Team
   character: ICachedCharacter
   getTeammateChar?: (key: CharacterKey) => ICachedCharacter | undefined
+  reference?: {
+    profile: TheoReferenceShape
+    value: number
+    date: number
+    stale: boolean
+    weights: Partial<Record<DiscSubStatKey, number>>
+    set4?: DiscSetKey
+    set2?: DiscSetKey
+    wengineKey?: string
+    combatStats?: TheoReferenceCombatStats
+  } | null
 }): AnalysisData {
   const {
     selectedBuild,
@@ -103,6 +148,7 @@ export function buildAnalysisData(params: {
     team,
     character,
     getTeammateChar,
+    reference,
   } = params
 
   const selectedId = `${selectedBuild.wengineKey ?? ''}-${Object.values(selectedBuild.discIds).join('-')}`
@@ -112,6 +158,13 @@ export function buildAnalysisData(params: {
     enrichedBuilds.find((b) => b.id === equippedBuildId) ?? null
 
   const selectedDiscSubstats = buildSubstatRolls(selectedBuild.discIds, getDisc)
+
+  const referenceComparison = buildReferenceComparison(
+    selectedBuild,
+    selectedEnriched,
+    getDisc,
+    reference ?? null
+  )
 
   const teammates: TeammateInfo[] = team.teammates
     .filter((t: TeammateDatum) => t.characterKey !== character.key)
@@ -157,13 +210,80 @@ export function buildAnalysisData(params: {
     selectedStats:
       targetInfo?.buffedStats ?? selectedEnriched?.combatStats ?? null,
     equippedStats: equippedEnriched?.combatStats ?? null,
-    targetValue: selectedBuild.value,
+    targetValue: selectedEnriched?.value ?? selectedBuild.value,
     selectedDiscSubstats,
     teammates,
     selectedDiscSetIds: selectedEnriched?.discSetIds ?? [],
     characterKey: character.key,
     selectedWengineKey: selectedBuild.wengineKey,
     targetInfo,
+    referenceComparison,
+  }
+}
+
+function buildReferenceComparison(
+  selectedBuild: { wengineKey?: string; discIds: DiscIds; value: number },
+  selectedEnriched: EnrichedBuild | null,
+  getDisc: (id: string) => ICachedDisc | undefined,
+  reference: {
+    profile: TheoReferenceShape
+    value: number
+    date: number
+    stale: boolean
+    weights: Partial<Record<DiscSubStatKey, number>>
+    set4?: DiscSetKey
+    set2?: DiscSetKey
+    wengineKey?: string
+    combatStats?: TheoReferenceCombatStats
+  } | null
+): ReferenceComparison | null {
+  if (!reference || !(reference.value > 0)) return null
+  const localRolls: Partial<Record<DiscSubStatKey, number>> = {}
+  const localMains: Partial<Record<DiscSlotKey, DiscMainStatKey>> = {}
+  for (const [slot, id] of Object.entries(selectedBuild.discIds)) {
+    if (!id) continue
+    const disc = getDisc(id)
+    if (!disc) continue
+    localMains[slot as DiscSlotKey] = disc.mainStatKey as DiscMainStatKey
+    for (const sub of disc.substats) {
+      if (!sub.key || !sub.upgrades) continue
+      const key = sub.key as DiscSubStatKey
+      localRolls[key] = (localRolls[key] ?? 0) + sub.upgrades
+    }
+  }
+  const { tips, mainMismatches } = compareToReference(
+    localRolls,
+    localMains,
+    reference.profile,
+    reference.weights
+  )
+  let selectedValue = selectedEnriched?.value ?? selectedBuild.value
+  // Float rounding between the solver's raw value and the display
+  // recomputation can leave a meaningless 1-point gap when the selected
+  // build IS the reference — snap it so the panel reads 100%, not 99.99%.
+  if (
+    Math.abs(selectedValue - reference.value) <=
+    Math.max(1, reference.value * 1e-9)
+  )
+    selectedValue = reference.value
+  const ratio = Math.max(0, Math.min(1, selectedValue / reference.value))
+  return {
+    ratio,
+    grade: efficiencyToGrade(ratio),
+    selectedValue,
+    referenceValue: reference.value,
+    date: reference.date,
+    stale: reference.stale,
+    tips,
+    mainMismatches,
+    set4: reference.set4,
+    set2: reference.set2,
+    wengineKey: reference.wengineKey,
+    mainsBySlot: reference.profile.mainsBySlot,
+    perfectRolls: reference.profile.perfectRolls,
+    localRolls,
+    localMains,
+    combatStats: reference.combatStats,
   }
 }
 

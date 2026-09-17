@@ -1,14 +1,21 @@
 import { Box, Center, Flex, Text } from '@mantine/core'
 import { IconUser } from '@tabler/icons-react'
+import { useDataManagerBase } from '@zenless-optimizer/common/database-ui'
 import { TagContext } from '@zenless-optimizer/game-opt/formula-ui'
 import { memo, useCallback, useEffect, useMemo } from 'react'
 import { characterAsset } from '../assets'
 import type { CharacterKey, DiscSlotKey, PhaseKey } from '../consts'
 import type { DiscIds, ICachedCharacter, ICachedDisc, Team } from '../db'
+import { getComboFrames, getTeamFrame0, isComboTarget, targetTag } from '../db'
 import { useCharacter, useDatabaseContext, useDiscs, useTeam } from '../db-ui'
 import type { Tag } from '../formula'
-import { own } from '../formula'
+import { own, Read } from '../formula'
 import { CharCalcProvider, useZzzCalcContext } from '../formula-ui'
+import {
+  getMergedEffectiveStats,
+  getMergedMainStats,
+  getMergedSubstatWeights,
+} from '../page-discs/scoring/statWeightUtils'
 import type { SavedTeammateGear } from '../schema/savedBuild'
 import { getCharStat } from '../stats'
 import {
@@ -17,10 +24,8 @@ import {
   useDiscEditorModalStore,
 } from '../ui'
 import {
-  calculateCharacterScore,
-  getCharacterEffectiveMainStats,
-  getCharacterEffectiveStats,
-  getCharacterSubstatWeights,
+  calculateSubstatEfficiency,
+  efficiencyToGrade,
   gradeColor,
 } from '../util'
 import {
@@ -204,6 +209,7 @@ function PreviewContent({
   const calc = useZzzCalcContext()
   const charStat = getCharStat(characterKey)
   const { attribute } = charStat
+  const { database } = useDatabaseContext()
 
   const discs = useDiscs(discIds)
 
@@ -242,23 +248,67 @@ function PreviewContent({
   }, [calc, attribute])
 
   const effectiveStats = useMemo(
-    () => getCharacterEffectiveStats(characterKey),
-    [characterKey]
+    () => getMergedEffectiveStats(characterKey, database),
+    [characterKey, database]
   )
 
   const substatWeights = useMemo(
-    () => getCharacterSubstatWeights(characterKey),
-    [characterKey]
+    () => getMergedSubstatWeights(characterKey, database),
+    [characterKey, database]
   )
 
   const effectiveMainStats = useMemo(
-    () => getCharacterEffectiveMainStats(characterKey),
-    [characterKey]
+    () => getMergedMainStats(characterKey, database),
+    [characterKey, database]
   )
+
+  // Pinned perfect reference (absent = no reference score shown).
+  const pinnedReference =
+    useDataManagerBase(database.theoReferences, characterKey) ?? undefined
+  const team = useTeam(characterKey)
+
+  // Build-value comparison: equipped build's target damage vs the pinned
+  // perfect value. Uses the live preview calculator, so mains, sets, and
+  // diminishing returns are all captured — unlike the old weighted-roll
+  // proxy. Gaps and tips still live in the optimizer Analysis tab.
+  const referenceScore = useMemo(() => {
+    if (!pinnedReference || !(pinnedReference.value > 0)) return undefined
+    if (!calc || !team) return undefined
+    const { tag } = getTeamFrame0(team)
+    if (!tag) return undefined
+    try {
+      let equippedValue: number
+      if (isComboTarget(tag)) {
+        const frames = getComboFrames(team).filter(
+          (frame) => frame.tag?.sheet && frame.tag?.name
+        )
+        if (frames.length === 0) return undefined
+        equippedValue = frames.reduce((sum, frame, i) => {
+          const actionTag = targetTag(frame.tag!)
+          const read = new Read(
+            { src: characterKey, ...actionTag },
+            undefined
+          ).with('preset', `preset${i}` as any)
+          return sum + calc.compute(read).val * frame.multiplier
+        }, 0)
+      } else {
+        const actionTag = targetTag(tag)
+        const read = new Read(
+          { src: characterKey, ...actionTag },
+          undefined
+        ).with('preset', 'preset0' as any)
+        equippedValue = calc.compute(read).val
+      }
+      if (!(equippedValue > 0)) return undefined
+      return Math.max(0, Math.min(1, equippedValue / pinnedReference.value))
+    } catch {
+      return undefined
+    }
+  }, [pinnedReference, calc, team, characterKey])
 
   const score = useMemo(
     () =>
-      calculateCharacterScore(
+      calculateSubstatEfficiency(
         [
           discs['1'],
           discs['2'],
@@ -267,9 +317,11 @@ function PreviewContent({
           discs['5'],
           discs['6'],
         ],
-        characterKey
+        effectiveStats,
+        effectiveMainStats,
+        substatWeights
       ),
-    [discs, characterKey]
+    [discs, effectiveStats, effectiveMainStats, substatWeights]
   )
 
   const portraitUrl = characterAsset(characterKey, 'full')
@@ -480,36 +532,121 @@ function PreviewContent({
               />
             </Box>
 
-            {/* Score - Hoyolab style rating badge */}
+            {/* Score - Hoyolab style rating badge, split side by side:
+                disc (weighted-roll) score | perfect-reference damage ratio */}
             {score && (
-              <Flex direction="column" align="center" gap={2} mb={2}>
-                <Text
-                  style={{
-                    fontSize: 28,
-                    fontWeight: 700,
-                    lineHeight: '34px',
-                    color: gradeColor(score.grade),
-                  }}
+              <Flex direction="column" align="center" gap={4} mb={2}>
+                <Flex
+                  direction="row"
+                  align="stretch"
+                  justify="center"
+                  gap={0}
+                  w="100%"
                 >
-                  {score.grade}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 18,
-                    fontWeight: 500,
-                    color: 'rgba(255,255,255,0.7)',
-                  }}
-                >
-                  {(score.efficiency * 100).toFixed(0)}%
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: 'rgba(255,255,255,0.4)',
-                  }}
-                >
-                  {score.effectiveRolls}/{score.totalRolls} rolls
-                </Text>
+                  <Flex
+                    direction="column"
+                    align="center"
+                    gap={2}
+                    style={{ flex: 1 }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 11,
+                        color: 'rgba(255,255,255,0.5)',
+                        textTransform: 'uppercase',
+                        letterSpacing: 0.6,
+                      }}
+                    >
+                      Disc score
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 28,
+                        fontWeight: 700,
+                        lineHeight: '34px',
+                        color: gradeColor(score.grade),
+                      }}
+                      title="Weighted substat efficiency + main-stat alignment"
+                    >
+                      {score.grade}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 18,
+                        fontWeight: 500,
+                        color: 'rgba(255,255,255,0.7)',
+                      }}
+                    >
+                      {(score.efficiency * 100).toFixed(0)}%
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        color: 'rgba(255,255,255,0.4)',
+                      }}
+                    >
+                      {score.effectiveRolls}/{score.totalRolls} rolls
+                    </Text>
+                  </Flex>
+                  {referenceScore !== undefined && (
+                    <>
+                      <Box
+                        style={{
+                          width: 1,
+                          backgroundColor: 'rgba(255,255,255,0.15)',
+                          margin: '4px 0',
+                        }}
+                      />
+                      <Flex
+                        direction="column"
+                        align="center"
+                        gap={2}
+                        style={{ flex: 1 }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 11,
+                            color: 'rgba(255,255,255,0.5)',
+                            textTransform: 'uppercase',
+                            letterSpacing: 0.6,
+                          }}
+                        >
+                          vs Perfect
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 28,
+                            fontWeight: 700,
+                            lineHeight: '34px',
+                            color: gradeColor(
+                              efficiencyToGrade(referenceScore)
+                            ),
+                          }}
+                          title="Equipped build value vs the pinned perfect value"
+                        >
+                          {efficiencyToGrade(referenceScore)}
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 18,
+                            fontWeight: 500,
+                            color: 'rgba(255,255,255,0.7)',
+                          }}
+                        >
+                          {(referenceScore * 100).toFixed(0)}%
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            color: 'rgba(255,255,255,0.4)',
+                          }}
+                        >
+                          damage ratio
+                        </Text>
+                      </Flex>
+                    </>
+                  )}
+                </Flex>
               </Flex>
             )}
 

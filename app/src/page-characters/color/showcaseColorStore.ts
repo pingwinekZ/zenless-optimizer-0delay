@@ -26,7 +26,7 @@ function isValidHex(color: unknown): color is string {
 function sanitizeColorMap(map: unknown): Partial<Record<CharacterKey, string>> {
   if (!map || typeof map !== 'object') return {}
   const out: Partial<Record<CharacterKey, string>> = {}
-  for (const [key, value] of Object.entries(map)) {
+  for (const [key, value] of Object.entries(map as Record<string, unknown>)) {
     if (isValidHex(value)) out[key as CharacterKey] = value
   }
   return out
@@ -37,7 +37,7 @@ function sanitizePaletteMap(
 ): Partial<Record<CharacterKey, string[]>> {
   if (!map || typeof map !== 'object') return {}
   const out: Partial<Record<CharacterKey, string[]>> = {}
-  for (const [key, value] of Object.entries(map)) {
+  for (const [key, value] of Object.entries(map as Record<string, unknown>)) {
     if (!Array.isArray(value)) continue
     const palette = value.filter(isValidHex)
     if (palette.length) out[key as CharacterKey] = palette

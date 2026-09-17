@@ -105,6 +105,14 @@ const optConfigSchema = z.object({
 
   engine: z.enum(allOptimizerEngines).catch('gpu'),
 
+  // Theoretical-max recipe-space heuristics. The defaults reproduce the
+  // historical recipe set byte-for-byte. Lowering `minEffectivePerCombo` or
+  // disabling the dominance filter only *widens* the enumerated space (more
+  // recipes, slower search) — neither can remove a recipe that used to exist,
+  // so they are safe to experiment with.
+  theoreticalMinEffectivePerCombo: z.number().int().min(1).max(4).catch(3),
+  theoreticalApplyDominanceFilter: z.boolean().catch(true),
+
   optWengine: zodBoolean(),
   wlevelLow: z.number().int().min(0).max(60).catch(wengineMaxLevel),
   wlevelHigh: z.number().int().min(0).max(60).catch(wengineMaxLevel),

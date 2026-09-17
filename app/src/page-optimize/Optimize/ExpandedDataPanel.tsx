@@ -1,5 +1,6 @@
 import { ActionBreakdown } from '../Analysis/ActionBreakdown'
 import type { AnalysisData } from '../Analysis/ExpandedDataPanelController'
+import { ReferenceComparison } from '../Analysis/ReferenceComparison'
 import { StatsDiffCard } from '../Analysis/StatsDiffCard'
 import { SubstatUpgrades } from '../Analysis/SubstatUpgrades'
 import { TeammateUpgrades } from '../Analysis/TeammateUpgrades'
@@ -43,6 +44,11 @@ export function ExpandedDataPanel({
               </div>
             </div>
             <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+              {analysisData.referenceComparison && (
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <ReferenceComparison analysisData={analysisData} />
+                </div>
+              )}
               <div
                 style={{
                   flex: 1,

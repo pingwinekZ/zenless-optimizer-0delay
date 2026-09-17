@@ -417,11 +417,48 @@ function OptimizerOptionsSection({
       </Flex>
 
       {useTheoreticalMax && (
-        <Text size="xs" c="orange" style={{ lineHeight: 1.3 }}>
-          Select exactly 1 four-piece and 1 two-piece set in Disc Set Filter.
-          Real discs are ignored — perfect S-rank +15 discs are generated from
-          the character's effective stats.
-        </Text>
+        <>
+          <Text size="xs" c="orange" style={{ lineHeight: 1.3 }}>
+            Select exactly 1 four-piece and 1 two-piece set in Disc Set Filter.
+            Real discs are ignored — perfect S-rank +15 discs are generated from
+            the character's effective stats.
+          </Text>
+          {/* Recipe-space heuristics. The defaults reproduce the historical
+              recipe set exactly; loosening them only adds recipes (a slower,
+              wider search), it never drops builds from the results. */}
+          <Flex align="center" gap={5}>
+            <Text size="xs">Min effective substats</Text>
+            <Select
+              data={[
+                { value: '3', label: '3 (default)' },
+                { value: '2', label: '2 (more recipes)' },
+                { value: '4', label: '4 (fewer recipes)' },
+              ]}
+              value={String(optConfig.theoreticalMinEffectivePerCombo ?? 3)}
+              onChange={(val) => {
+                if (val == null) return
+                setOption('theoreticalMinEffectivePerCombo', Number(val))
+              }}
+              size="xs"
+              disabled={disabled}
+              style={{ width: 140 }}
+            />
+          </Flex>
+          <Flex align="center" gap={5}>
+            <Switch
+              checked={optConfig.theoreticalApplyDominanceFilter ?? true}
+              onChange={(e) =>
+                setOption(
+                  'theoreticalApplyDominanceFilter',
+                  e.currentTarget.checked
+                )
+              }
+              disabled={disabled}
+              size="xs"
+            />
+            <Text size="xs">Skip dominated distributions</Text>
+          </Flex>
+        </>
       )}
 
       <Flex align="center" gap={5}>

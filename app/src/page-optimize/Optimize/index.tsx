@@ -1,4 +1,4 @@
-import { Box, Flex, Loader, Stack, Text } from '@mantine/core'
+import { Box, Button, Flex, Loader, Stack, Text } from '@mantine/core'
 import {
   useDataManagerBase,
   useDataManagerValues,
@@ -41,9 +41,11 @@ import {
   getTeamFrame0,
   type ICachedDisc,
   isComboTarget,
+  isTheoReferenceStale,
   type maxBuildsToShowList,
   type OptimizerEngine,
   type StatFilters,
+  type TheoReference,
   targetTag,
 } from '../../db'
 import {
@@ -58,19 +60,29 @@ import { useZzzCalcContext } from '../../formula-ui'
 import { ShowcaseDiscCard } from '../../page-characters'
 import { discCardH, discCardW } from '../../page-characters/constantsUi'
 import {
+  getMergedEffectiveStats,
+  getMergedSubstatWeights,
+} from '../../page-discs/scoring/statWeightUtils'
+import {
   type BuildRecipe,
   createSolverConfig,
-  generateTheoreticalDiscs,
+  materializeRecipeFromIndex,
+  runTheoryPipelineInWorker,
+  type TheoryPipelineOutput,
 } from '../../solver'
 import { getCharStat, getWengineStat } from '../../stats'
 import { DiscEditorModal, useDiscEditorModalStore } from '../../ui'
 import { DiscSet2p, DiscSetName } from '../../ui/Disc/DiscTrans'
-import { getCharacterEffectiveStats, hasHigherPriority } from '../../util'
+import { hasHigherPriority } from '../../util'
 import type { AnalysisData } from '../Analysis/ExpandedDataPanelController'
 import { buildAnalysisData } from '../Analysis/ExpandedDataPanelController'
 import { BuildsSection } from '../BuildManagement'
 import { useResponsive } from '../hooks'
 import { ResponsiveBottomBar } from '../layout'
+import {
+  buildReferenceProfile,
+  buildTheoContextSnapshot,
+} from '../reference/referenceScoring'
 import type { StatDisplay } from '../Sidebar'
 import {
   OptimizerControlsSection,
@@ -82,6 +94,7 @@ import type { EnrichedBuild } from '../Util/buildStatsUtils'
 import {
   batchComputeBuildStats,
   buildRowId,
+  computeBuildStats,
   filterBuildsByStatFilters,
 } from '../Util/buildStatsUtils'
 import { ExpandedDataPanel } from './ExpandedDataPanel'
@@ -110,9 +123,14 @@ function SelectedBuildDiscs({
   theoreticalDiscMap?: Record<string, ICachedDisc>
 }) {
   const dbDiscs = useDiscs(discIds)
+  const { database } = useDatabaseContext()
   const effectiveStats = useMemo(
-    () => getCharacterEffectiveStats(characterKey),
-    [characterKey]
+    () => getMergedEffectiveStats(characterKey, database),
+    [characterKey, database]
+  )
+  const substatWeights = useMemo(
+    () => getMergedSubstatWeights(characterKey, database),
+    [characterKey, database]
   )
   const openEditorModal = useDiscEditorModalStore((s) => s.openOverlay)
 
@@ -161,6 +179,7 @@ function SelectedBuildDiscs({
           disc={discs[slotKey]}
           onClick={() => handleDiscClick(slotKey)}
           effectiveStats={effectiveStats}
+          substatWeights={substatWeights}
           style={{
             width: '100%',
             height: 'auto',
@@ -184,11 +203,17 @@ function TheoreticalBuildSummary({
   recipeMeta,
   theoreticalDiscMap,
   value,
+  isPinned,
+  pinnedRecipeId,
+  onPinReference,
 }: {
   recipeId: string
   recipeMeta?: BuildRecipe
   theoreticalDiscMap: Record<string, ICachedDisc>
   value: number
+  isPinned: boolean
+  pinnedRecipeId?: string
+  onPinReference: (build?: GeneratedBuild) => void
 }) {
   const allDiscs = allDiscSlotKeys
     .map((sk) => theoreticalDiscMap[`${recipeId}_${sk}`])
@@ -209,12 +234,32 @@ function TheoreticalBuildSummary({
         .filter(([, rolls]) => (rolls ?? 0) > 0)
         .sort(([, a], [, b]) => (b ?? 0) - (a ?? 0))
     : []
+  // Only the exact pinned recipe counts as pinned — value ties (e.g. crit_
+  // vs crit_dmg_ mains) surface sibling builds that must stay pinnable.
+  const isThisPinned = isPinned && pinnedRecipeId === recipeId
 
   return (
     <Box p="sm">
-      <Text size="lg" fw={700} c="yellow" mb="xs">
-        Build Value: {Math.floor(value).toLocaleString()}
-      </Text>
+      <Flex align="center" justify="space-between" gap="xs" mb="xs">
+        <Text size="lg" fw={700} c="yellow">
+          Build Value: {Math.floor(value).toLocaleString()}
+        </Text>
+        <Button
+          size="xs"
+          variant={isThisPinned ? 'filled' : 'default'}
+          disabled={isThisPinned}
+          onClick={() => onPinReference()}
+          title={
+            isThisPinned
+              ? 'This build is the pinned reference for this character'
+              : isPinned
+                ? 'This character already has a pinned reference — pinning this build replaces it'
+                : 'Pin this theoretical build as this character\u2019s perfect reference for future comparisons'
+          }
+        >
+          {isThisPinned ? 'Reference pinned' : 'Pin as reference'}
+        </Button>
+      </Flex>
 
       <Text size="sm" fw={600} mt="sm" mb={4}>
         Main Stats
@@ -365,6 +410,17 @@ function statShortLabel(key: string): string {
 }
 
 /**
+ * Recover a recipe's index from its id (`recipe_123` -> `123`). Recipe ids are
+ * assigned in enumeration order, which is exactly the compact descriptor
+ * index, so the id alone is enough to rebuild the recipe's metadata.
+ */
+function recipeIndexFromId(recipeId: string): number | undefined {
+  if (!recipeId.startsWith('recipe_')) return undefined
+  const index = Number(recipeId.slice('recipe_'.length))
+  return Number.isInteger(index) && index >= 0 ? index : undefined
+}
+
+/**
  * Create 6 fake ICachedDisc objects from a recipe for stat computation.
  * The formula's discsToTagMapNodeEntries accumulates stats across all
  * discs, so we create one disc per slot with the correct main stat and
@@ -454,7 +510,22 @@ function OptimizeWrapper() {
     undefined
   )
   const { optConfig, optConfigId } = useContext(OptConfigContext)
-  const engine = optConfig.engine ?? 'cpu'
+  // WebGPU is the default engine (the config schema already defaults to 'gpu').
+  // A browser that cannot run it must fall back to the CPU solver instead of
+  // silently producing an empty result grid, so resolve the effective engine
+  // here rather than trusting the stored value.
+  const requestedEngine = optConfig.engine ?? 'gpu'
+  const gpuAvailable =
+    typeof navigator !== 'undefined' &&
+    !!(navigator as Navigator & { gpu?: unknown }).gpu
+  const engine: OptimizerEngine =
+    requestedEngine === 'gpu' && !gpuAvailable ? 'cpu' : requestedEngine
+  useEffect(() => {
+    if (requestedEngine === 'gpu' && !gpuAvailable)
+      console.warn(
+        '[Optimize] WebGPU is unavailable in this browser; using the CPU solver.'
+      )
+  }, [requestedEngine, gpuAvailable])
   const setEngine = useCallback(
     (engine: OptimizerEngine) => {
       if (optConfigId) database.optConfigs.set(optConfigId, { engine })
@@ -506,11 +577,23 @@ function OptimizeWrapper() {
   // Uses a ref for synchronous access (avoids race with batchComputeBuildStats)
   // and React state for triggering re-renders
   const theoreticalDiscMapRef = useRef<Record<string, ICachedDisc>>({})
+  // Display-canonical build values (buildRowId -> recomputed target value).
+  // The solver's raw values can differ by float rounding from what the
+  // Analysis panel recomputes, so pinning reads from here when available —
+  // otherwise the reference would show a 1-point gap vs itself.
+  const enrichedValuesRef = useRef<Map<string, number>>(new Map())
   const [theoreticalDiscMap, setTheoreticalDiscMap] = useState<
     Record<string, ICachedDisc>
   >({})
-  // Recipe metadata for TheoreticalBuildSummary display
-  const recipeMetaRef = useRef<Record<string, BuildRecipe>>({})
+  // Recipe metadata for TheoreticalBuildSummary display. This is a resolver,
+  // not a map: the recipe space can run to millions of entries, so metadata is
+  // rebuilt on demand from the generator's compact descriptor index for the
+  // handful of recipes that actually surface (the solver's top-N and the
+  // selected row). Retaining a BuildRecipe for every recipe used to be the
+  // single largest allocation in the whole pipeline.
+  const recipeMetaRef = useRef<(recipeId: string) => BuildRecipe | undefined>(
+    () => undefined
+  )
 
   // Stat display toggle (combat vs basic stats in grid)
   const [statDisplay, setStatDisplay] = useState<StatDisplay>('combat')
@@ -710,6 +793,12 @@ function OptimizeWrapper() {
       setPermutationsSearched(0)
       setPermutationsResults(0)
 
+      // Let React paint the optimizing state before the recipe enumeration
+      // starts. Enumeration is synchronous and can take seconds on a wide
+      // configuration, and without this yield the browser never gets a frame,
+      // so the page just looks frozen with no feedback at all.
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
       const statFilters = (statFiltersRef.current ?? []).filter(
         (s) => !s.disabled
       )
@@ -757,47 +846,129 @@ function OptimizeWrapper() {
         } catch {
           // ignore parse errors
         }
-        const result = generateTheoreticalDiscs(
+        // Generation and pruning are the two long, synchronous, CPU-bound
+        // stages of theoretical-max: on a wide configuration they produce
+        // millions of recipes and take seconds to tens of seconds of work.
+        // Both accept nothing but plain data, so they run in a worker and only
+        // the surviving recipes come back — the page keeps painting, the run
+        // stays cancellable, and the full pool never reaches this thread.
+        //
+        // Pruning needs the node graph, which `createSolverConfig` builds. The
+        // graph does not depend on the recipes themselves (only on the
+        // *presence* of a recipe pool, which adds the crit-overcap
+        // constraint), so it is built once up front with an empty placeholder
+        // pool and the real pool is passed in afterwards.
+        const scaffold = createSolverConfig(
           characterKey,
+          calc,
+          frames,
+          statFilters,
           optConfig.setFilter2,
           optConfig.setFilter4,
-          {
-            4: optConfig.slot4,
-            5: optConfig.slot5,
-            6: optConfig.slot6,
-          },
-          debugTargets
+          filteredWengineKeys,
+          character.wenginePhase as PhaseKey,
+          discsBySlot,
+          numWorkers,
+          optConfig.maxBuildsToShow,
+          setProgress,
+          []
         )
+        // When the GPU engine is selected, skip CPU prune entirely: the GPU
+        // can evaluate all permutations and reject candidates in the shader,
+        // making CPU-side dominance filtering pure overhead. The full recipe
+        // pool is passed directly to the GPU, which sweeps it trivially fast.
+        const skipPrune = engine === 'gpu'
+        const handle = runTheoryPipelineInWorker(
+          {
+            generator: {
+              characterKey,
+              setFilter2: optConfig.setFilter2,
+              setFilter4: optConfig.setFilter4,
+              slotFilters: {
+                4: optConfig.slot4,
+                5: optConfig.slot5,
+                6: optConfig.slot6,
+              },
+              substatRollTargets: debugTargets,
+              options: {
+                minEffectivePerCombo: optConfig.theoreticalMinEffectivePerCombo,
+                applyDominanceFilter:
+                  optConfig.theoreticalApplyDominanceFilter ?? true,
+              },
+            },
+            // Slot layout is [w-engine, recipes, empty_2 .. empty_6]
+            before: scaffold.candidates.slice(0, 1),
+            after: scaffold.candidates.slice(2),
+            nodes: scaffold.nodes,
+            minimum: scaffold.minimum,
+            topN: scaffold.topN,
+            skipPrune,
+          },
+          (stage) => {
+            if (stage !== 'done') console.debug('[TheoreticalMax] stage', stage)
+          }
+        )
+        cancelled.then(() => handle.cancel('user cancelled'))
+        let pipeline: TheoryPipelineOutput
+        try {
+          pipeline = await handle.result
+        } catch (e) {
+          console.error('TheoreticalMax: recipe pipeline failed:', e)
+          setOptimizing(false)
+          setOptimizationInProgress(false)
+          return
+        }
+        // NOTE: never touch a recipeMap here. It materializes a BuildRecipe for
+        // every single recipe, which is exactly the allocation the compact
+        // descriptor index exists to avoid.
         console.debug(
           '[TheoreticalMax] generated',
-          result.recipes.length,
-          'recipes',
-          'map keys:',
-          Object.keys(result.recipeMap).length
+          pipeline.stats,
+          '|',
+          pipeline.pruned
+            ? `kept ${pipeline.recipeCandidates.length} of ${pipeline.totalRecipes}`
+            : `pool ${pipeline.totalRecipes} (skip prune, GPU path)`,
+          '| combinations',
+          pipeline.beforeCount,
+          '->',
+          pipeline.afterCount
         )
-        if (result.recipes.length === 0) {
+        if (pipeline.recipeCandidates.length === 0) {
           console.warn('[TheoreticalMax] No recipes generated!')
         } else {
-          // Log first recipe stats for debugging
-          const sample = result.recipes[0]
-          console.debug('[TheoreticalMax] sample recipe:', sample)
+          // Log first surviving recipe for debugging
+          console.debug(
+            '[TheoreticalMax] sample recipe:',
+            pipeline.recipeCandidates[0]
+          )
         }
-        activeRecipes = result.recipes
-        // Store recipe metadata for display (used to reconstruct disc objects
-        // for the builds the solver returns — we avoid creating disc objects
-        // for ALL recipes here to prevent OOM with large recipe counts)
-        recipeMetaRef.current = result.recipeMap
+        activeRecipes = pipeline.recipeCandidates
+        // Keep only the resolver: the descriptor index plus the generator's
+        // (plain-data) context are all a recipe's metadata needs, so nothing is
+        // stored per-recipe here.
+        recipeMetaRef.current = (recipeId: string) => {
+          const index = recipeIndexFromId(recipeId)
+          return index === undefined
+            ? undefined
+            : materializeRecipeFromIndex(
+                index,
+                pipeline.recipeIndex,
+                pipeline.context
+              )
+        }
         // Start with empty disc map; we populate it after the solver returns
         // with only the recipes that end up in the final build results
         activeDiscMap = {}
 
-        // Update sidebar with recipe counts
-        setPermutations(result.recipes.length * filteredWengineKeys.length)
+        // Update sidebar with recipe counts. These report the full generated
+        // space, not just what survived pruning — that is what the search space
+        // is measured in, and the pruned pool size is logged above.
+        setPermutations(pipeline.totalRecipes * filteredWengineKeys.length)
         const details: Record<string, { count: number; total: number }> = {}
         for (const slotKey of allDiscSlotKeys) {
           details[slotKey] = {
-            count: result.recipes.length,
-            total: result.recipes.length,
+            count: pipeline.totalRecipes,
+            total: pipeline.totalRecipes,
           }
         }
         setPermutationDetails(details)
@@ -930,8 +1101,8 @@ function OptimizeWrapper() {
         const returnedDiscMap: Record<string, ICachedDisc> = {}
         for (const build of storedBuilds) {
           const rid = build.discIds['1']?.replace(/_\d+$/, '')
-          if (rid && recipeMetaRef.current[rid]) {
-            const recipe = recipeMetaRef.current[rid]
+          const recipe = rid ? recipeMetaRef.current(rid) : undefined
+          if (rid && recipe) {
             const discs = createRecipeDiscs(recipe, rid)
             for (const disc of discs) {
               returnedDiscMap[disc.id] = disc
@@ -963,8 +1134,10 @@ function OptimizeWrapper() {
       optConfig.slot4,
       optConfig.slot5,
       optConfig.slot6,
-      characterKey,
+      optConfig.theoreticalApplyDominanceFilter,
+      optConfig.theoreticalMinEffectivePerCombo,
       character.wenginePhase,
+      characterKey,
       filteredWengineKeys,
       discsBySlot,
       numWorkers,
@@ -1052,6 +1225,11 @@ function OptimizeWrapper() {
     () => generatedBuildList?.builds ?? [],
     [generatedBuildList?.builds]
   )
+
+  // Pinned theoretical reference for this character (reactive). Absent
+  // means the reference feature stays invisible for this character.
+  const pinnedReference =
+    useDataManagerBase(database.theoReferences, characterKey) ?? undefined
 
   // Reset the selected build only when a genuinely new result set arrives
   // (new optimizer run or different build list). Unrelated DB updates must
@@ -1144,6 +1322,127 @@ function OptimizeWrapper() {
     removePinnedBuild,
   ])
 
+  // Pin the currently selected theoretical build as this character's perfect
+  // reference. Must use the selection — not sorted[0] — because ties on
+  // build value (e.g. crit_ vs crit_dmg_ mains with equal value) surface
+  // multiple equivalent rows and the user may pick any of them.
+  const onPinReference = useCallback(
+    (build?: GeneratedBuild) => {
+      const toPin = build ?? selectedBuild
+      if (!toPin?.discIds?.['1']?.startsWith('recipe_')) {
+        console.warn('[TheoReference] nothing to pin')
+        return
+      }
+      const rid = toPin.discIds['1']?.replace(/_\d+$/, '')
+      const bestRecipe = rid ? recipeMetaRef.current(rid) : undefined
+      if (!rid || !bestRecipe) {
+        console.warn('[TheoReference] could not resolve theoretical recipe')
+        return
+      }
+      const profile = buildReferenceProfile(bestRecipe)
+      // Prefer the display-canonical recomputed value for the pinned build, so
+      // the reference matches what the Analysis panel computes for that exact
+      // build (the solver's raw value can be off by float rounding).
+      const refValue =
+        enrichedValuesRef.current.get(buildRowId(toPin)) ?? toPin.value
+      if (!(refValue > 0)) {
+        console.warn('[TheoReference] nothing to pin')
+        return
+      }
+      const snapshot = buildTheoContextSnapshot(
+        target,
+        optConfig.setFilter2,
+        optConfig.setFilter4
+      )
+      // Materialize the selected build with stable ids so it survives a
+      // page refresh (the generator's recipe index lives only in memory).
+      // Re-pinning overwrites the same ids.
+      const refIdPrefix = `theoref_${characterKey}`
+      const referenceDiscs = createRecipeDiscs(bestRecipe, refIdPrefix)
+      const refWengineKey = toPin.wengineKey
+      // In-combat snapshot of the reference build under the current team, so
+      // the comparison panel can show stats without a live calculator.
+      // getDisc must resolve teammate discs too — team-wide set bonuses and
+      // buffs scaling off teammate gear (e.g. team CRIT DMG) are otherwise
+      // silently dropped from the snapshot.
+      let referenceCombatStats = undefined as
+        | TheoReference['referenceCombatStats']
+        | undefined
+      try {
+        const refDiscMap = Object.fromEntries(
+          referenceDiscs.map((d) => [d.slotKey, d])
+        ) as Record<DiscSlotKey, ICachedDisc | undefined>
+        const refCharacter =
+          refWengineKey !== undefined
+            ? ({ ...character, wengineKey: refWengineKey } as typeof character)
+            : character
+        const refFormulaTag = isComboTarget(target)
+          ? getComboFrames(team)
+              .filter((frame) => frame.tag?.sheet && frame.tag?.name)
+              .map((frame) => ({
+                tag: targetTag(frame.tag!),
+                multiplier: frame.multiplier,
+              }))
+          : target
+            ? targetTag(target)
+            : undefined
+        const getDisc = (id: string) =>
+          theoreticalDiscMapRef.current[id] ??
+          database.discs.get(id) ??
+          undefined
+        const computed = computeBuildStats(
+          refCharacter,
+          refDiscMap,
+          team,
+          refFormulaTag,
+          (key) => database.chars.get(key) ?? undefined,
+          getDisc
+        )
+        referenceCombatStats = { ...computed.final }
+      } catch (e) {
+        console.warn('[TheoReference] combat snapshot failed:', e)
+      }
+      database.theoReferences.pin(characterKey, {
+        value: refValue,
+        perfectRolls: profile.perfectRolls,
+        mainsBySlot: profile.mainsBySlot,
+        set4: bestRecipe.set4,
+        set2: bestRecipe.set2,
+        wengineKey: refWengineKey,
+        ...snapshot,
+        date: Date.now(),
+        bestRecipe,
+        referenceDiscs,
+        ...(referenceCombatStats ? { referenceCombatStats } : {}),
+      })
+      console.log('[TheoReference] pinned', refValue, 'for', characterKey)
+    },
+    [
+      selectedBuild,
+      database,
+      character,
+      characterKey,
+      target,
+      team,
+      optConfig.setFilter2,
+      optConfig.setFilter4,
+    ]
+  )
+
+  // Hydrate the in-memory theoretical disc map from the persisted reference
+  // build. The generator's recipe index does not survive a refresh, so
+  // without this the pinned build's discs would be unresolvable after one.
+  useEffect(() => {
+    const discs = pinnedReference?.referenceDiscs
+    if (!discs || discs.length === 0) return
+    const missing = discs.some((d) => !theoreticalDiscMapRef.current[d.id])
+    if (!missing) return
+    const next = { ...theoreticalDiscMapRef.current }
+    for (const d of discs) next[d.id] = d
+    theoreticalDiscMapRef.current = next
+    setTheoreticalDiscMap(next)
+  }, [pinnedReference])
+
   // Includes equipped build + generated builds for stats computation
   // (stats are needed for both the pinned equipped build and regular rows)
   const buildsForStats = useMemo(() => {
@@ -1165,12 +1464,16 @@ function OptimizeWrapper() {
 
     // Get the optimization target formula tag from the team's first frame.
     // Rotations expand via getComboFrames so the selected combo metric
-    // (DMG/Daze/Buildup) is reflected in the per-build values.
+    // (DMG/Daze/Buildup) is reflected in the per-build values. Multipliers
+    // are preserved and hit `i` reads on `preset${i}`, matching the solver.
     const { tag: target } = getTeamFrame0(team)
     const formulaTag = isComboTarget(target)
       ? getComboFrames(team)
           .filter((frame) => frame.tag?.sheet && frame.tag?.name)
-          .map((frame) => targetTag(frame.tag!))
+          .map((frame) => ({
+            tag: targetTag(frame.tag!),
+            multiplier: frame.multiplier,
+          }))
       : target
         ? targetTag(target)
         : undefined
@@ -1193,6 +1496,9 @@ function OptimizeWrapper() {
     ).then((enriched) => {
       if (!cancelled) {
         setEnrichedBuilds(enriched)
+        enrichedValuesRef.current = new Map(
+          enriched.map((e) => [e.id, e.value])
+        )
         setIsComputingStats(false)
       }
     })
@@ -1208,6 +1514,31 @@ function OptimizeWrapper() {
     const getDisc = (id: string) =>
       theoreticalDiscMapRef.current[id] ?? database.discs.get(id) ?? undefined
     const equippedBuildId = buildRowId(equippedBuild)
+    // Pinned perfect reference (absent = feature invisible). Staleness
+    // compares the pin-time target/filter snapshot with the current one.
+    const reference = pinnedReference
+      ? {
+          profile: {
+            perfectRolls: pinnedReference.perfectRolls,
+            mainsBySlot: pinnedReference.mainsBySlot,
+          },
+          value: pinnedReference.value,
+          date: pinnedReference.date,
+          stale: isTheoReferenceStale(
+            pinnedReference,
+            buildTheoContextSnapshot(
+              target,
+              optConfig.setFilter2,
+              optConfig.setFilter4
+            )
+          ),
+          weights: getMergedSubstatWeights(characterKey, database),
+          set4: pinnedReference.set4,
+          set2: pinnedReference.set2,
+          wengineKey: pinnedReference.wengineKey,
+          combatStats: pinnedReference.referenceCombatStats,
+        }
+      : null
     return buildAnalysisData({
       selectedBuild,
       enrichedBuilds,
@@ -1216,8 +1547,21 @@ function OptimizeWrapper() {
       team,
       character,
       getTeammateChar: (key) => database.chars.get(key) ?? undefined,
+      reference,
     })
-  }, [selectedBuild, enrichedBuilds, equippedBuild, team, character, database])
+  }, [
+    selectedBuild,
+    enrichedBuilds,
+    equippedBuild,
+    team,
+    character,
+    database,
+    pinnedReference,
+    target,
+    optConfig.setFilter2,
+    optConfig.setFilter4,
+    characterKey,
+  ])
 
   const { t } = useTranslation('page_optimize')
   const { isMobileLayout } = useResponsive()
@@ -1311,8 +1655,14 @@ function OptimizeWrapper() {
                 ''
               )
               const recipeMeta = recipeId
-                ? recipeMetaRef.current[recipeId]
+                ? recipeMetaRef.current(recipeId)
                 : undefined
+              // Prefer the recomputed enriched value (correct for the
+              // equipped build, whose stored value is 0) over the stale
+              // `selectedBuild.value`.
+              const displayValue =
+                enrichedBuilds.find((b) => b.id === buildRowId(selectedBuild))
+                  ?.value ?? selectedBuild.value
               return (
                 <Box
                   style={{
@@ -1329,13 +1679,16 @@ function OptimizeWrapper() {
                       recipeId={recipeId}
                       recipeMeta={recipeMeta}
                       theoreticalDiscMap={theoreticalDiscMap}
-                      value={selectedBuild.value}
+                      value={displayValue}
+                      isPinned={!!pinnedReference}
+                      pinnedRecipeId={pinnedReference?.bestRecipe?.id}
+                      onPinReference={onPinReference}
                     />
                   ) : (
                     <>
                       <Text size="sm" fw={500} mb="xs">
                         {t('grid.selectedBuild', 'Selected Build')} —{' '}
-                        {Math.floor(selectedBuild.value).toLocaleString()}
+                        {Math.floor(displayValue).toLocaleString()}
                       </Text>
                       <SelectedBuildDiscs
                         discIds={selectedBuild.discIds}

@@ -6,7 +6,6 @@ import {
   type SolverConfig,
 } from '@zenless-optimizer/game-opt/solver'
 import type { Candidate, NumTagFree } from '@zenless-optimizer/pando/engine'
-import { prune } from '@zenless-optimizer/pando/engine'
 import { type OptimizationConfig, optimize } from './webgpuOptimizer'
 
 /**
@@ -47,12 +46,19 @@ export class WebGpuSolver<ID extends string | number> {
   ) {
     const { setProgress } = cfg
     const beforeCount = buildCount(cfg.candidates)
-    const pruned = prune(cfg.nodes, cfg.candidates, 'q', cfg.minimum, cfg.topN)
+
+    // Skip CPU prune: the GPU can evaluate all permutations and reject
+    // candidates directly in the shader, so CPU-side dominance filtering is
+    // pure overhead — especially for wide theoretical-max configs where the
+    // prune can take seconds to tens of seconds while the GPU would sweep the
+    // unpruned space trivially fast. The GPU shader uses the original `nodes`
+    // and `minimum` (not the prune-simplified versions), and `encodeCandidates`
+    // works on the raw candidate objects.
     const progress: Progress = {
       computed: 0,
       failed: 0,
-      skipped: beforeCount - buildCount(pruned.candidates),
-      remaining: buildCount(pruned.candidates),
+      skipped: 0, // No candidates skipped by CPU prune
+      remaining: beforeCount,
     }
     if (progress.remaining > Number.MAX_SAFE_INTEGER)
       throw new Error('too many combinations')
@@ -67,7 +73,13 @@ export class WebGpuSolver<ID extends string | number> {
       }
     })
 
-    void this.run(cfg, pruned, progress, finalize)
+    // Pass original nodes/candidates — no prune simplification
+    void this.run(
+      cfg,
+      { nodes: cfg.nodes, minimum: cfg.minimum, candidates: cfg.candidates },
+      progress,
+      finalize
+    )
   }
 
   private async run(
@@ -102,6 +114,7 @@ export class WebGpuSolver<ID extends string | number> {
         '[WebGpuSolver] WebGPU optimization failed, falling back to CPU:',
         e
       )
+      // CPU fallback runs its own prune internally, so pass the original config
       const cpu = new Solver(cfg)
       cpu.results.then(finalize, (reason) => this.terminate(reason))
     }

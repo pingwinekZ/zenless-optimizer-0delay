@@ -86,6 +86,18 @@ export type EnrichedBuild = {
 }
 
 /**
+ * Optimization-target input for post-solver stat computation.
+ * - Single `Tag`: one formula read on `preset0` (legacy behavior).
+ * - `Tag[]`: combo rotation — hit `i` reads on `preset${i}`.
+ * - `{ tag, multiplier }[]`: combo rotation preserving per-hit multipliers,
+ *   matching the solver summation in `createSolverConfig`.
+ */
+export type BuildTargetInput =
+  | Tag
+  | Tag[]
+  | Array<{ tag: Tag; multiplier: number }>
+
+/**
  * Compute enriched stats for a single build by creating a temporary
  * formula calculator with the build's disc/wengine data.
  * Returns both final (combat) and base stat sets simultaneously.
@@ -94,7 +106,7 @@ export function computeBuildStats(
   character: ICachedCharacter,
   discs: Record<DiscSlotKey, ICachedDisc | undefined>,
   team: Team,
-  targetTag?: Tag | Tag[],
+  targetTag?: BuildTargetInput,
   getTeammateChar?: (key: CharacterKey) => ICachedCharacter | undefined,
   getDisc?: (id: string) => ICachedDisc | undefined
 ): { final: BuildCombatStats; base: BuildBaseStats; targetValue?: number } {
@@ -150,16 +162,32 @@ export function computeBuildStats(
   }
 
   if (targetTag) {
-    const tags = Array.isArray(targetTag) ? targetTag : [targetTag]
-    const targetValue = tags.reduce((sum, tag) => {
-      const targetRead = new Read(
-        { src: character.key, ...tag },
-        undefined
-      ).with('preset', 'preset0' as any)
-      const val = calc.compute(targetRead).val
-      return sum + val
-    }, 0)
-    return { final, base, targetValue }
+    // Combo rotations read hit `i` on `preset${i}` with its multiplier,
+    // mirroring the solver summation and the Action Breakdown. A single
+    // target reads on `preset0`.
+    if (Array.isArray(targetTag)) {
+      const targetValue = targetTag.reduce((sum, entry, i) => {
+        const tag =
+          typeof entry === 'object' && entry !== null && 'multiplier' in entry
+            ? (entry as { tag: Tag; multiplier: number }).tag
+            : (entry as Tag)
+        const multiplier =
+          typeof entry === 'object' && entry !== null && 'multiplier' in entry
+            ? (entry as { multiplier: number }).multiplier
+            : 1
+        const targetRead = new Read(
+          { src: character.key, ...tag },
+          undefined
+        ).with('preset', `preset${i}` as any)
+        return sum + calc.compute(targetRead).val * multiplier
+      }, 0)
+      return { final, base, targetValue }
+    }
+    const targetRead = new Read(
+      { src: character.key, ...targetTag },
+      undefined
+    ).with('preset', 'preset0' as any)
+    return { final, base, targetValue: calc.compute(targetRead).val }
   }
 
   return { final, base, targetValue: undefined }
@@ -176,7 +204,7 @@ export async function batchComputeBuildStats(
   character: ICachedCharacter,
   team: Team,
   onProgress?: (completed: number, total: number) => void,
-  targetTag?: Tag | Tag[],
+  targetTag?: BuildTargetInput,
   getTeammateChar?: (key: CharacterKey) => ICachedCharacter | undefined
 ): Promise<EnrichedBuild[]> {
   const BATCH_SIZE = 10
@@ -255,10 +283,10 @@ export async function batchComputeBuildStats(
         )
         combatStats = result.final
         baseStats = result.base
-        // For rotation DMG (array targetTag), the solver already computed
-        // the correct multi-preset value — don't override it with the
-        // post-solver single-preset computation.
-        if (!Array.isArray(targetTag) && result.targetValue !== undefined) {
+        // Recomputed with the same per-preset + multiplier summation as the
+        // solver, so generated and equipped builds share one value source.
+        // This also fills in the equipped build, whose stored value is 0.
+        if (result.targetValue !== undefined) {
           value = result.targetValue
         }
       } catch {

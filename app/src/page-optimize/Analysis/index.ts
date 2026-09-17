@@ -13,6 +13,7 @@ export {
   buildStatComparisons,
   buildStatContributions,
 } from './ExpandedDataPanelController'
+export { ReferenceComparison } from './ReferenceComparison'
 export { StatContributionChart } from './StatContributionChart'
 export { StatsDiffCard } from './StatsDiffCard'
 export { SubstatUpgrades } from './SubstatUpgrades'

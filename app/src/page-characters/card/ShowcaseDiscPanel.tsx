@@ -10,13 +10,16 @@ import type {
   DiscSubStatKey,
 } from '../../consts'
 import {
+  discMaxLevel,
   getDiscMainStatVal,
   getDiscSubStatBaseVal,
   statKeyTextMap,
 } from '../../consts'
 import type { ICachedDisc } from '../../db'
+import { computeCurrentScore } from '../../page-discs/scoring/currentScore'
+import { computeMaxPotential } from '../../page-discs/scoring/potentialScore'
 import { StatIcon } from '../../svgicons'
-import { calculateDiscScore, gradeColor } from '../../util'
+import { efficiencyToGrade, gradeColor } from '../../util'
 import {
   showcaseShadow,
   showcaseShadowInsetAddition,
@@ -129,13 +132,27 @@ export function ShowcaseDiscCard({
   effectiveMainStats?: Partial<Record<DiscSlotKey, DiscMainStatKey[]>>
   style?: CSSProperties
 }) {
-  const discScore = useMemo(
-    () =>
-      disc
-        ? calculateDiscScore(disc, effectiveStats, substatWeights)
-        : { grade: '', efficiency: 0, effectiveRolls: 0, totalRolls: 0 },
-    [disc, effectiveStats, substatWeights]
-  )
+  const discScore = useMemo(() => {
+    if (!disc)
+      return {
+        grade: '',
+        efficiency: 0,
+        maxPotential: 0,
+        maxGrade: '',
+      }
+    const efficiency = computeCurrentScore(disc, effectiveStats, substatWeights)
+    const maxPotential = computeMaxPotential(
+      disc,
+      effectiveStats,
+      substatWeights ?? {}
+    )
+    return {
+      efficiency,
+      grade: efficiencyToGrade(efficiency),
+      maxPotential,
+      maxGrade: efficiencyToGrade(maxPotential),
+    }
+  }, [disc, effectiveStats, substatWeights])
 
   if (!disc) {
     return (
@@ -465,14 +482,27 @@ export function ShowcaseDiscCard({
         }}
       />
 
-      {/* Score footer */}
-      <Flex justify="space-between" align="center">
-        <Flex gap={0} align="center">
-          <Flex style={{ marginLeft: -3, marginRight: 2 }} align="center">
-            <IconMedal
-              size={22}
-              style={{ color: gradeColor(discScore.grade) }}
-            />
+      {/* Score footer: current vs max-potential, same as the discs tab.
+          Max potential is hidden at max level — no rolls remain, so it
+          would just duplicate the current score. */}
+      <Flex direction="column" gap={2}>
+        <Flex justify="space-between" align="center">
+          <Flex gap={0} align="center">
+            <Flex style={{ marginLeft: -3, marginRight: 2 }} align="center">
+              <IconMedal
+                size={22}
+                style={{ color: gradeColor(discScore.grade) }}
+              />
+            </Flex>
+            <Text
+              style={{
+                fontSize: 13,
+                lineHeight: '22px',
+                textShadow: '0 1px 4px rgba(0, 0, 0, 0.9)',
+              }}
+            >
+              Score
+            </Text>
           </Flex>
           <Text
             style={{
@@ -480,19 +510,36 @@ export function ShowcaseDiscCard({
               lineHeight: '22px',
               textShadow: '0 1px 4px rgba(0, 0, 0, 0.9)',
             }}
+            title="Current substat efficiency"
           >
-            Score
+            {(discScore.efficiency * 100).toFixed(1)} ({discScore.grade})
           </Text>
         </Flex>
-        <Text
-          style={{
-            fontSize: 13,
-            lineHeight: '22px',
-            textShadow: '0 1px 4px rgba(0, 0, 0, 0.9)',
-          }}
-        >
-          {(discScore.efficiency * 100).toFixed(1)} ({discScore.grade})
-        </Text>
+        {disc.level < discMaxLevel[disc.rarity] && (
+          <Flex justify="space-between" align="center">
+            <Text
+              style={{
+                fontSize: 11,
+                lineHeight: '18px',
+                color: 'rgba(255, 255, 255, 0.6)',
+                textShadow: '0 1px 4px rgba(0, 0, 0, 0.9)',
+              }}
+            >
+              Max potential
+            </Text>
+            <Text
+              style={{
+                fontSize: 11,
+                lineHeight: '18px',
+                color: gradeColor(discScore.maxGrade),
+                textShadow: '0 1px 4px rgba(0, 0, 0, 0.9)',
+              }}
+              title="Best score with remaining rolls"
+            >
+              {(discScore.maxPotential * 100).toFixed(1)} ({discScore.maxGrade})
+            </Text>
+          </Flex>
+        )}
       </Flex>
     </Box>
   )

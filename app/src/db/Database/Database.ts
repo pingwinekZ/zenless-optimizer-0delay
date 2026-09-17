@@ -13,6 +13,7 @@ import {
   CharMetaDataManager,
   DiscDataManager,
   StatWeightDataManager,
+  TheoReferenceDataManager,
 } from './DataManagers/'
 import { CharacterDataManager } from './DataManagers/CharacterDataManager'
 import { GeneratedBuildListDataManager } from './DataManagers/GeneratedBuildListDataManager'
@@ -38,6 +39,7 @@ export const legacyStorageKeyPrefixes = [
   'zzz_generatedBuildList_',
   'zzz_optConfig_',
   'zzz_team_',
+  'zzz_theoReference_',
   'zzz_wengine_',
   // Historical prefixes that may still be present in an old install:
   // legacy per-run configs, and the pre-charMeta / pre-builds formats.
@@ -86,6 +88,7 @@ export class ZzzDatabase extends Database {
   optConfigs: OptConfigDataManager
   charMeta: CharMetaDataManager
   statWeights: StatWeightDataManager
+  theoReferences: TheoReferenceDataManager
   dbMeta: DBMetaEntry
   displayDisc: DisplayDiscEntry
   displayCharacter: DisplayCharacterEntry
@@ -123,6 +126,7 @@ export class ZzzDatabase extends Database {
     this.teams = new TeamDataManager(this)
     this.charMeta = new CharMetaDataManager(this)
     this.statWeights = new StatWeightDataManager(this)
+    this.theoReferences = new TheoReferenceDataManager(this)
 
     // Handle DataEntries
     this.dbMeta = new DBMetaEntry(this)
@@ -159,6 +163,7 @@ export class ZzzDatabase extends Database {
       this.wengines,
       this.charMeta,
       this.statWeights,
+      this.theoReferences,
       this.generatedBuildList,
       this.optConfigs,
       this.teams,
