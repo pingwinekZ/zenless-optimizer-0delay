@@ -1290,12 +1290,16 @@ function OptimizeWrapper() {
 
     // Get the optimization target formula tag from the team's first frame.
     // Rotations expand via getComboFrames so the selected combo metric
-    // (DMG/Daze/Buildup) is reflected in the per-build values.
+    // (DMG/Daze/Buildup) is reflected in the per-build values. Multipliers
+    // are preserved and hit `i` reads on `preset${i}`, matching the solver.
     const { tag: target } = getTeamFrame0(team)
     const formulaTag = isComboTarget(target)
       ? getComboFrames(team)
           .filter((frame) => frame.tag?.sheet && frame.tag?.name)
-          .map((frame) => targetTag(frame.tag!))
+          .map((frame) => ({
+            tag: targetTag(frame.tag!),
+            multiplier: frame.multiplier,
+          }))
       : target
         ? targetTag(target)
         : undefined
@@ -1438,6 +1442,12 @@ function OptimizeWrapper() {
               const recipeMeta = recipeId
                 ? recipeMetaRef.current(recipeId)
                 : undefined
+              // Prefer the recomputed enriched value (correct for the
+              // equipped build, whose stored value is 0) over the stale
+              // `selectedBuild.value`.
+              const displayValue =
+                enrichedBuilds.find((b) => b.id === buildRowId(selectedBuild))
+                  ?.value ?? selectedBuild.value
               return (
                 <Box
                   style={{
@@ -1454,13 +1464,13 @@ function OptimizeWrapper() {
                       recipeId={recipeId}
                       recipeMeta={recipeMeta}
                       theoreticalDiscMap={theoreticalDiscMap}
-                      value={selectedBuild.value}
+                      value={displayValue}
                     />
                   ) : (
                     <>
                       <Text size="sm" fw={500} mb="xs">
                         {t('grid.selectedBuild', 'Selected Build')} —{' '}
-                        {Math.floor(selectedBuild.value).toLocaleString()}
+                        {Math.floor(displayValue).toLocaleString()}
                       </Text>
                       <SelectedBuildDiscs
                         discIds={selectedBuild.discIds}

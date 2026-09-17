@@ -157,7 +157,7 @@ export function buildAnalysisData(params: {
     selectedStats:
       targetInfo?.buffedStats ?? selectedEnriched?.combatStats ?? null,
     equippedStats: equippedEnriched?.combatStats ?? null,
-    targetValue: selectedBuild.value,
+    targetValue: selectedEnriched?.value ?? selectedBuild.value,
     selectedDiscSubstats,
     teammates,
     selectedDiscSetIds: selectedEnriched?.discSetIds ?? [],
