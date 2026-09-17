@@ -1,5 +1,6 @@
 import { ActionBreakdown } from '../Analysis/ActionBreakdown'
 import type { AnalysisData } from '../Analysis/ExpandedDataPanelController'
+import { ReferenceComparison } from '../Analysis/ReferenceComparison'
 import { StatsDiffCard } from '../Analysis/StatsDiffCard'
 import { SubstatUpgrades } from '../Analysis/SubstatUpgrades'
 import { TeammateUpgrades } from '../Analysis/TeammateUpgrades'
@@ -52,6 +53,9 @@ export function ExpandedDataPanel({
                   gap: 10,
                 }}
               >
+                {analysisData.referenceComparison && (
+                  <ReferenceComparison analysisData={analysisData} />
+                )}
                 <SubstatUpgrades analysisData={analysisData} />
                 <TeammateUpgrades analysisData={analysisData} />
               </div>

@@ -16,7 +16,7 @@ import {
 } from '../../consts'
 import type { ICachedDisc } from '../../db'
 import { StatIcon } from '../../svgicons'
-import { calculateDiscScore, efficiencyToGrade, gradeColor } from '../../util'
+import { calculateDiscScore, gradeColor } from '../../util'
 import {
   showcaseShadow,
   showcaseShadowInsetAddition,
@@ -33,14 +33,12 @@ export function ShowcaseDiscPanel({
   effectiveStats,
   substatWeights,
   effectiveMainStats,
-  dynamicScores,
 }: {
   discs: Record<DiscSlotKey, ICachedDisc | undefined>
   onSlotClick?: (slot: DiscSlotKey) => void
   effectiveStats: DiscSubStatKey[]
   substatWeights?: Partial<Record<DiscSubStatKey, number>>
   effectiveMainStats?: Partial<Record<DiscSlotKey, DiscMainStatKey[]>>
-  dynamicScores?: Partial<Record<DiscSlotKey, number>>
 }) {
   return (
     <Box
@@ -59,7 +57,6 @@ export function ShowcaseDiscPanel({
         effectiveStats={effectiveStats}
         substatWeights={substatWeights}
         effectiveMainStats={effectiveMainStats}
-        dynamicScores={dynamicScores}
       />
       <DiscColumn
         slots={RIGHT_SLOTS}
@@ -68,7 +65,6 @@ export function ShowcaseDiscPanel({
         effectiveStats={effectiveStats}
         substatWeights={substatWeights}
         effectiveMainStats={effectiveMainStats}
-        dynamicScores={dynamicScores}
       />
     </Box>
   )
@@ -81,7 +77,6 @@ function DiscColumn({
   effectiveStats,
   substatWeights,
   effectiveMainStats,
-  dynamicScores,
 }: {
   slots: DiscSlotKey[]
   discs: Record<DiscSlotKey, ICachedDisc | undefined>
@@ -89,7 +84,6 @@ function DiscColumn({
   effectiveStats: DiscSubStatKey[]
   substatWeights?: Partial<Record<DiscSubStatKey, number>>
   effectiveMainStats?: Partial<Record<DiscSlotKey, DiscMainStatKey[]>>
-  dynamicScores?: Partial<Record<DiscSlotKey, number>>
 }) {
   return (
     <Box
@@ -111,7 +105,6 @@ function DiscColumn({
             effectiveStats={effectiveStats}
             substatWeights={substatWeights}
             effectiveMainStats={effectiveMainStats}
-            dynamicScore={dynamicScores?.[slot]}
           />
         )
       })}
@@ -126,7 +119,6 @@ export function ShowcaseDiscCard({
   effectiveStats,
   substatWeights,
   effectiveMainStats,
-  dynamicScore,
   style,
 }: {
   slot: DiscSlotKey
@@ -135,23 +127,15 @@ export function ShowcaseDiscCard({
   effectiveStats: DiscSubStatKey[]
   substatWeights?: Partial<Record<DiscSubStatKey, number>>
   effectiveMainStats?: Partial<Record<DiscSlotKey, DiscMainStatKey[]>>
-  dynamicScore?: number
   style?: CSSProperties
 }) {
-  const discScore = useMemo(() => {
-    if (!disc)
-      return { grade: '', efficiency: 0, effectiveRolls: 0, totalRolls: 0 }
-    if (dynamicScore !== undefined && Number.isFinite(dynamicScore)) {
-      const efficiency = Math.max(0, Math.min(1, dynamicScore))
-      return {
-        grade: efficiencyToGrade(efficiency),
-        efficiency,
-        effectiveRolls: 0,
-        totalRolls: 0,
-      }
-    }
-    return calculateDiscScore(disc, effectiveStats, substatWeights)
-  }, [disc, effectiveStats, substatWeights, dynamicScore])
+  const discScore = useMemo(
+    () =>
+      disc
+        ? calculateDiscScore(disc, effectiveStats, substatWeights)
+        : { grade: '', efficiency: 0, effectiveRolls: 0, totalRolls: 0 },
+    [disc, effectiveStats, substatWeights]
+  )
 
   if (!disc) {
     return (

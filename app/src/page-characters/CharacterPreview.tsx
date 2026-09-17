@@ -1,14 +1,21 @@
 import { Box, Center, Flex, Text } from '@mantine/core'
 import { IconUser } from '@tabler/icons-react'
+import { useDataManagerBase } from '@zenless-optimizer/common/database-ui'
 import { TagContext } from '@zenless-optimizer/game-opt/formula-ui'
 import { memo, useCallback, useEffect, useMemo } from 'react'
 import { characterAsset } from '../assets'
 import type { CharacterKey, DiscSlotKey, PhaseKey } from '../consts'
 import type { DiscIds, ICachedCharacter, ICachedDisc, Team } from '../db'
+import { getComboFrames, getTeamFrame0, isComboTarget, targetTag } from '../db'
 import { useCharacter, useDatabaseContext, useDiscs, useTeam } from '../db-ui'
 import type { Tag } from '../formula'
-import { own } from '../formula'
+import { own, Read } from '../formula'
 import { CharCalcProvider, useZzzCalcContext } from '../formula-ui'
+import {
+  getMergedEffectiveStats,
+  getMergedMainStats,
+  getMergedSubstatWeights,
+} from '../page-discs/scoring/statWeightUtils'
 import type { SavedTeammateGear } from '../schema/savedBuild'
 import { getCharStat } from '../stats'
 import {
@@ -16,13 +23,7 @@ import {
   useCharacterTabStore,
   useDiscEditorModalStore,
 } from '../ui'
-import {
-  calculateCharacterScore,
-  getCharacterEffectiveMainStats,
-  getCharacterEffectiveStats,
-  getCharacterSubstatWeights,
-  gradeColor,
-} from '../util'
+import { calculateCharacterScore, efficiencyToGrade, gradeColor } from '../util'
 import {
   ShowcaseBackgroundBlur,
   showcaseShadow,
@@ -32,7 +33,6 @@ import {
 import { CharacterStatSummary } from './card/CharacterStatSummary'
 import { ShowcaseCharacterHeader } from './card/ShowcaseCharacterHeader'
 import { ShowcaseDiscPanel } from './card/ShowcaseDiscPanel'
-import { useDynamicDiscScoreStore } from '../page-optimize/dynamicScoring'
 import { ShowcasePortrait } from './card/ShowcasePortrait'
 import { ShowcaseWengine } from './card/ShowcaseWengine'
 import { extractPaletteInWorker } from './color/colorExtractionService'
@@ -205,6 +205,7 @@ function PreviewContent({
   const calc = useZzzCalcContext()
   const charStat = getCharStat(characterKey)
   const { attribute } = charStat
+  const { database } = useDatabaseContext()
 
   const discs = useDiscs(discIds)
 
@@ -243,32 +244,63 @@ function PreviewContent({
   }, [calc, attribute])
 
   const effectiveStats = useMemo(
-    () => getCharacterEffectiveStats(characterKey),
-    [characterKey]
+    () => getMergedEffectiveStats(characterKey, database),
+    [characterKey, database]
   )
 
   const substatWeights = useMemo(
-    () => getCharacterSubstatWeights(characterKey),
-    [characterKey]
+    () => getMergedSubstatWeights(characterKey, database),
+    [characterKey, database]
   )
 
   const effectiveMainStats = useMemo(
-    () => getCharacterEffectiveMainStats(characterKey),
-    [characterKey]
+    () => getMergedMainStats(characterKey, database),
+    [characterKey, database]
   )
 
-  const dynamicScores = useDynamicDiscScoreStore((s) => s.scores)
-  const dynamicScoresBySlot = useMemo(() => {
-    const out: Partial<Record<DiscSlotKey, number>> = {}
-    for (const slot of ['1', '2', '3', '4', '5', '6'] as DiscSlotKey[]) {
-      const id = discs[slot]?.id
-      const score = id
-        ? dynamicScores[`${characterKey}:${id}`]?.score
-        : undefined
-      if (score !== undefined) out[slot] = score
+  // Pinned perfect reference (absent = no reference score shown).
+  const pinnedReference =
+    useDataManagerBase(database.theoReferences, characterKey) ?? undefined
+  const team = useTeam(characterKey)
+
+  // Build-value comparison: equipped build's target damage vs the pinned
+  // perfect value. Uses the live preview calculator, so mains, sets, and
+  // diminishing returns are all captured — unlike the old weighted-roll
+  // proxy. Gaps and tips still live in the optimizer Analysis tab.
+  const referenceScore = useMemo(() => {
+    if (!pinnedReference || !(pinnedReference.value > 0)) return undefined
+    if (!calc || !team) return undefined
+    const { tag } = getTeamFrame0(team)
+    if (!tag) return undefined
+    try {
+      let equippedValue: number
+      if (isComboTarget(tag)) {
+        const frames = getComboFrames(team).filter(
+          (frame) => frame.tag?.sheet && frame.tag?.name
+        )
+        if (frames.length === 0) return undefined
+        equippedValue = frames.reduce((sum, frame, i) => {
+          const actionTag = targetTag(frame.tag!)
+          const read = new Read(
+            { src: characterKey, ...actionTag },
+            undefined
+          ).with('preset', `preset${i}` as any)
+          return sum + calc.compute(read).val * frame.multiplier
+        }, 0)
+      } else {
+        const actionTag = targetTag(tag)
+        const read = new Read(
+          { src: characterKey, ...actionTag },
+          undefined
+        ).with('preset', 'preset0' as any)
+        equippedValue = calc.compute(read).val
+      }
+      if (!(equippedValue > 0)) return undefined
+      return Math.max(0, Math.min(1, equippedValue / pinnedReference.value))
+    } catch {
+      return undefined
     }
-    return out
-  }, [discs, dynamicScores, characterKey])
+  }, [pinnedReference, calc, team, characterKey])
 
   const score = useMemo(
     () =>
@@ -524,6 +556,18 @@ function PreviewContent({
                 >
                   {score.effectiveRolls}/{score.totalRolls} rolls
                 </Text>
+                {referenceScore !== undefined && (
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: gradeColor(efficiencyToGrade(referenceScore)),
+                    }}
+                    title="Equipped build value vs the pinned perfect value"
+                  >
+                    vs Perfect {(referenceScore * 100).toFixed(0)}% (
+                    {efficiencyToGrade(referenceScore)})
+                  </Text>
+                )}
               </Flex>
             )}
 
@@ -545,7 +589,6 @@ function PreviewContent({
           effectiveStats={effectiveStats}
           substatWeights={substatWeights}
           effectiveMainStats={effectiveMainStats}
-          dynamicScores={dynamicScoresBySlot}
         />
       </Box>
 

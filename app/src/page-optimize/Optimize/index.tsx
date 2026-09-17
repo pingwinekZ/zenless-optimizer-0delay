@@ -1,4 +1,4 @@
-import { Box, Flex, Loader, Stack, Text } from '@mantine/core'
+import { Box, Button, Flex, Loader, Stack, Text } from '@mantine/core'
 import {
   useDataManagerBase,
   useDataManagerValues,
@@ -39,13 +39,14 @@ import {
   type GeneratedBuild,
   getComboFrames,
   getTeamFrame0,
-  type ICachedCharacter,
   type ICachedDisc,
   isComboTarget,
+  isTheoReferenceStale,
   type maxBuildsToShowList,
   type OptimizerEngine,
   type StatFilters,
   targetTag,
+  type TheoReference,
 } from '../../db'
 import {
   OptConfigContext,
@@ -58,10 +59,7 @@ import {
 import { useZzzCalcContext } from '../../formula-ui'
 import { ShowcaseDiscCard } from '../../page-characters'
 import { discCardH, discCardW } from '../../page-characters/constantsUi'
-import {
-  getMergedEffectiveStats,
-  getMergedSubstatWeights,
-} from '../../page-discs/scoring/statWeightUtils'
+import { getMergedSubstatWeights } from '../../page-discs/scoring/statWeightUtils'
 import {
   type BuildRecipe,
   createSolverConfig,
@@ -85,6 +83,10 @@ import {
   ResultsSection,
 } from '../Sidebar'
 import { useOptimizerDisplayStore } from '../stores/useOptimizerDisplayStore'
+import {
+  buildReferenceProfile,
+  buildTheoContextSnapshot,
+} from '../reference/referenceScoring'
 import type { EnrichedBuild } from '../Util/buildStatsUtils'
 import {
   batchComputeBuildStats,
@@ -95,10 +97,6 @@ import {
 import { ExpandedDataPanel } from './ExpandedDataPanel'
 import { OptimizerForm } from './OptimizerForm'
 import { OptimizerGrid } from './OptimizerGrid'
-import {
-  computeDynamicScoresWithReplacement,
-  useDynamicDiscScoreStore,
-} from '../dynamicScoring'
 
 /**
  * Renders the 6 showcase-style disc cards in a single horizontal row
@@ -127,7 +125,6 @@ function SelectedBuildDiscs({
     [characterKey]
   )
   const openEditorModal = useDiscEditorModalStore((s) => s.openOverlay)
-  const dynamicScores = useDynamicDiscScoreStore((s) => s.scores)
 
   const discs = useMemo(() => {
     if (!theoreticalDiscMap) return dbDiscs
@@ -174,11 +171,6 @@ function SelectedBuildDiscs({
           disc={discs[slotKey]}
           onClick={() => handleDiscClick(slotKey)}
           effectiveStats={effectiveStats}
-          dynamicScore={
-            discs[slotKey]?.id
-              ? dynamicScores[`${characterKey}:${discs[slotKey]?.id}`]?.score
-              : undefined
-          }
           style={{
             width: '100%',
             height: 'auto',
@@ -202,11 +194,15 @@ function TheoreticalBuildSummary({
   recipeMeta,
   theoreticalDiscMap,
   value,
+  isPinned,
+  onPinReference,
 }: {
   recipeId: string
   recipeMeta?: BuildRecipe
   theoreticalDiscMap: Record<string, ICachedDisc>
   value: number
+  isPinned: boolean
+  onPinReference: () => void
 }) {
   const allDiscs = allDiscSlotKeys
     .map((sk) => theoreticalDiscMap[`${recipeId}_${sk}`])
@@ -230,9 +226,24 @@ function TheoreticalBuildSummary({
 
   return (
     <Box p="sm">
-      <Text size="lg" fw={700} c="yellow" mb="xs">
-        Build Value: {Math.floor(value).toLocaleString()}
-      </Text>
+      <Flex align="center" justify="space-between" gap="xs" mb="xs">
+        <Text size="lg" fw={700} c="yellow">
+          Build Value: {Math.floor(value).toLocaleString()}
+        </Text>
+        <Button
+          size="xs"
+          variant={isPinned ? 'filled' : 'default'}
+          disabled={isPinned}
+          onClick={onPinReference}
+          title={
+            isPinned
+              ? 'This character already has a pinned reference from a theoretical run'
+              : 'Pin the top theoretical builds as this character\u2019s perfect reference for future comparisons'
+          }
+        >
+          {isPinned ? 'Reference pinned' : 'Pin as reference'}
+        </Button>
+      </Flex>
 
       <Text size="sm" fw={600} mt="sm" mb={4}>
         Main Stats
@@ -550,6 +561,11 @@ function OptimizeWrapper() {
   // Uses a ref for synchronous access (avoids race with batchComputeBuildStats)
   // and React state for triggering re-renders
   const theoreticalDiscMapRef = useRef<Record<string, ICachedDisc>>({})
+  // Display-canonical build values (buildRowId -> recomputed target value).
+  // The solver's raw values can differ by float rounding from what the
+  // Analysis panel recomputes, so pinning reads from here when available —
+  // otherwise the reference would show a 1-point gap vs itself.
+  const enrichedValuesRef = useRef<Map<string, number>>(new Map())
   const [theoreticalDiscMap, setTheoreticalDiscMap] = useState<
     Record<string, ICachedDisc>
   >({})
@@ -780,307 +796,6 @@ function OptimizeWrapper() {
         }))
       if (frames.length === 0)
         frames.push({ tag: targetTag(target), multiplier: 1 })
-
-      // Dynamic disc scoring: single click runs theoretical-max first, then
-      // the normal local-disc search, then scores each local disc by
-      // plugging it into the theoretical-best build (plug-in value /
-      // perfect value). The grid keeps showing the local builds; only the
-      // disc-card Score values change (via useDynamicDiscScoreStore).
-      if (optConfig.scoreDiscsDynamically) {
-        const finishDynamic = (failed?: unknown) => {
-          if (failed) console.error('[DynamicScore] run failed:', failed)
-          cancelToken.current = () => {}
-          setOptimizing(false)
-          setOptimizationInProgress(false)
-          setOptimizerEndTime(Date.now())
-        }
-        try {
-          console.log(
-            '[DynamicScore] phase 1/2: theoretical-max for',
-            characterKey
-          )
-          const dynScaffold = createSolverConfig(
-            characterKey,
-            calc,
-            frames,
-            statFilters,
-            optConfig.setFilter2,
-            optConfig.setFilter4,
-            filteredWengineKeys,
-            character.wenginePhase as PhaseKey,
-            discsBySlot,
-            numWorkers,
-            optConfig.maxBuildsToShow,
-            setProgress,
-            []
-          )
-          const dynHandle = runTheoryPipelineInWorker(
-            {
-              generator: {
-                characterKey,
-                setFilter2: optConfig.setFilter2,
-                setFilter4: optConfig.setFilter4,
-                slotFilters: {
-                  4: optConfig.slot4,
-                  5: optConfig.slot5,
-                  6: optConfig.slot6,
-                },
-                options: {
-                  minEffectivePerCombo:
-                    optConfig.theoreticalMinEffectivePerCombo,
-                  applyDominanceFilter:
-                    optConfig.theoreticalApplyDominanceFilter ?? true,
-                },
-              },
-              before: dynScaffold.candidates.slice(0, 1),
-              after: dynScaffold.candidates.slice(2),
-              nodes: dynScaffold.nodes,
-              minimum: dynScaffold.minimum,
-              topN: dynScaffold.topN,
-              skipPrune: engine === 'gpu',
-            },
-            (stage) => {
-              if (stage !== 'done')
-                console.debug('[DynamicScore] theory stage', stage)
-            }
-          )
-          cancelled.then(() => dynHandle.cancel('user cancelled'))
-          const dynPipeline = await dynHandle.result
-          const dynTheoConfig = createSolverConfig(
-            characterKey,
-            calc,
-            frames,
-            statFilters,
-            optConfig.setFilter2,
-            optConfig.setFilter4,
-            filteredWengineKeys,
-            character.wenginePhase as PhaseKey,
-            discsBySlot,
-            numWorkers,
-            optConfig.maxBuildsToShow,
-            setProgress,
-            dynPipeline.recipeCandidates
-          )
-          if (event.altKey) {
-            console.log(dynTheoConfig)
-            finishDynamic()
-            return
-          }
-          const theoOptimizer =
-            engine === 'gpu'
-              ? new WebGpuSolver(dynTheoConfig, getGpuTuningParams())
-              : new Solver(dynTheoConfig)
-          cancelled.then(() => theoOptimizer.terminate('user cancelled'))
-          const theoResults = await theoOptimizer.results
-          const theoBest = theoResults.reduce(
-            (m, r) => (r.value > m ? r.value : m),
-            0
-          )
-          if (!theoResults.length || !(theoBest > 0)) {
-            console.warn('[DynamicScore] theoretical phase returned no builds')
-            finishDynamic()
-            return
-          }
-          console.log(
-            '[DynamicScore] phase 2/2: local discs for',
-            characterKey,
-            '| theoBest =',
-            Math.floor(theoBest)
-          )
-          // Score from a wider pool than the display slice so discs outside
-          // the top-N still get a value. The display/storage slice below
-          // still respects the user's requested result count.
-          const scoringPool = Math.max(optConfig.maxBuildsToShow, 1000)
-          const localConfig = createSolverConfig(
-            characterKey,
-            calc,
-            frames,
-            statFilters,
-            optConfig.setFilter2,
-            optConfig.setFilter4,
-            filteredWengineKeys,
-            character.wenginePhase as PhaseKey,
-            discsBySlot,
-            numWorkers,
-            scoringPool,
-            setProgress,
-            undefined
-          )
-          const localOptimizer =
-            engine === 'gpu'
-              ? new WebGpuSolver(localConfig, getGpuTuningParams())
-              : new Solver(localConfig)
-          cancelled.then(() => localOptimizer.terminate('user cancelled'))
-          const localResultsFull = await localOptimizer.results
-          if (!localResultsFull.length) {
-            console.warn('[DynamicScore] local phase returned no builds')
-            finishDynamic()
-            return
-          }
-          const toStored = (results: typeof localResultsFull) =>
-            results
-              .map(({ ids, value }) => ({
-                wengineKey: ids[0],
-                discIds: objKeyMap(
-                  allDiscSlotKeys,
-                  (_slot, _index) => ids[_index + 1]
-                ),
-                value,
-              }))
-              .filter(
-                (() => {
-                  const seen = new Set<string>()
-                  return (build: {
-                    wengineKey?: string
-                    discIds: { [key: string]: string | undefined }
-                  }) => {
-                    const id = `${build.wengineKey ?? ''}-${Object.values(build.discIds).join('-')}`
-                    if (seen.has(id)) return false
-                    seen.add(id)
-                    return true
-                  }
-                })()
-              )
-              .sort((a, b) => b.value - a.value)
-          const fullStored = toStored(localResultsFull)
-          // Phase 3/3: per-disc plug-in scoring. Materialize the
-          // theoretical-best recipe, then evaluate each local disc plugged
-          // into that perfect build: score = value(perfect with your disc)
-          // / perfect value. Discs in the same build therefore get
-          // different scores, and nothing inflates past 1.0.
-          const theoBestResult = theoResults.reduce((a, b) =>
-            b.value >= a.value ? b : a
-          )
-          const theoRecipeId = String(theoBestResult.ids[1])
-          const theoWengineKey = theoBestResult.ids[0]
-          let theoBestDiscs:
-            | Record<DiscSlotKey, ICachedDisc | undefined>
-            | undefined
-          const theoRecipeIndex = recipeIndexFromId(theoRecipeId)
-          if (theoRecipeIndex !== undefined) {
-            const recipe = materializeRecipeFromIndex(
-              theoRecipeIndex,
-              dynPipeline.recipeIndex,
-              dynPipeline.context
-            )
-            if (recipe) {
-              const discs = createRecipeDiscs(recipe, theoRecipeId)
-              theoBestDiscs = Object.fromEntries(
-                discs.map((d) => [d.slotKey, d])
-              ) as Record<DiscSlotKey, ICachedDisc | undefined>
-            }
-          }
-          if (!theoBestDiscs)
-            console.warn(
-              '[DynamicScore] could not materialize theoretical-best recipe; using build-ratio fallback'
-            )
-          // Same target summation as the solver and the enriched grid values
-          // (mirrors the batchComputeBuildStats call below).
-          const formulaTag = isComboTarget(target)
-            ? getComboFrames(team)
-                .filter((frame) => frame.tag?.sheet && frame.tag?.name)
-                .map((frame) => ({
-                  tag: targetTag(frame.tag!),
-                  multiplier: frame.multiplier,
-                }))
-            : target
-              ? targetTag(target)
-              : undefined
-          const evaluateDiscSet = (
-            discs: Record<DiscSlotKey, ICachedDisc | undefined>,
-            wengineKey?: string
-          ): number | undefined => {
-            try {
-              const effectiveChar = (
-                wengineKey !== undefined
-                  ? { ...character, wengineKey }
-                  : character
-              ) as ICachedCharacter
-              const result = computeBuildStats(
-                effectiveChar,
-                discs,
-                team,
-                formulaTag,
-                (key) => database.chars.get(key) ?? undefined,
-                (id) => database.discs.get(id) ?? undefined
-              )
-              return result.targetValue
-            } catch {
-              return undefined
-            }
-          }
-          let contribCancelled = false
-          cancelled.then(() => {
-            contribCancelled = true
-          })
-          console.log(
-            '[DynamicScore] phase 3/3: per-disc plug-in scoring for',
-            characterKey
-          )
-          const contrib = await computeDynamicScoresWithReplacement(
-            fullStored,
-            theoBest,
-            theoBestDiscs,
-            theoWengineKey,
-            (id) => database.discs.get(id) ?? undefined,
-            evaluateDiscSet,
-            {
-              effectiveStats: getMergedEffectiveStats(characterKey, database),
-              weights: getMergedSubstatWeights(characterKey, database),
-            },
-            { isCancelled: () => contribCancelled }
-          )
-          if (!contrib.completed) {
-            console.log('[DynamicScore] cancelled during plug-in scoring')
-            finishDynamic()
-            return
-          }
-          const { entries, localBest, ratio } = contrib
-          const scoredDiscs = Object.keys(entries).length
-          console.log(
-            '[DynamicScore] theoBest =',
-            Math.floor(theoBest),
-            '| localBest =',
-            Math.floor(localBest),
-            '| ratio =',
-            ratio.toFixed(3),
-            '| scoredDiscs =',
-            scoredDiscs,
-            '/',
-            localResultsFull.length,
-            'builds'
-          )
-          useDynamicDiscScoreStore
-            .getState()
-            .setDynamicScores(characterKey, entries, {
-              characterKey,
-              theoBest,
-              localBest,
-              ratio,
-              scoredBuilds: fullStored.length,
-              scoredDiscs,
-              date: Date.now(),
-            })
-          theoreticalDiscMapRef.current = {}
-          setTheoreticalDiscMap({})
-          const displayStored = fullStored.slice(0, optConfig.maxBuildsToShow)
-          database.optConfigs.newOrSetGeneratedBuildList(optConfigId, {
-            builds: displayStored,
-            buildDate: Date.now(),
-          })
-          setPermutationsResults(displayStored.length)
-          if (progress) {
-            setOptimizerProgress(1)
-            setPermutationsSearched(progress.computed)
-          }
-          setSortTrigger((g) => g + 1)
-          finishDynamic()
-          return
-        } catch (e) {
-          finishDynamic(e)
-          return
-        }
-      }
 
       // When theoretical max mode is on, generate build-level recipes (one
       // candidate = total stats across all 6 discs) instead of per-slot
@@ -1387,10 +1102,6 @@ function OptimizeWrapper() {
         builds: storedBuilds,
         buildDate: Date.now(),
       })
-      // A plain (non-dynamic) run makes previously computed dynamic scores
-      // stale — different filters/pool — so drop them and let disc cards fall
-      // back to the static efficiency score.
-      useDynamicDiscScoreStore.getState().clearDynamicScores(characterKey)
       setPermutationsResults(results.length)
       setSortTrigger((g) => g + 1)
     },
@@ -1409,8 +1120,7 @@ function OptimizeWrapper() {
       optConfig.slot6,
       optConfig.theoreticalApplyDominanceFilter,
       optConfig.theoreticalMinEffectivePerCombo,
-      optConfig.scoreDiscsDynamically,
-      character,
+      character.wenginePhase,
       characterKey,
       filteredWengineKeys,
       discsBySlot,
@@ -1499,6 +1209,11 @@ function OptimizeWrapper() {
     () => generatedBuildList?.builds ?? [],
     [generatedBuildList?.builds]
   )
+
+  // Pinned theoretical reference for this character (reactive). Absent
+  // means the reference feature stays invisible for this character.
+  const pinnedReference =
+    useDataManagerBase(database.theoReferences, characterKey) ?? undefined
 
   // Reset the selected build only when a genuinely new result set arrives
   // (new optimizer run or different build list). Unrelated DB updates must
@@ -1591,6 +1306,116 @@ function OptimizeWrapper() {
     removePinnedBuild,
   ])
 
+  // Pin the top theoretical build as this character's perfect reference.
+  const onPinReference = useCallback(() => {
+    const sorted = [...allBuilds].sort((a, b) => b.value - a.value)
+    if (sorted.length === 0 || !(sorted[0].value > 0)) {
+      console.warn('[TheoReference] nothing to pin')
+      return
+    }
+    const best = sorted[0]
+    const rid = best.discIds['1']?.replace(/_\d+$/, '')
+    const bestRecipe = rid ? recipeMetaRef.current(rid) : undefined
+    if (!rid || !bestRecipe) {
+      console.warn('[TheoReference] could not resolve theoretical recipe')
+      return
+    }
+    const profile = buildReferenceProfile(bestRecipe)
+    // Prefer the display-canonical recomputed value for the best build, so
+    // the reference matches what the Analysis panel computes for that exact
+    // build (the solver's raw value can be off by float rounding).
+    const refValue =
+      enrichedValuesRef.current.get(buildRowId(best)) ?? best.value
+    const snapshot = buildTheoContextSnapshot(
+      target,
+      optConfig.setFilter2,
+      optConfig.setFilter4
+    )
+    // Materialize the single best build with stable ids so it survives a
+    // page refresh (the generator's recipe index lives only in memory).
+    // Re-pinning overwrites the same ids.
+    const refIdPrefix = `theoref_${characterKey}`
+    const referenceDiscs = createRecipeDiscs(bestRecipe, refIdPrefix)
+    const refWengineKey = best.wengineKey
+    // In-combat snapshot of the reference build under the current team, so
+    // the comparison panel can show stats without a live calculator.
+    // getDisc must resolve teammate discs too — team-wide set bonuses and
+    // buffs scaling off teammate gear (e.g. team CRIT DMG) are otherwise
+    // silently dropped from the snapshot.
+    let referenceCombatStats = undefined as
+      | TheoReference['referenceCombatStats']
+      | undefined
+    try {
+      const refDiscMap = Object.fromEntries(
+        referenceDiscs.map((d) => [d.slotKey, d])
+      ) as Record<DiscSlotKey, ICachedDisc | undefined>
+      const refCharacter =
+        refWengineKey !== undefined
+          ? ({ ...character, wengineKey: refWengineKey } as typeof character)
+          : character
+      const refFormulaTag = isComboTarget(target)
+        ? getComboFrames(team)
+            .filter((frame) => frame.tag?.sheet && frame.tag?.name)
+            .map((frame) => ({
+              tag: targetTag(frame.tag!),
+              multiplier: frame.multiplier,
+            }))
+        : target
+          ? targetTag(target)
+          : undefined
+      const getDisc = (id: string) =>
+        theoreticalDiscMapRef.current[id] ?? database.discs.get(id) ?? undefined
+      const computed = computeBuildStats(
+        refCharacter,
+        refDiscMap,
+        team,
+        refFormulaTag,
+        (key) => database.chars.get(key) ?? undefined,
+        getDisc
+      )
+      referenceCombatStats = { ...computed.final }
+    } catch (e) {
+      console.warn('[TheoReference] combat snapshot failed:', e)
+    }
+    database.theoReferences.pin(characterKey, {
+      value: refValue,
+      perfectRolls: profile.perfectRolls,
+      mainsBySlot: profile.mainsBySlot,
+      set4: bestRecipe.set4,
+      set2: bestRecipe.set2,
+      wengineKey: refWengineKey,
+      ...snapshot,
+      date: Date.now(),
+      bestRecipe,
+      referenceDiscs,
+      ...(referenceCombatStats ? { referenceCombatStats } : {}),
+    })
+    console.log('[TheoReference] pinned', refValue, 'for', characterKey)
+  }, [
+    allBuilds,
+    database,
+    character,
+    characterKey,
+    target,
+    team,
+    optConfig.setFilter2,
+    optConfig.setFilter4,
+  ])
+
+  // Hydrate the in-memory theoretical disc map from the persisted reference
+  // build. The generator's recipe index does not survive a refresh, so
+  // without this the pinned build's discs would be unresolvable after one.
+  useEffect(() => {
+    const discs = pinnedReference?.referenceDiscs
+    if (!discs || discs.length === 0) return
+    const missing = discs.some((d) => !theoreticalDiscMapRef.current[d.id])
+    if (!missing) return
+    const next = { ...theoreticalDiscMapRef.current }
+    for (const d of discs) next[d.id] = d
+    theoreticalDiscMapRef.current = next
+    setTheoreticalDiscMap(next)
+  }, [pinnedReference])
+
   // Includes equipped build + generated builds for stats computation
   // (stats are needed for both the pinned equipped build and regular rows)
   const buildsForStats = useMemo(() => {
@@ -1644,6 +1469,9 @@ function OptimizeWrapper() {
     ).then((enriched) => {
       if (!cancelled) {
         setEnrichedBuilds(enriched)
+        enrichedValuesRef.current = new Map(
+          enriched.map((e) => [e.id, e.value])
+        )
         setIsComputingStats(false)
       }
     })
@@ -1659,6 +1487,31 @@ function OptimizeWrapper() {
     const getDisc = (id: string) =>
       theoreticalDiscMapRef.current[id] ?? database.discs.get(id) ?? undefined
     const equippedBuildId = buildRowId(equippedBuild)
+    // Pinned perfect reference (absent = feature invisible). Staleness
+    // compares the pin-time target/filter snapshot with the current one.
+    const reference = pinnedReference
+      ? {
+          profile: {
+            perfectRolls: pinnedReference.perfectRolls,
+            mainsBySlot: pinnedReference.mainsBySlot,
+          },
+          value: pinnedReference.value,
+          date: pinnedReference.date,
+          stale: isTheoReferenceStale(
+            pinnedReference,
+            buildTheoContextSnapshot(
+              target,
+              optConfig.setFilter2,
+              optConfig.setFilter4
+            )
+          ),
+          weights: getMergedSubstatWeights(characterKey, database),
+          set4: pinnedReference.set4,
+          set2: pinnedReference.set2,
+          wengineKey: pinnedReference.wengineKey,
+          combatStats: pinnedReference.referenceCombatStats,
+        }
+      : null
     return buildAnalysisData({
       selectedBuild,
       enrichedBuilds,
@@ -1667,14 +1520,24 @@ function OptimizeWrapper() {
       team,
       character,
       getTeammateChar: (key) => database.chars.get(key) ?? undefined,
+      reference,
     })
-  }, [selectedBuild, enrichedBuilds, equippedBuild, team, character, database])
+  }, [
+    selectedBuild,
+    enrichedBuilds,
+    equippedBuild,
+    team,
+    character,
+    database,
+    pinnedReference,
+    target,
+    optConfig.setFilter2,
+    optConfig.setFilter4,
+    characterKey,
+  ])
 
   const { t } = useTranslation('page_optimize')
   const { isMobileLayout } = useResponsive()
-  const dynamicRunMeta = useDynamicDiscScoreStore(
-    (s) => s.runMeta[characterKey]
-  )
 
   if (generatedBuildList && generatedBuildList.builds.length > 0) {
     console.log(
@@ -1719,28 +1582,6 @@ function OptimizeWrapper() {
           {/* Results Grid — kept mounted while stats recompute (overlay
               loader instead of unmount) so selection/scroll survive DB updates */}
           <DeferCreate>
-            {dynamicRunMeta && (
-              <Box
-                mb="xs"
-                p="xs"
-                style={{
-                  borderRadius: 6,
-                  backgroundColor: 'var(--mantine-color-dark-6)',
-                  border: '1px solid var(--mantine-color-dark-4)',
-                }}
-              >
-                <Text size="xs" c="dimmed">
-                  Dynamic scoring — theoretical best{' '}
-                  {Math.floor(dynamicRunMeta.theoBest).toLocaleString()} vs
-                  local best{' '}
-                  {Math.floor(dynamicRunMeta.localBest).toLocaleString()} (
-                  {(dynamicRunMeta.ratio * 100).toFixed(1)}% of perfect,{' '}
-                  {dynamicRunMeta.scoredDiscs} discs scored). Disc-card Scores
-                  are premium rolls vs the perfect slot disc, gated by plug-in
-                  damage; unscored discs fall back to static.
-                </Text>
-              </Box>
-            )}
             <div style={{ position: 'relative' }}>
               <OptimizerGrid
                 builds={allBuilds}
@@ -1812,6 +1653,8 @@ function OptimizeWrapper() {
                       recipeMeta={recipeMeta}
                       theoreticalDiscMap={theoreticalDiscMap}
                       value={displayValue}
+                      isPinned={!!pinnedReference}
+                      onPinReference={onPinReference}
                     />
                   ) : (
                     <>

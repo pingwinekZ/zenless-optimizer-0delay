@@ -410,33 +410,11 @@ function OptimizerOptionsSection({
         <Switch
           checked={useTheoreticalMax}
           onChange={(e) => setUseTheoreticalMax(e.currentTarget.checked)}
-          disabled={disabled || !!optConfig.scoreDiscsDynamically}
+          disabled={disabled}
           size="xs"
         />
         <Text size="xs">Theoretical Max Discs</Text>
       </Flex>
-
-      <Flex align="center" gap={5}>
-        <Switch
-          checked={!!optConfig.scoreDiscsDynamically}
-          onChange={(e) =>
-            setOption('scoreDiscsDynamically', e.currentTarget.checked)
-          }
-          disabled={disabled}
-          size="xs"
-        />
-        <Text size="xs">Score discs dynamically</Text>
-      </Flex>
-
-      {optConfig.scoreDiscsDynamically && (
-        <Text size="xs" c="orange" style={{ lineHeight: 1.3 }}>
-          Runs theoretical-max first, then your local discs, and replaces the
-          disc-card Score with the lower of two comparisons against the perfect
-          slot disc: premium-roll count and plug-in damage. Wrong main or set
-          lowers the score. Discs missing from the top results keep their static
-          score.
-        </Text>
-      )}
 
       {useTheoreticalMax && (
         <>
