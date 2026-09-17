@@ -92,6 +92,9 @@ export type ReferenceComparison = {
   wengineKey?: string
   mainsBySlot?: Partial<Record<DiscSlotKey, DiscMainStatKey>>
   perfectRolls?: Partial<Record<DiscSubStatKey, number>>
+  /** Selected build's own rolls/mains, for side-by-side comparison. */
+  localRolls?: Partial<Record<DiscSubStatKey, number>>
+  localMains?: Partial<Record<DiscSlotKey, DiscMainStatKey>>
   /** In-combat snapshot of the reference build, taken at pin time. */
   combatStats?: TheoReferenceCombatStats
 }
@@ -278,6 +281,8 @@ function buildReferenceComparison(
     wengineKey: reference.wengineKey,
     mainsBySlot: reference.profile.mainsBySlot,
     perfectRolls: reference.profile.perfectRolls,
+    localRolls,
+    localMains,
     combatStats: reference.combatStats,
   }
 }

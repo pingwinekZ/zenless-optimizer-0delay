@@ -44,6 +44,11 @@ export function ExpandedDataPanel({
               </div>
             </div>
             <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+              {analysisData.referenceComparison && (
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <ReferenceComparison analysisData={analysisData} />
+                </div>
+              )}
               <div
                 style={{
                   flex: 1,
@@ -53,9 +58,6 @@ export function ExpandedDataPanel({
                   gap: 10,
                 }}
               >
-                {analysisData.referenceComparison && (
-                  <ReferenceComparison analysisData={analysisData} />
-                )}
                 <SubstatUpgrades analysisData={analysisData} />
                 <TeammateUpgrades analysisData={analysisData} />
               </div>
