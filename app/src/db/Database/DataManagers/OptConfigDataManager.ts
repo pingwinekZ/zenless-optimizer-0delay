@@ -113,6 +113,11 @@ const optConfigSchema = z.object({
   theoreticalMinEffectivePerCombo: z.number().int().min(1).max(4).catch(3),
   theoreticalApplyDominanceFilter: z.boolean().catch(true),
 
+  // Dynamic disc scoring: run a theoretical-max phase first, then a normal
+  // local-disc phase, and score each local disc by plug-in value
+  // (perfect build with your disc in its slot, as % of perfect).
+  scoreDiscsDynamically: zodBoolean(),
+
   optWengine: zodBoolean(),
   wlevelLow: z.number().int().min(0).max(60).catch(wengineMaxLevel),
   wlevelHigh: z.number().int().min(0).max(60).catch(wengineMaxLevel),

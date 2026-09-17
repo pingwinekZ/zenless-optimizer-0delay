@@ -32,6 +32,7 @@ import {
 import { CharacterStatSummary } from './card/CharacterStatSummary'
 import { ShowcaseCharacterHeader } from './card/ShowcaseCharacterHeader'
 import { ShowcaseDiscPanel } from './card/ShowcaseDiscPanel'
+import { useDynamicDiscScoreStore } from '../page-optimize/dynamicScoring'
 import { ShowcasePortrait } from './card/ShowcasePortrait'
 import { ShowcaseWengine } from './card/ShowcaseWengine'
 import { extractPaletteInWorker } from './color/colorExtractionService'
@@ -255,6 +256,19 @@ function PreviewContent({
     () => getCharacterEffectiveMainStats(characterKey),
     [characterKey]
   )
+
+  const dynamicScores = useDynamicDiscScoreStore((s) => s.scores)
+  const dynamicScoresBySlot = useMemo(() => {
+    const out: Partial<Record<DiscSlotKey, number>> = {}
+    for (const slot of ['1', '2', '3', '4', '5', '6'] as DiscSlotKey[]) {
+      const id = discs[slot]?.id
+      const score = id
+        ? dynamicScores[`${characterKey}:${id}`]?.score
+        : undefined
+      if (score !== undefined) out[slot] = score
+    }
+    return out
+  }, [discs, dynamicScores, characterKey])
 
   const score = useMemo(
     () =>
@@ -531,6 +545,7 @@ function PreviewContent({
           effectiveStats={effectiveStats}
           substatWeights={substatWeights}
           effectiveMainStats={effectiveMainStats}
+          dynamicScores={dynamicScoresBySlot}
         />
       </Box>
 
