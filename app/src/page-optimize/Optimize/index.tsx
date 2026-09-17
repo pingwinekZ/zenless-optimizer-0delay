@@ -60,7 +60,9 @@ import { discCardH, discCardW } from '../../page-characters/constantsUi'
 import {
   type BuildRecipe,
   createSolverConfig,
-  generateTheoreticalDiscs,
+  materializeRecipeFromIndex,
+  runTheoryPipelineInWorker,
+  type TheoryPipelineOutput,
 } from '../../solver'
 import { getCharStat, getWengineStat } from '../../stats'
 import { DiscEditorModal, useDiscEditorModalStore } from '../../ui'
@@ -365,6 +367,17 @@ function statShortLabel(key: string): string {
 }
 
 /**
+ * Recover a recipe's index from its id (`recipe_123` -> `123`). Recipe ids are
+ * assigned in enumeration order, which is exactly the compact descriptor
+ * index, so the id alone is enough to rebuild the recipe's metadata.
+ */
+function recipeIndexFromId(recipeId: string): number | undefined {
+  if (!recipeId.startsWith('recipe_')) return undefined
+  const index = Number(recipeId.slice('recipe_'.length))
+  return Number.isInteger(index) && index >= 0 ? index : undefined
+}
+
+/**
  * Create 6 fake ICachedDisc objects from a recipe for stat computation.
  * The formula's discsToTagMapNodeEntries accumulates stats across all
  * discs, so we create one disc per slot with the correct main stat and
@@ -454,7 +467,22 @@ function OptimizeWrapper() {
     undefined
   )
   const { optConfig, optConfigId } = useContext(OptConfigContext)
-  const engine = optConfig.engine ?? 'cpu'
+  // WebGPU is the default engine (the config schema already defaults to 'gpu').
+  // A browser that cannot run it must fall back to the CPU solver instead of
+  // silently producing an empty result grid, so resolve the effective engine
+  // here rather than trusting the stored value.
+  const requestedEngine = optConfig.engine ?? 'gpu'
+  const gpuAvailable =
+    typeof navigator !== 'undefined' &&
+    !!(navigator as Navigator & { gpu?: unknown }).gpu
+  const engine: OptimizerEngine =
+    requestedEngine === 'gpu' && !gpuAvailable ? 'cpu' : requestedEngine
+  useEffect(() => {
+    if (requestedEngine === 'gpu' && !gpuAvailable)
+      console.warn(
+        '[Optimize] WebGPU is unavailable in this browser; using the CPU solver.'
+      )
+  }, [requestedEngine, gpuAvailable])
   const setEngine = useCallback(
     (engine: OptimizerEngine) => {
       if (optConfigId) database.optConfigs.set(optConfigId, { engine })
@@ -509,8 +537,15 @@ function OptimizeWrapper() {
   const [theoreticalDiscMap, setTheoreticalDiscMap] = useState<
     Record<string, ICachedDisc>
   >({})
-  // Recipe metadata for TheoreticalBuildSummary display
-  const recipeMetaRef = useRef<Record<string, BuildRecipe>>({})
+  // Recipe metadata for TheoreticalBuildSummary display. This is a resolver,
+  // not a map: the recipe space can run to millions of entries, so metadata is
+  // rebuilt on demand from the generator's compact descriptor index for the
+  // handful of recipes that actually surface (the solver's top-N and the
+  // selected row). Retaining a BuildRecipe for every recipe used to be the
+  // single largest allocation in the whole pipeline.
+  const recipeMetaRef = useRef<(recipeId: string) => BuildRecipe | undefined>(
+    () => undefined
+  )
 
   // Stat display toggle (combat vs basic stats in grid)
   const [statDisplay, setStatDisplay] = useState<StatDisplay>('combat')
@@ -710,6 +745,12 @@ function OptimizeWrapper() {
       setPermutationsSearched(0)
       setPermutationsResults(0)
 
+      // Let React paint the optimizing state before the recipe enumeration
+      // starts. Enumeration is synchronous and can take seconds on a wide
+      // configuration, and without this yield the browser never gets a frame,
+      // so the page just looks frozen with no feedback at all.
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
       const statFilters = (statFiltersRef.current ?? []).filter(
         (s) => !s.disabled
       )
@@ -757,47 +798,129 @@ function OptimizeWrapper() {
         } catch {
           // ignore parse errors
         }
-        const result = generateTheoreticalDiscs(
+        // Generation and pruning are the two long, synchronous, CPU-bound
+        // stages of theoretical-max: on a wide configuration they produce
+        // millions of recipes and take seconds to tens of seconds of work.
+        // Both accept nothing but plain data, so they run in a worker and only
+        // the surviving recipes come back — the page keeps painting, the run
+        // stays cancellable, and the full pool never reaches this thread.
+        //
+        // Pruning needs the node graph, which `createSolverConfig` builds. The
+        // graph does not depend on the recipes themselves (only on the
+        // *presence* of a recipe pool, which adds the crit-overcap
+        // constraint), so it is built once up front with an empty placeholder
+        // pool and the real pool is passed in afterwards.
+        const scaffold = createSolverConfig(
           characterKey,
+          calc,
+          frames,
+          statFilters,
           optConfig.setFilter2,
           optConfig.setFilter4,
-          {
-            4: optConfig.slot4,
-            5: optConfig.slot5,
-            6: optConfig.slot6,
-          },
-          debugTargets
+          filteredWengineKeys,
+          character.wenginePhase as PhaseKey,
+          discsBySlot,
+          numWorkers,
+          optConfig.maxBuildsToShow,
+          setProgress,
+          []
         )
+        // When the GPU engine is selected, skip CPU prune entirely: the GPU
+        // can evaluate all permutations and reject candidates in the shader,
+        // making CPU-side dominance filtering pure overhead. The full recipe
+        // pool is passed directly to the GPU, which sweeps it trivially fast.
+        const skipPrune = engine === 'gpu'
+        const handle = runTheoryPipelineInWorker(
+          {
+            generator: {
+              characterKey,
+              setFilter2: optConfig.setFilter2,
+              setFilter4: optConfig.setFilter4,
+              slotFilters: {
+                4: optConfig.slot4,
+                5: optConfig.slot5,
+                6: optConfig.slot6,
+              },
+              substatRollTargets: debugTargets,
+              options: {
+                minEffectivePerCombo: optConfig.theoreticalMinEffectivePerCombo,
+                applyDominanceFilter:
+                  optConfig.theoreticalApplyDominanceFilter ?? true,
+              },
+            },
+            // Slot layout is [w-engine, recipes, empty_2 .. empty_6]
+            before: scaffold.candidates.slice(0, 1),
+            after: scaffold.candidates.slice(2),
+            nodes: scaffold.nodes,
+            minimum: scaffold.minimum,
+            topN: scaffold.topN,
+            skipPrune,
+          },
+          (stage) => {
+            if (stage !== 'done') console.debug('[TheoreticalMax] stage', stage)
+          }
+        )
+        cancelled.then(() => handle.cancel('user cancelled'))
+        let pipeline: TheoryPipelineOutput
+        try {
+          pipeline = await handle.result
+        } catch (e) {
+          console.error('TheoreticalMax: recipe pipeline failed:', e)
+          setOptimizing(false)
+          setOptimizationInProgress(false)
+          return
+        }
+        // NOTE: never touch a recipeMap here. It materializes a BuildRecipe for
+        // every single recipe, which is exactly the allocation the compact
+        // descriptor index exists to avoid.
         console.debug(
           '[TheoreticalMax] generated',
-          result.recipes.length,
-          'recipes',
-          'map keys:',
-          Object.keys(result.recipeMap).length
+          pipeline.stats,
+          '|',
+          pipeline.pruned
+            ? `kept ${pipeline.recipeCandidates.length} of ${pipeline.totalRecipes}`
+            : `pool ${pipeline.totalRecipes} (skip prune, GPU path)`,
+          '| combinations',
+          pipeline.beforeCount,
+          '->',
+          pipeline.afterCount
         )
-        if (result.recipes.length === 0) {
+        if (pipeline.recipeCandidates.length === 0) {
           console.warn('[TheoreticalMax] No recipes generated!')
         } else {
-          // Log first recipe stats for debugging
-          const sample = result.recipes[0]
-          console.debug('[TheoreticalMax] sample recipe:', sample)
+          // Log first surviving recipe for debugging
+          console.debug(
+            '[TheoreticalMax] sample recipe:',
+            pipeline.recipeCandidates[0]
+          )
         }
-        activeRecipes = result.recipes
-        // Store recipe metadata for display (used to reconstruct disc objects
-        // for the builds the solver returns — we avoid creating disc objects
-        // for ALL recipes here to prevent OOM with large recipe counts)
-        recipeMetaRef.current = result.recipeMap
+        activeRecipes = pipeline.recipeCandidates
+        // Keep only the resolver: the descriptor index plus the generator's
+        // (plain-data) context are all a recipe's metadata needs, so nothing is
+        // stored per-recipe here.
+        recipeMetaRef.current = (recipeId: string) => {
+          const index = recipeIndexFromId(recipeId)
+          return index === undefined
+            ? undefined
+            : materializeRecipeFromIndex(
+                index,
+                pipeline.recipeIndex,
+                pipeline.context
+              )
+        }
         // Start with empty disc map; we populate it after the solver returns
         // with only the recipes that end up in the final build results
         activeDiscMap = {}
 
-        // Update sidebar with recipe counts
-        setPermutations(result.recipes.length * filteredWengineKeys.length)
+        // Update sidebar with recipe counts. These report the full generated
+        // space, not just what survived pruning — that is what the search space
+        // is measured in, and the pruned pool size is logged above.
+        setPermutations(pipeline.totalRecipes * filteredWengineKeys.length)
         const details: Record<string, { count: number; total: number }> = {}
         for (const slotKey of allDiscSlotKeys) {
           details[slotKey] = {
-            count: result.recipes.length,
-            total: result.recipes.length,
+            count: pipeline.totalRecipes,
+            total: pipeline.totalRecipes,
           }
         }
         setPermutationDetails(details)
@@ -930,8 +1053,8 @@ function OptimizeWrapper() {
         const returnedDiscMap: Record<string, ICachedDisc> = {}
         for (const build of storedBuilds) {
           const rid = build.discIds['1']?.replace(/_\d+$/, '')
-          if (rid && recipeMetaRef.current[rid]) {
-            const recipe = recipeMetaRef.current[rid]
+          const recipe = rid ? recipeMetaRef.current(rid) : undefined
+          if (rid && recipe) {
             const discs = createRecipeDiscs(recipe, rid)
             for (const disc of discs) {
               returnedDiscMap[disc.id] = disc
@@ -1311,7 +1434,7 @@ function OptimizeWrapper() {
                 ''
               )
               const recipeMeta = recipeId
-                ? recipeMetaRef.current[recipeId]
+                ? recipeMetaRef.current(recipeId)
                 : undefined
               return (
                 <Box

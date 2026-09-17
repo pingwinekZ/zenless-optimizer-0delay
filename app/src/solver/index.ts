@@ -37,7 +37,18 @@ type Frames = Array<{ tag: Tag; multiplier: number }>
 export {
   type BuildRecipe,
   generateTheoreticalDiscs,
+  materializeRecipeFromIndex,
+  type TheoreticalDiscContext,
 } from './generateTheoreticalDiscs'
+export {
+  type TheoryPipelineInput,
+  type TheoryPipelineOutput,
+  type TheoryStage,
+} from './theoryPipeline'
+export {
+  runTheoryPipelineInWorker,
+  type TheoryPipelineHandle,
+} from './theoryWorkerClient'
 
 export function createSolverConfig(
   characterKey: CharacterKey,

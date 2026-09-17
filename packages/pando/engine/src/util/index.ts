@@ -10,7 +10,7 @@ let debugMode = false
 export function setDebugMode(mode: DebugMode) {
   debugMode = mode
 }
-export function isDebug(_: 'calc' | 'tag_db'): boolean {
+export function isDebug(_: 'calc' | 'tag_db' | 'prune'): boolean {
   return debugMode
 }
 
