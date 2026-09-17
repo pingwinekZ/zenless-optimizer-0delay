@@ -14,8 +14,8 @@ import {
   allDiscSlotKeys,
   allDiscSubStatKeys,
 } from '../../../consts'
-import type { ICachedDisc } from '../../Interfaces'
 import type { BuildRecipe } from '../../../solver'
+import type { ICachedDisc } from '../../Interfaces'
 import type { ZzzDatabase } from '../Database'
 import { DataManager } from '../DataManager'
 

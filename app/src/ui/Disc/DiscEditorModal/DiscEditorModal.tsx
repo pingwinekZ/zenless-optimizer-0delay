@@ -8,6 +8,7 @@ import { useDiscEditorModalStore } from './discEditorModalStore'
 export function DiscEditorModal() {
   const open = useDiscEditorModalStore((s) => s.open)
   const closeOverlay = useDiscEditorModalStore((s) => s.closeOverlay)
+  const config = useDiscEditorModalStore((s) => s.config)
   const prev = useDiscEditorModalStore((s) => s.config?.prev)
   const next = useDiscEditorModalStore((s) => s.config?.next)
 
@@ -16,7 +17,12 @@ export function DiscEditorModal() {
       <Modal size={560} centered opened={open} onClose={closeOverlay}>
         {open && (
           <Suspense fallback={<Skeleton height={400} />}>
-            <DiscEditorModalContent />
+            <DiscEditorModalContent
+              key={
+                config?.selectedDisc?.id ??
+                `${config?.slotKey ?? 'new'}_${config?.characterKey ?? ''}`
+              }
+            />
           </Suspense>
         )}
       </Modal>

@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
 export enum OpenCloseIDs {
   MENU_SIDEBAR = 'MENU_SIDEBAR',
@@ -7,10 +8,32 @@ export enum OpenCloseIDs {
 
 type OpenCloseState = Record<OpenCloseIDs, boolean>
 
-const openCloseStore = create<OpenCloseState>(() => ({
-  [OpenCloseIDs.MENU_SIDEBAR]: true,
-  [OpenCloseIDs.SETTINGS_DRAWER]: false,
-}))
+const openCloseStore = create<OpenCloseState>()(
+  persist<OpenCloseState>(
+    () => ({
+      [OpenCloseIDs.MENU_SIDEBAR]: true,
+      [OpenCloseIDs.SETTINGS_DRAWER]: false,
+    }),
+    {
+      // Persists UI toggles (e.g. sidebar expanded/collapsed) across reloads.
+      name: 'openclose-store-v1',
+      merge: (persisted, current) => {
+        const p = persisted as Partial<OpenCloseState> | undefined
+        return {
+          ...current,
+          ...(typeof p?.[OpenCloseIDs.MENU_SIDEBAR] === 'boolean'
+            ? { [OpenCloseIDs.MENU_SIDEBAR]: p[OpenCloseIDs.MENU_SIDEBAR] }
+            : {}),
+          ...(typeof p?.[OpenCloseIDs.SETTINGS_DRAWER] === 'boolean'
+            ? {
+                [OpenCloseIDs.SETTINGS_DRAWER]: p[OpenCloseIDs.SETTINGS_DRAWER],
+              }
+            : {}),
+        }
+      },
+    }
+  )
+)
 
 export function setOpen(id: OpenCloseIDs) {
   openCloseStore.setState({ [id]: true })

@@ -15,6 +15,7 @@ import type {
   OptFrame,
   Team,
   TeammateDatum,
+  TheoReferenceCombatStats,
 } from '../../db'
 import {
   getComboFrames,
@@ -24,15 +25,14 @@ import {
 } from '../../db'
 import type { Tag } from '../../formula'
 import { convert, ownTag, Read, zzzCalculatorWithEntries } from '../../formula'
+import type { ISubstat } from '../../schema/disc'
 import { efficiencyToGrade } from '../../util'
 import type {
   MainMismatch,
   SubstatTip,
   TheoReferenceShape,
 } from '../reference/referenceScoring'
-import type { TheoReferenceCombatStats } from '../../db'
 import { compareToReference } from '../reference/referenceScoring'
-import type { ISubstat } from '../../schema/disc'
 import type { BuildCombatStats, EnrichedBuild } from '../Util/buildStatsUtils'
 import { buildCalculatorEntries } from '../Util/buildStatsUtils'
 
