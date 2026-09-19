@@ -121,6 +121,26 @@ describe('filterRelevantConditionals teammate teamwide', () => {
   })
 })
 
+describe('filterRelevantConditionals enemy state', () => {
+  it('keeps main-member enemy rows but drops teammate-src ones', () => {
+    const conds = [
+      entry('enemy', 'isStunned', mainKey, 1),
+      entry('enemy', 'isWindswept', mainKey, 1),
+      entry('enemy', 'windsweptInfusion', mainKey, 0),
+      // Enemy rows under a teammate src are not effective — dropped.
+      entry('enemy', 'isStunned', 'Lucy', 1),
+      entry(mainKey, 'k', mainKey, 1),
+    ]
+    const result = filterRelevantConditionals(conds, members())
+    expect(result.map((c) => `${c.sheet}:${c.condKey}:${c.src}`)).toEqual([
+      `enemy:isStunned:${mainKey}`,
+      `enemy:isWindswept:${mainKey}`,
+      `enemy:windsweptInfusion:${mainKey}`,
+      `${mainKey}:k:${mainKey}`,
+    ])
+  })
+})
+
 describe('synthesizeTeammateConditionals', () => {
   it('creates src=teammate rows for missing teammate conditionals', () => {
     const lucyKeys = Object.keys(

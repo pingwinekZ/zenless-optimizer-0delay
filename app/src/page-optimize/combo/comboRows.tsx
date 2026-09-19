@@ -15,6 +15,7 @@ import {
   ComboSheetName,
   CondLabelWithHover,
   comboCondLabel,
+  comboListOptionLabel,
   isComboRowLocked,
 } from './comboLabels'
 import {
@@ -281,7 +282,11 @@ function PartitionRow({
                   disabled={locked}
                   data={condData.list.map((label, i) => ({
                     value: String(i),
-                    label,
+                    label: comboListOptionLabel(
+                      cond.sheet,
+                      cond.condKey,
+                      label
+                    ),
                   }))}
                   value={String(partitionValue)}
                   onChange={(v) =>

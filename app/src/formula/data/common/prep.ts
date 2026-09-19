@@ -9,12 +9,14 @@ const data: TagMapNodeEntries = [
   // Reread to flatten the formula
   ownBuff.formula.standardDmg.reread(ownBuff.dmg.shared),
   ownBuff.formula.standardDmg.add(own.dmg.def_mult_),
+  ownBuff.formula.standardDmg.add(own.dmg.direct_mult_),
 
   ownBuff.formula.sheerDmg.add(own.formula.base),
   ownBuff.formula.sheerDmg.add(own.dmg.crit_mult_),
   // Reread to flatten the formula
   ownBuff.formula.sheerDmg.reread(ownBuff.dmg.shared),
   ownBuff.formula.sheerDmg.add(own.dmg.sheer_mult_),
+  ownBuff.formula.sheerDmg.add(own.dmg.direct_mult_),
 
   ownBuff.formula.sharpDmg.add(sum(own.formula.base, own.final.flat_dmg)),
   ownBuff.formula.sharpDmg.add(own.dmg.laceration_mult_),
@@ -23,6 +25,7 @@ const data: TagMapNodeEntries = [
   ownBuff.formula.sharpDmg.reread(ownBuff.dmg.shared),
   ownBuff.formula.sharpDmg.add(own.dmg.def_mult_),
   ownBuff.formula.sharpDmg.add(own.dmg.sharp_mult_),
+  ownBuff.formula.sharpDmg.add(own.dmg.direct_mult_),
 
   ownBuff.formula.maimDmg.add(sum(own.formula.base, own.final.flat_dmg)),
   ownBuff.formula.maimDmg.add(own.dmg.laceration_mult_),
@@ -31,6 +34,7 @@ const data: TagMapNodeEntries = [
   ownBuff.formula.maimDmg.reread(ownBuff.dmg.shared),
   ownBuff.formula.maimDmg.add(own.dmg.def_mult_),
   ownBuff.formula.maimDmg.add(own.dmg.sharp_mult_),
+  ownBuff.formula.maimDmg.add(own.dmg.direct_mult_),
 
   ownBuff.formula.gashBuildup.add(
     prod(own.formula.base, sum(percent(1), own.final.gashBuildup_))

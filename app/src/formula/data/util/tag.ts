@@ -181,6 +181,7 @@ export const ownTag = {
     res_mult_: fixed,
     dmg_taken_mult_: fixed,
     stunned_mult_: fixed,
+    direct_mult_: fixed,
     mv_mult_: agg,
     sheer_mult_: fixed,
     sharp_mult_: fixed,

@@ -1,4 +1,5 @@
 import {
+  cmpEq,
   cmpGT,
   lookup,
   max,
@@ -10,7 +11,17 @@ import {
 } from '@zenless-optimizer/pando/engine'
 import type { TagMapNodeEntries } from '../util'
 import { enemy, own, ownBuff, percent } from '../util'
-import { isStunned } from './enemy'
+import { isStunned, isWindswept, windsweptInfusion } from './enemy'
+
+// Non-wind attributes that a Windswept aura can be infused with. Index + 1
+// matches the `windsweptInfusion` list conditional value.
+const windsweptInfusedAttributes = [
+  'fire',
+  'electric',
+  'ice',
+  'physical',
+  'ether',
+] as const
 
 const defLevelFactor = [
   -1, 50, 54, 58, 62, 66, 71, 76, 82, 88, 94, 100, 107, 114, 121, 129, 137, 145,
@@ -31,7 +42,21 @@ const data: TagMapNodeEntries = [
 
   // DMG Bonus Multiplier
   ownBuff.dmg.dmg_mult_.add(
-    sum(percent(1), own.final.dmg_, own.final.common_dmg_, own.final.directDmg_)
+    sum(percent(1), own.final.dmg_, own.final.common_dmg_)
+  ),
+  // Direct DMG Bonus Multiplier (e.g. Windswept). Applies to direct hits
+  // only — anomaly formulas do not read this multiplier.
+  ownBuff.dmg.direct_mult_.add(sum(percent(1), own.final.directDmg_)),
+  // Windswept: hitting a Windswept enemy with Wind DMG increases the Direct
+  // DMG Bonus of that attack by 10%.
+  ownBuff.combat.directDmg_.wind.add(isWindswept.ifOn(percent(0.1))),
+  // Windswept Infusion: hitting the aura with a non-Wind attack matching the
+  // Agent's Attribute infuses it, granting 10% Direct DMG Bonus to attacks
+  // matching the infused Attribute.
+  ...windsweptInfusedAttributes.map((attr, i) =>
+    ownBuff.combat.directDmg_[attr].add(
+      isWindswept.ifOn(cmpEq(windsweptInfusion.value, i + 1, percent(0.1)))
+    )
   ),
   // Buff Multiplier (e.g. Timeweaver Disorder DMG Bonus)
   ownBuff.dmg.buff_mult_.add(sum(percent(1), own.final.buff_)),

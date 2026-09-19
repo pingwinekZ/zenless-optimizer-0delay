@@ -263,6 +263,9 @@ export function filterRelevantConditionals(
 ): TeamConditional[] {
   const mainKey = members[0]?.key
   return conditionals.filter((c) => {
+    // Enemy state (stunned, windswept, ...) applies to every hit, so it is
+    // always relevant in the main member's context.
+    if (c.sheet === 'enemy' && c.src === mainKey) return true
     const owner = members.find(
       (m) =>
         c.src === m.key &&

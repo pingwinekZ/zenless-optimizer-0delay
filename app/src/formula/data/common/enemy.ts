@@ -1,3 +1,12 @@
-import { allBoolConditionals } from '../util'
+import { allBoolConditionals, allListConditionals } from '../util'
 
-export const { isStunned } = allBoolConditionals('enemy')
+export const { isStunned, isWindswept } = allBoolConditionals('enemy')
+
+export const { windsweptInfusion } = allListConditionals('enemy', [
+  'None',
+  'fire',
+  'electric',
+  'ice',
+  'physical',
+  'ether',
+])

@@ -56,6 +56,52 @@ export function EnemyStatsSection() {
       ),
     [database, characterKey]
   )
+
+  const isWindsweptCond = frame0.conditionals?.find(
+    (c) =>
+      c.sheet === 'enemy' &&
+      c.condKey === 'isWindswept' &&
+      c.src === characterKey &&
+      c.dst === null
+  )
+  const enemyWindswept = isWindsweptCond?.condValue ?? 0
+
+  const setWindswept = useCallback(
+    (value: boolean) =>
+      database.teams.setFrameConditional(
+        characterKey,
+        frameIndex,
+        'enemy',
+        'isWindswept',
+        characterKey,
+        null,
+        value ? 1 : 0
+      ),
+    [database, characterKey]
+  )
+
+  const windsweptInfusionCond = frame0.conditionals?.find(
+    (c) =>
+      c.sheet === 'enemy' &&
+      c.condKey === 'windsweptInfusion' &&
+      c.src === characterKey &&
+      c.dst === null
+  )
+  const windsweptInfusion = windsweptInfusionCond?.condValue ?? 0
+
+  const setWindsweptInfusion = useCallback(
+    (value: number) =>
+      database.teams.setFrameConditional(
+        characterKey,
+        frameIndex,
+        'enemy',
+        'windsweptInfusion',
+        characterKey,
+        null,
+        value
+      ),
+    [database, characterKey]
+  )
   const setStat = useCallback(
     (tag: EnemyStatsTag, value: number | null, index?: number) =>
       database.teams.setFrameEnemyStat(
@@ -89,6 +135,18 @@ export function EnemyStatsSection() {
               onChange={(e) => setStunned(e.currentTarget.checked)}
               size="xs"
             />
+            <Switch
+              label="Enemy is Windswept"
+              checked={enemyWindswept > 0}
+              onChange={(e) => setWindswept(e.currentTarget.checked)}
+              size="xs"
+            />
+            {enemyWindswept > 0 && (
+              <WindsweptInfusionDropdown
+                value={windsweptInfusion}
+                onSelect={setWindsweptInfusion}
+              />
+            )}
           </Stack>
         </CardSection>
       </CardThemed>
@@ -347,6 +405,62 @@ function EnemyStatDisplay({
         </ActionIcon>
       </CardSection>
     </CardThemed>
+  )
+}
+
+// Must match the `windsweptInfusion` list conditional in
+// `app/src/formula/data/common/enemy.ts` (index 0 = no infusion).
+const windsweptInfusionOptions = [
+  'None',
+  'fire',
+  'electric',
+  'ice',
+  'physical',
+  'ether',
+] as const
+
+function WindsweptInfusionDropdown({
+  value,
+  onSelect,
+}: {
+  value: number
+  onSelect: (value: number) => void
+}) {
+  const selected = windsweptInfusionOptions[value] ?? 'None'
+  return (
+    <Box>
+      <DropdownButton
+        size="compact-sm"
+        w="auto"
+        title={
+          selected === 'None' ? (
+            'Windswept Infusion: None'
+          ) : (
+            <span>
+              Windswept Infusion:{' '}
+              <AttributeName attribute={selected as Attribute} />
+            </span>
+          )
+        }
+        color={selected === 'None' ? undefined : selected}
+      >
+        {windsweptInfusionOptions.map((attr, i) => (
+          <MenuItem key={attr} onClick={() => onSelect(i)}>
+            {attr === 'None' ? (
+              'None'
+            ) : (
+              <ColorText color={attr}>
+                <AttributeName attribute={attr as Attribute} />
+              </ColorText>
+            )}
+          </MenuItem>
+        ))}
+      </DropdownButton>
+      <Text size="xs" c="dimmed" mt={4}>
+        Wind hits gain 10% Direct DMG Bonus. The infused attribute gains an
+        additional 10% Direct DMG Bonus.
+      </Text>
+    </Box>
   )
 }
 

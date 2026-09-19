@@ -12,6 +12,7 @@ import {
   type CharacterKey,
   type DiscSetKey,
   type DiscSlotKey,
+  elementalData,
   isDiscSetKey,
   isWengineKey,
   type WengineKey,
@@ -132,7 +133,27 @@ export function comboCondLabel(sheet: string, condKey: string): ReactNode {
     }
     return condLabel(condKey, `disc_${sheet}`)
   }
+  if (sheet === 'enemy') {
+    if (condKey === 'isStunned') return 'Enemy is Stunned'
+    if (condKey === 'isWindswept') return 'Enemy is Windswept'
+    if (condKey === 'windsweptInfusion') return 'Windswept Infusion'
+  }
   return condLabel(condKey, sheet)
+}
+
+/**
+ * Display label for a list-conditional option in the drawer. Windswept
+ * infusion options are attribute keys — show the same display names as the
+ * rest of the app ("Fire", not "fire").
+ */
+export function comboListOptionLabel(
+  sheet: string,
+  condKey: string,
+  option: string
+): string {
+  if (sheet === 'enemy' && condKey === 'windsweptInfusion')
+    return (elementalData as Record<string, string>)[option] ?? option
+  return option
 }
 
 type UiDescDoc = {
@@ -588,5 +609,6 @@ export function ComboSheetName({ sheetKey }: { sheetKey: string }) {
     return <WengineName wKey={sheetKey as WengineKey} />
   if (isDiscSetKey(sheetKey))
     return <DiscSetName setKey={sheetKey as DiscSetKey} />
+  if (sheetKey === 'enemy') return <span>Enemy</span>
   return <span>{sheetKey}</span>
 }
