@@ -7,7 +7,7 @@ import type {
   DiscMainStatKey,
   DiscSetKey,
   DiscSubStatKey,
-} from '../../../consts'
+} from '@zenless-optimizer/zzz/consts'
 import {
   charTagMapNodeEntries,
   conditionals,

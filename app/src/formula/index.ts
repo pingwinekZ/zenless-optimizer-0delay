@@ -20,6 +20,7 @@ import { formulas as _aggFormulas } from './meta/agg'
 
 export { Calculator } from './calculator'
 export * from './conditionalUtil'
+export * from './contributions'
 export { data as formulaData } from './data'
 export * from './data/util'
 export * from './meta/char'

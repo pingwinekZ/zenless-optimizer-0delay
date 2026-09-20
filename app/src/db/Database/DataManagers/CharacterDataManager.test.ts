@@ -1,5 +1,9 @@
 import { createTestDBStorage } from '@zenless-optimizer/common/database'
-import { allCharacterKeys, coreByLevel, skillByLevel } from '../../../consts'
+import {
+  allCharacterKeys,
+  coreByLevel,
+  skillByLevel,
+} from '@zenless-optimizer/zzz/consts'
 import { ZzzDatabase } from '../Database'
 
 describe('CharacterDataManager', () => {

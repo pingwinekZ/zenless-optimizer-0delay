@@ -10,31 +10,31 @@ import {
   TagFieldDisplay,
   TextFieldDisplay,
 } from '@zenless-optimizer/game-opt/sheet-ui'
-import type { ReactNode } from 'react'
-import { memo, useContext, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 import {
   type AttributeKey,
   type CharacterKey,
   elementalData,
-} from '../../consts'
+} from '@zenless-optimizer/zzz/consts'
 import {
   useCharacter,
   useCharacterContext,
   useDatabaseContext,
   useTeam,
-} from '../../db-ui'
-import { buffs, conditionals } from '../../formula'
-import { charSheets, TagDisplay } from '../../formula-ui'
+} from '@zenless-optimizer/zzz/db-ui'
+import { buffs, conditionals } from '@zenless-optimizer/zzz/formula'
+import { charSheets, TagDisplay } from '@zenless-optimizer/zzz/formula-ui'
 import {
   EffectiveMindscapeContext,
   SkillGameDesc,
   usePotentialDescKey,
-} from '../../formula-ui/char/sheetUtil'
-import { buffAppliesToMainUnit } from '../../formula-ui/teammate'
-import { GameDesc, GameText } from '../../i18n'
-import { getCharStat } from '../../stats'
-import { ElementIcon } from '../../svgicons'
+} from '@zenless-optimizer/zzz/formula-ui/char/sheetUtil'
+import { buffAppliesToMainUnit } from '@zenless-optimizer/zzz/formula-ui/teammate'
+import { GameDesc, GameText } from '@zenless-optimizer/zzz/i18n'
+import { getCharStat } from '@zenless-optimizer/zzz/stats'
+import { ElementIcon } from '@zenless-optimizer/zzz/svgicons'
+import type { ReactNode } from 'react'
+import { memo, useContext, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { HeaderText } from '../layout'
 import {
   ConditionalText,

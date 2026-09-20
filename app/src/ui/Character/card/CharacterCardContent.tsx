@@ -1,15 +1,15 @@
 import { Box, Flex, Text, Title } from '@mantine/core'
 import { ImgIcon } from '@zenless-optimizer/common/ui'
-import { useTranslation } from 'react-i18next'
 import {
   commonDefIcon,
   rarityDefIcon,
   specialityDefIcon,
-} from '../../../assets'
-import { allSkillKeys, type CharacterKey } from '../../../consts'
-import { useCharacter } from '../../../db-ui'
-import { getCharStat } from '../../../stats'
-import { ElementIcon } from '../../../svgicons'
+} from '@zenless-optimizer/zzz/assets'
+import { allSkillKeys, type CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { useCharacter } from '@zenless-optimizer/zzz/db-ui'
+import { getCharStat } from '@zenless-optimizer/zzz/stats'
+import { ElementIcon } from '@zenless-optimizer/zzz/svgicons'
+import { useTranslation } from 'react-i18next'
 import { CharacterName } from '../CharacterTrans'
 
 export function CharacterCardContent({

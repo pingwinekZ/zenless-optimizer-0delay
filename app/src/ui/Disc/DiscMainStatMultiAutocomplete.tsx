@@ -2,11 +2,11 @@ import { Badge } from '@mantine/core'
 import { iconInlineProps } from '@zenless-optimizer/common/svgicons'
 import { GeneralAutocompleteMulti } from '@zenless-optimizer/common/ui'
 import { getUnitStr } from '@zenless-optimizer/common/util'
+import type { DiscMainStatKey, StatKey } from '@zenless-optimizer/zzz/consts'
+import { allDiscMainStatKeys } from '@zenless-optimizer/zzz/consts'
+import { StatIcon } from '@zenless-optimizer/zzz/svgicons'
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { DiscMainStatKey, StatKey } from '../../consts'
-import { allDiscMainStatKeys } from '../../consts'
-import { StatIcon } from '../../svgicons'
 
 export function DiscMainStatMultiAutocomplete({
   mainStatKeys,

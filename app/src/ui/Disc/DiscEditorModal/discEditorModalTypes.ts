@@ -6,8 +6,8 @@ import type {
   DiscSlotKey,
   DiscSubStatKey,
   LocationKey,
-} from '../../../consts'
-import type { ICachedDisc } from '../../../db'
+} from '@zenless-optimizer/zzz/consts'
+import type { ICachedDisc } from '@zenless-optimizer/zzz/db'
 
 export type DiscEditorForm = {
   setKey: DiscSetKey

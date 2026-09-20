@@ -1,6 +1,6 @@
 import { Image, Text } from '@mantine/core'
-import { characterAsset, wengineAsset } from '../../assets'
-import type { CharacterKey, WengineKey } from '../../consts'
+import { characterAsset, wengineAsset } from '@zenless-optimizer/zzz/assets'
+import type { CharacterKey, WengineKey } from '@zenless-optimizer/zzz/consts'
 import type { AnalysisData } from './ExpandedDataPanelController'
 import { buildStatComparisons } from './ExpandedDataPanelController'
 import classes from './StatsDiffCard.module.css'

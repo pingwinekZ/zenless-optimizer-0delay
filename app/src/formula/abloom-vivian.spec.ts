@@ -1,6 +1,6 @@
 import { expect, test } from 'bun:test'
 import { compileTagMapValues, read } from '@zenless-optimizer/pando/engine'
-import type { CharacterKey } from '../consts'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import {
   charTagMapNodeEntries,
   formulas,

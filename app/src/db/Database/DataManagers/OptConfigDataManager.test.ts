@@ -1,5 +1,5 @@
 import { createTestDBStorage } from '@zenless-optimizer/common/database'
-import { allAttributeKeys } from '../../../consts'
+import { allAttributeKeys } from '@zenless-optimizer/zzz/consts'
 import { ZzzDatabase } from '../Database'
 
 describe('OptConfigDataManager', () => {

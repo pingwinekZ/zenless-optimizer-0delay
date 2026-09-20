@@ -1,6 +1,6 @@
 import { CalcContext, TagContext } from '@zenless-optimizer/game-opt/formula-ui'
+import type { Calculator } from '@zenless-optimizer/zzz/formula'
 import { useContext, useMemo } from 'react'
-import type { Calculator } from '../../formula'
 
 export function useZzzCalcContext() {
   const _calc = useContext(CalcContext) as Calculator | null

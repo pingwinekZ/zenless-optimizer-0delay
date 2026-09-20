@@ -15,21 +15,24 @@ import {
   NumberInputLazy,
 } from '@zenless-optimizer/common/ui'
 import { type UnArray } from '@zenless-optimizer/common/util'
-import { useCallback, useContext } from 'react'
-import type { AttributeKey } from '../../consts'
-import { allAttributeKeys } from '../../consts'
-import type { StatFilterTag } from '../../db'
+import type { AttributeKey } from '@zenless-optimizer/zzz/consts'
+import { allAttributeKeys } from '@zenless-optimizer/zzz/consts'
+import type { StatFilterTag } from '@zenless-optimizer/zzz/db'
 import {
   newStatFilterTag,
   type StatFilterStatKey,
   type StatFilters,
   statFilterStatKeys,
   statFilterStatQtKeys,
-} from '../../db'
-import { OptConfigContext, useDatabaseContext } from '../../db-ui'
-import type { Tag } from '../../formula'
-import { qtMap, TagDisplay } from '../../formula-ui'
-import { AttributeName, StatDisplay } from '../../ui'
+} from '@zenless-optimizer/zzz/db'
+import {
+  OptConfigContext,
+  useDatabaseContext,
+} from '@zenless-optimizer/zzz/db-ui'
+import type { Tag } from '@zenless-optimizer/zzz/formula'
+import { qtMap, TagDisplay } from '@zenless-optimizer/zzz/formula-ui'
+import { AttributeName, StatDisplay } from '@zenless-optimizer/zzz/ui'
+import { useCallback, useContext } from 'react'
 
 export function StatFilterCard({ disabled = false }: { disabled?: boolean }) {
   const {

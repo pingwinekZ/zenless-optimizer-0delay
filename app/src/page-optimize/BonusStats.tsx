@@ -9,22 +9,30 @@ import {
   TextFieldLazy,
 } from '@zenless-optimizer/common/ui'
 import { stableArr } from '@zenless-optimizer/common/util'
-import { useCallback } from 'react'
-import { useTranslation } from 'react-i18next'
-import type { StatKey } from '../consts'
-import { allAttributeAnomalyKeys } from '../consts'
-import type { BonusStatKey, BonusStatTag, TeamBonusStat } from '../db'
+import type { StatKey } from '@zenless-optimizer/zzz/consts'
+import { allAttributeAnomalyKeys } from '@zenless-optimizer/zzz/consts'
+import type {
+  BonusStatKey,
+  BonusStatTag,
+  TeamBonusStat,
+} from '@zenless-optimizer/zzz/db'
 import {
   bonusStatDamageTypes,
   bonusStatDmgTypeIncStats,
   bonusStatKeys,
   bonusStatQtKeys,
   newBonusStatTag,
-} from '../db'
-import { useCharacterContext, useDatabaseContext, useTeam } from '../db-ui'
-import type { Attribute, Tag } from '../formula'
-import { qtMap, TagDisplay } from '../formula-ui'
-import { AttributeName, StatDisplay } from '../ui'
+} from '@zenless-optimizer/zzz/db'
+import {
+  useCharacterContext,
+  useDatabaseContext,
+  useTeam,
+} from '@zenless-optimizer/zzz/db-ui'
+import type { Attribute, Tag } from '@zenless-optimizer/zzz/formula'
+import { qtMap, TagDisplay } from '@zenless-optimizer/zzz/formula-ui'
+import { AttributeName, StatDisplay } from '@zenless-optimizer/zzz/ui'
+import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { AfterShockToggleButton } from './AfterShockToggleButton'
 import { DmgTypeDropdown } from './DmgTypeDropdown'
 

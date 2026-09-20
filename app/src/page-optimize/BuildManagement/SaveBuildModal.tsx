@@ -1,17 +1,17 @@
 import { Button, Divider, Flex, Modal, TextInput, Tooltip } from '@mantine/core'
 import { modals } from '@mantine/modals'
-import { memo, useContext, useEffect, useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import type { CharacterKey } from '../../consts'
-import type { GeneratedBuild } from '../../db'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import type { GeneratedBuild } from '@zenless-optimizer/zzz/db'
 import {
   OptConfigContext,
   useCharacter,
   useDatabaseContext,
   useTeam,
-} from '../../db-ui'
-import { Message } from '../../ui'
-import { BuildSource } from '../../zood'
+} from '@zenless-optimizer/zzz/db-ui'
+import { Message } from '@zenless-optimizer/zzz/ui'
+import { BuildSource } from '@zenless-optimizer/zzz/zood'
+import { memo, useContext, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { BuildList } from './BuildList'
 import { BuildPreview } from './BuildPreview'
 import { serializeFromOptimizer } from './buildConverter'

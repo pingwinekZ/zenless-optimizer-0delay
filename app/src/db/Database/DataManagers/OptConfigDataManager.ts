@@ -7,8 +7,7 @@ import {
   removeUndefinedFields,
   validateValue,
 } from '@zenless-optimizer/common/util'
-import { z } from 'zod'
-import type { AttributeKey, SpecialityKey } from '../../../consts'
+import type { AttributeKey, SpecialityKey } from '@zenless-optimizer/zzz/consts'
 import {
   allAttributeKeys,
   allDiscSetKeys,
@@ -18,8 +17,9 @@ import {
   discMaxLevel,
   discSlotToMainStatKeys,
   wengineMaxLevel,
-} from '../../../consts'
-import type { Tag } from '../../../formula'
+} from '@zenless-optimizer/zzz/consts'
+import type { Tag } from '@zenless-optimizer/zzz/formula'
+import { z } from 'zod'
 import type { ZzzDatabase } from '../..'
 import { DataManager } from '../DataManager'
 import type { GeneratedBuildList } from './GeneratedBuildListDataManager'

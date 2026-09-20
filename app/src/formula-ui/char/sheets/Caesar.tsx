@@ -1,8 +1,8 @@
-import type { CharacterKey } from '../../../consts'
-import { useCharacter } from '../../../db-ui'
-import { Caesar } from '../../../formula'
-import { GameDesc, GameDescSlice } from '../../../i18n'
-import { mappedStats } from '../../../stats'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { useCharacter } from '@zenless-optimizer/zzz/db-ui'
+import { Caesar } from '@zenless-optimizer/zzz/formula'
+import { GameDesc, GameDescSlice } from '@zenless-optimizer/zzz/i18n'
+import { mappedStats } from '@zenless-optimizer/zzz/stats'
 import { st, trans } from '../../util'
 import {
   AbilityBodyText,

@@ -12,6 +12,20 @@ import type { IConditionalData } from '@zenless-optimizer/game-opt/engine'
 import { TagContext } from '@zenless-optimizer/game-opt/formula-ui'
 import type { Field } from '@zenless-optimizer/game-opt/sheet-ui'
 import { TagFieldDisplay } from '@zenless-optimizer/game-opt/sheet-ui'
+import { discDefIcon } from '@zenless-optimizer/zzz/assets'
+import { allDiscSetKeys, discSetNames } from '@zenless-optimizer/zzz/consts'
+import type { TeamConditional } from '@zenless-optimizer/zzz/db'
+import {
+  useCharacterContext,
+  useDatabaseContext,
+  useTeam,
+} from '@zenless-optimizer/zzz/db-ui'
+import { conditionals } from '@zenless-optimizer/zzz/formula'
+import {
+  CharCalcMockCountProvider,
+  discUiSheets,
+} from '@zenless-optimizer/zzz/formula-ui'
+import { GameDesc, i18n } from '@zenless-optimizer/zzz/i18n'
 import {
   isValidElement,
   type ReactNode,
@@ -21,13 +35,6 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { discDefIcon } from '../../assets'
-import { allDiscSetKeys, discSetNames } from '../../consts'
-import type { TeamConditional } from '../../db'
-import { useCharacterContext, useDatabaseContext, useTeam } from '../../db-ui'
-import { conditionals } from '../../formula'
-import { CharCalcMockCountProvider, discUiSheets } from '../../formula-ui'
-import { GameDesc, i18n } from '../../i18n'
 
 const cardStyle: React.CSSProperties = {
   borderRadius: 6,

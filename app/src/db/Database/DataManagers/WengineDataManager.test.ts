@@ -2,7 +2,7 @@ import {
   createTestDBStorage,
   createTestSandboxStorage,
 } from '@zenless-optimizer/common/database'
-import { allWengineKeys } from '../../../consts'
+import { allWengineKeys } from '@zenless-optimizer/zzz/consts'
 import { ZzzDatabase } from '../Database'
 
 describe('WengineDataManager', () => {

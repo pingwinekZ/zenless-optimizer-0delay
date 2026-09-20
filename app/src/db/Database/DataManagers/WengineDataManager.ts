@@ -1,5 +1,5 @@
-import type { WengineKey } from '../../../consts'
-import { allWengineKeys } from '../../../consts'
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
+import { allWengineKeys } from '@zenless-optimizer/zzz/consts'
 import type { ICachedWengine } from '../../Interfaces/IDbWengine'
 import type { ZzzDatabase } from '../Database'
 import { DataManager } from '../DataManager'

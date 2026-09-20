@@ -1,6 +1,6 @@
 import { Image } from '@mantine/core'
-import { characterAsset } from '../../assets'
-import type { CharacterKey } from '../../consts'
+import { characterAsset } from '@zenless-optimizer/zzz/assets'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 
 export function CharIconCircle({
   characterKey,

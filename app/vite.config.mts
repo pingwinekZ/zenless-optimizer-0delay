@@ -8,8 +8,8 @@ import pkg from './package.json' with { type: 'json' }
 // Source directories for locale files (relative to Vite root = app/)
 const localeDirs = [
   resolve('../packages/common/localization/assets/locales'),
-  resolve('./src/localization/assets/locales'),
-  resolve('./src/dm-localization/assets/locales'),
+  resolve('../packages/zzz/localization/src/assets/locales'),
+  resolve('../packages/zzz/dm-localization/src/assets/locales'),
 ]
 
 function serveLocaleFiles(): Plugin {
@@ -55,12 +55,16 @@ export default defineConfig(() => {
       rename: { stripBase: 4 },
     },
     {
-      src: normalizePath(resolve('./src/localization/assets/locales')),
+      src: normalizePath(
+        resolve('../packages/zzz/localization/src/assets/locales')
+      ),
       dest: 'assets',
       rename: { stripBase: 3 },
     },
     {
-      src: normalizePath(resolve('./src/dm-localization/assets/locales')),
+      src: normalizePath(
+        resolve('../packages/zzz/dm-localization/src/assets/locales')
+      ),
       dest: 'assets',
       rename: { stripBase: 3 },
     },

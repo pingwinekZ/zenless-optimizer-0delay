@@ -3,10 +3,10 @@ import { useMediaQuery } from '@mantine/hooks'
 import type { SolidToggleButtonGroupProps } from '@zenless-optimizer/common/ui'
 import { SolidColoredToggleButton } from '@zenless-optimizer/common/ui'
 import { handleMultiSelect } from '@zenless-optimizer/common/util'
+import type { AttributeKey } from '@zenless-optimizer/zzz/consts'
+import { allAttributeKeys } from '@zenless-optimizer/zzz/consts'
+import { ElementIcon } from '@zenless-optimizer/zzz/svgicons'
 import type { ReactNode } from 'react'
-import type { AttributeKey } from '../../consts'
-import { allAttributeKeys } from '../../consts'
-import { ElementIcon } from '../../svgicons'
 
 type ElementToggleProps = Omit<
   SolidToggleButtonGroupProps,

@@ -1,5 +1,5 @@
-import type { DiscSlotKey } from '../../consts'
-import type { IDisc } from '../../zood'
+import type { DiscSlotKey } from '@zenless-optimizer/zzz/consts'
+import type { IDisc } from './disc'
 
 export interface ICachedDisc extends IDisc {
   id: string

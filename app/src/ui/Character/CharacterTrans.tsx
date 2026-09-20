@@ -2,9 +2,9 @@ import {
   type AttributeKey,
   type CharacterKey,
   elementalData,
-} from '../../consts'
+} from '@zenless-optimizer/zzz/consts'
 // use client due to hydration difference between client rendering and server in translation
-import { Translate } from '../../i18n'
+import { Translate } from '@zenless-optimizer/zzz/i18n'
 
 export function CharacterName({
   characterKey,

@@ -1,9 +1,9 @@
 import { Badge, Button, Group } from '@mantine/core'
 import type { SolidToggleButtonGroupProps } from '@zenless-optimizer/common/ui'
 import { handleMultiSelect } from '@zenless-optimizer/common/util'
+import type { DiscSlotKey } from '@zenless-optimizer/zzz/consts'
+import { allDiscSlotKeys } from '@zenless-optimizer/zzz/consts'
 import type { ReactNode } from 'react'
-import type { DiscSlotKey } from '../../consts'
-import { allDiscSlotKeys } from '../../consts'
 
 type DiscSlotToggleProps = Omit<
   SolidToggleButtonGroupProps,

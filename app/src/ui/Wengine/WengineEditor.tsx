@@ -1,8 +1,8 @@
 import { Box, Divider, Flex, SimpleGrid, Text } from '@mantine/core'
 import { CardThemed, ModalWrapper } from '@zenless-optimizer/common/ui'
-import { wengineAsset } from '../../assets'
-import { useWengine } from '../../db-ui'
-import { getWengineStat, getWengineStats } from '../../stats'
+import { wengineAsset } from '@zenless-optimizer/zzz/assets'
+import { useWengine } from '@zenless-optimizer/zzz/db-ui'
+import { getWengineStat, getWengineStats } from '@zenless-optimizer/zzz/stats'
 import { StatDisplay } from '../Character'
 import { WengineSubstatDisplay } from './WengineSubstatDisplay'
 

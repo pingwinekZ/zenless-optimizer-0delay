@@ -4,8 +4,11 @@ import {
   zodFilteredArray,
   zodString,
 } from '@zenless-optimizer/common/database'
+import {
+  allSpecialityKeys,
+  allWengineRarityKeys,
+} from '@zenless-optimizer/zzz/consts'
 import { z } from 'zod'
-import { allSpecialityKeys, allWengineRarityKeys } from '../../../consts'
 import type { ZzzDatabase } from '../Database'
 import { DataEntry } from '../DataEntry'
 

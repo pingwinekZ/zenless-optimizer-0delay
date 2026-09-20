@@ -11,19 +11,19 @@ import {
   statKeyToFixed,
   toPercent,
 } from '@zenless-optimizer/common/util'
-import type { ReactNode } from 'react'
-import { Suspense, useCallback, useContext } from 'react'
-import { characterAsset, discDefIcon } from '../../assets'
-import type { DiscRarityKey, DiscSlotKey } from '../../consts'
+import { characterAsset, discDefIcon } from '@zenless-optimizer/zzz/assets'
+import type { DiscRarityKey, DiscSlotKey } from '@zenless-optimizer/zzz/consts'
 import {
   getDiscMainStatVal,
   getDiscSubStatBaseVal,
   rarityColor,
   themeColorVar,
-} from '../../consts'
-import type { ICachedDisc } from '../../db'
-import { SlotIcon, StatIcon } from '../../svgicons'
-import type { ISubstat } from '../../zood'
+} from '@zenless-optimizer/zzz/consts'
+import type { ICachedDisc } from '@zenless-optimizer/zzz/db'
+import { SlotIcon, StatIcon } from '@zenless-optimizer/zzz/svgicons'
+import type { ISubstat } from '@zenless-optimizer/zzz/zood'
+import type { ReactNode } from 'react'
+import { Suspense, useCallback, useContext } from 'react'
 import { ZCard } from '../Components'
 import { getHighlightRGBA, isHighlight, StatHighlightContext } from '../context'
 import { COMPACT_CARD_HEIGHT_PX, EmptyCompactCard } from '../util'

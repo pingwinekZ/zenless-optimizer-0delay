@@ -4,15 +4,15 @@ import {
   type DiscMainStatKey,
   type DiscSlotKey,
   discSlotToMainStatKeys,
-} from '../../consts'
+} from '@zenless-optimizer/zzz/consts'
 import {
   type StatFilter,
   statFilterStatKeys,
   statFilterStatQtKeys,
   targetQ,
   targetQt,
-} from '../../db'
-import { formulas } from '../../formula'
+} from '@zenless-optimizer/zzz/db'
+import { formulas } from '@zenless-optimizer/zzz/formula'
 import {
   getRecommendedPresets,
   mergeStatFilters,

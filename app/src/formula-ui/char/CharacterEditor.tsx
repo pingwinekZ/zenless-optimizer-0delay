@@ -1,15 +1,13 @@
 import { ActionIcon, Box, Button, Grid, Skeleton } from '@mantine/core'
 import { IconTrash, IconX } from '@tabler/icons-react'
 import { CardThemed, ModalWrapper } from '@zenless-optimizer/common/ui'
-import { Suspense, useCallback } from 'react'
-import { useTranslation } from 'react-i18next'
-import { allSkillKeys, type CharacterKey } from '../../consts'
+import { allSkillKeys, type CharacterKey } from '@zenless-optimizer/zzz/consts'
 import {
   CharacterContext,
   useCharacter,
   useCharacterContext,
   useDatabaseContext,
-} from '../../db-ui'
+} from '@zenless-optimizer/zzz/db-ui'
 import {
   CharacterCard,
   CharacterCompactMindscapeSelector,
@@ -17,7 +15,9 @@ import {
   EquippedGrid,
   LevelSelect,
   SkillDropdown,
-} from '../../ui'
+} from '@zenless-optimizer/zzz/ui'
+import { Suspense, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { CharStatsDisplay } from './CharStatsDisplay'
 

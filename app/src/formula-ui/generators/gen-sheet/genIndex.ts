@@ -1,11 +1,11 @@
 import type { Tree } from '@nx/devkit'
 import { formatText } from '@zenless-optimizer/common/pipeline'
-import { writeFileSync } from 'fs'
 import {
   allCharacterKeys,
   allDiscSetKeys,
   allWengineKeys,
-} from '../../../consts'
+} from '@zenless-optimizer/zzz/consts'
+import { writeFileSync } from 'fs'
 
 export default async function genIndex(_tree: Tree, sheet_type: string) {
   const file_location = `app/src/formula-ui/${sheet_type}/sheets/index.ts`
@@ -25,7 +25,7 @@ export default async function genIndex(_tree: Tree, sheet_type: string) {
 async function writeCharIndex(path: string) {
   const index = `
 // WARNING: Generated file, do not modify
-import type { CharacterKey } from '../../../consts'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import type { CharUISheet } from '../consts'
 ${allCharacterKeys
   .map((charKey) => `import ${charKey} from './${charKey}'`)
@@ -43,7 +43,7 @@ async function writeDiscIndex(path: string) {
   const index = `
 // WARNING: Generated file, do not modify
 import type { UISheet } from '@zenless-optimizer/game-opt/sheet-ui'
-import type { DiscSetKey } from '../../../consts'
+import type { DiscSetKey } from '@zenless-optimizer/zzz/consts'
 ${allDiscSetKeys
   .map((setKey) => `import ${setKey} from './${setKey}'`)
   .join('\n')}
@@ -60,7 +60,7 @@ async function writeWengineIndex(path: string) {
   const index = `
 // WARNING: Generated file, do not modify
 import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
-import type { WengineKey } from '../../../consts'
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
 
 ${allWengineKeys.map((wkey) => `import ${wkey} from './${wkey}'`).join('\n')}
 

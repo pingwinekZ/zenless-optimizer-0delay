@@ -25,9 +25,9 @@ import {
   TextFieldLazy,
 } from '@zenless-optimizer/common/ui'
 import { range } from '@zenless-optimizer/common/util'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
 import { useCallback } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
-import { useDatabaseContext } from '../../db-ui'
 import { UploadCard } from './UploadCard'
 
 export function DatabaseCard() {

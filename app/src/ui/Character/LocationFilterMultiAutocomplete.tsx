@@ -1,10 +1,13 @@
 import { Badge, Skeleton } from '@mantine/core'
 import type { GeneralAutocompleteOption } from '@zenless-optimizer/common/ui'
 import { GeneralAutocompleteMulti } from '@zenless-optimizer/common/ui'
+import {
+  allLocationKeys,
+  type LocationKey,
+} from '@zenless-optimizer/zzz/consts'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
 import { Suspense, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { allLocationKeys, type LocationKey } from '../../consts'
-import { useDatabaseContext } from '../../db-ui'
 import { CharIconCircle } from './CharIconCircleElement'
 
 const toImg = (key: LocationKey) =>

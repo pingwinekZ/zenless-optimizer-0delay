@@ -1,4 +1,4 @@
-import type { IDisc } from '../../zood'
+import type { IDisc } from '@zenless-optimizer/zzz/zood'
 
 export type ScoredDisc = {
   id: string

@@ -1,12 +1,12 @@
 import { zodBoundedNumber, zodEnum } from '@zenless-optimizer/common/database'
-import { z } from 'zod'
 import {
   allWengineKeys,
   type MilestoneKey,
   type PhaseKey,
   validateLevelMilestone,
   wengineMaxLevel,
-} from '../consts'
+} from '@zenless-optimizer/zzz/consts'
+import { z } from 'zod'
 
 export const wengineBaseSchema = z.object({
   key: zodEnum(allWengineKeys),

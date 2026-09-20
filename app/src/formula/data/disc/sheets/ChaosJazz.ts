@@ -1,5 +1,5 @@
 import { cmpGE } from '@zenless-optimizer/pando/engine'
-import type { DiscSetKey } from '../../../../consts'
+import type { DiscSetKey } from '@zenless-optimizer/zzz/consts'
 import { allBoolConditionals, own, percent, registerBuff } from '../../util'
 import { entriesForDisc, registerDisc } from '../util'
 

@@ -1,11 +1,14 @@
 import { Menu } from '@mantine/core'
 import { DropdownButton, ImgIcon } from '@zenless-optimizer/common/ui'
 import { range } from '@zenless-optimizer/common/util'
+import { commonDefIcon } from '@zenless-optimizer/zzz/assets'
+import { coreByLevel } from '@zenless-optimizer/zzz/consts'
+import {
+  useCharacterContext,
+  useDatabaseContext,
+} from '@zenless-optimizer/zzz/db-ui'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { commonDefIcon } from '../../assets'
-import { coreByLevel } from '../../consts'
-import { useCharacterContext, useDatabaseContext } from '../../db-ui'
 
 export function CoreDropdown() {
   const { t } = useTranslation('page_characters')

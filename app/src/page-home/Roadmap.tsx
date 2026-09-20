@@ -1,5 +1,5 @@
 import { CardSection, Checkbox, Stack, Title } from '@mantine/core'
-import { ZCard } from '../ui'
+import { ZCard } from '@zenless-optimizer/zzz/ui'
 
 type RoadmapItem = {
   label: string

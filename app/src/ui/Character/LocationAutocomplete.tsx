@@ -1,11 +1,11 @@
 import { Skeleton } from '@mantine/core'
 import type { GeneralAutocompleteOption } from '@zenless-optimizer/common/ui'
 import { GeneralAutocomplete } from '@zenless-optimizer/common/ui'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { allCharacterKeys } from '@zenless-optimizer/zzz/consts'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
 import { Suspense, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { CharacterKey } from '../../consts'
-import { allCharacterKeys } from '../../consts'
-import { useDatabaseContext } from '../../db-ui'
 import { CharIconCircle } from './CharIconCircleElement'
 
 export function LocationAutocomplete({

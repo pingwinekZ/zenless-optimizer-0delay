@@ -1,13 +1,17 @@
 import { createTestDBStorage } from '@zenless-optimizer/common/database'
 import { read } from '@zenless-optimizer/pando/engine'
-import yeDiscs from '../../../ye-shunguang-entry-rotation-discs.json'
-import type { CharacterKey, DiscSlotKey } from '../consts'
-import type { ICachedCharacter, ICachedDisc, Team } from '../db'
-import { comboCondHash } from '../db'
-import { ZzzDatabase } from '../db/Database/Database'
-import { zzzCalculatorWithEntries } from '../formula'
-import { wengineUiSheets } from '../formula-ui'
-import { buildCalculatorEntries } from '../page-optimize/Util/buildStatsUtils'
+import type { CharacterKey, DiscSlotKey } from '@zenless-optimizer/zzz/consts'
+import type {
+  ICachedCharacter,
+  ICachedDisc,
+  Team,
+} from '@zenless-optimizer/zzz/db'
+import { comboCondHash } from '@zenless-optimizer/zzz/db'
+import { ZzzDatabase } from '@zenless-optimizer/zzz/db/Database/Database'
+import { zzzCalculatorWithEntries } from '@zenless-optimizer/zzz/formula'
+import { buildCalculatorEntries } from '@zenless-optimizer/zzz/solver/buildStatsUtils'
+import yeDiscs from '@zenless-optimizer/zzz/solver/ye-shunguang-entry-rotation-discs.json'
+import { wengineUiSheets } from '..'
 
 const YE = 'YeShunguang' as CharacterKey
 const SUNNA = 'Sunna' as CharacterKey

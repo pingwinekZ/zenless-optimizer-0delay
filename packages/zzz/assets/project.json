@@ -1,0 +1,20 @@
+{
+  "name": "zzz-assets",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/zzz/assets/src",
+  "projectType": "library",
+  "tags": ["scope:zzz", "layer:domain"],
+  "targets": {
+    "gen-file-remote": {
+      "executor": "@zenless-optimizer/zzz/assets:gen-assets-remote",
+      "outputs": ["{projectRoot}/src/gen/**/*"]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun test --timeout=60000",
+        "cwd": "packages/zzz/assets"
+      }
+    }
+  }
+}

@@ -19,11 +19,14 @@ import {
 import { SandboxStorage } from '@zenless-optimizer/common/database'
 import { iconInlineProps } from '@zenless-optimizer/common/svgicons'
 import { CardThemed } from '@zenless-optimizer/common/ui'
+import type {
+  ImportResult,
+  ImportResultCounter,
+} from '@zenless-optimizer/zzz/db'
+import { ZzzDatabase } from '@zenless-optimizer/zzz/db'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
 import { useCallback, useDeferredValue, useMemo, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
-import type { ImportResult, ImportResultCounter } from '../../db'
-import { ZzzDatabase } from '../../db'
-import { useDatabaseContext } from '../../db-ui'
 
 export function UploadCard({
   index,

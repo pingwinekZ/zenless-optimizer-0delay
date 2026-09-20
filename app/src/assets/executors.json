@@ -1,9 +1,0 @@
-{
-  "executors": {
-    "gen-assets-remote": {
-      "implementation": "./executors/gen-assets-remote/executor",
-      "schema": "./executors/gen-assets-remote/schema.json",
-      "description": "gen-assets-remote executor"
-    }
-  }
-}

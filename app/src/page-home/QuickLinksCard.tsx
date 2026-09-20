@@ -1,7 +1,7 @@
 import { Button, CardSection, Group, Stack, Title } from '@mantine/core'
 import { IconGitFork, IconLink } from '@tabler/icons-react'
+import { ZCard } from '@zenless-optimizer/zzz/ui'
 import { useTranslation } from 'react-i18next'
-import { ZCard } from '../ui'
 
 const links = [
   {

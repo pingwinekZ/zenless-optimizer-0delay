@@ -4,10 +4,13 @@ import { useDataManagerValues } from '@zenless-optimizer/common/database-ui'
 import { useMediaQueryUp } from '@zenless-optimizer/common/react-util'
 import { useInfScroll } from '@zenless-optimizer/common/ui'
 import { filterFunction } from '@zenless-optimizer/common/util'
+import {
+  useDatabaseContext,
+  useDisplayDisc,
+} from '@zenless-optimizer/zzz/db-ui'
+import { discFilterConfigs } from '@zenless-optimizer/zzz/util'
 import { Suspense, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useDatabaseContext, useDisplayDisc } from '../../db-ui'
-import { discFilterConfigs } from '../../util'
 import { DiscCard } from './DiscCard'
 import DiscFilter from './DiscFilter'
 import discInventoryClasses from './DiscInventory.module.css'

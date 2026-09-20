@@ -4,17 +4,17 @@ import {
   detach,
   setDebugMode,
 } from '@zenless-optimizer/pando/engine'
-import type { WengineKey } from '../consts'
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
 import {
   charTagMapNodeEntries,
   discTagMapNodeEntries,
   teamData,
   wengineTagMapNodeEntries,
   withMember,
-} from '../formula'
-import { Calculator } from '../formula/calculator'
-import { data, keys, values } from '../formula/data'
-import type { TagMapNodeEntries } from '../formula/data/util'
+} from '@zenless-optimizer/zzz/formula'
+import { Calculator } from '@zenless-optimizer/zzz/formula/calculator'
+import { data, keys, values } from '@zenless-optimizer/zzz/formula/data'
+import type { TagMapNodeEntries } from '@zenless-optimizer/zzz/formula/data/util'
 import {
   conditionalEntries,
   convert,
@@ -24,9 +24,9 @@ import {
   ownTag,
   Read,
   type Tag,
-} from '../formula/data/util'
-import { allStats } from '../stats/allStats'
-import { getCharStat } from '../stats/char'
+} from '@zenless-optimizer/zzz/formula/data/util'
+import { allStats } from '@zenless-optimizer/zzz/stats/allStats'
+import { getCharStat } from '@zenless-optimizer/zzz/stats/char'
 
 // Must be called before Calculator creation
 setDebugMode(true)

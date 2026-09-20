@@ -3,6 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/common/ui/src",
   "projectType": "library",
-  "tags": [],
+  "tags": ["scope:shared", "layer:shared"],
   "targets": {}
 }

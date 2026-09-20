@@ -5,7 +5,7 @@ import {
   allFactionKeys,
   allSpecialityKeys,
   allWengineKeys,
-} from '../../../consts'
+} from '@zenless-optimizer/zzz/consts'
 
 export const stats = [
   'hp',

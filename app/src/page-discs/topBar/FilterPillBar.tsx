@@ -1,7 +1,4 @@
 import { getUnitStr } from '@zenless-optimizer/common/util'
-import { useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useShallow } from 'zustand/react/shallow'
 import type {
   CharacterKey,
   DiscMainStatKey,
@@ -9,7 +6,7 @@ import type {
   DiscSetKey,
   DiscSlotKey,
   DiscSubStatKey,
-} from '../../consts'
+} from '@zenless-optimizer/zzz/consts'
 import {
   allCharacterKeys,
   allDiscMainStatKeys,
@@ -18,9 +15,12 @@ import {
   allDiscSlotKeys,
   allDiscSubStatKeys,
   discSetNames,
-} from '../../consts'
+} from '@zenless-optimizer/zzz/consts'
+import { CharIconCircle } from '@zenless-optimizer/zzz/ui'
+import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useShallow } from 'zustand/react/shallow'
 import { MultiSelectPills } from '../../page-optimize'
-import { CharIconCircle } from '../../ui'
 import {
   useDiscTabStore,
   type ValueColumnField,

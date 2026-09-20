@@ -3,14 +3,14 @@ import {
   read,
   setDebugMode,
 } from '@zenless-optimizer/pando/engine'
-import { fail } from 'assert'
-import type { MilestoneKey, WengineKey } from '../consts'
+import type { MilestoneKey, WengineKey } from '@zenless-optimizer/zzz/consts'
 import {
   allCharacterKeys,
   allDiscSetKeys,
   allWengineKeys,
   type CharacterKey,
-} from '../consts'
+} from '@zenless-optimizer/zzz/consts'
+import { fail } from 'assert'
 import {
   charTagMapNodeEntries,
   conditionals,

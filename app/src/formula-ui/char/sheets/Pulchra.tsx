@@ -1,7 +1,7 @@
 import { ColorText } from '@zenless-optimizer/common/ui'
-import type { CharacterKey } from '../../../consts'
-import { Pulchra } from '../../../formula'
-import { GameDesc, GameDescSlice } from '../../../i18n'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { Pulchra } from '@zenless-optimizer/zzz/formula'
+import { GameDesc, GameDescSlice } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
 import {
   AbilityBodyText,

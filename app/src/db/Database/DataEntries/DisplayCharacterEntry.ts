@@ -3,14 +3,14 @@ import {
   zodEnumWithDefault,
   zodFilteredArray,
 } from '@zenless-optimizer/common/database'
-import { z } from 'zod'
 import {
   allAttributeKeys,
   allCharacterKeys,
   allCharacterRarityKeys,
   allSpecialityKeys,
   type CharacterKey,
-} from '../../../consts'
+} from '@zenless-optimizer/zzz/consts'
+import { z } from 'zod'
 import type { ZzzDatabase } from '../Database'
 import { DataEntry } from '../DataEntry'
 

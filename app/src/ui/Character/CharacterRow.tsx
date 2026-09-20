@@ -1,9 +1,9 @@
 import { ActionIcon, Box, Text, Tooltip } from '@mantine/core'
 import { IconPencil, IconX } from '@tabler/icons-react'
+import { characterAsset, wengineAsset } from '@zenless-optimizer/zzz/assets'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { useCharacter } from '@zenless-optimizer/zzz/db-ui'
 import { memo, useCallback, useMemo } from 'react'
-import { characterAsset, wengineAsset } from '../../assets'
-import type { CharacterKey } from '../../consts'
-import { useCharacter } from '../../db-ui'
 import classes from './CharacterRow.module.css'
 
 const noop = () => {}

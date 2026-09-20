@@ -1,12 +1,12 @@
 import type { Tree } from '@nx/devkit'
 import { formatText } from '@zenless-optimizer/common/pipeline'
-import { mkdirSync, writeFileSync } from 'fs'
-import { dirname } from 'path'
 import {
   allCharacterKeys,
   allDiscSetKeys,
   allWengineKeys,
-} from '../../../consts'
+} from '@zenless-optimizer/zzz/consts'
+import { mkdirSync, writeFileSync } from 'fs'
+import { dirname } from 'path'
 import { commonSheets } from '../../data/util'
 
 export default async function genIndex(_tree: Tree, sheet_type: string) {

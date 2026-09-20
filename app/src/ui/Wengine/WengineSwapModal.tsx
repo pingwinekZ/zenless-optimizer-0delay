@@ -15,6 +15,10 @@ import {
   ModalWrapper,
   useInfScroll,
 } from '@zenless-optimizer/common/ui'
+import { specialityDefIcon } from '@zenless-optimizer/zzz/assets'
+import type { SpecialityKey, WengineKey } from '@zenless-optimizer/zzz/consts'
+import { allWengineKeys } from '@zenless-optimizer/zzz/consts'
+import { getWengineStat } from '@zenless-optimizer/zzz/stats'
 import type { ChangeEvent } from 'react'
 import {
   Suspense,
@@ -24,10 +28,6 @@ import {
   useState,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { specialityDefIcon } from '../../assets'
-import type { SpecialityKey, WengineKey } from '../../consts'
-import { allWengineKeys } from '../../consts'
-import { getWengineStat } from '../../stats'
 import { WengineCard } from './WengineCard'
 
 const numToShowMap = { xs: 2 * 3, sm: 2 * 3, md: 3 * 3, lg: 4 * 3, xl: 4 * 3 }

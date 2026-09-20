@@ -20,19 +20,22 @@ import {
 } from '@zenless-optimizer/game-opt/sheet-ui'
 import type { CalcResult } from '@zenless-optimizer/pando/engine'
 import { constant } from '@zenless-optimizer/pando/engine'
-import type { ReactNode } from 'react'
-import { useMemo } from 'react'
-import type { CharacterKey, PhaseKey } from '../../consts'
+import type { CharacterKey, PhaseKey } from '@zenless-optimizer/zzz/consts'
 import {
   allDiscSetKeys,
   allDiscSlotKeys,
   allWengineKeys,
   isWengineKey,
-} from '../../consts'
-import type { DiscIds, ICachedCharacter, Team, TeamConditional } from '../../db'
-import { getComboFrames, teamCharacterKeys } from '../../db'
-import { useCharacter, useDiscs } from '../../db-ui'
-import type { TagMapNodeEntries } from '../../formula'
+} from '@zenless-optimizer/zzz/consts'
+import type {
+  DiscIds,
+  ICachedCharacter,
+  Team,
+  TeamConditional,
+} from '@zenless-optimizer/zzz/db'
+import { getComboFrames, teamCharacterKeys } from '@zenless-optimizer/zzz/db'
+import { useCharacter, useDiscs } from '@zenless-optimizer/zzz/db-ui'
+import type { TagMapNodeEntries } from '@zenless-optimizer/zzz/formula'
 import {
   charTagMapNodeEntries,
   conditionalEntries,
@@ -49,9 +52,11 @@ import {
   withMember,
   withPreset,
   zzzCalculatorWithEntries,
-} from '../../formula'
-import type { SavedTeammateGear } from '../../schema/savedBuild'
-import { allStats } from '../../stats'
+} from '@zenless-optimizer/zzz/formula'
+import type { SavedTeammateGear } from '@zenless-optimizer/zzz/schema/savedBuild'
+import { allStats } from '@zenless-optimizer/zzz/stats'
+import type { ReactNode } from 'react'
+import { useMemo } from 'react'
 import { FullTagDisplay, TagDisplay } from '../components'
 import { formulaText } from '../formulaText'
 

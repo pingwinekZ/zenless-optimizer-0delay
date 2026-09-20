@@ -1,5 +1,5 @@
 import { useDataManagerBase } from '@zenless-optimizer/common/database-ui'
-import type { CharacterKey } from '../../consts'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { useDatabaseContext } from '../context'
 
 export function useCharacter(characterKey: CharacterKey | '' | undefined) {

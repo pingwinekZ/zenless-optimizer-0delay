@@ -1,5 +1,5 @@
-import { isComboTarget, type TargetTag } from '../db'
-import type { Tag } from '../formula'
+import { isComboTarget, type TargetTag } from '@zenless-optimizer/zzz/db'
+import type { Tag } from '@zenless-optimizer/zzz/formula'
 
 export function isOptTargetTag(
   tag: Tag,

@@ -1,6 +1,6 @@
 import { compileTagMapValues, read } from '@zenless-optimizer/pando/engine'
-import type { CharacterKey } from '../consts'
-import { mappedStats } from '../stats'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { mappedStats } from '@zenless-optimizer/zzz/stats'
 import {
   charTagMapNodeEntries,
   formulas,

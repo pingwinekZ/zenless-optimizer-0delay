@@ -6,8 +6,11 @@ import {
   subscript,
   sum,
 } from '@zenless-optimizer/pando/engine'
-import { allAttributeAnomalyKeys, type CharacterKey } from '../../../../consts'
-import { allStats, mappedStats } from '../../../../stats'
+import {
+  allAttributeAnomalyKeys,
+  type CharacterKey,
+} from '@zenless-optimizer/zzz/consts'
+import { allStats, mappedStats } from '@zenless-optimizer/zzz/stats'
 import {
   allBoolConditionals,
   customAnomalyDmg,

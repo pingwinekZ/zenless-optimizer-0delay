@@ -1,5 +1,9 @@
+import {
+  characterSchema,
+  discSchema,
+  wengineBaseSchema,
+} from '@zenless-optimizer/zzz/schema'
 import { z } from 'zod'
-import { characterSchema, discSchema, wengineBaseSchema } from '../../schema'
 
 const zoodMetadataSchema = z.object({
   format: z.literal('ZOOD'),

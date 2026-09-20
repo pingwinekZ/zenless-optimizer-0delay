@@ -1,15 +1,15 @@
 import { ColorText } from '@zenless-optimizer/common/ui'
 import { TagContext } from '@zenless-optimizer/game-opt/formula-ui'
 import type { UISheet } from '@zenless-optimizer/game-opt/sheet-ui'
-import { useContext } from 'react'
-import { discDefIcon } from '../../../assets'
+import { discDefIcon } from '@zenless-optimizer/zzz/assets'
 import {
   type CharacterKey,
   type DiscSetKey,
   elementalData,
-} from '../../../consts'
-import { FreedomBlues } from '../../../formula'
-import { allStats } from '../../../stats'
+} from '@zenless-optimizer/zzz/consts'
+import { FreedomBlues } from '@zenless-optimizer/zzz/formula'
+import { allStats } from '@zenless-optimizer/zzz/stats'
+import { useContext } from 'react'
 import { trans } from '../../util'
 import { Set2Display, Set4Display } from '../components'
 

@@ -1,5 +1,5 @@
+import type { ZzzDatabase } from '@zenless-optimizer/zzz/db'
 import { createContext, useContext } from 'react'
-import type { ZzzDatabase } from '../../db'
 
 export type DatabaseContextObj = {
   databases: ZzzDatabase[]

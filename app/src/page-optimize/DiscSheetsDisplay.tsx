@@ -1,12 +1,12 @@
 import { Box, SimpleGrid, Stack } from '@mantine/core'
 import { stableArr } from '@zenless-optimizer/common/util'
+import type { DiscSetKey } from '@zenless-optimizer/zzz/consts'
+import { isDiscSetKey } from '@zenless-optimizer/zzz/consts'
+import type { TeamConditional } from '@zenless-optimizer/zzz/db'
+import { useCharacterContext, useTeam } from '@zenless-optimizer/zzz/db-ui'
+import { DiscSheetDisplay } from '@zenless-optimizer/zzz/formula-ui'
+import { DiscSetAutocomplete } from '@zenless-optimizer/zzz/ui'
 import { useMemo, useState } from 'react'
-import type { DiscSetKey } from '../consts'
-import { isDiscSetKey } from '../consts'
-import type { TeamConditional } from '../db'
-import { useCharacterContext, useTeam } from '../db-ui'
-import { DiscSheetDisplay } from '../formula-ui'
-import { DiscSetAutocomplete } from '../ui'
 
 export function DiscSheetsDisplay() {
   const { key: characterKey } = useCharacterContext()!

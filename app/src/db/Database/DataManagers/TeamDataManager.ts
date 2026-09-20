@@ -12,13 +12,12 @@ import {
   correctConditionalValue,
   type IConditionalData,
 } from '@zenless-optimizer/game-opt/engine'
-import { z } from 'zod'
 import {
   type AttributeKey,
   allAttributeKeys,
   allCharacterKeys,
   type CharacterKey,
-} from '../../../consts'
+} from '@zenless-optimizer/zzz/consts'
 import type {
   DamageType,
   Dst,
@@ -27,13 +26,14 @@ import type {
   Sheet,
   Src,
   Tag,
-} from '../../../formula'
+} from '@zenless-optimizer/zzz/formula'
 import {
   conditionals as allConditionals,
   formulas,
   getConditional,
   isMember,
-} from '../../../formula'
+} from '@zenless-optimizer/zzz/formula'
+import { z } from 'zod'
 import type { ZzzDatabase } from '../..'
 import { DataManager } from '../DataManager'
 

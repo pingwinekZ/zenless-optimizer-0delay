@@ -1,12 +1,16 @@
 import { createTestDBStorage } from '@zenless-optimizer/common/database'
 import { objKeyMap } from '@zenless-optimizer/common/util'
-import type { CharacterKey, WengineKey } from '../../consts'
-import { allCharacterKeys, allDiscSlotKeys, allWengineKeys } from '../../consts'
-import type { Team } from '../../db'
-import { ZzzDatabase } from '../../db/Database/Database'
-import { initialTeam } from '../../db/Database/DataManagers/TeamDataManager'
-import { formulas } from '../../formula'
-import { BuildSource } from '../../zood'
+import type { CharacterKey, WengineKey } from '@zenless-optimizer/zzz/consts'
+import {
+  allCharacterKeys,
+  allDiscSlotKeys,
+  allWengineKeys,
+} from '@zenless-optimizer/zzz/consts'
+import type { Team } from '@zenless-optimizer/zzz/db'
+import { ZzzDatabase } from '@zenless-optimizer/zzz/db/Database/Database'
+import { initialTeam } from '@zenless-optimizer/zzz/db/Database/DataManagers/TeamDataManager'
+import { formulas } from '@zenless-optimizer/zzz/formula'
+import { BuildSource } from '@zenless-optimizer/zzz/zood'
 import {
   deserializeBuild,
   previewOverrideFromBuild,

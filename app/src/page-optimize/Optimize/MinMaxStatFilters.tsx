@@ -1,8 +1,11 @@
 import { Flex } from '@mantine/core'
+import type { StatFilterStatKey, StatFilters } from '@zenless-optimizer/zzz/db'
+import {
+  OptConfigContext,
+  useDatabaseContext,
+} from '@zenless-optimizer/zzz/db-ui'
 import type { MutableRefObject } from 'react'
 import { useCallback, useContext } from 'react'
-import type { StatFilterStatKey, StatFilters } from '../../db'
-import { OptConfigContext, useDatabaseContext } from '../../db-ui'
 import { FilterRow, FormStatTextStyled, HeaderText } from '../layout'
 
 const statFilterStatKeys: StatFilterStatKey[] = [

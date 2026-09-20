@@ -1,7 +1,7 @@
 import { Box, Divider, Menu } from '@mantine/core'
 import { DropdownButton } from '@zenless-optimizer/common/ui'
-import { own } from '../formula'
-import { useZzzCalcContext } from '../formula-ui'
+import { own } from '@zenless-optimizer/zzz/formula'
+import { useZzzCalcContext } from '@zenless-optimizer/zzz/formula-ui'
 
 // TODO: Implement full sort/limit integration with optimizer state
 // Currently handles display-only; actual sorting/filtering needs store integration

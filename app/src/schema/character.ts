@@ -1,6 +1,5 @@
 import { zodBoundedNumber, zodEnum } from '@zenless-optimizer/common/database'
 import { clamp } from '@zenless-optimizer/common/util'
-import { z } from 'zod'
 import {
   allCharacterKeys,
   allWengineKeys,
@@ -9,7 +8,8 @@ import {
   skillByLevel,
   validateLevelMilestone,
   type WengineKey,
-} from '../consts'
+} from '@zenless-optimizer/zzz/consts'
+import { z } from 'zod'
 import { savedBuildSchema } from './savedBuild'
 
 export const characterSchema = z

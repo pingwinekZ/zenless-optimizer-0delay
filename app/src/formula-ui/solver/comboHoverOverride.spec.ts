@@ -1,13 +1,20 @@
 import { createTestDBStorage } from '@zenless-optimizer/common/database'
 import { correctConditionalValue } from '@zenless-optimizer/game-opt/engine'
 import { read } from '@zenless-optimizer/pando/engine'
-import yeDiscs from '../../../ye-shunguang-entry-rotation-discs.json'
-import type { CharacterKey, DiscSlotKey } from '../consts'
-import type { ICachedCharacter, ICachedDisc, Team } from '../db'
-import { ZzzDatabase } from '../db/Database/Database'
-import { getConditional, zzzCalculatorWithEntries } from '../formula'
-import { charSheets } from '../formula-ui'
-import { buildCalculatorEntries } from '../page-optimize/Util/buildStatsUtils'
+import type { CharacterKey, DiscSlotKey } from '@zenless-optimizer/zzz/consts'
+import type {
+  ICachedCharacter,
+  ICachedDisc,
+  Team,
+} from '@zenless-optimizer/zzz/db'
+import { ZzzDatabase } from '@zenless-optimizer/zzz/db/Database/Database'
+import {
+  getConditional,
+  zzzCalculatorWithEntries,
+} from '@zenless-optimizer/zzz/formula'
+import { buildCalculatorEntries } from '@zenless-optimizer/zzz/solver/buildStatsUtils'
+import yeDiscs from '@zenless-optimizer/zzz/solver/ye-shunguang-entry-rotation-discs.json'
+import { charSheets } from '..'
 
 const YE = 'YeShunguang' as CharacterKey
 

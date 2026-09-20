@@ -1,6 +1,6 @@
-import type { CharacterKey } from '../../../consts'
-import { Rina } from '../../../formula'
-import { GameDesc, GameDescSlice } from '../../../i18n'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { Rina } from '@zenless-optimizer/zzz/formula'
+import { GameDesc, GameDescSlice } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
 import {
   AbilityBodyText,

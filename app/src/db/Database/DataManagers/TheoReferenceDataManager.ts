@@ -1,21 +1,21 @@
 import { zodFilteredArray } from '@zenless-optimizer/common/database'
 import { validateValue } from '@zenless-optimizer/common/util'
-import { z } from 'zod'
 import type {
   CharacterKey,
   DiscMainStatKey,
   DiscSetKey,
   DiscSlotKey,
   DiscSubStatKey,
-} from '../../../consts'
+} from '@zenless-optimizer/zzz/consts'
 import {
   allDiscMainStatKeys,
   allDiscSetKeys,
   allDiscSlotKeys,
   allDiscSubStatKeys,
-} from '../../../consts'
-import type { BuildRecipe } from '../../../solver'
+} from '@zenless-optimizer/zzz/consts'
+import { z } from 'zod'
 import type { ICachedDisc } from '../../Interfaces'
+import type { BuildRecipe } from '../../Interfaces/BuildRecipe'
 import type { ZzzDatabase } from '../Database'
 import { DataManager } from '../DataManager'
 
@@ -23,7 +23,7 @@ import { DataManager } from '../DataManager'
  * Snapshot of the reference build's in-combat stats, taken at pin time.
  * Stored as plain numbers (no calculator dependency) so the comparison
  * panel can render them after a refresh. Field names match
- * `BuildCombatStats` in page-optimize/Util/buildStatsUtils.
+ * `BuildCombatStats` in solver/buildStatsUtils.
  */
 export type TheoReferenceCombatStats = Partial<{
   hp: number

@@ -1,14 +1,14 @@
-import { useMemo } from 'react'
-import { create } from 'zustand'
-import type { ComboHit, TeamConditional } from '../../db'
+import type { ComboHit, TeamConditional } from '@zenless-optimizer/zzz/db'
 import {
   COMBO_STATE_VERSION,
   comboCondHash,
   MAX_COMBO_HITS,
   parseComboState,
-} from '../../db'
-import { own } from '../../formula'
-import { useZzzCalcContext } from '../../formula-ui'
+} from '@zenless-optimizer/zzz/db'
+import { own } from '@zenless-optimizer/zzz/formula'
+import { useZzzCalcContext } from '@zenless-optimizer/zzz/formula-ui'
+import { useMemo } from 'react'
+import { create } from 'zustand'
 import { parseSkillVariant, skillVariantBase } from '../OptTargetTagDisplay'
 import type { CascaderData } from './CascaderSelect'
 import type { ComboMember } from './useComboMembers'

@@ -16,14 +16,22 @@ import {
   NumberInputLazy,
 } from '@zenless-optimizer/common/ui'
 import { isIn } from '@zenless-optimizer/common/util'
+import { allAttributeAnomalyKeys } from '@zenless-optimizer/zzz/consts'
+import type { EnemyStatKey, EnemyStatsTag } from '@zenless-optimizer/zzz/db'
+import {
+  enemyStatKeys,
+  getTeamFrame0,
+  newEnemyStatTag,
+} from '@zenless-optimizer/zzz/db'
+import {
+  useCharacterContext,
+  useDatabaseContext,
+  useTeam,
+} from '@zenless-optimizer/zzz/db-ui'
+import { type Attribute, type Tag } from '@zenless-optimizer/zzz/formula'
+import { TagDisplay } from '@zenless-optimizer/zzz/formula-ui'
+import { AttributeName } from '@zenless-optimizer/zzz/ui'
 import { useCallback } from 'react'
-import { allAttributeAnomalyKeys } from '../consts'
-import type { EnemyStatKey, EnemyStatsTag } from '../db'
-import { enemyStatKeys, getTeamFrame0, newEnemyStatTag } from '../db'
-import { useCharacterContext, useDatabaseContext, useTeam } from '../db-ui'
-import { type Attribute, type Tag } from '../formula'
-import { TagDisplay } from '../formula-ui'
-import { AttributeName } from '../ui'
 
 export function EnemyStatsSection() {
   const { database } = useDatabaseContext()

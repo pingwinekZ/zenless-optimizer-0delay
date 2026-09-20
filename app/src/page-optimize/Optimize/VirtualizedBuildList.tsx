@@ -1,8 +1,8 @@
 import { Box, Text } from '@mantine/core'
 import { useInfScroll } from '@zenless-optimizer/common/ui'
+import type { GeneratedBuild } from '@zenless-optimizer/zzz/db'
 import { memo, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { GeneratedBuild } from '../../db'
 
 const SCROLL_LOAD_INCREMENT = 20
 

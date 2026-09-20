@@ -8,7 +8,7 @@ import type {
   DiscMainStatKey,
   DiscSetKey,
   DiscSubStatKey,
-} from '../consts'
+} from '@zenless-optimizer/zzz/consts'
 import {
   type GenerateTheoreticalOptions,
   generateTheoreticalDiscs,

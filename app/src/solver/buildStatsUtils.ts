@@ -6,7 +6,7 @@ import type {
   DiscSetKey,
   DiscSlotKey,
   PhaseKey,
-} from '../../consts'
+} from '@zenless-optimizer/zzz/consts'
 import type {
   DiscIds,
   ICachedCharacter,
@@ -14,9 +14,13 @@ import type {
   StatFilter,
   Team,
   TeammateDatum,
-} from '../../db'
-import { getComboFrames, StatFilterTagToTag, teamCharacterKeys } from '../../db'
-import type { Tag } from '../../formula'
+} from '@zenless-optimizer/zzz/db'
+import {
+  getComboFrames,
+  StatFilterTagToTag,
+  teamCharacterKeys,
+} from '@zenless-optimizer/zzz/db'
+import type { Tag } from '@zenless-optimizer/zzz/formula'
 import {
   charTagMapNodeEntries,
   conditionalEntries,
@@ -34,8 +38,8 @@ import {
   withMember,
   withPreset,
   zzzCalculatorWithEntries,
-} from '../../formula'
-import { allStats } from '../../stats'
+} from '@zenless-optimizer/zzz/formula'
+import { allStats } from '@zenless-optimizer/zzz/stats'
 
 const EPSILON = 1e-7
 
@@ -555,10 +559,16 @@ export function buildCalculatorEntries(
           .filter(({ disabled }) => !disabled)
           .flatMap(({ tag, value }) => {
             const { damageType1, ...rest } = tag
+            // Custom frame buffs use `sheet:custom` (instead of `sheet:agg`)
+            // so they stay distinguishable as a provenance source.
+            // Behavior is preserved: `data/common` rereads `sheet:custom`
+            // into both `sheet:agg` and `sheet:iso` for `et:own` reads, and
+            // no `iso` read uses these `qt`s, so the extra `iso` path matches
+            // nothing.
             const baseTag = {
               ...rest,
               src: character.key,
-              sheet: 'agg',
+              sheet: 'custom',
               et: 'own',
             } as any
             const entries: TagMapNodeEntries = [

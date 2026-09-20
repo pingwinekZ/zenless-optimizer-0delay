@@ -2,8 +2,8 @@ import type { Candidate } from '@zenless-optimizer/game-opt/solver'
 import { buildCount } from '@zenless-optimizer/game-opt/solver'
 import type { NumTagFree } from '@zenless-optimizer/pando/engine'
 import { max, prune, read, sum } from '@zenless-optimizer/pando/engine'
+import type { DiscSetKey } from '@zenless-optimizer/zzz/consts'
 import { describe, expect, it } from 'vitest'
-import type { DiscSetKey } from '../consts'
 import {
   generateTheoreticalDiscs,
   materializeRecipeFromIndex,

@@ -10,24 +10,24 @@ import {
 import { IconArrowsHorizontal } from '@tabler/icons-react'
 import { useBoolState } from '@zenless-optimizer/common/react-util'
 import { ImgIcon } from '@zenless-optimizer/common/ui'
-import { Suspense, useContext, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { specialityDefIcon } from '../../assets'
+import { specialityDefIcon } from '@zenless-optimizer/zzz/assets'
 import type {
   DiscSlotKey,
   PhaseKey,
   SpecialityKey,
   WengineKey,
-} from '../../consts'
-import { allSpecialityKeys } from '../../consts'
-import type { ICachedDisc } from '../../db'
+} from '@zenless-optimizer/zzz/consts'
+import { allSpecialityKeys } from '@zenless-optimizer/zzz/consts'
+import type { ICachedDisc } from '@zenless-optimizer/zzz/db'
 import {
   CharacterContext,
   useDatabaseContext,
   useDisc,
   useDiscs,
-} from '../../db-ui'
-import { getCharStat } from '../../stats'
+} from '@zenless-optimizer/zzz/db-ui'
+import { getCharStat } from '@zenless-optimizer/zzz/stats'
+import { Suspense, useContext, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ZCard } from '../Components'
 import { DiscCardObj, DiscEditor, DiscSwapModal } from '../Disc'
 import { WengineCardObj, WengineSwapModal } from '../Wengine'

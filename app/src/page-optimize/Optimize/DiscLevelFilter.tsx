@@ -1,7 +1,10 @@
+import { discMaxLevel } from '@zenless-optimizer/zzz/consts'
+import {
+  OptConfigContext,
+  useDatabaseContext,
+} from '@zenless-optimizer/zzz/db-ui'
+import { DiscLevelSlider } from '@zenless-optimizer/zzz/ui'
 import { memo, useContext } from 'react'
-import { discMaxLevel } from '../../consts'
-import { OptConfigContext, useDatabaseContext } from '../../db-ui'
-import { DiscLevelSlider } from '../../ui'
 
 export const DiscLevelFilter = memo(function DiscLevelFilter({
   disabled = false,

@@ -1,10 +1,18 @@
 import { Box, Text } from '@mantine/core'
+import {
+  characterAsset,
+  commonDefImages,
+  discDefIcon,
+} from '@zenless-optimizer/zzz/assets'
+import type { CharacterKey, DiscSlotKey } from '@zenless-optimizer/zzz/consts'
+import {
+  allDiscSlotKeys,
+  rarityColor,
+  themeColorVar,
+} from '@zenless-optimizer/zzz/consts'
+import type { ICachedDisc } from '@zenless-optimizer/zzz/db'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
 import { useMemo } from 'react'
-import { characterAsset, commonDefImages, discDefIcon } from '../../../assets'
-import type { CharacterKey, DiscSlotKey } from '../../../consts'
-import { allDiscSlotKeys, rarityColor, themeColorVar } from '../../../consts'
-import type { ICachedDisc } from '../../../db'
-import { useDatabaseContext } from '../../../db-ui'
 
 const commonStyles = Object.freeze({
   position: 'absolute' as const,

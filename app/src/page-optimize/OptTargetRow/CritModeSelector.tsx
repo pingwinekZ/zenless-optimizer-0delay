@@ -1,8 +1,12 @@
 import { Box, MenuItem } from '@mantine/core'
 import { DropdownButton } from '@zenless-optimizer/common/ui'
-import type { critModeKey } from '../../db'
-import { critModeKeys, getTeamFrame0 } from '../../db'
-import { useCharacterContext, useDatabaseContext, useTeam } from '../../db-ui'
+import type { critModeKey } from '@zenless-optimizer/zzz/db'
+import { critModeKeys, getTeamFrame0 } from '@zenless-optimizer/zzz/db'
+import {
+  useCharacterContext,
+  useDatabaseContext,
+  useTeam,
+} from '@zenless-optimizer/zzz/db-ui'
 
 // TODO: translation
 const modeMap: Record<critModeKey, string> = {

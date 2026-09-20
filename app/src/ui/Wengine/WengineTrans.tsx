@@ -1,5 +1,5 @@
-import type { WengineKey } from '../../consts'
-import { Translate } from '../../i18n'
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
+import { Translate } from '@zenless-optimizer/zzz/i18n'
 
 export function WengineName({ wKey }: { wKey: WengineKey }) {
   return <Translate ns="wengineNames_gen" key18={wKey} />

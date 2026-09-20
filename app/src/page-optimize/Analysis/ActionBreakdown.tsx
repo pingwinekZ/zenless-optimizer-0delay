@@ -16,8 +16,11 @@ import {
   FormulaTextContext,
 } from '@zenless-optimizer/game-opt/sheet-ui'
 import type { CalcResult } from '@zenless-optimizer/pando/engine'
+import type {
+  Tag as AppTag,
+  SourceContribution,
+} from '@zenless-optimizer/zzz/formula'
 import { useCallback, useContext, useMemo } from 'react'
-import type { Tag as AppTag } from '../../formula'
 import { OptTargetTagDisplay } from '../OptTargetTagDisplay'
 import type { AnalysisData } from './ExpandedDataPanelController'
 
@@ -130,6 +133,42 @@ export function ActionBreakdown({
                         </Text>
                       )}
                     </Group>
+                    {entry.sources.length > 0 && (
+                      <Stack gap={2} mt={2} ml={18}>
+                        {entry.sources.map((source) => {
+                          const share =
+                            entry.value !== 0
+                              ? (source.value / entry.value) * 100
+                              : 0
+                          return (
+                            <Group key={source.key} gap="xs" wrap="nowrap">
+                              <Box style={{ flex: 1 }}>
+                                <SourceBadge source={source} />
+                              </Box>
+                              <Text
+                                size="xs"
+                                c="dimmed"
+                                style={{ textAlign: 'right', width: 100 }}
+                              >
+                                {source.value >= 0 ? '+' : '−'}
+                                {Math.floor(
+                                  Math.abs(source.value)
+                                ).toLocaleString()}
+                              </Text>
+                              {isRotation && (
+                                <Text
+                                  size="xs"
+                                  c="dimmed"
+                                  style={{ textAlign: 'right', width: 50 }}
+                                >
+                                  {share.toFixed(1)}%
+                                </Text>
+                              )}
+                            </Group>
+                          )
+                        })}
+                      </Stack>
+                    )}
                   </Box>
                 )
               })}
@@ -246,6 +285,31 @@ export function ActionBreakdown({
 
 function FormulaLabel({ tag }: { tag: Tag }) {
   return <OptTargetTagDisplay tag={tag as unknown as AppTag} />
+}
+
+const SOURCE_COLORS: Record<SourceContribution['kind'], string> = {
+  sheet: '#4dabf7',
+  custom: '#fcc419',
+  enemy: '#ff6b6b',
+}
+
+function SourceBadge({ source }: { source: SourceContribution }) {
+  return (
+    <Group gap={6} wrap="nowrap">
+      <Box
+        style={{
+          width: 8,
+          height: 8,
+          borderRadius: 2,
+          backgroundColor: SOURCE_COLORS[source.kind],
+          flexShrink: 0,
+        }}
+      />
+      <Text size="xs" c="dimmed" style={{ flex: 1 }}>
+        {source.label}
+      </Text>
+    </Group>
+  )
 }
 
 function FormulaHelpIcon({

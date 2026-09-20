@@ -11,8 +11,8 @@ import {
   type MilestoneKey,
   type PhaseKey,
   type WengineKey,
-} from '../consts'
-import type { IDisc } from '../zood'
+} from '@zenless-optimizer/zzz/consts'
+import type { IDisc } from '@zenless-optimizer/zzz/zood'
 import type { Member, TagMapNodeEntries } from './data/util'
 import {
   convert,

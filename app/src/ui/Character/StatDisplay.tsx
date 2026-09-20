@@ -1,7 +1,7 @@
 import { iconInlineProps } from '@zenless-optimizer/common/svgicons'
 import { getUnitStr } from '@zenless-optimizer/common/util'
-import { type StatKey, statKeyTextMap } from '../../consts'
-import { StatIcon } from '../../svgicons'
+import { type StatKey, statKeyTextMap } from '@zenless-optimizer/zzz/consts'
+import { StatIcon } from '@zenless-optimizer/zzz/svgicons'
 
 export function StatDisplay({
   statKey,

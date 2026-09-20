@@ -5,11 +5,11 @@ import {
   allAttributeDamageKeys,
   allAttributeKeys,
   elementalData,
-} from '../../consts'
-import { specificDmgTypeKeys } from '../../db'
-import type { Attribute, Tag } from '../../formula'
-import { own } from '../../formula'
-import { StatDisplay } from '../../ui'
+} from '@zenless-optimizer/zzz/consts'
+import { specificDmgTypeKeys } from '@zenless-optimizer/zzz/db'
+import type { Attribute, Tag } from '@zenless-optimizer/zzz/formula'
+import { own } from '@zenless-optimizer/zzz/formula'
+import { StatDisplay } from '@zenless-optimizer/zzz/ui'
 import { damageTypeKeysMap } from './util'
 export const charBaseUiSheet: TagField[] = (
   [

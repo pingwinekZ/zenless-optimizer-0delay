@@ -3,8 +3,8 @@ import type {
   DiscMainStatKey,
   DiscSetKey,
   DiscSlotKey,
-} from '../../consts'
-import type { StatFilter, TargetTag } from '../../db'
+} from '@zenless-optimizer/zzz/consts'
+import type { StatFilter, TargetTag } from '@zenless-optimizer/zzz/db'
 
 export type RecommendedPreset = {
   id: string

@@ -5,12 +5,15 @@ import {
   stableArr,
   toggleInArr,
 } from '@zenless-optimizer/common/util'
+import type { DiscSetKey, DiscSlotKey } from '@zenless-optimizer/zzz/consts'
+import { allDiscSetKeys, allDiscSlotKeys } from '@zenless-optimizer/zzz/consts'
+import type { ICachedDisc, TeamConditional } from '@zenless-optimizer/zzz/db'
+import { useCharacterContext, useTeam } from '@zenless-optimizer/zzz/db-ui'
+import {
+  CharCalcMockCountProvider,
+  DiscSheetDisplay,
+} from '@zenless-optimizer/zzz/formula-ui'
 import { useMemo } from 'react'
-import type { DiscSetKey, DiscSlotKey } from '../../consts'
-import { allDiscSetKeys, allDiscSlotKeys } from '../../consts'
-import type { ICachedDisc, TeamConditional } from '../../db'
-import { useCharacterContext, useTeam } from '../../db-ui'
-import { CharCalcMockCountProvider, DiscSheetDisplay } from '../../formula-ui'
 
 export function DiscSetFilter({
   discBySlot,

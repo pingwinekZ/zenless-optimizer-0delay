@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/game-opt/solver-webgpu/src",
   "projectType": "library",
-  "tags": [],
+  "tags": ["scope:game-opt", "layer:engine"],
   "targets": {
     "test": {
       "executor": "nx:run-commands",

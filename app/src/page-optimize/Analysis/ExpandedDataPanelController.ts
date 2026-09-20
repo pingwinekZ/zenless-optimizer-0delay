@@ -6,8 +6,11 @@ import type {
   DiscSetKey,
   DiscSlotKey,
   DiscSubStatKey,
-} from '../../consts'
-import { getDiscSubStatBaseVal, statKeyTextMap } from '../../consts'
+} from '@zenless-optimizer/zzz/consts'
+import {
+  getDiscSubStatBaseVal,
+  statKeyTextMap,
+} from '@zenless-optimizer/zzz/consts'
 import type {
   DiscIds,
   ICachedCharacter,
@@ -16,25 +19,36 @@ import type {
   Team,
   TeammateDatum,
   TheoReferenceCombatStats,
-} from '../../db'
+} from '@zenless-optimizer/zzz/db'
 import {
   getComboFrames,
   getTeamFrame0,
   isComboTarget,
   targetTag,
-} from '../../db'
-import type { Tag } from '../../formula'
-import { convert, ownTag, Read, zzzCalculatorWithEntries } from '../../formula'
-import type { ISubstat } from '../../schema/disc'
-import { efficiencyToGrade } from '../../util'
+} from '@zenless-optimizer/zzz/db'
+import type { Tag } from '@zenless-optimizer/zzz/formula'
+import {
+  type ContributionTarget,
+  convert,
+  explainContributions,
+  ownTag,
+  Read,
+  type SourceContribution,
+  zzzCalculatorWithEntries,
+} from '@zenless-optimizer/zzz/formula'
+import type { ISubstat } from '@zenless-optimizer/zzz/schema/disc'
+import type {
+  BuildCombatStats,
+  EnrichedBuild,
+} from '@zenless-optimizer/zzz/solver/buildStatsUtils'
+import { buildCalculatorEntries } from '@zenless-optimizer/zzz/solver/buildStatsUtils'
+import { efficiencyToGrade } from '@zenless-optimizer/zzz/util'
 import type {
   MainMismatch,
   SubstatTip,
   TheoReferenceShape,
 } from '../reference/referenceScoring'
 import { compareToReference } from '../reference/referenceScoring'
-import type { BuildCombatStats, EnrichedBuild } from '../Util/buildStatsUtils'
-import { buildCalculatorEntries } from '../Util/buildStatsUtils'
 
 export type SubstatRollInfo = {
   key: DiscSubStatKey
@@ -66,6 +80,14 @@ export type PerActionDamage = {
   value: number
   calcResult: CalcResult<number, CalcMeta<Tag, string>>
   buffedStats: BuildCombatStats | null
+  /**
+   * Per-source damage contributions for this action (leave-one-out deltas).
+   * Only buffs targeting this opt target appear: entries scoped to another
+   * `preset`/`sheet`/`name` recompute to the same total and are filtered.
+   * Teammate buffs carry their own sheet, so they are no longer grouped
+   * into the main character's bucket.
+   */
+  sources: SourceContribution[]
 }
 
 export type TargetFormulaInfo = {
@@ -349,7 +371,14 @@ function buildTargetInfo(
     defIgn: calc.compute(combatReader.final.defIgn_).val,
   }
 
-  const perActionDamage: PerActionDamage[] = []
+  const actionRows: Array<{
+    name: string
+    tag: Tag
+    value: number
+    calcResult: CalcResult<number, CalcMeta<Tag, string>>
+    buffedStats: BuildCombatStats | null
+    target: ContributionTarget
+  }> = []
 
   const readBuffedStats = (
     nameContext?: string,
@@ -394,12 +423,13 @@ function buildTargetInfo(
         undefined
       ).with('preset', preset as any)
       const actionResult = calc.compute(targetRead)
-      perActionDamage.push({
+      actionRows.push({
         name: `${comboFrame.tag.sheet}.${comboFrame.tag.name}`,
         tag: actionTag,
         value: actionResult.val * comboFrame.multiplier,
         calcResult: actionResult,
         buffedStats: readBuffedStats(comboFrame.tag.name, preset),
+        target: { read: targetRead as any, multiplier: comboFrame.multiplier },
       })
     })
   } else {
@@ -410,7 +440,7 @@ function buildTargetInfo(
     const calcResult = calc.compute(targetRead)
     const value = calcResult.val
     const actionName = formulaTag.name ?? undefined
-    perActionDamage.push({
+    actionRows.push({
       name:
         frame.tag.sheet && frame.tag.name
           ? `${frame.tag.sheet}.${frame.tag.name}`
@@ -421,8 +451,27 @@ function buildTargetInfo(
       value,
       calcResult,
       buffedStats: readBuffedStats(actionName),
+      target: { read: targetRead as any, multiplier: 1 },
     })
   }
+
+  // Per-source attribution, computed once for all actions: one calculator
+  // rebuild per source group, evaluated against every action's exact target
+  // read (preset-scoped). Gated behind this panel (not the solver loop).
+  const sourcesByAction = explainContributions(
+    entries,
+    character.key,
+    actionRows.map((r) => [r.target]),
+    (e) => zzzCalculatorWithEntries(e)
+  )
+  const perActionDamage: PerActionDamage[] = actionRows.map((row, i) => ({
+    name: row.name,
+    tag: row.tag,
+    value: row.value,
+    calcResult: row.calcResult,
+    buffedStats: row.buffedStats,
+    sources: sourcesByAction[i] ?? [],
+  }))
 
   return {
     frame,

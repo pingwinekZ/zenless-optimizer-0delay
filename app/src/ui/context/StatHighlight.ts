@@ -1,5 +1,5 @@
+import type { StatKey } from '@zenless-optimizer/zzz/consts'
 import { createContext } from 'react'
-import type { StatKey } from '../../consts'
 
 export const StatHighlightContext = createContext({
   statHighlight: '',

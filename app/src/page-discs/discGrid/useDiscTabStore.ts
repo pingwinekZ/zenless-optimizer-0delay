@@ -1,4 +1,3 @@
-import { create } from 'zustand'
 import type {
   CharacterKey,
   DiscMainStatKey,
@@ -6,7 +5,8 @@ import type {
   DiscSetKey,
   DiscSlotKey,
   DiscSubStatKey,
-} from '../../consts'
+} from '@zenless-optimizer/zzz/consts'
+import { create } from 'zustand'
 
 export type ValueColumnField = 'scoreCurrent' | 'scoreMaxPotential'
 

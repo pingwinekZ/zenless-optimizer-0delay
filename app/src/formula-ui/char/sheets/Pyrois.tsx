@@ -1,5 +1,5 @@
-import type { CharacterKey } from '../../../consts'
-import { Pyrois } from '../../../formula'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { Pyrois } from '@zenless-optimizer/zzz/formula'
 import { trans } from '../../util'
 import { CoreGameDesc, createBaseSheet, fieldForBuff } from '../sheetUtil'
 

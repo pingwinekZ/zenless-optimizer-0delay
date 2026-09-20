@@ -1,14 +1,14 @@
 import { workspaceRoot } from '@nx/devkit'
 import { generateIndexFromObj } from '@zenless-optimizer/common/pipeline'
 import { crawlObject, layeredAssignment } from '@zenless-optimizer/common/util'
+import { AssetData } from '@zenless-optimizer/zzz/assets-data'
 import * as fs from 'fs'
 import * as path from 'path'
-import { AssetData } from '../../../assets-data'
 import type { GenAssetsRemoteExecutorSchema } from './schema'
 
 const URL_BASE = 'https://static.nanoka.cc/assets/zzz/'
 const CONCURRENCY = 16
-const DEST_PROJ_PATH = `${workspaceRoot}/app/src/assets` as const
+const DEST_PROJ_PATH = `${workspaceRoot}/packages/zzz/assets/src` as const
 const CATEGORY_DIRS = ['chars', 'discs', 'wengines', 'monsters'] as const
 
 /** Reads the boss monster image names used by the optimizer pages. */

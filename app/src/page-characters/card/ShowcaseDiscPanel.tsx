@@ -1,25 +1,25 @@
 import { Box, Flex, Text } from '@mantine/core'
 import { IconMedal } from '@tabler/icons-react'
-import { type CSSProperties, useMemo } from 'react'
-import { characterAsset, discDefIcon } from '../../assets'
+import { characterAsset, discDefIcon } from '@zenless-optimizer/zzz/assets'
 import type {
   CharacterKey,
   DiscMainStatKey,
   DiscRarityKey,
   DiscSlotKey,
   DiscSubStatKey,
-} from '../../consts'
+} from '@zenless-optimizer/zzz/consts'
 import {
   discMaxLevel,
   getDiscMainStatVal,
   getDiscSubStatBaseVal,
   statKeyTextMap,
-} from '../../consts'
-import type { ICachedDisc } from '../../db'
+} from '@zenless-optimizer/zzz/consts'
+import type { ICachedDisc } from '@zenless-optimizer/zzz/db'
+import { StatIcon } from '@zenless-optimizer/zzz/svgicons'
+import { efficiencyToGrade, gradeColor } from '@zenless-optimizer/zzz/util'
+import { type CSSProperties, useMemo } from 'react'
 import { computeCurrentScore } from '../../page-discs/scoring/currentScore'
 import { computeMaxPotential } from '../../page-discs/scoring/potentialScore'
-import { StatIcon } from '../../svgicons'
-import { efficiencyToGrade, gradeColor } from '../../util'
 import {
   showcaseShadow,
   showcaseShadowInsetAddition,

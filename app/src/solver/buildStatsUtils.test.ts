@@ -1,6 +1,6 @@
-import { allCharacterKeys } from '../../consts'
-import type { ICachedCharacter, Team } from '../../db'
-import { formulas } from '../../formula'
+import { allCharacterKeys } from '@zenless-optimizer/zzz/consts'
+import type { ICachedCharacter, Team } from '@zenless-optimizer/zzz/db'
+import { formulas } from '@zenless-optimizer/zzz/formula'
 import { buildCalculatorEntries } from './buildStatsUtils'
 
 function firstFormula(): { sheet: string; name: string } {

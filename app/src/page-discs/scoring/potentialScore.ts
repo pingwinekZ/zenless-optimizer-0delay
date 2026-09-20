@@ -1,7 +1,13 @@
-import type { DiscSubStatKey } from '../../consts'
-import { discMaxLevel, discSubstatRollData } from '../../consts'
-import { computeMaxPossibleWeighted, getDiscAbsoluteMax } from '../../util'
-import type { IDisc } from '../../zood'
+import type { DiscSubStatKey } from '@zenless-optimizer/zzz/consts'
+import {
+  discMaxLevel,
+  discSubstatRollData,
+} from '@zenless-optimizer/zzz/consts'
+import {
+  computeMaxPossibleWeighted,
+  getDiscAbsoluteMax,
+} from '@zenless-optimizer/zzz/util'
+import type { IDisc } from '@zenless-optimizer/zzz/zood'
 
 type SubstatWithKey = { key: DiscSubStatKey; upgrades: number }
 

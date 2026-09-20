@@ -1,8 +1,8 @@
 import { Button, Flex, Group, Slider, Text } from '@mantine/core'
+import type { DiscSubStatKey } from '@zenless-optimizer/zzz/consts'
+import { allDiscSubStatKeys } from '@zenless-optimizer/zzz/consts'
+import { StatDisplay } from '@zenless-optimizer/zzz/ui'
 import { Fragment, useState } from 'react'
-import type { DiscSubStatKey } from '../../consts'
-import { allDiscSubStatKeys } from '../../consts'
-import { StatDisplay } from '../../ui'
 import { HeaderText } from '../layout'
 
 type WeightPreset = Record<DiscSubStatKey, number>

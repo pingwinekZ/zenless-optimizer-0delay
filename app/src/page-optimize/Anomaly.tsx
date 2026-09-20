@@ -3,7 +3,7 @@ import {
   type Document,
   DocumentDisplay,
 } from '@zenless-optimizer/game-opt/sheet-ui'
-import { anomalyMeta } from '../formula'
+import { anomalyMeta } from '@zenless-optimizer/zzz/formula'
 
 export function AnomalySection() {
   return (

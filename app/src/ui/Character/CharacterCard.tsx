@@ -1,14 +1,18 @@
 import { ActionIcon, Badge, Box, Flex, Text, Tooltip } from '@mantine/core'
 import { IconEdit, IconPlayerPlay, IconTrash } from '@tabler/icons-react'
 import { ImgIcon } from '@zenless-optimizer/common/ui'
+import {
+  rarityDefIcon,
+  specialityDefIcon,
+  wengineAsset,
+} from '@zenless-optimizer/zzz/assets'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { allSkillKeys, milestoneMaxLevel } from '@zenless-optimizer/zzz/consts'
+import { useCharacter } from '@zenless-optimizer/zzz/db-ui'
+import { getCharStat } from '@zenless-optimizer/zzz/stats'
+import { ElementIcon } from '@zenless-optimizer/zzz/svgicons'
 import type { CSSProperties } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { rarityDefIcon, specialityDefIcon, wengineAsset } from '../../assets'
-import type { CharacterKey } from '../../consts'
-import { allSkillKeys, milestoneMaxLevel } from '../../consts'
-import { useCharacter } from '../../db-ui'
-import { getCharStat } from '../../stats'
-import { ElementIcon } from '../../svgicons'
 import type { CharacterGridDensity } from '../store'
 import { equipDotColor } from '../store'
 import { CharacterName } from './CharacterTrans'

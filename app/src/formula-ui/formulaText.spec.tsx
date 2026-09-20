@@ -1,13 +1,13 @@
 import { compileTagMapValues, read } from '@zenless-optimizer/pando/engine'
-import type { CharacterKey } from '../consts'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import {
   Calculator,
   charTagMapNodeEntries,
   own,
   teamData,
   withMember,
-} from '../formula'
-import { keys, values } from '../formula/data'
+} from '@zenless-optimizer/zzz/formula'
+import { keys, values } from '@zenless-optimizer/zzz/formula/data'
 import { formulaText } from './formulaText'
 
 describe('formulaText', () => {

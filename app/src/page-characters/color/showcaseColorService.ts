@@ -1,5 +1,5 @@
-import type { CharacterKey } from '../../consts'
-import { getCharStat } from '../../stats'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { getCharStat } from '@zenless-optimizer/zzz/stats'
 import { type ColorPipelineConfig } from './colorPipelineConfig'
 import { getAttributeColor } from './colorUtils'
 import {

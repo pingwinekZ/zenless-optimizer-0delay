@@ -1,7 +1,7 @@
-import type { CharacterKey } from '../../../consts'
-import { useCharacter } from '../../../db-ui'
-import { Claret } from '../../../formula'
-import { GameDesc, GameDescSlice } from '../../../i18n'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { useCharacter } from '@zenless-optimizer/zzz/db-ui'
+import { Claret } from '@zenless-optimizer/zzz/formula'
+import { GameDesc, GameDescSlice } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
 import { AbilityBodyText, createBaseSheet, fieldForBuff } from '../sheetUtil'
 

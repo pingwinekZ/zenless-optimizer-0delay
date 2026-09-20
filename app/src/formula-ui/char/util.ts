@@ -1,4 +1,4 @@
-import type { Attribute, DamageType, Tag } from '../../formula'
+import type { Attribute, DamageType, Tag } from '@zenless-optimizer/zzz/formula'
 
 export function getVariant(tag: Tag) {
   const { attribute } = tag

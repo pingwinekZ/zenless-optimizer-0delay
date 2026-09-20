@@ -1,7 +1,7 @@
 import { Flex } from '@mantine/core'
 import { LocalStorageUsageCard } from '@zenless-optimizer/common/react-util'
-import { DatabaseCard, DiscScannerCard } from '../ui'
-import { LiveImportCard } from '../websocket/LiveImportCard'
+import { DatabaseCard, DiscScannerCard } from '@zenless-optimizer/zzz/ui'
+import { LiveImportCard } from '@zenless-optimizer/zzz/websocket/LiveImportCard'
 
 export default function PageSettings() {
   return (

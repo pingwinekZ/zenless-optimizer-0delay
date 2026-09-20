@@ -4,7 +4,7 @@ import type {
   DiscSlotKey,
   DiscSubStatKey,
   LocationKey,
-} from '../../../consts'
+} from '@zenless-optimizer/zzz/consts'
 import {
   allDiscSetKeys,
   allDiscSlotKeys,
@@ -14,8 +14,8 @@ import {
   getDiscMainStatVal,
   getDiscSubStatBaseVal,
   statKeyTextMap,
-} from '../../../consts'
-import type { IDisc } from '../../../zood'
+} from '@zenless-optimizer/zzz/consts'
+import type { IDisc } from '@zenless-optimizer/zzz/zood'
 import type {
   DiscEditorConfig,
   DiscEditorForm,

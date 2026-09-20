@@ -1,5 +1,5 @@
 import { Button } from '@mantine/core'
-import { damageTypeKeysMap } from '../formula-ui'
+import { damageTypeKeysMap } from '@zenless-optimizer/zzz/formula-ui'
 
 export function AfterShockToggleButton({
   isAftershock,

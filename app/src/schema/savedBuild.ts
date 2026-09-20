@@ -1,8 +1,8 @@
 import { zodTypedRecord } from '@zenless-optimizer/common/database'
 import { objKeyMap } from '@zenless-optimizer/common/util'
+import { allDiscSlotKeys } from '@zenless-optimizer/zzz/consts'
 import { z } from 'zod'
-import { allDiscSlotKeys } from '../consts'
-import type { DiscIds } from '../db/Interfaces/IDbDisc'
+import type { DiscIds } from './IDbDisc'
 
 export enum BuildSource {
   Character = 'character',

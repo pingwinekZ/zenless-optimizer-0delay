@@ -7,7 +7,7 @@ import {
   slotMigrationKey,
   slotStorageKey,
   ZzzDatabase,
-} from '../../db'
+} from '@zenless-optimizer/zzz/db'
 import { openDatabaseSlot } from './DatabaseProvider'
 
 const testDisc = () => ({

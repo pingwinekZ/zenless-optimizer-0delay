@@ -1,12 +1,12 @@
 import { isPercentStat, objMap } from '@zenless-optimizer/common/util'
-import type { FactionKey } from '../../../consts'
+import type { FactionKey } from '@zenless-optimizer/zzz/consts'
 import {
   type AttributeKey,
   allCharacterKeys,
   type CharacterKey,
   type CharacterRarityKey,
   type SpecialityKey,
-} from '../../../consts'
+} from '@zenless-optimizer/zzz/consts'
 import { readNanokaJSON } from '../../util'
 import type { NanokaSkillKey } from './consts'
 import {

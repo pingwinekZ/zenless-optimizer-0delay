@@ -1,5 +1,5 @@
+import type { ICachedCharacter } from '@zenless-optimizer/zzz/db'
 import { createContext, useContext } from 'react'
-import type { ICachedCharacter } from '../../db'
 
 export const CharacterContext = createContext(
   undefined as ICachedCharacter | undefined

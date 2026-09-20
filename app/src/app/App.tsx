@@ -2,8 +2,18 @@ import { Box, Flex, MantineProvider } from '@mantine/core'
 import { ModalsProvider } from '@mantine/modals'
 import { Notifications } from '@mantine/notifications'
 import { ScrollTop } from '@zenless-optimizer/common/ui'
-import { DatabaseProvider } from '../db-ui'
-import '../i18n' // import to load translations
+import { DatabaseProvider } from '@zenless-optimizer/zzz/db-ui'
+import '@zenless-optimizer/zzz/i18n' // import to load translations
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import PageHome from '@zenless-optimizer/zzz/page-home'
+import PageSettings from '@zenless-optimizer/zzz/page-settings'
+import PageWengines from '@zenless-optimizer/zzz/page-wengines'
+import { Gradient } from '@zenless-optimizer/zzz/rendering/gradient'
+import {
+  createMantineTheme,
+  themeResolver,
+  useThemeStore,
+} from '@zenless-optimizer/zzz/theme'
 import {
   type ReactNode,
   useCallback,
@@ -11,15 +21,9 @@ import {
   useMemo,
   useState,
 } from 'react'
-import type { CharacterKey } from '../consts'
 import PageCharacters from '../page-characters'
 import PageDiscs from '../page-discs'
-import PageHome from '../page-home'
 import PageOptimize from '../page-optimize'
-import PageSettings from '../page-settings'
-import PageWengines from '../page-wengines'
-import { Gradient } from '../rendering/gradient'
-import { createMantineTheme, themeResolver, useThemeStore } from '../theme'
 import { LayoutSider } from './LayoutSider'
 import { NavigateContextProvider, useNavigateContext } from './NavigateContext'
 import { type TabKey, useTabStore } from './useTabStore'

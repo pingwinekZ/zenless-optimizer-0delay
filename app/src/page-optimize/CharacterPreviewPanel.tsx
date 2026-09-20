@@ -1,11 +1,14 @@
 import { Box, Flex, Text } from '@mantine/core'
 import { useBoolState } from '@zenless-optimizer/common/react-util'
+import { characterAsset, wengineAsset } from '@zenless-optimizer/zzz/assets'
+import type { CharacterKey, WengineKey } from '@zenless-optimizer/zzz/consts'
+import { useCharacter } from '@zenless-optimizer/zzz/db-ui'
+import { getCharStat } from '@zenless-optimizer/zzz/stats'
+import {
+  CharacterSingleSelectionModal,
+  WengineSelectionModal,
+} from '@zenless-optimizer/zzz/ui'
 import { useCallback } from 'react'
-import { characterAsset, wengineAsset } from '../assets'
-import type { CharacterKey, WengineKey } from '../consts'
-import { useCharacter } from '../db-ui'
-import { getCharStat } from '../stats'
-import { CharacterSingleSelectionModal, WengineSelectionModal } from '../ui'
 
 const containerMinW = 200
 const cardGap = 10

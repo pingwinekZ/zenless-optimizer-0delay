@@ -1,7 +1,7 @@
 import type { UISheet } from '@zenless-optimizer/game-opt/sheet-ui'
-import { discDefIcon } from '../../../assets'
-import type { DiscSetKey } from '../../../consts'
-import { TheSkyAblaze } from '../../../formula'
+import { discDefIcon } from '@zenless-optimizer/zzz/assets'
+import type { DiscSetKey } from '@zenless-optimizer/zzz/consts'
+import { TheSkyAblaze } from '@zenless-optimizer/zzz/formula'
 import { tagToTagField, trans } from '../../util'
 import { Set2Display, Set4Display } from '../components'
 

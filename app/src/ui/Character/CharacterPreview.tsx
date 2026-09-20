@@ -1,6 +1,6 @@
 import { Box, Center, Flex, Text } from '@mantine/core'
 import { IconUser } from '@tabler/icons-react'
-import type { CharacterKey } from '../../consts'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 
 export function CharacterPreview({
   characterKey,

@@ -1,6 +1,6 @@
-import type { CharacterKey } from '../../../consts'
-import { Sunna } from '../../../formula'
-import { GameDesc } from '../../../i18n'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { Sunna } from '@zenless-optimizer/zzz/formula'
+import { GameDesc } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
 import {
   CoreGameDesc,

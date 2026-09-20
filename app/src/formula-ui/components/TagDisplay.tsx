@@ -2,11 +2,11 @@ import { iconInlineProps } from '@zenless-optimizer/common/svgicons'
 import { ColorText, SqBadge } from '@zenless-optimizer/common/ui'
 import { evalIfFunc, getUnitStr } from '@zenless-optimizer/common/util'
 import type { Calculator as GameOptCalculator } from '@zenless-optimizer/game-opt/engine'
-import type { StatKey } from '../../consts'
-import { elementalData, statKeyTextMap } from '../../consts'
-import { Read, type Tag } from '../../formula'
-import { StatIcon } from '../../svgicons'
-import { AttributeName, StatDisplay } from '../../ui'
+import type { StatKey } from '@zenless-optimizer/zzz/consts'
+import { elementalData, statKeyTextMap } from '@zenless-optimizer/zzz/consts'
+import { Read, type Tag } from '@zenless-optimizer/zzz/formula'
+import { StatIcon } from '@zenless-optimizer/zzz/svgicons'
+import { AttributeName, StatDisplay } from '@zenless-optimizer/zzz/ui'
 import {
   condMap,
   damageTypeKeysMap,

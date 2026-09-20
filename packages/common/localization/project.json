@@ -14,5 +14,5 @@
       "inputs": ["default"]
     }
   },
-  "tags": []
+  "tags": ["scope:shared", "layer:shared"]
 }

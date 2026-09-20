@@ -28,11 +28,62 @@ module.exports = [
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     rules: {
       '@nx/enforce-module-boundaries': [
+        // Phase 2: error-enforced layering, see doc/architecture.md.
+        // No relative-import exemption: cross-project imports (relative or
+        // aliased) must respect depConstraints. Same-project imports are
+        // unaffected.
         'error',
         {
           enforceBuildableLibDependency: true,
-          allow: ['^\\.\\.?/', '^@zenless-optimizer/pando/engine'],
-          depConstraints: [{ sourceTag: '*', onlyDependOnLibsWithTags: ['*'] }],
+          allow: ['^@zenless-optimizer/pando/engine'],
+          depConstraints: [
+            { sourceTag: 'layer:app', onlyDependOnLibsWithTags: ['*'] },
+            {
+              sourceTag: 'layer:feature',
+              onlyDependOnLibsWithTags: [
+                'layer:domain',
+                'layer:engine-ui',
+                'layer:engine',
+                'layer:shared',
+                'layer:base',
+              ],
+            },
+            {
+              sourceTag: 'layer:domain',
+              onlyDependOnLibsWithTags: [
+                'layer:domain',
+                'layer:engine-ui',
+                'layer:engine',
+                'layer:shared',
+                'layer:base',
+              ],
+            },
+            {
+              sourceTag: 'layer:engine-ui',
+              onlyDependOnLibsWithTags: [
+                'layer:engine-ui',
+                'layer:engine',
+                'layer:shared',
+                'layer:base',
+              ],
+            },
+            {
+              sourceTag: 'layer:engine',
+              onlyDependOnLibsWithTags: [
+                'layer:engine',
+                'layer:shared',
+                'layer:base',
+              ],
+            },
+            {
+              sourceTag: 'layer:shared',
+              onlyDependOnLibsWithTags: ['layer:shared', 'layer:base'],
+            },
+            {
+              sourceTag: 'layer:base',
+              onlyDependOnLibsWithTags: ['layer:base'],
+            },
+          ],
         },
       ],
       'unused-imports/no-unused-imports': 'error',

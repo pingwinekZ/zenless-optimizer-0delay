@@ -1,6 +1,6 @@
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
+import { own } from '@zenless-optimizer/zzz/formula'
 import type { ReactNode } from 'react'
-import type { WengineKey } from '../../../consts'
-import { own } from '../../../formula'
 import { useZzzCalcContext } from '../../hooks'
 
 export function PhaseWrapper({

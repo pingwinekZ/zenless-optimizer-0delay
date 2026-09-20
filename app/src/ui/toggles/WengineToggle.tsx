@@ -3,10 +3,10 @@ import { useMediaQuery } from '@mantine/hooks'
 import type { SolidToggleButtonGroupProps } from '@zenless-optimizer/common/ui'
 import { ImgIcon } from '@zenless-optimizer/common/ui'
 import { handleMultiSelect } from '@zenless-optimizer/common/util'
+import { specialityDefIcon } from '@zenless-optimizer/zzz/assets'
+import type { SpecialityKey } from '@zenless-optimizer/zzz/consts'
+import { allSpecialityKeys } from '@zenless-optimizer/zzz/consts'
 import type { ReactNode } from 'react'
-import { specialityDefIcon } from '../../assets'
-import type { SpecialityKey } from '../../consts'
-import { allSpecialityKeys } from '../../consts'
 
 type WengineToggleProps = Omit<
   SolidToggleButtonGroupProps,

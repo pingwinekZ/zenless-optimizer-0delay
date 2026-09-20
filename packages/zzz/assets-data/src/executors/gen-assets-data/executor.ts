@@ -2,12 +2,16 @@ import type { PromiseExecutor } from '@nx/devkit'
 import { workspaceRoot } from '@nx/devkit'
 import { dumpFile } from '@zenless-optimizer/common/pipeline'
 import { objMap } from '@zenless-optimizer/common/util'
-import type { CharacterKey, DiscSetKey, WengineKey } from '../../../consts'
+import type {
+  CharacterKey,
+  DiscSetKey,
+  WengineKey,
+} from '@zenless-optimizer/zzz/consts'
 import {
   charactersDetailedJSONData,
   discsDetailedJSONData,
   wengineDetailedJSONData,
-} from '../../../dm'
+} from '@zenless-optimizer/zzz/dm'
 import type { GenAssetsDataExecutorSchema } from './schema'
 
 export type AssetData = {
@@ -77,7 +81,7 @@ const runExecutor: PromiseExecutor<GenAssetsDataExecutorSchema> = async (
 
   // Dump out the asset List.
   dumpFile(
-    `${workspaceRoot}/app/src/assets-data/AssetsData_gen.json`,
+    `${workspaceRoot}/packages/zzz/assets-data/src/AssetsData_gen.json`,
     assetData
   )
 

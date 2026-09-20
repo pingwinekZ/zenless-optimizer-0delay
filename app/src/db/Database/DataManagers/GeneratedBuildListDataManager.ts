@@ -1,7 +1,7 @@
 import { zodTypedRecord } from '@zenless-optimizer/common/database'
 import { objKeyMap } from '@zenless-optimizer/common/util'
+import { allDiscSlotKeys } from '@zenless-optimizer/zzz/consts'
 import { z } from 'zod'
-import { allDiscSlotKeys } from '../../../consts'
 import type { DiscIds, ZzzDatabase } from '../..'
 import { DataManager } from '../DataManager'
 

@@ -1,10 +1,13 @@
 import { Box, Button, Flex, Skeleton, Text } from '@mantine/core'
 import { IconRefresh } from '@tabler/icons-react'
+import {
+  useDatabaseContext,
+  useDisplayDisc,
+} from '@zenless-optimizer/zzz/db-ui'
+import type { DiscFilterOption } from '@zenless-optimizer/zzz/util'
 import { t } from 'i18next'
 import { Suspense, useCallback } from 'react'
 import { Trans } from 'react-i18next'
-import { useDatabaseContext, useDisplayDisc } from '../../db-ui'
-import type { DiscFilterOption } from '../../util'
 import discFilterClasses from './DiscFilter.module.css'
 import { DiscFilterDisplay } from './DiscFilterDisplay'
 

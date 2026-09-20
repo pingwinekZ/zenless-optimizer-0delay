@@ -14,15 +14,19 @@ import {
   ConditionalWrapper,
   ImgIcon,
 } from '@zenless-optimizer/common/ui'
+import type { WenginePhaseKey } from '@zenless-optimizer/zzz/assets'
+import {
+  specialityDefIcon,
+  wengineAsset,
+  wenginePhaseIcon,
+} from '@zenless-optimizer/zzz/assets'
+import type { PhaseKey } from '@zenless-optimizer/zzz/consts'
+import { useWengine } from '@zenless-optimizer/zzz/db-ui'
+import { getWengineStat, getWengineStats } from '@zenless-optimizer/zzz/stats'
+import type { IWengine } from '@zenless-optimizer/zzz/zood'
 import type { ReactNode } from 'react'
 import React, { memo, Suspense, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { WenginePhaseKey } from '../../assets'
-import { specialityDefIcon, wengineAsset, wenginePhaseIcon } from '../../assets'
-import type { PhaseKey } from '../../consts'
-import { useWengine } from '../../db-ui'
-import { getWengineStat, getWengineStats } from '../../stats'
-import type { IWengine } from '../../zood'
 import { StatDisplay } from '../Character'
 
 import { ZCard } from '../Components'

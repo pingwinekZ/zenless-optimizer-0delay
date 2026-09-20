@@ -1,5 +1,5 @@
+import type { ZzzDatabase } from '@zenless-optimizer/zzz/db'
 import { useEffect } from 'react'
-import type { ZzzDatabase } from '../../db'
 
 /**
  * How long the database has to sit still before its slot is written.

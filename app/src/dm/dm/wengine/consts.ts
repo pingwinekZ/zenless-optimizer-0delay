@@ -1,4 +1,7 @@
-import type { SpecialityKey, WengineRarityKey } from '../../../consts'
+import type {
+  SpecialityKey,
+  WengineRarityKey,
+} from '@zenless-optimizer/zzz/consts'
 
 // libs\zzz\dm\src\dm\wengine\wengineIdMap.json
 export const WengineIdMap = {

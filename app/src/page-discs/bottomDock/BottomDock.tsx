@@ -1,7 +1,7 @@
 import { Box } from '@mantine/core'
 import { useDataManagerValues } from '@zenless-optimizer/common/database-ui'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
 import { useShallow } from 'zustand/react/shallow'
-import { useDatabaseContext } from '../../db-ui'
 import { useDiscTabStore } from '../discGrid/useDiscTabStore'
 import { BottomToolbarLeft, BottomToolbarRight } from './BottomToolbar'
 import { DiscPreview } from './DiscPreview'

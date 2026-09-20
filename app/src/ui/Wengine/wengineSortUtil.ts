@@ -1,8 +1,8 @@
 import type { FilterConfigs, SortConfigs } from '@zenless-optimizer/common/util'
-import type { WengineSortKey } from '../../db'
-import { i18n } from '../../i18n'
-import { getWengineStat } from '../../stats'
-import type { IWengine } from '../../zood'
+import type { WengineSortKey } from '@zenless-optimizer/zzz/db'
+import { i18n } from '@zenless-optimizer/zzz/i18n'
+import { getWengineStat } from '@zenless-optimizer/zzz/stats'
+import type { IWengine } from '@zenless-optimizer/zzz/zood'
 
 export function wengineSortConfigs(): SortConfigs<WengineSortKey, IWengine> {
   return {

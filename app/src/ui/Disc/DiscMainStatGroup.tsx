@@ -1,10 +1,16 @@
 import { Button } from '@mantine/core'
 import type { DropdownButtonProps } from '@zenless-optimizer/common/ui'
 import { BootstrapTooltip, CardThemed } from '@zenless-optimizer/common/ui'
+import type {
+  DiscMainStatKey,
+  DiscSlotKey,
+} from '@zenless-optimizer/zzz/consts'
+import {
+  discSlotToMainStatKeys,
+  statKeyTextMap,
+} from '@zenless-optimizer/zzz/consts'
+import { StatIcon } from '@zenless-optimizer/zzz/svgicons'
 import type { ReactNode } from 'react'
-import type { DiscMainStatKey, DiscSlotKey } from '../../consts'
-import { discSlotToMainStatKeys, statKeyTextMap } from '../../consts'
-import { StatIcon } from '../../svgicons'
 import { StatDisplay } from '../Character'
 
 export function DiscMainStatGroup({

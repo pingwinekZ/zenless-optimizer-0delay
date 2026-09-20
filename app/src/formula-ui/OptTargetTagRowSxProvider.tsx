@@ -1,10 +1,10 @@
 import type { TagRowSxFunc } from '@zenless-optimizer/game-opt/sheet-ui'
 import { TagRowSxContext } from '@zenless-optimizer/game-opt/sheet-ui'
+import { getTeamFrame0 } from '@zenless-optimizer/zzz/db'
+import { useCharacterContext, useTeam } from '@zenless-optimizer/zzz/db-ui'
+import type { Tag } from '@zenless-optimizer/zzz/formula'
 import type { ReactNode } from 'react'
 import { useCallback } from 'react'
-import { getTeamFrame0 } from '../db'
-import { useCharacterContext, useTeam } from '../db-ui'
-import type { Tag } from '../formula'
 import { isOptTargetTag, optTargetRowSx } from './optTarget'
 
 export function OptTargetTagRowSxProvider({

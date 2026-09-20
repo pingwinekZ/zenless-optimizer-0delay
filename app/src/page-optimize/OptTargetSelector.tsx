@@ -4,8 +4,7 @@ import {
   DropdownButton,
   SqBadge,
 } from '@zenless-optimizer/common/ui'
-import { useCallback, useMemo } from 'react'
-import type { ComboKindKey, TargetTag } from '../db'
+import type { ComboKindKey, TargetTag } from '@zenless-optimizer/zzz/db'
 import {
   comboKindKeys,
   getTeamFrame0,
@@ -13,18 +12,19 @@ import {
   isComboTarget,
   type Team,
   targetTag,
-} from '../db'
-import { useDatabaseContext } from '../db-ui'
-import type { Tag } from '../formula'
-import { own } from '../formula'
+} from '@zenless-optimizer/zzz/db'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import type { Tag } from '@zenless-optimizer/zzz/formula'
+import { own } from '@zenless-optimizer/zzz/formula'
 import {
   damageTypeKeysMap,
   getDmgType,
   getVariant,
   useZzzCalcContext,
-} from '../formula-ui'
-import { getCharStat } from '../stats'
-import { AttributeName } from '../ui'
+} from '@zenless-optimizer/zzz/formula-ui'
+import { getCharStat } from '@zenless-optimizer/zzz/stats'
+import { AttributeName } from '@zenless-optimizer/zzz/ui'
+import { useCallback, useMemo } from 'react'
 import {
   OptTargetTagDisplay,
   parseSkillVariant,

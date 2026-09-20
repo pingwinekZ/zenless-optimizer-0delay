@@ -2,9 +2,9 @@ import { Box, Divider, Group, Stack, Title } from '@mantine/core'
 import { ImgIcon } from '@zenless-optimizer/common/ui'
 import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
 import { DocumentDisplay } from '@zenless-optimizer/game-opt/sheet-ui'
-import { discDefIcon } from '../../../assets'
-import type { DiscSetKey } from '../../../consts'
-import { DiscSetName, ZCard } from '../../../ui'
+import { discDefIcon } from '@zenless-optimizer/zzz/assets'
+import type { DiscSetKey } from '@zenless-optimizer/zzz/consts'
+import { DiscSetName, ZCard } from '@zenless-optimizer/zzz/ui'
 import { discUiSheets } from '../sheets'
 
 export function DiscSheetDisplay({

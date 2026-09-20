@@ -1,7 +1,7 @@
 import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
-import { wengineAsset } from '../../../assets'
-import type { WengineKey } from '../../../consts'
-import { MagneticStormAlpha } from '../../../formula'
+import { wengineAsset } from '@zenless-optimizer/zzz/assets'
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
+import { MagneticStormAlpha } from '@zenless-optimizer/zzz/formula'
 import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 

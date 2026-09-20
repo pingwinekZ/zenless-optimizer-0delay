@@ -1,6 +1,6 @@
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
 import { createContext, type ReactNode, useCallback, useContext } from 'react'
-import type { CharacterKey } from '../consts'
-import { useDatabaseContext } from '../db-ui'
 import { useTabStore } from './useTabStore'
 
 interface NavigateContextValue {

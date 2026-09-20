@@ -1,11 +1,20 @@
 import { Button, Flex } from '@mantine/core'
 import { IconAdjustments } from '@tabler/icons-react'
 import { useBoolState } from '@zenless-optimizer/common/react-util'
+import type {
+  DiscMainStatKey,
+  DiscSlotKey,
+} from '@zenless-optimizer/zzz/consts'
+import {
+  discSlotToMainStatKeys,
+  statKeyTextMap,
+} from '@zenless-optimizer/zzz/consts'
+import type { ICachedDisc } from '@zenless-optimizer/zzz/db'
+import {
+  OptConfigContext,
+  useDatabaseContext,
+} from '@zenless-optimizer/zzz/db-ui'
 import { useContext } from 'react'
-import type { DiscMainStatKey, DiscSlotKey } from '../../consts'
-import { discSlotToMainStatKeys, statKeyTextMap } from '../../consts'
-import type { ICachedDisc } from '../../db'
-import { OptConfigContext, useDatabaseContext } from '../../db-ui'
 import { HeaderText, MultiSelectPills } from '../layout'
 import { DiscSetFilterModal } from './DiscSetFilterModal'
 import { FormSetConditionals } from './FormSetConditionals'

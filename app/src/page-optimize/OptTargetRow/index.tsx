@@ -1,10 +1,14 @@
 import { Box, MenuItem } from '@mantine/core'
 import { DropdownButton } from '@zenless-optimizer/common/ui'
+import type { ICachedCharacter, Team } from '@zenless-optimizer/zzz/db'
+import { getTeamFrame0 } from '@zenless-optimizer/zzz/db'
+import {
+  useCharacterContext,
+  useDatabaseContext,
+  useTeam,
+} from '@zenless-optimizer/zzz/db-ui'
+import { qtMap } from '@zenless-optimizer/zzz/formula-ui'
 import { useCallback } from 'react'
-import type { ICachedCharacter, Team } from '../../db'
-import { getTeamFrame0 } from '../../db'
-import { useCharacterContext, useDatabaseContext, useTeam } from '../../db-ui'
-import { qtMap } from '../../formula-ui'
 import { AfterShockToggleButton } from '../AfterShockToggleButton'
 import { CritModeSelector } from './CritModeSelector'
 import { OptSelector } from './OptSelector'

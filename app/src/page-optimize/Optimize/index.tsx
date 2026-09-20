@@ -15,16 +15,6 @@ import {
   WebGpuSolver,
   type WebGpuSolverOptions,
 } from '@zenless-optimizer/game-opt/solver-webgpu'
-import type { MouseEvent } from 'react'
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import { useTranslation } from 'react-i18next'
 import type {
   CharacterKey,
   DiscMainStatKey,
@@ -32,8 +22,12 @@ import type {
   DiscSlotKey,
   DiscSubStatKey,
   PhaseKey,
-} from '../../consts'
-import { allDiscSlotKeys, getDiscSubStatBaseVal } from '../../consts'
+} from '@zenless-optimizer/zzz/consts'
+import {
+  allDiscSlotKeys,
+  getDiscSubStatBaseVal,
+} from '@zenless-optimizer/zzz/consts'
+import type { BuildRecipe } from '@zenless-optimizer/zzz/db'
 import {
   type DiscIds,
   type GeneratedBuild,
@@ -47,7 +41,7 @@ import {
   type StatFilters,
   type TheoReference,
   targetTag,
-} from '../../db'
+} from '@zenless-optimizer/zzz/db'
 import {
   OptConfigContext,
   OptConfigProvider,
@@ -55,25 +49,47 @@ import {
   useDatabaseContext,
   useDiscs,
   useTeam,
-} from '../../db-ui'
-import { useZzzCalcContext } from '../../formula-ui'
+} from '@zenless-optimizer/zzz/db-ui'
+import { useZzzCalcContext } from '@zenless-optimizer/zzz/formula-ui'
+import {
+  createSolverConfig,
+  materializeRecipeFromIndex,
+  runTheoryPipelineInWorker,
+  type TheoryPipelineOutput,
+} from '@zenless-optimizer/zzz/solver'
+import type { EnrichedBuild } from '@zenless-optimizer/zzz/solver/buildStatsUtils'
+import {
+  batchComputeBuildStats,
+  buildRowId,
+  computeBuildStats,
+  filterBuildsByStatFilters,
+} from '@zenless-optimizer/zzz/solver/buildStatsUtils'
+import { getCharStat, getWengineStat } from '@zenless-optimizer/zzz/stats'
+import {
+  DiscEditorModal,
+  useDiscEditorModalStore,
+} from '@zenless-optimizer/zzz/ui'
+import {
+  DiscSet2p,
+  DiscSetName,
+} from '@zenless-optimizer/zzz/ui/Disc/DiscTrans'
+import { hasHigherPriority } from '@zenless-optimizer/zzz/util'
+import type { MouseEvent } from 'react'
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import { useTranslation } from 'react-i18next'
 import { ShowcaseDiscCard } from '../../page-characters'
 import { discCardH, discCardW } from '../../page-characters/constantsUi'
 import {
   getMergedEffectiveStats,
   getMergedSubstatWeights,
 } from '../../page-discs/scoring/statWeightUtils'
-import {
-  type BuildRecipe,
-  createSolverConfig,
-  materializeRecipeFromIndex,
-  runTheoryPipelineInWorker,
-  type TheoryPipelineOutput,
-} from '../../solver'
-import { getCharStat, getWengineStat } from '../../stats'
-import { DiscEditorModal, useDiscEditorModalStore } from '../../ui'
-import { DiscSet2p, DiscSetName } from '../../ui/Disc/DiscTrans'
-import { hasHigherPriority } from '../../util'
 import type { AnalysisData } from '../Analysis/ExpandedDataPanelController'
 import { buildAnalysisData } from '../Analysis/ExpandedDataPanelController'
 import { BuildsSection } from '../BuildManagement'
@@ -90,13 +106,6 @@ import {
   ResultsSection,
 } from '../Sidebar'
 import { useOptimizerDisplayStore } from '../stores/useOptimizerDisplayStore'
-import type { EnrichedBuild } from '../Util/buildStatsUtils'
-import {
-  batchComputeBuildStats,
-  buildRowId,
-  computeBuildStats,
-  filterBuildsByStatFilters,
-} from '../Util/buildStatsUtils'
 import { ExpandedDataPanel } from './ExpandedDataPanel'
 import { OptimizerForm } from './OptimizerForm'
 import { OptimizerGrid } from './OptimizerGrid'

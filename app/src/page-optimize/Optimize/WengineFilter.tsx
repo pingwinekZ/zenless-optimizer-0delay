@@ -15,23 +15,26 @@ import { useDataManagerValues } from '@zenless-optimizer/common/database-ui'
 import { useBoolState } from '@zenless-optimizer/common/react-util'
 import { CardThemed, ModalWrapper, SqBadge } from '@zenless-optimizer/common/ui'
 import { objKeyMap, stableArr } from '@zenless-optimizer/common/util'
-import { Suspense, useContext, useMemo } from 'react'
-import type { WengineKey } from '../../consts'
-import { allSpecialityKeys, allWengineKeys } from '../../consts'
-import type { TeamConditional } from '../../db'
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
+import {
+  allSpecialityKeys,
+  allWengineKeys,
+} from '@zenless-optimizer/zzz/consts'
+import type { TeamConditional } from '@zenless-optimizer/zzz/db'
 import {
   OptConfigContext,
   useCharacterContext,
   useDatabaseContext,
   useTeam,
-} from '../../db-ui'
+} from '@zenless-optimizer/zzz/db-ui'
 import {
   CharCalcMockCountProvider,
   WengineSheetDisplay,
-} from '../../formula-ui'
-import { getWengineStat } from '../../stats'
-import { WengineToggle } from '../../ui'
-import type { IWengine } from '../../zood'
+} from '@zenless-optimizer/zzz/formula-ui'
+import { getWengineStat } from '@zenless-optimizer/zzz/stats'
+import { WengineToggle } from '@zenless-optimizer/zzz/ui'
+import type { IWengine } from '@zenless-optimizer/zzz/zood'
+import { Suspense, useContext, useMemo } from 'react'
 import { WengineLevelFilter } from './WengineLevelFilter'
 export function WengineFilter({
   wengines,

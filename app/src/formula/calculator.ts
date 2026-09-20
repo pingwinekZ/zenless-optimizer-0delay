@@ -2,7 +2,7 @@ import type { CalcMeta as CalcMetaBase } from '@zenless-optimizer/game-opt/engin
 import { Calculator as Base } from '@zenless-optimizer/game-opt/engine'
 import { createFilterDebug } from '@zenless-optimizer/game-opt/formula'
 import { DebugCalculator } from '@zenless-optimizer/pando/engine'
-import { allDiscSetKeys, allWengineKeys } from '../consts'
+import { allDiscSetKeys, allWengineKeys } from '@zenless-optimizer/zzz/consts'
 import type { Read, Tag } from './data/util'
 import { enemyTag, ownTag, tagStr } from './data/util'
 

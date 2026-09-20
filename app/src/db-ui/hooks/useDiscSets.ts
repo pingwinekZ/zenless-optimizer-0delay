@@ -1,6 +1,6 @@
+import type { DiscSetKey, DiscSlotKey } from '@zenless-optimizer/zzz/consts'
+import type { ICachedDisc } from '@zenless-optimizer/zzz/db'
 import { useMemo } from 'react'
-import type { DiscSetKey, DiscSlotKey } from '../../consts'
-import type { ICachedDisc } from '../../db'
 export function useDiscSets(
   discs: Record<DiscSlotKey, ICachedDisc | undefined>
 ) {

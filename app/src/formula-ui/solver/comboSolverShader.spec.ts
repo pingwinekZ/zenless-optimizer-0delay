@@ -3,16 +3,20 @@ import {
   compileWgsl,
   generateWgsl,
 } from '@zenless-optimizer/game-opt/solver-webgpu'
+import type {
+  CharacterKey,
+  DiscSlotKey,
+  PhaseKey,
+} from '@zenless-optimizer/zzz/consts'
+import { allCharacterKeys } from '@zenless-optimizer/zzz/consts'
+import type { ICachedCharacter, ICachedDisc } from '@zenless-optimizer/zzz/db'
+import { getComboFrames, targetTag } from '@zenless-optimizer/zzz/db'
+import { ZzzDatabase } from '@zenless-optimizer/zzz/db/Database/Database'
+import { zzzCalculatorWithEntries } from '@zenless-optimizer/zzz/formula'
+import { createSolverConfig } from '@zenless-optimizer/zzz/solver'
+import { buildCalculatorEntries } from '@zenless-optimizer/zzz/solver/buildStatsUtils'
+import yeDiscs from '@zenless-optimizer/zzz/solver/ye-shunguang-entry-rotation-discs.json'
 import * as fs from 'fs'
-import yeDiscs from '../../../ye-shunguang-entry-rotation-discs.json'
-import type { CharacterKey, DiscSlotKey, PhaseKey } from '../consts'
-import { allCharacterKeys } from '../consts'
-import type { ICachedCharacter, ICachedDisc } from '../db'
-import { getComboFrames, targetTag } from '../db'
-import { ZzzDatabase } from '../db/Database/Database'
-import { zzzCalculatorWithEntries } from '../formula'
-import { buildCalculatorEntries } from '../page-optimize/Util/buildStatsUtils'
-import { createSolverConfig } from './index'
 
 const YE = 'YeShunguang' as CharacterKey
 

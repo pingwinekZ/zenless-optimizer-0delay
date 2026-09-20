@@ -1,9 +1,9 @@
 import { ColorText, ImgIcon } from '@zenless-optimizer/common/ui'
 import { read } from '@zenless-optimizer/pando/engine'
-import { commonDefIcon, mindscapeDefIcon } from '../../../assets'
-import type { CharacterKey } from '../../../consts'
-import { Burnice } from '../../../formula'
-import { GameDesc, GameDescSlice } from '../../../i18n'
+import { commonDefIcon, mindscapeDefIcon } from '@zenless-optimizer/zzz/assets'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { Burnice } from '@zenless-optimizer/zzz/formula'
+import { GameDesc, GameDescSlice } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
 import {
   CoreGameDesc,

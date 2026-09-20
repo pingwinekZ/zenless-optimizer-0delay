@@ -1,6 +1,6 @@
 import { Box, Group, Table, Text } from '@mantine/core'
 import { CardThemed } from '@zenless-optimizer/common/ui'
-import { discSetNames } from '../../consts'
+import { discSetNames } from '@zenless-optimizer/zzz/consts'
 import type { AnalysisData } from './ExpandedDataPanelController'
 
 export function TeammateUpgrades({

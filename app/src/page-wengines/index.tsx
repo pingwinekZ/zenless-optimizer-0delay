@@ -17,17 +17,17 @@ import {
   useInfScroll,
 } from '@zenless-optimizer/common/ui'
 import { filterFunction, sortFunction } from '@zenless-optimizer/common/util'
-import type { ChangeEvent } from 'react'
-import { useDeferredValue, useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import type { WengineSortKey } from '../db'
-import { useDatabaseContext } from '../db-ui'
+import type { WengineSortKey } from '@zenless-optimizer/zzz/db'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
 import {
   WengineCard,
   wengineFilterConfigs,
   wengineSortConfigs,
   wengineSortMap,
-} from '../ui'
+} from '@zenless-optimizer/zzz/ui'
+import type { ChangeEvent } from 'react'
+import { useDeferredValue, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import WengineFilter from './WengineFilter'
 
 const columns = { xs: 2, sm: 3, md: 4, lg: 4, xl: 6 }

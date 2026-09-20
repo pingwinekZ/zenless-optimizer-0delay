@@ -2,9 +2,9 @@ import { Badge, Button, Group } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
 import type { SolidToggleButtonGroupProps } from '@zenless-optimizer/common/ui'
 import { handleMultiSelect } from '@zenless-optimizer/common/util'
+import type { WengineRarityKey } from '@zenless-optimizer/zzz/consts'
+import { allWengineRarityKeys } from '@zenless-optimizer/zzz/consts'
 import type { ReactNode } from 'react'
-import type { WengineRarityKey } from '../../consts'
-import { allWengineRarityKeys } from '../../consts'
 
 type WengineRarityToggleProps = Omit<
   SolidToggleButtonGroupProps,

@@ -1,6 +1,6 @@
 import { useDataManagerBase } from '@zenless-optimizer/common/database-ui'
+import type { OptConfig } from '@zenless-optimizer/zzz/db'
 import { createContext, useMemo } from 'react'
-import type { OptConfig } from '../../db'
 import { useDatabaseContext } from './DatabaseContext'
 
 export const OptConfigContext = createContext({

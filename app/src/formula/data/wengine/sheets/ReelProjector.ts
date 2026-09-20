@@ -1,4 +1,4 @@
-import type { WengineKey } from '../../../../consts'
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
 import { entriesForWengine, registerWengine } from '../util'
 
 const key: WengineKey = 'ReelProjector'

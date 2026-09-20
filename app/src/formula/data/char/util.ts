@@ -10,13 +10,17 @@ import {
   subscript,
   sum,
 } from '@zenless-optimizer/pando/engine'
-import type { CharacterKey } from '../../../consts'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import {
   type AttributeAnomalyKey,
   allSkillKeys,
   type SkillKey,
-} from '../../../consts'
-import { allStats, type CharacterDatum, type SkillParam } from '../../../stats'
+} from '@zenless-optimizer/zzz/consts'
+import {
+  allStats,
+  type CharacterDatum,
+  type SkillParam,
+} from '@zenless-optimizer/zzz/stats'
 import { anomTimePassed } from '../common/anomaly'
 import type { DamageType, DmgTag, FormulaArg, Stat } from '../util'
 import {

@@ -5,7 +5,7 @@ import type {
   SkillKey,
   SpecialityKey,
   StatKey,
-} from '../../../consts'
+} from '@zenless-optimizer/zzz/consts'
 
 // Copied from libs\zzz\dm\src\dm\character\characterIdMap.json
 export const characterIdMap = {

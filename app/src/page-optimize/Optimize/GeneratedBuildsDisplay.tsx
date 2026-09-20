@@ -13,22 +13,25 @@ import { IconChecklist, IconPin, IconPinned } from '@tabler/icons-react'
 import { useDataManagerBase } from '@zenless-optimizer/common/database-ui'
 import { CardThemed } from '@zenless-optimizer/common/ui'
 import { valueString } from '@zenless-optimizer/common/util'
-import { memo, useCallback, useContext } from 'react'
-import { useTranslation } from 'react-i18next'
-import type { GeneratedBuild } from '../../db'
+import type { GeneratedBuild } from '@zenless-optimizer/zzz/db'
 import {
   OptConfigContext,
   useCharacterContext,
   useDatabaseContext,
   useDiscs,
   useTeam,
-} from '../../db-ui'
-import { CharCalcProvider, CharStatsDisplay } from '../../formula-ui'
+} from '@zenless-optimizer/zzz/db-ui'
+import {
+  CharCalcProvider,
+  CharStatsDisplay,
+} from '@zenless-optimizer/zzz/formula-ui'
 import {
   CompactDiscCard,
   CompactWengineCard,
   DiscSetCardCompact,
-} from '../../ui'
+} from '@zenless-optimizer/zzz/ui'
+import { memo, useCallback, useContext } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useOptimizerDisplayStore } from '../stores/useOptimizerDisplayStore'
 
 function useGeneratedBuildList(listId: string) {

@@ -2,18 +2,18 @@ import { Box } from '@mantine/core'
 import type { Read } from '@zenless-optimizer/game-opt/engine'
 
 import { TagFieldDisplay } from '@zenless-optimizer/game-opt/sheet-ui'
-import { useContext, useMemo } from 'react'
-import type { StatKey } from '../../consts'
-import { applyDamageTypeToTag, getTeamFrame0 } from '../../db'
-import { useCharacterContext, useTeam } from '../../db-ui'
-import type { Tag } from '../../formula'
-import { own } from '../../formula'
+import type { StatKey } from '@zenless-optimizer/zzz/consts'
+import { applyDamageTypeToTag, getTeamFrame0 } from '@zenless-optimizer/zzz/db'
+import { useCharacterContext, useTeam } from '@zenless-optimizer/zzz/db-ui'
+import type { Tag } from '@zenless-optimizer/zzz/formula'
+import { own } from '@zenless-optimizer/zzz/formula'
 import {
   getHighlightRGBA,
   isHighlight,
   StatHighlightContext,
   ZCard,
-} from '../../ui'
+} from '@zenless-optimizer/zzz/ui'
+import { useContext, useMemo } from 'react'
 import { useZzzCalcContext } from '../hooks'
 import { tagToTagField } from '../util'
 

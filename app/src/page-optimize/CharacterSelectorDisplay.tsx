@@ -8,18 +8,22 @@ import {
 } from '@mantine/core'
 import { useBoolState } from '@zenless-optimizer/common/react-util'
 import { ImgIcon } from '@zenless-optimizer/common/ui'
-import { useCallback, useMemo } from 'react'
-import { characterAsset, wengineAsset } from '../assets'
-import type { CharacterKey, PhaseKey, WengineKey } from '../consts'
-import { allPhaseKeys } from '../consts'
-import { useCharacter, useDatabaseContext } from '../db-ui'
-import { getCharStat } from '../stats'
+import { characterAsset, wengineAsset } from '@zenless-optimizer/zzz/assets'
+import type {
+  CharacterKey,
+  PhaseKey,
+  WengineKey,
+} from '@zenless-optimizer/zzz/consts'
+import { allPhaseKeys } from '@zenless-optimizer/zzz/consts'
+import { useCharacter, useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import { getCharStat } from '@zenless-optimizer/zzz/stats'
 import {
   CharacterName,
   CharacterSingleSelectionModal,
   WengineName,
   WengineSelectionModal,
-} from '../ui'
+} from '@zenless-optimizer/zzz/ui'
+import { useCallback, useMemo } from 'react'
 import { HeaderText } from './layout/HeaderText'
 import { PresetsButton } from './PresetsButton'
 

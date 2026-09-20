@@ -1,6 +1,6 @@
 import { deepFreeze } from '@zenless-optimizer/common/util'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { z } from 'zod'
-import type { CharacterKey } from '../../../consts'
 import type { ZzzDatabase } from '../Database'
 import { DataManager } from '../DataManager'
 

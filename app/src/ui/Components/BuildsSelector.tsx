@@ -1,8 +1,8 @@
 import { Menu, Text } from '@mantine/core'
 import { DropdownButton } from '@zenless-optimizer/common/ui'
+import { maxBuildsToShowList } from '@zenless-optimizer/zzz/db'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
 import { useTranslation } from 'react-i18next'
-import { maxBuildsToShowList } from '../../db'
-import { useDatabaseContext } from '../../db-ui'
 
 export function BuildsSelector({
   maxBuildsToShow,

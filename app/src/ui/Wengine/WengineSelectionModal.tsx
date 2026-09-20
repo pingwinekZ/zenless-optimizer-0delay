@@ -1,6 +1,26 @@
 import { Box, CloseButton, Flex, Text, TextInput } from '@mantine/core'
 import { useDataEntryBase } from '@zenless-optimizer/common/database-ui'
 import { ImgIcon, ModalWrapper } from '@zenless-optimizer/common/ui'
+import {
+  rarityDefIcon,
+  specialityDefIcon,
+  wengineAsset,
+} from '@zenless-optimizer/zzz/assets'
+import type {
+  CharacterKey,
+  SpecialityKey,
+  WengineKey,
+} from '@zenless-optimizer/zzz/consts'
+import {
+  allSpecialityKeys,
+  allWengineKeys,
+  allWengineRarityKeys,
+} from '@zenless-optimizer/zzz/consts'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import {
+  characterKeyToWengineKey,
+  getWengineStat,
+} from '@zenless-optimizer/zzz/stats'
 import type { ChangeEvent } from 'react'
 import {
   Suspense,
@@ -11,15 +31,6 @@ import {
   useState,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { rarityDefIcon, specialityDefIcon, wengineAsset } from '../../assets'
-import type { CharacterKey, SpecialityKey, WengineKey } from '../../consts'
-import {
-  allSpecialityKeys,
-  allWengineKeys,
-  allWengineRarityKeys,
-} from '../../consts'
-import { useDatabaseContext } from '../../db-ui'
-import { characterKeyToWengineKey, getWengineStat } from '../../stats'
 import { SegmentedFilterRow } from '../toggles'
 import { WengineName } from './WengineTrans'
 

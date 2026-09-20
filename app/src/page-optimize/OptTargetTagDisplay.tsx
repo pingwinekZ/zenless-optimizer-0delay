@@ -1,13 +1,13 @@
 import { ColorText, SqBadge } from '@zenless-optimizer/common/ui'
-import type { DamageType, Tag } from '../formula'
+import type { DamageType, Tag } from '@zenless-optimizer/zzz/formula'
 import {
   damageTypeKeysMap,
   FullTagDisplay,
   getDmgType,
   getVariant,
-} from '../formula-ui'
-import { i18n } from '../i18n'
-import { AttributeName } from '../ui'
+} from '@zenless-optimizer/zzz/formula-ui'
+import { i18n } from '@zenless-optimizer/zzz/i18n'
+import { AttributeName } from '@zenless-optimizer/zzz/ui'
 
 // Page-optimize-only display: strip the redundant leading skill-type prefix
 // ("Special Attack: ...", "EXSpecial Attack ...", "Basic Attack ...") since

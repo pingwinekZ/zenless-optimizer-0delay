@@ -1,6 +1,6 @@
 import { notEmpty } from '@zenless-optimizer/common/util'
-import type { IDisc } from '../../../zood'
-import { validateDisc } from '../../../zood'
+import type { IDisc } from '@zenless-optimizer/zzz/zood'
+import { validateDisc } from '@zenless-optimizer/zzz/zood'
 import type {
   ICachedDisc,
   IZenlessObjectDescription,
@@ -360,4 +360,4 @@ function findDupCandidates(
 export {
   validateDisc,
   validateDiscWithErrors as validateDiscBasedOnRarity,
-} from '../../../zood'
+} from '@zenless-optimizer/zzz/zood'

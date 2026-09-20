@@ -1,6 +1,6 @@
 import { ColorText } from '@zenless-optimizer/common/ui'
-import type { CharacterKey } from '../../../consts'
-import { YeShunguang } from '../../../formula'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { YeShunguang } from '@zenless-optimizer/zzz/formula'
 import { trans } from '../../util'
 import { createBaseSheet, fieldForBuff } from '../sheetUtil'
 import { getVariant } from '../util'

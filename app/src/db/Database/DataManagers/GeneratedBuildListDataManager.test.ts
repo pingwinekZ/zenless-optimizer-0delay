@@ -3,7 +3,7 @@ import {
   DBLocalStorage,
 } from '@zenless-optimizer/common/database'
 import { objKeyMap } from '@zenless-optimizer/common/util'
-import { allDiscSlotKeys } from '../../../consts'
+import { allDiscSlotKeys } from '@zenless-optimizer/zzz/consts'
 import { ZzzDatabase } from '../Database'
 import { maxPersistedGeneratedBuilds } from './GeneratedBuildListDataManager'
 

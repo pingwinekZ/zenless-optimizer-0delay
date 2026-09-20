@@ -1,12 +1,12 @@
 import { DBLocalStorage, SlotStorage } from '@zenless-optimizer/common/database'
-import type { ReactNode } from 'react'
-import { useCallback, useMemo, useState } from 'react'
 import {
   isLegacyStorageKey,
   slotMigrationKey,
   slotStorageKey,
   ZzzDatabase,
-} from '../../db'
+} from '@zenless-optimizer/zzz/db'
+import type { ReactNode } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { DatabaseContext, type DatabaseContextObj } from '../context'
 import { useDatabaseAutoSave } from './useDatabaseAutoSave'
 

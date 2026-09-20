@@ -6,13 +6,13 @@ import {
   statKeyToFixed,
   toPercent,
 } from '@zenless-optimizer/common/util'
+import { wengineAsset, wenginePhaseIcon } from '@zenless-optimizer/zzz/assets'
+import { rarityColor, themeColorVar } from '@zenless-optimizer/zzz/consts'
+import { useWengine } from '@zenless-optimizer/zzz/db-ui'
+import { getWengineStat, getWengineStats } from '@zenless-optimizer/zzz/stats'
+import { StatIcon } from '@zenless-optimizer/zzz/svgicons'
 import type { ReactNode } from 'react'
 import { Suspense, useCallback, useContext } from 'react'
-import { wengineAsset, wenginePhaseIcon } from '../../assets'
-import { rarityColor, themeColorVar } from '../../consts'
-import { useWengine } from '../../db-ui'
-import { getWengineStat, getWengineStats } from '../../stats'
-import { StatIcon } from '../../svgicons'
 import { ZCard } from '../Components'
 import { getHighlightRGBA, isHighlight, StatHighlightContext } from '../context'
 import { COMPACT_CARD_HEIGHT_PX, EmptyCompactCard } from '../util'

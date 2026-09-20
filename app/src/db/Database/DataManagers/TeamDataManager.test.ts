@@ -3,8 +3,8 @@ import {
   DBLocalStorage,
 } from '@zenless-optimizer/common/database'
 import { presets } from '@zenless-optimizer/game-opt/engine'
-import { allCharacterKeys, allDiscSetKeys } from '../../../consts'
-import { conditionals, formulas } from '../../../formula'
+import { allCharacterKeys, allDiscSetKeys } from '@zenless-optimizer/zzz/consts'
+import { conditionals, formulas } from '@zenless-optimizer/zzz/formula'
 import { ZzzDatabase } from '../Database'
 import {
   COMBO_STATE_VERSION,

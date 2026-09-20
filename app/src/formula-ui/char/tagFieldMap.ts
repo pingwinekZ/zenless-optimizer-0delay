@@ -3,8 +3,8 @@ import {
   isTagField,
   type TagField,
 } from '@zenless-optimizer/game-opt/sheet-ui'
-import type { Tag } from '../../formula'
-import { createTagMap } from '../../formula'
+import type { Tag } from '@zenless-optimizer/zzz/formula'
+import { createTagMap } from '@zenless-optimizer/zzz/formula'
 import { discUiSheets } from '../disc'
 import { wengineUiSheets } from '../wengine'
 import { charBaseUiSheet } from './CharBase'

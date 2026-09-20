@@ -1,14 +1,17 @@
 import { Group, Menu, SegmentedControl, Text } from '@mantine/core'
 import { DropdownButton } from '@zenless-optimizer/common/ui'
 import { getUnitStr, valueString } from '@zenless-optimizer/common/util'
-import { useTranslation } from 'react-i18next'
 import type {
   DiscMainStatKey,
   DiscRarityKey,
   DiscSubStatKey,
-} from '../../../consts'
-import { allDiscSubStatKeys, getDiscSubStatBaseVal } from '../../../consts'
-import { StatIcon } from '../../../svgicons'
+} from '@zenless-optimizer/zzz/consts'
+import {
+  allDiscSubStatKeys,
+  getDiscSubStatBaseVal,
+} from '@zenless-optimizer/zzz/consts'
+import { StatIcon } from '@zenless-optimizer/zzz/svgicons'
+import { useTranslation } from 'react-i18next'
 import { StatDisplay } from '../../Character'
 import modalClasses from './DiscEditorModal.module.css'
 import type { SubstatUpgradeValues } from './discEditorModalTypes'

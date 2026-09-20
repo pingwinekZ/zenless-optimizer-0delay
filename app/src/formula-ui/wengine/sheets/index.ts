@@ -1,6 +1,6 @@
 // WARNING: Generated file, do not modify
 import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
-import type { WengineKey } from '../../../consts'
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
 
 import AngelInTheShell from './AngelInTheShell'
 import BashfulDemon from './BashfulDemon'

@@ -1,9 +1,9 @@
 import type { ButtonProps } from '@mantine/core'
 import { Menu } from '@mantine/core'
 import { DropdownButton } from '@zenless-optimizer/common/ui'
+import type { DiscRarityKey } from '@zenless-optimizer/zzz/consts'
+import { allDiscRarityKeys } from '@zenless-optimizer/zzz/consts'
 import { useTranslation } from 'react-i18next'
-import type { DiscRarityKey } from '../../consts'
-import { allDiscRarityKeys } from '../../consts'
 
 type props = ButtonProps & {
   rarity?: DiscRarityKey

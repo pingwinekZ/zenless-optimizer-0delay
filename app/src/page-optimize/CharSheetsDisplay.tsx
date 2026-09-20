@@ -1,7 +1,7 @@
 import { Box } from '@mantine/core'
 import type { Document, Field } from '@zenless-optimizer/game-opt/sheet-ui'
 import { DocumentDisplay } from '@zenless-optimizer/game-opt/sheet-ui'
-import { useCharacterContext } from '../db-ui'
+import { useCharacterContext } from '@zenless-optimizer/zzz/db-ui'
 import {
   Banyue,
   Manato,
@@ -9,8 +9,8 @@ import {
   StarlightBilly,
   Yidhari,
   Yixuan,
-} from '../formula'
-import { charSheets, TagDisplay } from '../formula-ui'
+} from '@zenless-optimizer/zzz/formula'
+import { charSheets, TagDisplay } from '@zenless-optimizer/zzz/formula-ui'
 
 function filterDocFields(doc: Document, potential: number): Document {
   const filter = (f: Field) =>

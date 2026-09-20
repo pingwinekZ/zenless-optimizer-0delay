@@ -3,8 +3,12 @@ import {
   compileTagMapValues,
   setDebugMode,
 } from '@zenless-optimizer/pando/engine'
-import type { CharacterKey, SpecialityKey, WengineKey } from '../../../consts'
-import { getWengineStat } from '../../../stats'
+import type {
+  CharacterKey,
+  SpecialityKey,
+  WengineKey,
+} from '@zenless-optimizer/zzz/consts'
+import { getWengineStat } from '@zenless-optimizer/zzz/stats'
 import {
   charTagMapNodeEntries,
   conditionals,

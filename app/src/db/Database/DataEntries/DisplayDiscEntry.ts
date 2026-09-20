@@ -5,7 +5,6 @@ import {
   zodFilteredArray,
   zodObjectSchema,
 } from '@zenless-optimizer/common/database'
-import { z } from 'zod'
 import {
   allDiscMainStatKeys,
   allDiscRarityKeys,
@@ -13,7 +12,8 @@ import {
   allDiscSlotKeys,
   allDiscSubStatKeys,
   allLocationKeys,
-} from '../../../consts'
+} from '@zenless-optimizer/zzz/consts'
+import { z } from 'zod'
 import type { ZzzDatabase } from '../Database'
 import { DataEntry } from '../DataEntry'
 

@@ -1,24 +1,24 @@
 import type { Candidate } from '@zenless-optimizer/game-opt/solver'
-
 import type {
   CharacterKey,
   DiscMainStatKey,
   DiscSetKey,
   DiscSlotKey,
   DiscSubStatKey,
-} from '../consts'
+} from '@zenless-optimizer/zzz/consts'
 import {
   allDiscSlotKeys,
   allDiscSubStatKeys,
   discSlotToMainStatKeys,
   getDiscMainStatVal,
   getDiscSubStatBaseVal,
-} from '../consts'
-import { allStats } from '../stats'
+} from '@zenless-optimizer/zzz/consts'
+import type { BuildRecipe } from '@zenless-optimizer/zzz/db'
+import { allStats } from '@zenless-optimizer/zzz/stats'
 import {
   getCharacterEffectiveMainStats,
   getCharacterEffectiveStats,
-} from '../util'
+} from '@zenless-optimizer/zzz/util'
 
 const THEORETICAL_RARITY = 'S' as const
 const THEORETICAL_LEVEL = 15
@@ -43,16 +43,6 @@ export const DEFAULT_MIN_EFFECTIVE_PER_COMBO = 3
  * chosen 2p set equals the 4p set, the recipe gets count 6 instead of 4+2.
  */
 export const RECIPE_DESCRIPTOR_STRIDE = 7
-
-export interface BuildRecipe {
-  id: string
-  mainStats: Record<DiscSlotKey, DiscMainStatKey>
-  totalRolls: Partial<Record<DiscSubStatKey, number>>
-  appearances: Partial<Record<DiscSubStatKey, number>>
-  perDiscSubstats: { key: DiscSubStatKey; upgrades: number }[][]
-  set4: DiscSetKey
-  set2: DiscSetKey
-}
 
 export interface GenerateTheoreticalOptions {
   /**

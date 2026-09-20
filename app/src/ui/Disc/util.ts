@@ -1,5 +1,8 @@
+import type {
+  DiscMainStatKey,
+  DiscSubStatKey,
+} from '@zenless-optimizer/zzz/consts'
 import { useEffect, useRef, useState } from 'react'
-import type { DiscMainStatKey, DiscSubStatKey } from '../../consts'
 
 const showPercentKeys = ['hp_', 'def_', 'atk_'] as const
 /**

@@ -1,11 +1,11 @@
 import { Skeleton } from '@mantine/core'
 import type { GeneralAutocompleteOption } from '@zenless-optimizer/common/ui'
 import { GeneralAutocomplete, ImgIcon } from '@zenless-optimizer/common/ui'
+import { wengineAsset } from '@zenless-optimizer/zzz/assets'
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
+import { allWengineKeys } from '@zenless-optimizer/zzz/consts'
 import { Suspense, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { wengineAsset } from '../../assets'
-import type { WengineKey } from '../../consts'
-import { allWengineKeys } from '../../consts'
 
 export function WengineAutocomplete({
   wkey,

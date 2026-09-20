@@ -3,13 +3,13 @@ import type {
   DiscMainStatKey,
   DiscSlotKey,
   DiscSubStatKey,
-} from '../../consts'
-import type { ZzzDatabase } from '../../db'
+} from '@zenless-optimizer/zzz/consts'
+import type { ZzzDatabase } from '@zenless-optimizer/zzz/db'
 import {
   getCharacterEffectiveMainStats,
   getCharacterEffectiveStats,
   getCharacterSubstatWeights,
-} from '../../util'
+} from '@zenless-optimizer/zzz/util'
 
 /**
  * Returns the effective stats for a character, merged with any custom overrides.

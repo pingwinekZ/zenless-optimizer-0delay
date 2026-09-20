@@ -32,6 +32,20 @@ import {
   statKeyToFixed,
   toPercent,
 } from '@zenless-optimizer/common/util'
+import type { DiscSetKey, DiscSlotKey } from '@zenless-optimizer/zzz/consts'
+import {
+  allDiscSlotKeys,
+  discMaxLevel,
+  getDiscMainStatVal,
+} from '@zenless-optimizer/zzz/consts'
+import {
+  type ICachedDisc,
+  validateDiscBasedOnRarity,
+} from '@zenless-optimizer/zzz/db'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import type { Processed } from '@zenless-optimizer/zzz/disc-scanner'
+import { ScanningQueue } from '@zenless-optimizer/zzz/disc-scanner'
+import type { IDisc, ISubstat } from '@zenless-optimizer/zzz/zood'
 import type { ChangeEvent } from 'react'
 import {
   Suspense,
@@ -43,17 +57,6 @@ import {
   useState,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { DiscSetKey, DiscSlotKey } from '../../../consts'
-import {
-  allDiscSlotKeys,
-  discMaxLevel,
-  getDiscMainStatVal,
-} from '../../../consts'
-import { type ICachedDisc, validateDiscBasedOnRarity } from '../../../db'
-import { useDatabaseContext } from '../../../db-ui'
-import type { Processed } from '../../../disc-scanner'
-import { ScanningQueue } from '../../../disc-scanner'
-import type { IDisc, ISubstat } from '../../../zood'
 import { LocationAutocomplete } from '../../Character/LocationAutocomplete'
 import { DiscCardObj } from '../DiscCard'
 import { DiscMainStatGroup } from '../DiscMainStatGroup'

@@ -8,8 +8,8 @@ import {
   subscript,
   sum,
 } from '@zenless-optimizer/pando/engine'
-import type { WengineKey } from '../../../consts'
-import { allStats, getWengineStat } from '../../../stats'
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
+import { allStats, getWengineStat } from '@zenless-optimizer/zzz/stats'
 import type { Tag, TagMapNodeEntries, TagMapNodeEntry } from '../util'
 import { own, ownBuff } from '../util'
 

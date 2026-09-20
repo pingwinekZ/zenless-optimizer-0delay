@@ -1,6 +1,6 @@
 import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
-import { wengineAsset } from '../../../assets'
-import type { WengineKey } from '../../../consts'
+import { wengineAsset } from '@zenless-optimizer/zzz/assets'
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
 import { trans } from '../../util'
 import { PhaseWrapper } from '../components'
 

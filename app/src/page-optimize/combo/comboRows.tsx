@@ -1,8 +1,8 @@
 import { Button, Flex, Select, Switch } from '@mantine/core'
 import { IconCircleMinus, IconCirclePlus } from '@tabler/icons-react'
+import type { TeamConditional } from '@zenless-optimizer/zzz/db'
+import { getConditional } from '@zenless-optimizer/zzz/formula'
 import { memo, useMemo } from 'react'
-import type { TeamConditional } from '../../db'
-import { getConditional } from '../../formula'
 import { NumConditionalRow } from '../Optimize/conditionalUtils'
 import {
   buttonStyle,

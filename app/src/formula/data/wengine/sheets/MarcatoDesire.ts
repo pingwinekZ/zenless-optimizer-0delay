@@ -1,6 +1,6 @@
 import { cmpGE, subscript, sum } from '@zenless-optimizer/pando/engine'
-import type { WengineKey } from '../../../../consts'
-import { mappedStats } from '../../../../stats'
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
+import { mappedStats } from '@zenless-optimizer/zzz/stats'
 import { allNumConditionals, own, ownBuff, registerBuff } from '../../util'
 import {
   cmpSpecialtyAndEquipped,

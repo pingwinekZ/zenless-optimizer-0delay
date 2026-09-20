@@ -4,17 +4,8 @@ import {
   useDataManagerKeys,
 } from '@zenless-optimizer/common/database-ui'
 import { filterFunction, sortFunction } from '@zenless-optimizer/common/util'
-import {
-  Suspense,
-  useCallback,
-  useDeferredValue,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import type { CharacterKey } from '../consts'
-import { useDatabaseContext } from '../db-ui'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
 import {
   CharacterMenu,
   CharacterSingleSelectionModal,
@@ -24,7 +15,16 @@ import {
   precomputedCssVars,
   StatHighlightContext,
   useCharacterTabStore,
-} from '../ui'
+} from '@zenless-optimizer/zzz/ui'
+import {
+  Suspense,
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { CharacterDragList } from './CharacterDragList'
 import { CharacterEditModal } from './CharacterEditModal'
 import { CharacterPreview } from './CharacterPreview'

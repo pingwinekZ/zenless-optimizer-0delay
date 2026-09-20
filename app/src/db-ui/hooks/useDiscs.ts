@@ -1,7 +1,7 @@
 import { objKeyMap } from '@zenless-optimizer/common/util'
+import type { DiscSlotKey } from '@zenless-optimizer/zzz/consts'
+import { allDiscSlotKeys } from '@zenless-optimizer/zzz/consts'
 import { useMemo } from 'react'
-import type { DiscSlotKey } from '../../consts'
-import { allDiscSlotKeys } from '../../consts'
 import { useDisc } from './useDisc'
 
 const emptydiscIds = objKeyMap(allDiscSlotKeys, () => undefined)

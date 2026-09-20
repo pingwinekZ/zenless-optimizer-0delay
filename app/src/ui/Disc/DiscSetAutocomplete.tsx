@@ -1,9 +1,9 @@
 import { GeneralAutocomplete, ImgIcon } from '@zenless-optimizer/common/ui'
+import { discDefIcon } from '@zenless-optimizer/zzz/assets'
+import type { DiscSetKey } from '@zenless-optimizer/zzz/consts'
+import { allDiscSetKeys } from '@zenless-optimizer/zzz/consts'
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { discDefIcon } from '../../assets'
-import type { DiscSetKey } from '../../consts'
-import { allDiscSetKeys } from '../../consts'
 
 type DiscSetAutocompleteProps = {
   discSetKey: DiscSetKey | ''

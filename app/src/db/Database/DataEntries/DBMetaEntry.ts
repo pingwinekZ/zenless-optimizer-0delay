@@ -1,6 +1,9 @@
 import type { Database } from '@zenless-optimizer/common/database'
+import {
+  allCharacterKeys,
+  type CharacterKey,
+} from '@zenless-optimizer/zzz/consts'
 import { z } from 'zod'
-import { allCharacterKeys, type CharacterKey } from '../../../consts'
 import type { IZenlessObjectDescription, IZZZDatabase } from '../../Interfaces'
 import type { ZzzDatabase } from '../Database'
 import { DataEntry } from '../DataEntry'

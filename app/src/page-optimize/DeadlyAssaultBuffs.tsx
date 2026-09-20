@@ -1,14 +1,18 @@
 import { ActionIcon, Box, CardSection, Flex, Stack, Text } from '@mantine/core'
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import { CardThemed } from '@zenless-optimizer/common/ui'
+import { monsterAsset } from '@zenless-optimizer/zzz/assets'
+import type { AttributeKey } from '@zenless-optimizer/zzz/consts'
+import type { TeamBonusStat, TeamEnemyStat } from '@zenless-optimizer/zzz/db'
+import { getTeamFrame0 } from '@zenless-optimizer/zzz/db'
+import {
+  useCharacterContext,
+  useDatabaseContext,
+  useTeam,
+} from '@zenless-optimizer/zzz/db-ui'
+import { getCharStat } from '@zenless-optimizer/zzz/stats'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { monsterAsset } from '../assets'
-import type { AttributeKey } from '../consts'
-import type { TeamBonusStat, TeamEnemyStat } from '../db'
-import { getTeamFrame0 } from '../db'
-import { useCharacterContext, useDatabaseContext, useTeam } from '../db-ui'
-import { getCharStat } from '../stats'
 import seasons from './daSeasons_gen.json'
 import { parseBuffDescription } from './parseBuffDescription'
 

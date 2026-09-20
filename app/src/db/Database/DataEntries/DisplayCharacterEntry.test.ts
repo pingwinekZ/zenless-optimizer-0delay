@@ -3,7 +3,7 @@ import {
   allAttributeKeys,
   allCharacterRarityKeys,
   allSpecialityKeys,
-} from '../../../consts'
+} from '@zenless-optimizer/zzz/consts'
 import { ZzzDatabase } from '../Database'
 
 describe('DisplayCharacterEntry', () => {

@@ -12,28 +12,28 @@ import {
 import { type UseFormReturnType, useForm } from '@mantine/form'
 import { modals } from '@mantine/modals'
 import { getUnitStr } from '@zenless-optimizer/common/util'
-import { useCallback, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
-import { characterAsset } from '../../assets'
+import { characterAsset } from '@zenless-optimizer/zzz/assets'
 import type {
   CharacterKey,
   DiscMainStatKey,
   DiscSlotKey,
   DiscSubStatKey,
-} from '../../consts'
+} from '@zenless-optimizer/zzz/consts'
 import {
   allCharacterKeys,
   allDiscSubStatKeys,
   discSlotToMainStatKeys,
-} from '../../consts'
-import type { StatWeightOverride } from '../../db'
-import { useDatabaseContext } from '../../db-ui'
-import { StatIcon } from '../../svgicons'
-import { CharIconCircle } from '../../ui'
+} from '@zenless-optimizer/zzz/consts'
+import type { StatWeightOverride } from '@zenless-optimizer/zzz/db'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import { StatIcon } from '@zenless-optimizer/zzz/svgicons'
+import { CharIconCircle } from '@zenless-optimizer/zzz/ui'
 import {
   getCharacterEffectiveMainStats,
   getCharacterSubstatWeights,
-} from '../../util'
+} from '@zenless-optimizer/zzz/util'
+import { useCallback, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDiscTabStore } from '../discGrid/useDiscTabStore'
 import classes from './StatWeightEditorModal.module.css'
 

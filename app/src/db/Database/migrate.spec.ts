@@ -1,8 +1,11 @@
 import { DBLocalStorage } from '@zenless-optimizer/common/database'
 import { objKeyMap } from '@zenless-optimizer/common/util'
-import type { CharacterKey } from '../../consts'
-import { allCharacterKeys, allDiscSlotKeys } from '../../consts'
-import type { SavedBuild } from '../../zood'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import {
+  allCharacterKeys,
+  allDiscSlotKeys,
+} from '@zenless-optimizer/zzz/consts'
+import type { SavedBuild } from '@zenless-optimizer/zzz/zood'
 import { ZzzDatabase } from './Database'
 
 const charKey = allCharacterKeys[0] as CharacterKey

@@ -23,6 +23,9 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { Box } from '@mantine/core'
 import { useMergedRef } from '@mantine/hooks'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import { CharacterRow, DragOverlayRow } from '@zenless-optimizer/zzz/ui'
 import {
   OverlayScrollbarsComponent,
   type OverlayScrollbarsComponentRef,
@@ -37,9 +40,6 @@ import {
   useRef,
   useState,
 } from 'react'
-import type { CharacterKey } from '../consts'
-import { useDatabaseContext } from '../db-ui'
-import { CharacterRow, DragOverlayRow } from '../ui'
 import classes from './CharacterGrid.module.css'
 import { useShowcaseRowColor } from './color/useShowcaseRowTheme'
 

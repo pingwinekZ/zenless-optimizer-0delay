@@ -4,8 +4,10 @@ import {
   zodBoundedNumber,
   zodEnumWithDefault,
 } from '@zenless-optimizer/common/database'
-import { z } from 'zod'
-import type { DiscRarityKey, DiscSubStatKey } from '../consts'
+import type {
+  DiscRarityKey,
+  DiscSubStatKey,
+} from '@zenless-optimizer/zzz/consts'
 import {
   allDiscMainStatKeys,
   allDiscRarityKeys,
@@ -17,7 +19,8 @@ import {
   discSlotToMainStatKeys,
   discSubstatRollData,
   statKeyTextMap,
-} from '../consts'
+} from '@zenless-optimizer/zzz/consts'
+import { z } from 'zod'
 
 export const substatSchema = z.object({
   key: zodEnumWithDefault([...allDiscSubStatKeys, ''] as const, ''),

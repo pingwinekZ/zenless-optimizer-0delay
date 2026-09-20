@@ -3,7 +3,7 @@ import type {
   Field,
   TagField,
 } from '@zenless-optimizer/game-opt/sheet-ui'
-import { formulaData, type Tag } from '../../formula'
+import { formulaData, type Tag } from '@zenless-optimizer/zzz/formula'
 
 const MAIN_UNIT_EFFECT_TYPES = new Set([
   'teamBuff',

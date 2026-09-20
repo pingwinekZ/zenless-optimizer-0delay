@@ -11,8 +11,8 @@ import {
   type AttributeAnomalyKey,
   allAttributeAnomalyKeys,
   type CharacterKey,
-} from '../../../../consts'
-import { allStats, mappedStats } from '../../../../stats'
+} from '@zenless-optimizer/zzz/consts'
+import { allStats, mappedStats } from '@zenless-optimizer/zzz/stats'
 import {
   allBoolConditionals,
   allNumConditionals,

@@ -1,5 +1,5 @@
-import { type DiscSetKey } from '../../consts'
-import { Translate } from '../../i18n'
+import { type DiscSetKey } from '@zenless-optimizer/zzz/consts'
+import { Translate } from '@zenless-optimizer/zzz/i18n'
 export function DiscSetName({ setKey }: { setKey: DiscSetKey }) {
   return <Translate ns="discNames_gen" key18={setKey} />
 }

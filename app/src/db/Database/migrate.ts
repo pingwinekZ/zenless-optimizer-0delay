@@ -6,10 +6,10 @@
 // 4. Test on import, and also on version update
 
 import type { DBStorage } from '@zenless-optimizer/common/database'
-import type { CharacterKey } from '../../consts'
-import { allCharacterKeys, allWengineKeys } from '../../consts'
-import type { ICharacter, SavedBuild } from '../../zood'
-import { parseSavedBuild } from '../../zood'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { allCharacterKeys, allWengineKeys } from '@zenless-optimizer/zzz/consts'
+import type { ICharacter, SavedBuild } from '@zenless-optimizer/zzz/zood'
+import { parseSavedBuild } from '@zenless-optimizer/zzz/zood'
 import type {
   ICharMeta,
   IZenlessObjectDescription,

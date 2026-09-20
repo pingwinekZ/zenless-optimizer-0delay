@@ -1,7 +1,7 @@
+import type { CharacterKey, DiscSlotKey } from '@zenless-optimizer/zzz/consts'
+import { allDiscSlotKeys } from '@zenless-optimizer/zzz/consts'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { CharacterKey, DiscSlotKey } from '../../consts'
-import { allDiscSlotKeys } from '../../consts'
 
 export type CharacterTabFilters = {
   name: string

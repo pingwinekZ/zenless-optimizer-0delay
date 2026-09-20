@@ -1,6 +1,6 @@
 // WARNING: Generated file, do not modify
 import type { UISheet } from '@zenless-optimizer/game-opt/sheet-ui'
-import type { DiscSetKey } from '../../../consts'
+import type { DiscSetKey } from '@zenless-optimizer/zzz/consts'
 import AstralVoice from './AstralVoice'
 import BranchBladeSong from './BranchBladeSong'
 import BunnyInWonderland from './BunnyInWonderland'

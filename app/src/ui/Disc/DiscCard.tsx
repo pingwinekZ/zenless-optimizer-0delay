@@ -15,20 +15,20 @@ import {
   statKeyToFixed,
   toPercent,
 } from '@zenless-optimizer/common/util'
-import type React from 'react'
-import type { ReactNode } from 'react'
-import { memo, Suspense, useCallback } from 'react'
-import { useTranslation } from 'react-i18next'
-import { discDefIcon } from '../../assets'
-import type { DiscRarityKey, LocationKey } from '../../consts'
+import { discDefIcon } from '@zenless-optimizer/zzz/assets'
+import type { DiscRarityKey, LocationKey } from '@zenless-optimizer/zzz/consts'
 import {
   getDiscMainStatVal,
   getDiscSubStatBaseVal,
   rarityColor,
   themeColorVar,
-} from '../../consts'
-import { useDatabaseContext, useDisc } from '../../db-ui'
-import type { IDisc, ISubstat } from '../../zood'
+} from '@zenless-optimizer/zzz/consts'
+import { useDatabaseContext, useDisc } from '@zenless-optimizer/zzz/db-ui'
+import type { IDisc, ISubstat } from '@zenless-optimizer/zzz/zood'
+import type React from 'react'
+import type { ReactNode } from 'react'
+import { memo, Suspense, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { StatDisplay } from '../Character'
 import { LocationAutocomplete } from '../Character/LocationAutocomplete'
 import { LocationName } from '../Character/LocationName'

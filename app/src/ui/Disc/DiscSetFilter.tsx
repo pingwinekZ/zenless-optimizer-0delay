@@ -17,9 +17,9 @@ import {
   ModalWrapper,
 } from '@zenless-optimizer/common/ui'
 import { toggleInArr } from '@zenless-optimizer/common/util'
-import { discDefIcon } from '../../assets'
-import type { DiscSetKey } from '../../consts'
-import { allDiscSetKeys } from '../../consts'
+import { discDefIcon } from '@zenless-optimizer/zzz/assets'
+import type { DiscSetKey } from '@zenless-optimizer/zzz/consts'
+import { allDiscSetKeys } from '@zenless-optimizer/zzz/consts'
 import { DiscSetName } from './DiscTrans'
 
 export function DiscSetFilter({

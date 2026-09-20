@@ -1,18 +1,21 @@
 import { Box, MenuItem } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { DropdownButton } from '@zenless-optimizer/common/ui'
-import { useMemo } from 'react'
-import type { TargetTag } from '../../db'
+import type { TargetTag } from '@zenless-optimizer/zzz/db'
 import {
   getTeamFrame0,
   type ICachedCharacter,
   isComboTarget,
   type Team,
   targetTag,
-} from '../../db'
-import { useDatabaseContext } from '../../db-ui'
-import { own } from '../../formula'
-import { FullTagDisplay, useZzzCalcContext } from '../../formula-ui'
+} from '@zenless-optimizer/zzz/db'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import { own } from '@zenless-optimizer/zzz/formula'
+import {
+  FullTagDisplay,
+  useZzzCalcContext,
+} from '@zenless-optimizer/zzz/formula-ui'
+import { useMemo } from 'react'
 import { ComboDrawer } from '../combo'
 import { useComboMembers } from '../combo/useComboMembers'
 import { comboMetricLabel } from '../OptTargetSelector'

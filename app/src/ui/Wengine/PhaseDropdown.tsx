@@ -1,7 +1,7 @@
 import { Menu } from '@mantine/core'
 import { DropdownButton } from '@zenless-optimizer/common/ui'
+import { allPhaseKeys, type PhaseKey } from '@zenless-optimizer/zzz/consts'
 import { useTranslation } from 'react-i18next'
-import { allPhaseKeys, type PhaseKey } from '../../consts'
 
 export function PhaseDropdown({
   phase,

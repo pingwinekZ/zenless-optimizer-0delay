@@ -11,12 +11,24 @@ import {
 } from '@mantine/core'
 import { IconBolt, IconSettings, IconTarget } from '@tabler/icons-react'
 import { CardThemed } from '@zenless-optimizer/common/ui'
+import type {
+  CharacterKey,
+  DiscSlotKey,
+  WengineKey,
+} from '@zenless-optimizer/zzz/consts'
+import type {
+  ICachedCharacter,
+  ICachedDisc,
+  StatFilters,
+  Team,
+} from '@zenless-optimizer/zzz/db'
+import { getTeamFrame0, isComboTarget } from '@zenless-optimizer/zzz/db'
+import {
+  OptConfigContext,
+  useDatabaseContext,
+} from '@zenless-optimizer/zzz/db-ui'
 import type { MutableRefObject } from 'react'
 import { useCallback, useContext, useState } from 'react'
-import type { CharacterKey, DiscSlotKey, WengineKey } from '../../consts'
-import type { ICachedCharacter, ICachedDisc, StatFilters, Team } from '../../db'
-import { getTeamFrame0, isComboTarget } from '../../db'
-import { OptConfigContext, useDatabaseContext } from '../../db-ui'
 import { AfterShockToggleButton } from '../AfterShockToggleButton'
 import { AppliedBuffStats } from '../AppliedBuffStats'
 import { CharacterPreviewPanel } from '../CharacterPreviewPanel'

@@ -11,23 +11,31 @@ import {
   isTagField,
   TagFieldDisplay,
 } from '@zenless-optimizer/game-opt/sheet-ui'
-import type { ReactNode } from 'react'
-import { memo, useContext, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
-import type { CharacterKey, WengineKey } from '../../consts'
-import { useCharacterContext, useDatabaseContext, useTeam } from '../../db-ui'
-import { buffs as allBuffs, conditionals, own } from '../../formula'
+import type { CharacterKey, WengineKey } from '@zenless-optimizer/zzz/consts'
+import {
+  useCharacterContext,
+  useDatabaseContext,
+  useTeam,
+} from '@zenless-optimizer/zzz/db-ui'
+import {
+  buffs as allBuffs,
+  conditionals,
+  own,
+} from '@zenless-optimizer/zzz/formula'
 import {
   TagDisplay,
   useZzzCalcContext,
   wengineUiSheets,
-} from '../../formula-ui'
+} from '@zenless-optimizer/zzz/formula-ui'
 import {
   buffAppliesToMainUnit,
   buffAppliesToSelf,
-} from '../../formula-ui/teammate'
-import { GameDesc, GameText } from '../../i18n'
-import { getCharStat } from '../../stats'
+} from '@zenless-optimizer/zzz/formula-ui/teammate'
+import { GameDesc, GameText } from '@zenless-optimizer/zzz/i18n'
+import { getCharStat } from '@zenless-optimizer/zzz/stats'
+import type { ReactNode } from 'react'
+import { memo, useContext, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   ConditionalText,
   conditionalAlign,

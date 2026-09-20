@@ -2,10 +2,10 @@ import { Badge } from '@mantine/core'
 import { iconInlineProps } from '@zenless-optimizer/common/svgicons'
 import { GeneralAutocompleteMulti } from '@zenless-optimizer/common/ui'
 import { getUnitStr } from '@zenless-optimizer/common/util'
+import type { DiscSubStatKey } from '@zenless-optimizer/zzz/consts'
+import { StatIcon } from '@zenless-optimizer/zzz/svgicons'
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { DiscSubStatKey } from '../../consts'
-import { StatIcon } from '../../svgicons'
 
 export function SubstatMultiAutocomplete<
   SubstatKeyParam extends DiscSubStatKey,

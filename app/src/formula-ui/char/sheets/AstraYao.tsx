@@ -1,7 +1,7 @@
 import { ColorText } from '@zenless-optimizer/common/ui'
-import type { CharacterKey } from '../../../consts'
-import { AstraYao } from '../../../formula'
-import { GameDescSlice } from '../../../i18n'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { AstraYao } from '@zenless-optimizer/zzz/formula'
+import { GameDescSlice } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
 import {
   CoreGameDesc,

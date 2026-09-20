@@ -1,4 +1,4 @@
-import type { ICharacter, IDisc } from '../../zood'
+import type { ICharacter, IDisc } from '@zenless-optimizer/zzz/zood'
 
 function newCounter<T>(): ImportResultCounter<T> {
   return {

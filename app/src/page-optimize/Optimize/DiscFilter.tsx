@@ -13,12 +13,22 @@ import { IconX } from '@tabler/icons-react'
 import { useBoolState } from '@zenless-optimizer/common/react-util'
 import { CardThemed, ModalWrapper, SqBadge } from '@zenless-optimizer/common/ui'
 import { handleMultiSelect } from '@zenless-optimizer/common/util'
+import type {
+  DiscMainStatKey,
+  DiscSetKey,
+  DiscSlotKey,
+} from '@zenless-optimizer/zzz/consts'
+import {
+  allDiscSlotKeys,
+  discSlotToMainStatKeys,
+} from '@zenless-optimizer/zzz/consts'
+import type { ICachedDisc } from '@zenless-optimizer/zzz/db'
+import {
+  OptConfigContext,
+  useDatabaseContext,
+} from '@zenless-optimizer/zzz/db-ui'
+import { StatDisplay } from '@zenless-optimizer/zzz/ui'
 import { Suspense, useCallback, useContext } from 'react'
-import type { DiscMainStatKey, DiscSetKey, DiscSlotKey } from '../../consts'
-import { allDiscSlotKeys, discSlotToMainStatKeys } from '../../consts'
-import type { ICachedDisc } from '../../db'
-import { OptConfigContext, useDatabaseContext } from '../../db-ui'
-import { StatDisplay } from '../../ui'
 import { DiscLevelFilter } from './DiscLevelFilter'
 import { DiscSetFilter } from './DiscSetFilter'
 

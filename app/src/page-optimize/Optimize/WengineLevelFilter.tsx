@@ -1,9 +1,12 @@
 import { CardSection, Divider, Text } from '@mantine/core'
 import { CardThemed } from '@zenless-optimizer/common/ui'
+import { wengineMaxLevel } from '@zenless-optimizer/zzz/consts'
+import {
+  OptConfigContext,
+  useDatabaseContext,
+} from '@zenless-optimizer/zzz/db-ui'
+import { WengineLevelSlider } from '@zenless-optimizer/zzz/ui'
 import { memo, useContext } from 'react'
-import { wengineMaxLevel } from '../../consts'
-import { OptConfigContext, useDatabaseContext } from '../../db-ui'
-import { WengineLevelSlider } from '../../ui'
 
 export const WengineLevelFilter = memo(function WengineLevelFilter({
   disabled = false,

@@ -1,8 +1,8 @@
 import { SimpleGrid, Stack } from '@mantine/core'
+import { allDiscSlotKeys } from '@zenless-optimizer/zzz/consts'
+import { type DiscIds } from '@zenless-optimizer/zzz/db'
+import { useDiscs, useWengine } from '@zenless-optimizer/zzz/db-ui'
 import { useMemo } from 'react'
-import { allDiscSlotKeys } from '../../consts'
-import { type DiscIds } from '../../db'
-import { useDiscs, useWengine } from '../../db-ui'
 import { CompactDiscCard, DiscSetCardCompact } from '../Disc'
 import { CompactWengineCard } from '../Wengine'
 

@@ -1,5 +1,5 @@
-import type { DiscSlotKey } from '../../consts'
-import type { ICharacter } from '../../zood'
+import type { DiscSlotKey } from '@zenless-optimizer/zzz/consts'
+import type { ICharacter } from '@zenless-optimizer/zzz/zood'
 
 export interface ICharMeta {
   description: string

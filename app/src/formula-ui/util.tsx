@@ -1,8 +1,12 @@
 import type { TagField } from '@zenless-optimizer/game-opt/sheet-ui'
+import type {
+  CharacterKey,
+  DiscSetKey,
+  WengineKey,
+} from '@zenless-optimizer/zzz/consts'
+import type { Tag } from '@zenless-optimizer/zzz/formula'
+import { i18n, Translate } from '@zenless-optimizer/zzz/i18n'
 import type { ReactNode } from 'react'
-import type { CharacterKey, DiscSetKey, WengineKey } from '../consts'
-import type { Tag } from '../formula'
-import { i18n, Translate } from '../i18n'
 import { TagDisplay } from './components'
 export const st = (
   strKey: string,

@@ -2,7 +2,7 @@ import {
   compileTagMapValues,
   setDebugMode,
 } from '@zenless-optimizer/pando/engine'
-import type { WengineKey } from '../consts'
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
 import {
   charTagMapNodeEntries,
   conditionalEntries,
@@ -14,10 +14,10 @@ import {
   teamData,
   wengineTagMapNodeEntries,
   withMember,
-} from '../formula'
-import { Calculator } from '../formula/calculator'
-import { data, keys, values } from '../formula/data'
-import type { TagMapNodeEntries } from '../formula/data/util'
+} from '@zenless-optimizer/zzz/formula'
+import { Calculator } from '@zenless-optimizer/zzz/formula/calculator'
+import { data, keys, values } from '@zenless-optimizer/zzz/formula/data'
+import type { TagMapNodeEntries } from '@zenless-optimizer/zzz/formula/data/util'
 import { generateTheoreticalDiscs } from './generateTheoreticalDiscs'
 
 setDebugMode(true)

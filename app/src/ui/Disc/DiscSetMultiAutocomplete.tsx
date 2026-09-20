@@ -1,11 +1,11 @@
 import { Badge, Box, Text } from '@mantine/core'
 import { GeneralAutocompleteMulti, ImgIcon } from '@zenless-optimizer/common/ui'
+import { discDefIcon } from '@zenless-optimizer/zzz/assets'
+import type { DiscRarityKey, DiscSetKey } from '@zenless-optimizer/zzz/consts'
+import { allDiscRarityKeys } from '@zenless-optimizer/zzz/consts'
+import { setKeysByRarities } from '@zenless-optimizer/zzz/util'
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { discDefIcon } from '../../assets'
-import type { DiscRarityKey, DiscSetKey } from '../../consts'
-import { allDiscRarityKeys } from '../../consts'
-import { setKeysByRarities } from '../../util'
 
 export function DiscSetMultiAutocomplete({
   allowRarities = [...allDiscRarityKeys],

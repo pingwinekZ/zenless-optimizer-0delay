@@ -1,8 +1,6 @@
 import { Button, Group, Menu } from '@mantine/core'
 import { DropdownButton, NumberInputLazy } from '@zenless-optimizer/common/ui'
 import { clamp } from '@zenless-optimizer/common/util'
-import { useCallback } from 'react'
-import { useTranslation } from 'react-i18next'
 import {
   ambiguousLevel,
   ambiguousLevelLow,
@@ -13,7 +11,9 @@ import {
   milestoneLevelsLow,
   milestoneMaxLevel,
   milestoneMaxLevelLow,
-} from '../consts'
+} from '@zenless-optimizer/zzz/consts'
+import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export function LevelSelect({
   level,

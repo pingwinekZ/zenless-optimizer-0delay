@@ -5,22 +5,25 @@ import {
   statKeyToFixed,
   toPercent,
 } from '@zenless-optimizer/common/util'
-import { discDefIcon } from '../../assets'
-import type { CharacterKey, DiscSubStatKey } from '../../consts'
+import { discDefIcon } from '@zenless-optimizer/zzz/assets'
+import type {
+  CharacterKey,
+  DiscSubStatKey,
+} from '@zenless-optimizer/zzz/consts'
 import {
   rarityColor as discRarityColor,
   getDiscMainStatVal,
   getDiscSubStatBaseVal,
   statKeyTextMap,
   themeColorVar,
-} from '../../consts'
-import { StatIcon } from '../../svgicons'
-import { DiscSetName } from '../../ui'
+} from '@zenless-optimizer/zzz/consts'
+import { StatIcon } from '@zenless-optimizer/zzz/svgicons'
+import { DiscSetName } from '@zenless-optimizer/zzz/ui'
 import {
   getCharacterEffectiveStats,
   getCharacterSubstatWeights,
-} from '../../util'
-import type { IDisc, ISubstat } from '../../zood'
+} from '@zenless-optimizer/zzz/util'
+import type { IDisc, ISubstat } from '@zenless-optimizer/zzz/zood'
 import { computeCurrentScore } from '../scoring/currentScore'
 import { computeMaxPotential } from '../scoring/potentialScore'
 import { formatScorePct } from '../scoring/scoreFormatting'

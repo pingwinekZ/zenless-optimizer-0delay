@@ -1,6 +1,6 @@
-import { allCharacterKeys } from '../../consts'
-import type { TeamConditional } from '../../db'
-import { conditionals as allConditionalsMeta } from '../../formula'
+import { allCharacterKeys } from '@zenless-optimizer/zzz/consts'
+import type { TeamConditional } from '@zenless-optimizer/zzz/db'
+import { conditionals as allConditionalsMeta } from '@zenless-optimizer/zzz/formula'
 import {
   type ComboMember,
   filterRelevantConditionals,

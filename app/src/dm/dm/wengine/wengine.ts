@@ -3,7 +3,7 @@ import type {
   SpecialityKey,
   WengineKey,
   WengineRarityKey,
-} from '../../../consts'
+} from '@zenless-optimizer/zzz/consts'
 import { readNanokaJSON } from '../../util'
 import {
   specialityMap,

@@ -9,21 +9,21 @@ import {
   statKeyToFixed,
   toPercent,
 } from '@zenless-optimizer/common/util'
-import { useCallback, useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { discDefIcon } from '../../../assets'
+import { discDefIcon } from '@zenless-optimizer/zzz/assets'
 import type {
   DiscMainStatKey,
   DiscSlotKey,
   DiscSubStatKey,
-} from '../../../consts'
+} from '@zenless-optimizer/zzz/consts'
 import {
   allDiscSetKeys,
   allDiscSlotKeys,
   discMaxLevel,
   discSlotToMainStatKeys,
-} from '../../../consts'
-import { useDatabaseContext } from '../../../db-ui'
+} from '@zenless-optimizer/zzz/consts'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import { useCallback, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { LocationAutocomplete } from '../../Character/LocationAutocomplete'
 import modalClasses from './DiscEditorModal.module.css'
 import { DiscEditorSubstatInput } from './DiscEditorSubstatInput'

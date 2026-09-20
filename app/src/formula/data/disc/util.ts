@@ -1,7 +1,7 @@
 import { registerEquipment } from '@zenless-optimizer/game-opt/formula'
 import { cmpGE } from '@zenless-optimizer/pando/engine'
-import type { DiscSetKey } from '../../../consts'
-import { disc2pEffect } from '../../../consts'
+import type { DiscSetKey } from '@zenless-optimizer/zzz/consts'
+import { disc2pEffect } from '@zenless-optimizer/zzz/consts'
 import type { Tag, TagMapNodeEntries, TagMapNodeEntry } from '../util'
 import { getStatFromStatKey, own, ownBuff, registerBuff } from '../util'
 

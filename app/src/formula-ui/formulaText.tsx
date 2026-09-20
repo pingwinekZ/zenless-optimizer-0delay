@@ -6,9 +6,9 @@ import {
 import type { CalcMeta } from '@zenless-optimizer/game-opt/engine'
 import type { FormulaText } from '@zenless-optimizer/game-opt/sheet-ui'
 import type { CalcResult } from '@zenless-optimizer/pando/engine'
+import type { Tag } from '@zenless-optimizer/zzz/formula'
 import type { ReactNode } from 'react'
 import { Fragment } from 'react'
-import type { Tag } from '../formula'
 import { TagDisplay } from './components'
 import { getTagLabel } from './util'
 

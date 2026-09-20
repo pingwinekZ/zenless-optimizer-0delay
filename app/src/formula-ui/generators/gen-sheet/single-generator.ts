@@ -4,7 +4,7 @@ import {
   allCharacterKeys,
   allDiscSetKeys,
   allWengineKeys,
-} from '../../../consts'
+} from '@zenless-optimizer/zzz/consts'
 import genIndex from './genIndex'
 import genSheet from './genSheet'
 import type { GenSheetGeneratorSchema } from './schema'

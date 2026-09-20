@@ -1,6 +1,6 @@
 import { Anchor, CardSection, Text, Title } from '@mantine/core'
+import { ZCard } from '@zenless-optimizer/zzz/ui'
 import { Trans, useTranslation } from 'react-i18next'
-import { ZCard } from '../ui'
 export function IntroCard() {
   const { t } = useTranslation('page_home')
   return (

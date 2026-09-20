@@ -3,7 +3,7 @@ import {
   allDiscSetKeys,
   allDiscSlotKeys,
   discSlotToMainStatKeys,
-} from '../../../consts'
+} from '@zenless-optimizer/zzz/consts'
 import { ZzzDatabase } from '../Database'
 import { validateDiscBasedOnRarity } from './DiscDataManager'
 

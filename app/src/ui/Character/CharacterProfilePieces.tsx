@@ -1,16 +1,20 @@
 import { Box, Text, Title } from '@mantine/core'
 import { ImgIcon, SqBadge } from '@zenless-optimizer/common/ui'
 import { range } from '@zenless-optimizer/common/util'
-import { useTranslation } from 'react-i18next'
-import { characterAsset, rarityDefIcon, specialityDefIcon } from '../../assets'
+import {
+  characterAsset,
+  rarityDefIcon,
+  specialityDefIcon,
+} from '@zenless-optimizer/zzz/assets'
 import {
   type CharacterKey,
   getLevelString,
   type MilestoneKey,
-} from '../../consts'
-import type { ICachedCharacter } from '../../db'
-import { getCharStat } from '../../stats'
-import { ElementIcon } from '../../svgicons'
+} from '@zenless-optimizer/zzz/consts'
+import type { ICachedCharacter } from '@zenless-optimizer/zzz/db'
+import { getCharStat } from '@zenless-optimizer/zzz/stats'
+import { ElementIcon } from '@zenless-optimizer/zzz/svgicons'
+import { useTranslation } from 'react-i18next'
 import { MindscapesSwitch, ZCard } from '../Components'
 import { CharacterName } from './CharacterTrans'
 

@@ -23,9 +23,7 @@ import {
   handleMultiSelect,
   objKeyMap,
 } from '@zenless-optimizer/common/util'
-import { Suspense, useMemo } from 'react'
-import { Trans, useTranslation } from 'react-i18next'
-import type { DiscSlotKey } from '../../consts'
+import type { DiscSlotKey } from '@zenless-optimizer/zzz/consts'
 import {
   allDiscMainStatKeys,
   allDiscRarityKeys,
@@ -33,9 +31,11 @@ import {
   allDiscSlotKeys,
   allDiscSubStatKeys,
   allLocationKeys,
-} from '../../consts'
-import { useDatabaseContext } from '../../db-ui'
-import { type DiscFilterOption } from '../../util'
+} from '@zenless-optimizer/zzz/consts'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import { type DiscFilterOption } from '@zenless-optimizer/zzz/util'
+import { Suspense, useMemo } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
 import { LocationFilterMultiAutocomplete } from '../Character/LocationFilterMultiAutocomplete'
 import { DiscSlotToggle } from '../toggles'
 import { DiscLevelSlider } from './DiscLevelSlider'

@@ -1,5 +1,5 @@
 import { constant, max, prod, sum } from '@zenless-optimizer/pando/engine'
-import type { AttributeKey } from '../../../consts'
+import type { AttributeKey } from '@zenless-optimizer/zzz/consts'
 import type { TagMapNodeEntries } from '../util'
 import { allNumConditionals, customAnomalyDmg, own, percent } from '../util'
 

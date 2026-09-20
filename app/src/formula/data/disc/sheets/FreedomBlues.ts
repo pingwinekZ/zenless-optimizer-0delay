@@ -1,5 +1,8 @@
 import { cmpEq, cmpGE, sum } from '@zenless-optimizer/pando/engine'
-import { allAttributeKeys, type DiscSetKey } from '../../../../consts'
+import {
+  allAttributeKeys,
+  type DiscSetKey,
+} from '@zenless-optimizer/zzz/consts'
 import { allBoolConditionals, enemyDebuff, own, registerBuff } from '../../util'
 import { entriesForDisc, registerDisc } from '../util'
 

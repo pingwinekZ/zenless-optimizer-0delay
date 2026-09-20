@@ -1,6 +1,6 @@
 import { cmpGE, subscript } from '@zenless-optimizer/pando/engine'
-import { type CharacterKey } from '../../../../consts'
-import { allStats, mappedStats } from '../../../../stats'
+import { type CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { allStats, mappedStats } from '@zenless-optimizer/zzz/stats'
 import { isStunned } from '../../common/enemy'
 import {
   allBoolConditionals,

@@ -1,8 +1,8 @@
 import { Box, Text } from '@mantine/core'
 import { ImgIcon } from '@zenless-optimizer/common/ui'
-import { wengineAsset } from '../../assets'
-import type { PhaseKey, WengineKey } from '../../consts'
-import { WengineName } from '../../ui'
+import { wengineAsset } from '@zenless-optimizer/zzz/assets'
+import type { PhaseKey, WengineKey } from '@zenless-optimizer/zzz/consts'
+import { WengineName } from '@zenless-optimizer/zzz/ui'
 import styles from './ShowcaseWengine.module.css'
 
 export function ShowcaseWengine({

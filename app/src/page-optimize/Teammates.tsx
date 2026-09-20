@@ -1,13 +1,25 @@
 import { Box, Button, SimpleGrid, Stack } from '@mantine/core'
 import { CardThemed, ImgIcon } from '@zenless-optimizer/common/ui'
 import { range } from '@zenless-optimizer/common/util'
+import {
+  characterAsset,
+  factionDefIcon,
+  specialityDefIcon,
+} from '@zenless-optimizer/zzz/assets'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import {
+  useCharacterContext,
+  useDatabaseContext,
+  useTeam,
+} from '@zenless-optimizer/zzz/db-ui'
+import { allStats, getCharStat } from '@zenless-optimizer/zzz/stats'
+import { ElementIcon } from '@zenless-optimizer/zzz/svgicons'
+import {
+  CharacterName,
+  CharacterSingleSelectionModal,
+  ZCard,
+} from '@zenless-optimizer/zzz/ui'
 import { Suspense, useCallback, useState } from 'react'
-import { characterAsset, factionDefIcon, specialityDefIcon } from '../assets'
-import type { CharacterKey } from '../consts'
-import { useCharacterContext, useDatabaseContext, useTeam } from '../db-ui'
-import { allStats, getCharStat } from '../stats'
-import { ElementIcon } from '../svgicons'
-import { CharacterName, CharacterSingleSelectionModal, ZCard } from '../ui'
 
 const EXTRA_TEAMMATE_SLOTS = [1, 2] as const
 

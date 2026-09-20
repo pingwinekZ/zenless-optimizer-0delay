@@ -4,8 +4,8 @@ import {
   statKeyToFixed,
   toPercent,
 } from '@zenless-optimizer/common/util'
-import type { WengineSubStatKey } from '../../consts'
-import { StatIcon } from '../../svgicons'
+import type { WengineSubStatKey } from '@zenless-optimizer/zzz/consts'
+import { StatIcon } from '@zenless-optimizer/zzz/svgicons'
 import { StatDisplay } from '../Character'
 
 export function WengineSubstatDisplay({

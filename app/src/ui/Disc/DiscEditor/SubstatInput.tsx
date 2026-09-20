@@ -5,17 +5,17 @@ import {
   DropdownButton,
 } from '@zenless-optimizer/common/ui'
 import { getUnitStr, range, valueString } from '@zenless-optimizer/common/util'
-import { useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import type { DiscRarityKey } from '../../../consts'
+import type { DiscRarityKey } from '@zenless-optimizer/zzz/consts'
 import {
   allDiscSubStatKeys,
   discSubstatRollData,
   getDiscSubStatBaseVal,
-} from '../../../consts'
-import type { ICachedDisc } from '../../../db'
-import { StatIcon } from '../../../svgicons'
-import type { ISubstat } from '../../../zood'
+} from '@zenless-optimizer/zzz/consts'
+import type { ICachedDisc } from '@zenless-optimizer/zzz/db'
+import { StatIcon } from '@zenless-optimizer/zzz/svgicons'
+import type { ISubstat } from '@zenless-optimizer/zzz/zood'
+import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { StatDisplay } from '../../Character'
 
 export default function SubstatInput({

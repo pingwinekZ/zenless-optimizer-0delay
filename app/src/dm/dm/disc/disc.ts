@@ -1,4 +1,4 @@
-import type { DiscSetKey } from '../../../consts'
+import type { DiscSetKey } from '@zenless-optimizer/zzz/consts'
 import { readNanokaJSON } from '../../util'
 import { DiscIdMap } from './consts'
 

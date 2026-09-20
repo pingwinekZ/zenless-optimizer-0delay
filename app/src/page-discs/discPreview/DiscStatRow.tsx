@@ -9,9 +9,9 @@ import {
   getDiscMainStatVal,
   getDiscSubStatBaseVal,
   statKeyTextMap,
-} from '../../consts'
-import { StatIcon } from '../../svgicons'
-import type { ISubstat } from '../../zood'
+} from '@zenless-optimizer/zzz/consts'
+import { StatIcon } from '@zenless-optimizer/zzz/svgicons'
+import type { ISubstat } from '@zenless-optimizer/zzz/zood'
 
 export function DiscStatRow({
   label,

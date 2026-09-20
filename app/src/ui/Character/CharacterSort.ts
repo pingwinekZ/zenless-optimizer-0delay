@@ -7,11 +7,11 @@ import {
   type CharacterKey,
   type CharacterRarityKey,
   type SpecialityKey,
-} from '../../consts'
-import type { ZzzDatabase } from '../../db'
-import { i18n } from '../../i18n'
-import { getCharStat } from '../../stats'
-import { calculateCharacterScore } from '../../util'
+} from '@zenless-optimizer/zzz/consts'
+import type { ZzzDatabase } from '@zenless-optimizer/zzz/db'
+import { i18n } from '@zenless-optimizer/zzz/i18n'
+import { getCharStat } from '@zenless-optimizer/zzz/stats'
+import { calculateCharacterScore } from '@zenless-optimizer/zzz/util'
 export const characterSortKeys = [
   'new',
   'level',

@@ -1,6 +1,25 @@
 import { ActionIcon, Divider, Drawer, Flex } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
 import { ImgIcon } from '@zenless-optimizer/common/ui'
+import { discDefIcon } from '@zenless-optimizer/zzz/assets'
+import {
+  allDiscSetKeys,
+  type CharacterKey,
+  type DiscSetKey,
+  discSetNames,
+} from '@zenless-optimizer/zzz/consts'
+import type { Team, TeamConditional } from '@zenless-optimizer/zzz/db'
+import {
+  COMBO_STATE_VERSION,
+  getTeamFrame0,
+  MAX_COMBO_HITS,
+  parseComboState,
+} from '@zenless-optimizer/zzz/db'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import {
+  conditionals as allConditionalsMeta,
+  getConditional,
+} from '@zenless-optimizer/zzz/formula'
 import {
   type RefObject,
   useCallback,
@@ -10,25 +29,6 @@ import {
   useState,
 } from 'react'
 import Selecto from 'react-selecto'
-import { discDefIcon } from '../../assets'
-import {
-  allDiscSetKeys,
-  type CharacterKey,
-  type DiscSetKey,
-  discSetNames,
-} from '../../consts'
-import type { Team, TeamConditional } from '../../db'
-import {
-  COMBO_STATE_VERSION,
-  getTeamFrame0,
-  MAX_COMBO_HITS,
-  parseComboState,
-} from '../../db'
-import { useDatabaseContext } from '../../db-ui'
-import {
-  conditionals as allConditionalsMeta,
-  getConditional,
-} from '../../formula'
 import { CascaderSelect } from './CascaderSelect'
 import { comboBoxWidth } from './comboDrawerConstants'
 import { type CellKey, CondGroupRow } from './comboRows'

@@ -1,3 +1,13 @@
+import type { SpecialityKey } from '@zenless-optimizer/zzz/consts'
+import { getEnerRegenShortLabel } from '@zenless-optimizer/zzz/consts'
+import type { GeneratedBuild } from '@zenless-optimizer/zzz/db'
+import { Gradient } from '@zenless-optimizer/zzz/rendering/gradient'
+import {
+  type BuildCombatStats,
+  buildRowId,
+  type EnrichedBuild,
+  STAT_LABELS,
+} from '@zenless-optimizer/zzz/solver/buildStatsUtils'
 import type {
   CellClassParams,
   CellClickedEvent,
@@ -6,21 +16,10 @@ import type {
 } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import { AgGridReact } from 'ag-grid-react'
-
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { SpecialityKey } from '../../consts'
-import { getEnerRegenShortLabel } from '../../consts'
-import type { GeneratedBuild } from '../../db'
-import { Gradient } from '../../rendering/gradient'
 import type { StatDisplay } from '../Sidebar/StatsViewSelect'
 import { useOptimizerDisplayStore } from '../stores/useOptimizerDisplayStore'
-import {
-  type BuildCombatStats,
-  buildRowId,
-  type EnrichedBuild,
-  STAT_LABELS,
-} from '../Util/buildStatsUtils'
 import { DiscSetCellRenderer } from './gridCellRenderers'
 
 // AG Grid v35+ requires explicit module registration

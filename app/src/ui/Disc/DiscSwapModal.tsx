@@ -16,15 +16,18 @@ import {
   useInfScroll,
 } from '@zenless-optimizer/common/ui'
 import { filterFunction } from '@zenless-optimizer/common/util'
+import type { DiscSlotKey } from '@zenless-optimizer/zzz/consts'
+import { allDiscSlotKeys } from '@zenless-optimizer/zzz/consts'
+import type { ICachedDisc } from '@zenless-optimizer/zzz/db'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import type { DiscFilterOption } from '@zenless-optimizer/zzz/util'
+import {
+  discFilterConfigs,
+  initialDiscFilterOption,
+} from '@zenless-optimizer/zzz/util'
+import type { IDisc } from '@zenless-optimizer/zzz/zood'
 import { Suspense, useCallback, useMemo, useReducer } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { DiscSlotKey } from '../../consts'
-import { allDiscSlotKeys } from '../../consts'
-import type { ICachedDisc } from '../../db'
-import { useDatabaseContext } from '../../db-ui'
-import type { DiscFilterOption } from '../../util'
-import { discFilterConfigs, initialDiscFilterOption } from '../../util'
-import type { IDisc } from '../../zood'
 import { DiscCardObj } from './DiscCard'
 import { DiscFilterDisplay } from './DiscFilterDisplay'
 

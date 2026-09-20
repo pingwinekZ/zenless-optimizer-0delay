@@ -3,19 +3,26 @@ import { IconX } from '@tabler/icons-react'
 import { useDataEntryBase } from '@zenless-optimizer/common/database-ui'
 import { ImgIcon, ModalWrapper } from '@zenless-optimizer/common/ui'
 import { filterFunction } from '@zenless-optimizer/common/util'
-import type { ChangeEvent, CSSProperties } from 'react'
-import { Suspense, useDeferredValue, useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { characterAsset, specialityDefIcon } from '../../assets'
-import type { AttributeKey, CharacterKey, SpecialityKey } from '../../consts'
+import {
+  characterAsset,
+  specialityDefIcon,
+} from '@zenless-optimizer/zzz/assets'
+import type {
+  AttributeKey,
+  CharacterKey,
+  SpecialityKey,
+} from '@zenless-optimizer/zzz/consts'
 import {
   allAttributeKeys,
   allCharacterKeys,
   allSpecialityKeys,
-} from '../../consts'
-import { useDatabaseContext } from '../../db-ui'
-import { getCharStat } from '../../stats'
-import { ElementIcon } from '../../svgicons'
+} from '@zenless-optimizer/zzz/consts'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import { getCharStat } from '@zenless-optimizer/zzz/stats'
+import { ElementIcon } from '@zenless-optimizer/zzz/svgicons'
+import type { ChangeEvent, CSSProperties } from 'react'
+import { Suspense, useDeferredValue, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { SegmentedFilterRow } from '../toggles'
 import { characterFilterConfigs } from './CharacterSort'
 

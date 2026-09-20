@@ -18,24 +18,23 @@ import type {
   DiscSubStatKey,
   PhaseKey,
   WengineKey,
-} from '../consts'
+} from '@zenless-optimizer/zzz/consts'
 import {
   allDiscSetKeys,
   allWengineKeys,
   getDiscMainStatVal,
   getDiscSubStatBaseVal,
-} from '../consts'
-import type { StatFilter } from '../db'
-import { type ICachedDisc, StatFilterTagToTag } from '../db'
-import { type Calculator, Read, type Tag } from '../formula'
-import { allStats } from '../stats'
+} from '@zenless-optimizer/zzz/consts'
+import type { StatFilter } from '@zenless-optimizer/zzz/db'
+import { type ICachedDisc, StatFilterTagToTag } from '@zenless-optimizer/zzz/db'
+import { type Calculator, Read, type Tag } from '@zenless-optimizer/zzz/formula'
+import { allStats } from '@zenless-optimizer/zzz/stats'
 
 const EPSILON = 1e-7
 
 type Frames = Array<{ tag: Tag; multiplier: number }>
 
 export {
-  type BuildRecipe,
   generateTheoreticalDiscs,
   materializeRecipeFromIndex,
   type TheoreticalDiscContext,

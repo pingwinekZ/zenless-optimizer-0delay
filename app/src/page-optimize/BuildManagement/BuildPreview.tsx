@@ -1,8 +1,8 @@
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { useCharacter, useTeam } from '@zenless-optimizer/zzz/db-ui'
+import type { SavedBuild } from '@zenless-optimizer/zzz/zood'
 import { memo, useMemo } from 'react'
-import type { CharacterKey } from '../../consts'
-import { useCharacter, useTeam } from '../../db-ui'
 import { CharacterPreview } from '../../page-characters/CharacterPreview'
-import type { SavedBuild } from '../../zood'
 import styles from './BuildsModal.module.css'
 import { previewOverrideFromBuild } from './buildConverter'
 

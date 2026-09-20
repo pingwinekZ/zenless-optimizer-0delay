@@ -1,6 +1,6 @@
 import { tag } from '@zenless-optimizer/game-opt/engine'
 import { type NumNode, type StrNode } from '@zenless-optimizer/pando/engine'
-import type { PandoStatKey } from '../../../consts'
+import type { PandoStatKey } from '@zenless-optimizer/zzz/consts'
 import type { Read, Tag } from '.'
 import {
   ownBuff,

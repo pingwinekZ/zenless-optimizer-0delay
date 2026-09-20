@@ -1,6 +1,8 @@
+import {
+  type allDiscSubStatKeys,
+  getDiscSubStatBaseVal,
+} from '@zenless-optimizer/zzz/consts'
 import { describe, expect, it } from 'vitest'
-
-import { type allDiscSubStatKeys, getDiscSubStatBaseVal } from '../consts'
 import {
   generateTheoreticalDiscs,
   RECIPE_DESCRIPTOR_STRIDE,

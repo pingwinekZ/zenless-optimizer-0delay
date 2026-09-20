@@ -3,7 +3,7 @@ import {
   allCharacterKeys,
   allDiscSetKeys,
   allWengineKeys,
-} from '../../../consts'
+} from '@zenless-optimizer/zzz/consts'
 import genIndex from './genIndex'
 import genSheet from './genSheet'
 export default async function genSheetGenerator(tree: Tree) {

@@ -1,6 +1,6 @@
 import { useDataManagerBase } from '@zenless-optimizer/common/database-ui'
-import type { CharacterKey } from '../../consts'
-import type { Team } from '../../db'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import type { Team } from '@zenless-optimizer/zzz/db'
 import { useDatabaseContext } from '../context'
 
 export function useTeam(

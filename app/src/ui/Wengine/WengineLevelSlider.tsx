@@ -1,9 +1,9 @@
 import { Box, Divider, RangeSlider } from '@mantine/core'
 import { CustomNumberInput, usePrev } from '@zenless-optimizer/common/ui'
 import { clamp } from '@zenless-optimizer/common/util'
+import { wengineMaxLevel } from '@zenless-optimizer/zzz/consts'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { wengineMaxLevel } from '../../consts'
 
 export function WengineLevelSlider({
   levelLow,
