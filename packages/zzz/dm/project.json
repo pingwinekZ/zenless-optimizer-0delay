@@ -1,13 +1,20 @@
 {
   "name": "zzz-dm",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "app/src/dm",
+  "sourceRoot": "packages/zzz/dm/src",
   "projectType": "library",
   "tags": ["scope:zzz", "layer:domain"],
   "targets": {
     "get-nanoka": {
       "executor": "@zenless-optimizer/zzz/dm:gen-nanoka",
-      "outputs": ["{projectRoot}/NanokaData/**/*"]
+      "outputs": ["{projectRoot}/src/NanokaData/**/*"]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun test --timeout=60000",
+        "cwd": "packages/zzz/dm"
+      }
     }
   }
 }

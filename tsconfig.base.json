@@ -94,7 +94,8 @@
       "@zenless-optimizer/zzz/disc-scanner/*": [
         "./packages/zzz/disc-scanner/src/*"
       ],
-      "@zenless-optimizer/zzz/dm": ["./app/src/dm/index.ts"],
+      "@zenless-optimizer/zzz/dm": ["./packages/zzz/dm/src/index.ts"],
+      "@zenless-optimizer/zzz/dm/*": ["./packages/zzz/dm/src/*"],
       "@zenless-optimizer/zzz/dm/*": ["./app/src/dm/*"],
       "@zenless-optimizer/zzz/dm-localization": [
         "./packages/zzz/dm-localization/src/index.ts"
