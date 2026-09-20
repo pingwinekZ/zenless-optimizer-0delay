@@ -417,7 +417,7 @@ function EnemyStatDisplay({
 }
 
 // Must match the `windsweptInfusion` list conditional in
-// `app/src/formula/data/common/enemy.ts` (index 0 = no infusion).
+// `packages/zzz/formula/src/data/common/enemy.ts` (index 0 = no infusion).
 const windsweptInfusionOptions = [
   'None',
   'fire',

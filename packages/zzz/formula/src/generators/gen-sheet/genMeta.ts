@@ -11,7 +11,7 @@ export default async function genMeta(
 ) {
   console.log(options)
   const { sheet_type, sheet } = options
-  const file_location = `app/src/formula/meta`
+  const file_location = `packages/zzz/formula/src/meta`
   const types = ['formulas', 'conditionals', 'buffs']
   for (const type of types) {
     const dest = path.join(

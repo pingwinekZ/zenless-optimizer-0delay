@@ -10,9 +10,9 @@ import { dirname } from 'path'
 import { commonSheets } from '../../data/util'
 
 export default async function genIndex(_tree: Tree, sheet_type: string) {
-  const file_location = `app/src/formula/data/${sheet_type}/index.ts`
-  const meta_file_location = `app/src/formula/meta/${sheet_type}/index.ts`
-  const main_meta_location = `app/src/formula/meta/index.ts`
+  const file_location = `packages/zzz/formula/src/data/${sheet_type}/index.ts`
+  const meta_file_location = `packages/zzz/formula/src/meta/${sheet_type}/index.ts`
+  const main_meta_location = `packages/zzz/formula/src/meta/index.ts`
   switch (sheet_type) {
     case 'char':
       await writeCharIndex(file_location)
