@@ -102,8 +102,8 @@
       "@zenless-optimizer/zzz/dm-localization/*": [
         "./packages/zzz/dm-localization/src/*"
       ],
-      "@zenless-optimizer/zzz/formula": ["./app/src/formula/index.ts"],
-      "@zenless-optimizer/zzz/formula/*": ["./app/src/formula/*"],
+      "@zenless-optimizer/zzz/formula": ["./packages/zzz/formula/src/index.ts"],
+      "@zenless-optimizer/zzz/formula/*": ["./packages/zzz/formula/src/*"],
       "@zenless-optimizer/zzz/formula-ui": [
         "./packages/zzz/formula-ui/src/index.ts"
       ],
