@@ -11,7 +11,7 @@ export default async function genSheet(
 ) {
   console.log(options)
   const { sheet_type } = options
-  const file_location = `app/src/formula-ui/${sheet_type}/sheets`
+  const file_location = `packages/zzz/formula-ui/src/${sheet_type}/sheets`
   const dest = path.join(tree.root, file_location, `${options.sheet}.tsx`)
   if (existsSync(dest)) {
     verbose &&

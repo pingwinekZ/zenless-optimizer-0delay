@@ -104,8 +104,12 @@
       ],
       "@zenless-optimizer/zzz/formula": ["./app/src/formula/index.ts"],
       "@zenless-optimizer/zzz/formula/*": ["./app/src/formula/*"],
-      "@zenless-optimizer/zzz/formula-ui": ["./app/src/formula-ui/index.ts"],
-      "@zenless-optimizer/zzz/formula-ui/*": ["./app/src/formula-ui/*"],
+      "@zenless-optimizer/zzz/formula-ui": [
+        "./packages/zzz/formula-ui/src/index.ts"
+      ],
+      "@zenless-optimizer/zzz/formula-ui/*": [
+        "./packages/zzz/formula-ui/src/*"
+      ],
       "@zenless-optimizer/zzz/i18n": ["./packages/zzz/i18n/src/index.ts"],
       "@zenless-optimizer/zzz/i18n/*": ["./packages/zzz/i18n/src/*"],
       "@zenless-optimizer/zzz/localization": [

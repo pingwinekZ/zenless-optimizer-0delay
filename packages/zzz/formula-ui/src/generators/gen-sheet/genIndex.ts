@@ -8,7 +8,7 @@ import {
 import { writeFileSync } from 'fs'
 
 export default async function genIndex(_tree: Tree, sheet_type: string) {
-  const file_location = `app/src/formula-ui/${sheet_type}/sheets/index.ts`
+  const file_location = `packages/zzz/formula-ui/src/${sheet_type}/sheets/index.ts`
   switch (sheet_type) {
     case 'char':
       await writeCharIndex(file_location)
