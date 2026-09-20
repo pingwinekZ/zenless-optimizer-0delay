@@ -1,0 +1,16 @@
+{
+  "name": "zzz-db-ui",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "app/src/db-ui",
+  "projectType": "library",
+  "tags": ["scope:zzz", "layer:domain"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit -p app/tsconfig.app.json",
+        "cwd": "."
+      }
+    }
+  }
+}

@@ -6,7 +6,7 @@ import type {
   FactionKey,
   SkillKey,
   SpecialityKey,
-} from '../consts'
+} from '@zenless-optimizer/zzz/consts'
 import { allStats } from './allStats'
 
 export type CharacterDatum = {

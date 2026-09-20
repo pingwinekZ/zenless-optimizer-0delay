@@ -4,9 +4,12 @@ import type {
   DiscRarityKey,
   DiscSlotKey,
   DiscSubStatKey,
-} from '../../consts'
-import { discMaxLevel, discSubstatRollData } from '../../consts'
-import type { IDisc } from '../../zood'
+} from '@zenless-optimizer/zzz/consts'
+import {
+  discMaxLevel,
+  discSubstatRollData,
+} from '@zenless-optimizer/zzz/consts'
+import type { IDisc } from '@zenless-optimizer/zzz/zood'
 import {
   getCharacterEffectiveMainStats,
   getCharacterEffectiveStats,

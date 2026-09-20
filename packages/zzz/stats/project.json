@@ -1,9 +1,9 @@
 {
   "name": "zzz-stats",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "app/src/stats",
+  "sourceRoot": "packages/zzz/stats/src",
   "projectType": "library",
-  "tags": [],
+  "tags": ["scope:zzz", "layer:domain"],
   "targets": {
     "typecheck": {
       "executor": "nx:run-commands",
@@ -15,10 +15,17 @@
     "gen-file": {
       "executor": "@zenless-optimizer/zzz/stats:gen-stats",
       "outputs": [
-        "{projectRoot}/Data/**/*",
+        "{projectRoot}/src/Data/**/*",
         "{projectRoot}/src/allStat_gen.json"
       ],
       "inputs": ["default"]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun test --timeout=60000",
+        "cwd": "packages/zzz/stats"
+      }
     }
   }
 }

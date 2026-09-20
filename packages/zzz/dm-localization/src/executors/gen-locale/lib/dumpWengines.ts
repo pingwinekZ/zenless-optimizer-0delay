@@ -1,6 +1,6 @@
 import { dumpFile } from '@zenless-optimizer/common/pipeline'
-import type { WengineKey } from '../../../../consts'
-import { wengineDetailedJSONData } from '../../../../dm'
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
+import { wengineDetailedJSONData } from '@zenless-optimizer/zzz/dm'
 import { processText } from './util'
 export function dumpWengines(fileDir: string) {
   const wengineNames = {} as Record<WengineKey, string>

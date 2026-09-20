@@ -1,4 +1,4 @@
-import type { CharacterKey, WengineKey } from '../consts'
+import type { CharacterKey, WengineKey } from '@zenless-optimizer/zzz/consts'
 
 export const characterKeyToWengineKey: Record<CharacterKey, WengineKey> = {
   Anby: 'DemaraBatteryMarkII',

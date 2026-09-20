@@ -1,4 +1,4 @@
-import { allWengineKeys } from '../consts'
+import { allWengineKeys } from '@zenless-optimizer/zzz/consts'
 import { getWengineStat, getWengineStats } from './wengine'
 
 // Reproduction for: equipping an Armorer w-engine (e.g. CrimsonThirst) only

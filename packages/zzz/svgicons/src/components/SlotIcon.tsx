@@ -1,5 +1,5 @@
 import type { SvgIconProps } from '@zenless-optimizer/common/svgicons'
-import type { DiscSlotKey } from '../../consts'
+import type { DiscSlotKey } from '@zenless-optimizer/zzz/consts'
 import {
   Slot1Icon,
   Slot2Icon,

@@ -1,5 +1,5 @@
 import { type Tree } from '@nx/devkit'
-import { allCharacterKeys, allWengineKeys } from '../../../consts'
+import { allCharacterKeys, allWengineKeys } from '@zenless-optimizer/zzz/consts'
 import genIndex from './genIndex'
 import genMap from './genMap'
 export default async function genMapGenerator(tree: Tree) {

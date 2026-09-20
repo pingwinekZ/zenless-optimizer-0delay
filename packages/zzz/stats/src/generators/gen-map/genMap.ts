@@ -2,9 +2,9 @@ import type { Tree } from '@nx/devkit'
 import { generateFiles } from '@nx/devkit'
 import { formatText } from '@zenless-optimizer/common/pipeline'
 import { objMap } from '@zenless-optimizer/common/util'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { existsSync, writeFileSync } from 'fs'
 import * as path from 'path'
-import type { CharacterKey } from '../../../consts'
 import { allStats } from '../../allStats'
 import type { GenMapGeneratorSchema } from './schema'
 
@@ -15,7 +15,7 @@ export default async function genMap(
 ) {
   console.log(options)
   const { map_type } = options
-  const file_location = `app/src/stats/mappedStats/${map_type}/maps`
+  const file_location = `packages/zzz/stats/src/mappedStats/${map_type}/maps`
   const dest = path.join(tree.root, file_location, `${options.map}.ts`)
   if (existsSync(dest)) {
     verbose &&
@@ -37,7 +37,7 @@ export default async function genMap(
 // Generate char maps differently so we can have a definitely typed object
 async function generateCharMap(file_location: string, charKey: CharacterKey) {
   const file = `
-import type { CharacterKey } from '../../../consts'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { getCharStat } from '../../../char'
 
 const key: CharacterKey = '${charKey}'

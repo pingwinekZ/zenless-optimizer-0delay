@@ -6,9 +6,12 @@ import type {
   DiscSlotKey,
   DiscSubStatKey,
   LocationKey,
-} from '../../consts'
-import { allDiscRarityKeys, allDiscSlotKeys } from '../../consts'
-import type { IDisc } from '../../zood'
+} from '@zenless-optimizer/zzz/consts'
+import {
+  allDiscRarityKeys,
+  allDiscSlotKeys,
+} from '@zenless-optimizer/zzz/consts'
+import type { IDisc } from '@zenless-optimizer/zzz/zood'
 
 export type DiscFilterOption = {
   discSetKeys: DiscSetKey[]

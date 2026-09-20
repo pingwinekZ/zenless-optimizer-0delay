@@ -1,4 +1,4 @@
-import { nounData } from '../../../../dm'
+import { nounData } from '@zenless-optimizer/zzz/dm'
 
 export function processText(text: string) {
   const processedText = text

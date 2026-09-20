@@ -74,17 +74,76 @@
       "@zenless-optimizer/pando/engine": [
         "./packages/pando/engine/src/index.ts"
       ],
+      "@zenless-optimizer/zzz/assets": ["./packages/zzz/assets/src/index.ts"],
+      "@zenless-optimizer/zzz/assets/*": ["./packages/zzz/assets/src/*"],
+      "@zenless-optimizer/zzz/assets-data": [
+        "./packages/zzz/assets-data/src/index.ts"
+      ],
+      "@zenless-optimizer/zzz/assets-data/*": [
+        "./packages/zzz/assets-data/src/*"
+      ],
+      "@zenless-optimizer/zzz/consts": ["./packages/zzz/consts/src/index.ts"],
+      "@zenless-optimizer/zzz/consts/*": ["./packages/zzz/consts/src/*"],
+      "@zenless-optimizer/zzz/db": ["./app/src/db/index.ts"],
+      "@zenless-optimizer/zzz/db/*": ["./app/src/db/*"],
+      "@zenless-optimizer/zzz/db-ui": ["./app/src/db-ui/index.ts"],
+      "@zenless-optimizer/zzz/db-ui/*": ["./app/src/db-ui/*"],
+      "@zenless-optimizer/zzz/disc-scanner": [
+        "./packages/zzz/disc-scanner/src/index.ts"
+      ],
+      "@zenless-optimizer/zzz/disc-scanner/*": [
+        "./packages/zzz/disc-scanner/src/*"
+      ],
       "@zenless-optimizer/zzz/dm": ["./app/src/dm/index.ts"],
+      "@zenless-optimizer/zzz/dm/*": ["./app/src/dm/*"],
       "@zenless-optimizer/zzz/dm-localization": [
-        "./app/src/dm-localization/index.ts"
+        "./packages/zzz/dm-localization/src/index.ts"
       ],
-      "@zenless-optimizer/zzz/stats": ["./app/src/stats/index.ts"],
-      "@zenless-optimizer/zzz/assets": ["./app/src/assets/index.ts"],
-      "@zenless-optimizer/zzz/assets-data": ["./app/src/assets-data/index.ts"],
+      "@zenless-optimizer/zzz/dm-localization/*": [
+        "./packages/zzz/dm-localization/src/*"
+      ],
+      "@zenless-optimizer/zzz/formula": ["./app/src/formula/index.ts"],
+      "@zenless-optimizer/zzz/formula/*": ["./app/src/formula/*"],
+      "@zenless-optimizer/zzz/formula-ui": ["./app/src/formula-ui/index.ts"],
+      "@zenless-optimizer/zzz/formula-ui/*": ["./app/src/formula-ui/*"],
+      "@zenless-optimizer/zzz/i18n": ["./packages/zzz/i18n/src/index.ts"],
+      "@zenless-optimizer/zzz/i18n/*": ["./packages/zzz/i18n/src/*"],
       "@zenless-optimizer/zzz/localization": [
-        "./app/src/localization/index.ts"
+        "./packages/zzz/localization/src/index.ts"
       ],
-      "@zenless-optimizer/zzz/formula": ["./app/src/formula/index.ts"]
+      "@zenless-optimizer/zzz/localization/*": [
+        "./packages/zzz/localization/src/*"
+      ],
+      "@zenless-optimizer/zzz/page-home": ["./app/src/page-home/index.tsx"],
+      "@zenless-optimizer/zzz/page-home/*": ["./app/src/page-home/*"],
+      "@zenless-optimizer/zzz/page-settings": [
+        "./app/src/page-settings/index.tsx"
+      ],
+      "@zenless-optimizer/zzz/page-settings/*": ["./app/src/page-settings/*"],
+      "@zenless-optimizer/zzz/page-wengines": [
+        "./app/src/page-wengines/index.tsx"
+      ],
+      "@zenless-optimizer/zzz/page-wengines/*": ["./app/src/page-wengines/*"],
+      "@zenless-optimizer/zzz/rendering/*": ["./packages/zzz/rendering/src/*"],
+      "@zenless-optimizer/zzz/schema": ["./app/src/schema/index.ts"],
+      "@zenless-optimizer/zzz/schema/*": ["./app/src/schema/*"],
+      "@zenless-optimizer/zzz/solver": ["./app/src/solver/index.ts"],
+      "@zenless-optimizer/zzz/solver/*": ["./app/src/solver/*"],
+      "@zenless-optimizer/zzz/stats": ["./packages/zzz/stats/src/index.ts"],
+      "@zenless-optimizer/zzz/stats/*": ["./packages/zzz/stats/src/*"],
+      "@zenless-optimizer/zzz/svgicons": [
+        "./packages/zzz/svgicons/src/index.ts"
+      ],
+      "@zenless-optimizer/zzz/svgicons/*": ["./packages/zzz/svgicons/src/*"],
+      "@zenless-optimizer/zzz/theme": ["./packages/zzz/theme/src/index.ts"],
+      "@zenless-optimizer/zzz/theme/*": ["./packages/zzz/theme/src/*"],
+      "@zenless-optimizer/zzz/ui": ["./app/src/ui/index.tsx"],
+      "@zenless-optimizer/zzz/ui/*": ["./app/src/ui/*"],
+      "@zenless-optimizer/zzz/util": ["./packages/zzz/util/src/index.ts"],
+      "@zenless-optimizer/zzz/util/*": ["./packages/zzz/util/src/*"],
+      "@zenless-optimizer/zzz/websocket/*": ["./packages/zzz/websocket/src/*"],
+      "@zenless-optimizer/zzz/zood": ["./app/src/zood/index.ts"],
+      "@zenless-optimizer/zzz/zood/*": ["./app/src/zood/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

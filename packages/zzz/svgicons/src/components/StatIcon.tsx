@@ -1,6 +1,6 @@
 import type { SvgIconProps } from '@zenless-optimizer/common/svgicons'
-import type { AttributeKey } from '../../consts'
-import { allAttributeKeys } from '../../consts'
+import type { AttributeKey } from '@zenless-optimizer/zzz/consts'
+import { allAttributeKeys } from '@zenless-optimizer/zzz/consts'
 import {
   AnomMasIcon,
   AnomProfIcon,

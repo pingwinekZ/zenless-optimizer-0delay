@@ -1,6 +1,6 @@
 import { dumpFile } from '@zenless-optimizer/common/pipeline'
-import type { DiscSetKey } from '../../../../consts'
-import { discsDetailedJSONData } from '../../../../dm'
+import type { DiscSetKey } from '@zenless-optimizer/zzz/consts'
+import { discsDetailedJSONData } from '@zenless-optimizer/zzz/dm'
 import { processText } from './util'
 export function dumpDiscs(fileDir: string) {
   const discNames = {} as Record<DiscSetKey, string>

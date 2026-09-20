@@ -1,4 +1,4 @@
-import type { CharacterKey } from '../../consts'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 
 /**
  * Get priority index for a character from the customSortOrder array.

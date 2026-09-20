@@ -1,5 +1,5 @@
 import type { SvgIconProps } from '@zenless-optimizer/common/svgicons'
-import type { AttributeKey } from '../../consts'
+import type { AttributeKey } from '@zenless-optimizer/zzz/consts'
 import lumifluxIcon from './IconLumiflux.webp'
 
 const elementUrls: Record<string, string> = {

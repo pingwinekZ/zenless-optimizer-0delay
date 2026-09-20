@@ -1,5 +1,5 @@
 import { levenshteinDistance } from '@zenless-optimizer/common/util'
-import type { DiscRarityKey, DiscSlotKey } from '../../consts'
+import type { DiscRarityKey, DiscSlotKey } from '@zenless-optimizer/zzz/consts'
 import {
   allDiscMainStatKeys,
   allDiscSetKeys,
@@ -7,8 +7,8 @@ import {
   type DiscSetKey,
   discMaxLevel,
   discSlotToMainStatKeys,
-} from '../../consts'
-import type { ISubstat } from '../../zood'
+} from '@zenless-optimizer/zzz/consts'
+import type { ISubstat } from '@zenless-optimizer/zzz/zood'
 import { misreadCharactersInSubstatMap } from './consts'
 import { statMapEngMap } from './enStringMap'
 

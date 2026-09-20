@@ -4,9 +4,9 @@ import type {
   WengineKey,
   WengineRarityKey,
   WengineSubStatKey,
-} from '../../../../consts'
-import type { WengineBaseStatKey } from '../../../../dm'
-import { wengineDetailedJSONData } from '../../../../dm'
+} from '@zenless-optimizer/zzz/consts'
+import type { WengineBaseStatKey } from '@zenless-optimizer/zzz/dm'
+import { wengineDetailedJSONData } from '@zenless-optimizer/zzz/dm'
 import { extractParamsFromString } from './util'
 
 export type WengineDatum = {

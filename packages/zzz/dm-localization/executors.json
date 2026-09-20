@@ -1,8 +1,8 @@
 {
   "executors": {
     "gen-locale": {
-      "implementation": "./executors/gen-locale/executor",
-      "schema": "./executors/gen-locale/schema.json",
+      "implementation": "./src/executors/gen-locale/executor",
+      "schema": "./src/executors/gen-locale/schema.json",
       "description": "gen-locale executor"
     }
   }

@@ -1,0 +1,16 @@
+{
+  "name": "zzz-page-settings",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "app/src/page-settings",
+  "projectType": "library",
+  "tags": ["scope:zzz", "layer:feature"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit -p app/tsconfig.app.json",
+        "cwd": "."
+      }
+    }
+  }
+}

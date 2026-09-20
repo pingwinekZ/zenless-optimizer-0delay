@@ -1,0 +1,16 @@
+{
+  "name": "zzz-util",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/zzz/util/src",
+  "projectType": "library",
+  "tags": ["scope:zzz", "layer:domain"],
+  "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun test --timeout=60000",
+        "cwd": "packages/zzz/util"
+      }
+    }
+  }
+}

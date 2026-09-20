@@ -10,7 +10,7 @@ const runExecutor: PromiseExecutor<GenLocaleExecutorSchema> = async (
   console.log('Executor ran for GenLocale', options)
 
   // currently only dump english translations
-  const fileDir = `${process.env['NX_WORKSPACE_ROOT']}/app/src/dm-localization/assets/locales/en`
+  const fileDir = `${process.env['NX_WORKSPACE_ROOT']}/packages/zzz/dm-localization/src/assets/locales/en`
 
   dumpChars(fileDir)
   dumpDiscs(fileDir)

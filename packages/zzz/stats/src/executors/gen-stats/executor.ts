@@ -5,8 +5,7 @@ import { getCharactersData } from './src/characterData'
 import { getDiscsData } from './src/discData'
 import { getWenginesData } from './src/wengineData'
 
-const proj_path = `${workspaceRoot}/app/src/stats`
-const src_path = `${proj_path}/src`
+const proj_path = `${workspaceRoot}/packages/zzz/stats/src`
 const path = `${proj_path}/Data`
 const characterDataDump = getCharactersData()
 const wengineDataDump = getWenginesData()
@@ -42,8 +41,7 @@ export default async function runExecutor(_options: GenStatsExecutorSchema) {
     )
   )
 
-  console.log(`Writing combined data to ${proj_path}/src/allStat_gen.json`)
-  dumpFile(`${src_path}/allStat_gen.json`, allStat)
+  console.log(`Writing combined data to ${proj_path}/allStat_gen.json`)
   dumpFile(`${proj_path}/allStat_gen.json`, allStat)
 
   return { success: true }

@@ -1,14 +1,14 @@
 import type { Tree } from '@nx/devkit'
 import { formatText } from '@zenless-optimizer/common/pipeline'
-import { writeFileSync } from 'fs'
 import {
   allCharacterKeys,
   allDiscSetKeys,
   allWengineKeys,
-} from '../../../consts'
+} from '@zenless-optimizer/zzz/consts'
+import { writeFileSync } from 'fs'
 
 export default async function genIndex(_tree: Tree, map_type: string) {
-  const file_location = `app/src/stats/mappedStats/${map_type}/index.ts`
+  const file_location = `packages/zzz/stats/src/mappedStats/${map_type}/index.ts`
   switch (map_type) {
     case 'char':
       await writeIndex(file_location, allCharacterKeys)

@@ -1,7 +1,7 @@
 import { ColorText, ImgIcon } from '@zenless-optimizer/common/ui'
+import { commonDefIcon } from '@zenless-optimizer/zzz/assets'
 import { useMemo } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
-import { commonDefIcon } from '../assets'
 import { sliceBetween } from './sliceBetween'
 
 const COND_GREEN = '#2BAD00'

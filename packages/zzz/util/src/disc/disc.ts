@@ -3,7 +3,7 @@ import {
   allDiscSetKeys,
   type DiscRarityKey,
   type DiscSetKey,
-} from '../../consts'
+} from '@zenless-optimizer/zzz/consts'
 
 export const setKeysByRarities = Object.fromEntries(
   allDiscRarityKeys.map((r) => [r, [] as DiscSetKey[]])

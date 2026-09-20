@@ -1,14 +1,21 @@
 {
   "name": "zzz-dm-localization",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "app/src/dm-localization",
+  "sourceRoot": "packages/zzz/dm-localization/src",
   "projectType": "library",
-  "tags": [],
+  "tags": ["scope:zzz", "layer:domain"],
   "targets": {
     "gen-file": {
       "executor": "@zenless-optimizer/zzz/dm-localization:gen-locale",
-      "outputs": ["{projectRoot}/assets/locales"],
+      "outputs": ["{projectRoot}/src/assets/locales"],
       "inputs": ["default"]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun test --timeout=60000",
+        "cwd": "packages/zzz/dm-localization"
+      }
     }
   }
 }

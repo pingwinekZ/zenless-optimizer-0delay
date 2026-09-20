@@ -6,13 +6,13 @@ import {
   transposeArray,
   verifyObjKeys,
 } from '@zenless-optimizer/common/util'
-import { allSkillKeys, type CharacterKey } from '../../../../consts'
-import type { CharacterData } from '../../../../dm'
+import { allSkillKeys, type CharacterKey } from '@zenless-optimizer/zzz/consts'
+import type { CharacterData } from '@zenless-optimizer/zzz/dm'
 import {
   charactersDetailedJSONData,
   filterUnbuffedKits,
   nanokaSkillMap,
-} from '../../../../dm'
+} from '@zenless-optimizer/zzz/dm'
 import { type CharacterDatum } from '../../../char'
 import { extractParamsFromString } from './util'
 

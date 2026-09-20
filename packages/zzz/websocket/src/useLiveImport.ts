@@ -1,8 +1,8 @@
 import { SandboxStorage } from '@zenless-optimizer/common/database'
+import type { ImportResult } from '@zenless-optimizer/zzz/db'
+import { ZzzDatabase } from '@zenless-optimizer/zzz/db'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { ImportResult } from '../db'
-import { ZzzDatabase } from '../db'
-import { useDatabaseContext } from '../db-ui'
 
 export const LIVE_IMPORT_URL = 'ws://127.0.0.1:23313/ws'
 

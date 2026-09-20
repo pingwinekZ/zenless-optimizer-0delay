@@ -4,9 +4,9 @@ import {
   SqBadge,
   TranslateBase,
 } from '@zenless-optimizer/common/ui'
-import '../theme' // import to validate typing for color variants
+import '@zenless-optimizer/zzz/theme' // import to validate typing for color variants
+import { commonDefIcon } from '@zenless-optimizer/zzz/assets'
 import type { ReactNode } from 'react'
-import { commonDefIcon } from '../assets'
 
 const textComponents = {
   fire: <ColorText color="fire" />,

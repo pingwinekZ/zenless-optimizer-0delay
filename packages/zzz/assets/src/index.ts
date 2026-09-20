@@ -1,4 +1,4 @@
-import type { AssetDataType } from '../assets-data'
+import type { AssetDataType } from '@zenless-optimizer/zzz/assets-data'
 import type {
   CharacterKey,
   DiscSetKey,
@@ -6,7 +6,7 @@ import type {
   Raritykey,
   SpecialityKey,
   WengineKey,
-} from '../consts'
+} from '@zenless-optimizer/zzz/consts'
 import commonImages from './common'
 import faction from './common/faction'
 import mindscape from './common/mindscape'

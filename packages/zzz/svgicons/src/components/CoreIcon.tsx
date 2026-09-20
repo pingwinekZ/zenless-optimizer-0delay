@@ -1,5 +1,5 @@
 import type { SvgIconProps } from '@zenless-optimizer/common/svgicons'
-import type { CoreKey } from '../../consts'
+import type { CoreKey } from '@zenless-optimizer/zzz/consts'
 import {
   ACoreIcon,
   BCoreIcon,

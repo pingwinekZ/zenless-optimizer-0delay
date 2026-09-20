@@ -1,4 +1,4 @@
-import type { CharacterKey } from '../../../../consts'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { getCharStat } from '../../../char'
 
 const key: CharacterKey = 'Velina'

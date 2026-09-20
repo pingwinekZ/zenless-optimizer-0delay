@@ -1,0 +1,8 @@
+{
+  "name": "zzz-rendering",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/zzz/rendering/src",
+  "projectType": "library",
+  "tags": ["scope:zzz", "layer:shared"],
+  "targets": {}
+}

@@ -13,10 +13,10 @@ import {
   urlToImageData,
 } from '@zenless-optimizer/common/img-util'
 import { levenshteinDistance } from '@zenless-optimizer/common/util'
+import type { DiscSlotKey } from '@zenless-optimizer/zzz/consts'
+import { discSlotToMainStatKeys } from '@zenless-optimizer/zzz/consts'
+import type { IDisc } from '@zenless-optimizer/zzz/zood'
 import type { ReactNode } from 'react'
-import type { DiscSlotKey } from '../../consts'
-import { discSlotToMainStatKeys } from '../../consts'
-import type { IDisc } from '../../zood'
 import { blackColor } from './consts'
 import { statMapEngMap } from './enStringMap'
 import {

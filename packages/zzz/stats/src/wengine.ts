@@ -1,5 +1,5 @@
 import { clamp, transposeArray } from '@zenless-optimizer/common/util'
-import { allWengineKeys, type WengineKey } from '../consts'
+import { allWengineKeys, type WengineKey } from '@zenless-optimizer/zzz/consts'
 import { allStats } from './allStats'
 
 export function getWengineStat(wKey: WengineKey) {

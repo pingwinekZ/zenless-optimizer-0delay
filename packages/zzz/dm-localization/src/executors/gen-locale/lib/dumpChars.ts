@@ -1,8 +1,11 @@
 import { dumpFile } from '@zenless-optimizer/common/pipeline'
 import { nameToKey } from '@zenless-optimizer/common/util'
-import type { CharacterKey } from '../../../../consts'
-import type { CharacterData } from '../../../../dm'
-import { charactersDetailedJSONData, filterUnbuffedKits } from '../../../../dm'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import type { CharacterData } from '@zenless-optimizer/zzz/dm'
+import {
+  charactersDetailedJSONData,
+  filterUnbuffedKits,
+} from '@zenless-optimizer/zzz/dm'
 import { processText } from './util'
 
 export function dumpChars(fileDir: string) {

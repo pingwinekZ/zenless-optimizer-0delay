@@ -3,7 +3,7 @@ import type {
   DiscMainStatKey,
   DiscSlotKey,
   DiscSubStatKey,
-} from '../../consts'
+} from '@zenless-optimizer/zzz/consts'
 
 type CharacterPlan = {
   effectiveStats: DiscSubStatKey[]
