@@ -84,10 +84,10 @@
       ],
       "@zenless-optimizer/zzz/consts": ["./packages/zzz/consts/src/index.ts"],
       "@zenless-optimizer/zzz/consts/*": ["./packages/zzz/consts/src/*"],
-      "@zenless-optimizer/zzz/db": ["./app/src/db/index.ts"],
-      "@zenless-optimizer/zzz/db/*": ["./app/src/db/*"],
-      "@zenless-optimizer/zzz/db-ui": ["./app/src/db-ui/index.ts"],
-      "@zenless-optimizer/zzz/db-ui/*": ["./app/src/db-ui/*"],
+      "@zenless-optimizer/zzz/db": ["./packages/zzz/db/src/index.ts"],
+      "@zenless-optimizer/zzz/db/*": ["./packages/zzz/db/src/*"],
+      "@zenless-optimizer/zzz/db-ui": ["./packages/zzz/db-ui/src/index.ts"],
+      "@zenless-optimizer/zzz/db-ui/*": ["./packages/zzz/db-ui/src/*"],
       "@zenless-optimizer/zzz/disc-scanner": [
         "./packages/zzz/disc-scanner/src/index.ts"
       ],
@@ -129,8 +129,8 @@
       ],
       "@zenless-optimizer/zzz/page-wengines/*": ["./app/src/page-wengines/*"],
       "@zenless-optimizer/zzz/rendering/*": ["./packages/zzz/rendering/src/*"],
-      "@zenless-optimizer/zzz/schema": ["./app/src/schema/index.ts"],
-      "@zenless-optimizer/zzz/schema/*": ["./app/src/schema/*"],
+      "@zenless-optimizer/zzz/schema": ["./packages/zzz/schema/src/index.ts"],
+      "@zenless-optimizer/zzz/schema/*": ["./packages/zzz/schema/src/*"],
       "@zenless-optimizer/zzz/solver": ["./app/src/solver/index.ts"],
       "@zenless-optimizer/zzz/solver/*": ["./app/src/solver/*"],
       "@zenless-optimizer/zzz/stats": ["./packages/zzz/stats/src/index.ts"],
@@ -146,8 +146,8 @@
       "@zenless-optimizer/zzz/util": ["./packages/zzz/util/src/index.ts"],
       "@zenless-optimizer/zzz/util/*": ["./packages/zzz/util/src/*"],
       "@zenless-optimizer/zzz/websocket/*": ["./packages/zzz/websocket/src/*"],
-      "@zenless-optimizer/zzz/zood": ["./app/src/zood/index.ts"],
-      "@zenless-optimizer/zzz/zood/*": ["./app/src/zood/*"]
+      "@zenless-optimizer/zzz/zood": ["./packages/zzz/zood/src/index.ts"],
+      "@zenless-optimizer/zzz/zood/*": ["./packages/zzz/zood/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

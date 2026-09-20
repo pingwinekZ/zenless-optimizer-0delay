@@ -25,8 +25,8 @@ ZZZ domain (Nx libs, all `scope:zzz`, `layer:domain`): `zzz-db`, `zzz-db-ui`,
   `zzz-dm-localization`, `zzz-localization`, `zzz-ui`, `zzz-svgicons`,
   `zzz-util`, `zzz-disc-scanner`, `zzz-i18n`, `zzz-websocket` under `app/src/*`,
   plus `zzz-consts/util/svgicons/disc-scanner/i18n/websocket/localization/
-  dm-localization/assets/assets-data/stats/formula-ui/formula` at
-  `packages/zzz/*/src`
+  dm-localization/assets/assets-data/stats/formula-ui/formula/schema/zood/db/db-ui`
+  at `packages/zzz/*/src`
   (P2-2 pilot + batches 2/3a/3b/3c, incl. executors + vite locale paths).
   Game data, formula sheets, solver, DB, shared widgets. Must not import
   from feature/app layers.

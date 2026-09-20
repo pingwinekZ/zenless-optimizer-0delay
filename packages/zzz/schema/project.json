@@ -1,7 +1,7 @@
 {
-  "name": "zzz-db",
+  "name": "zzz-schema",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "app/src/db",
+  "sourceRoot": "packages/zzz/schema/src",
   "projectType": "library",
   "tags": ["scope:zzz", "layer:domain"],
   "targets": {
