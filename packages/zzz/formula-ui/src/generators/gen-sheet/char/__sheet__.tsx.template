@@ -1,25 +1,54 @@
 import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { <%= sheet %> } from '@zenless-optimizer/zzz/formula'
+import { GameDesc } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
-import { createBaseSheet } from '../sheetUtil'
+import { CoreGameDesc, createBaseSheet, fieldForBuff } from '../sheetUtil'
 
 const key: CharacterKey = '<%= sheet %>'
-// TODO: Cleanup
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const ns = 'char_<%= sheet %>_gen'
 const [, ch] = trans('char', key)
-// TODO: Cleanup
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
+// Run `gen-file` (gen-desc) first so `conditionals`/`buffs` metadata exists
+// for this sheet, then uncomment the sections below and fill in names from
+// `packages/zzz/formula/src/meta/char/<%= sheet %>/`.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const cond = <%= sheet %>.conditionals
-// TODO: Cleanup
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const buff = <%= sheet %>.buffs
 
-const sheet = createBaseSheet(key)
+const sheet = createBaseSheet(key, {
+  // core: [
+  //   {
+  //     type: 'conditional',
+  //     conditional: {
+  //       label: ch('coreCond'),
+  //       description: <CoreGameDesc characterKey={key} />,
+  //       metadata: cond.core_conditionalName,
+  //       fields: [fieldForBuff(buff.core_buffName_)],
+  //     },
+  //   },
+  // ],
+  // m1: [
+  //   {
+  //     type: 'conditional',
+  //     conditional: {
+  //       label: ch('m1Cond'),
+  //       description: <GameDesc ns={ns} key18="mindscapes.1.desc" />,
+  //       metadata: cond.m1_conditionalName,
+  //       fields: [fieldForBuff(buff.m1_buffName_)],
+  //     },
+  //   },
+  // ],
+  // m2: [
+  //   {
+  //     type: 'fields',
+  //     description: <GameDesc ns={ns} key18="mindscapes.2.desc" />,
+  //     header: { icon: null, text: ch('m2_header') },
+  //     fields: [fieldForBuff(buff.m2_buffName_)],
+  //   },
+  // ],
+  // Locale strings live in
+  // `packages/zzz/localization/src/assets/locales/en/char_<%= sheet %>.json`
+  // (coreCond, m1Cond, m2_header, ...).
+})
 
 export default sheet

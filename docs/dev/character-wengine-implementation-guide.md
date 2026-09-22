@@ -6,20 +6,33 @@ Based on patterns observed in commit `30fbf74` (Norma character + ChiefSidekick 
 
 ## Character Implementation
 
+### 0. Scaffold (start here — do not hand-write boilerplate)
+
+```bash
+# Data sheet + data index + meta stubs (validates {Name} against consts keys)
+npx nx g @zenless-optimizer/zzz/formula:gen-sheet --sheet_type=char --sheet={Name}
+# UI sheet + UI index (guided skeleton with core/m1/m2 examples in comments)
+npx nx g @zenless-optimizer/zzz/formula:gen-ui-sheet --sheet_type=char --sheet={Name}
+```
+
+Then fill in conditionals/buffs in the data sheet (§1), run
+`npx nx run zzz-formula:gen-file` to materialize `meta/` (§3), and wire the
+UI sections against the generated metadata (§2).
+
 ### Files to create/modify
 
 | # | File | Action |
 |---|------|--------|
-| 1 | `app/src/formula/data/char/sheets/{Name}.ts` | **Create** — Formula data sheet (core logic) |
-| 2 | `app/src/formula-ui/char/sheets/{Name}.tsx` | **Create** — UI sheet (display fields & conditionals) |
-| 3 | `app/src/formula/meta/char/{Name}/buffs.ts` | **Generate** — Buff metadata (auto-generated / manual) |
-| 4 | `app/src/formula/meta/char/{Name}/conditionals.ts` | **Generate** — Conditional metadata |
-| 5 | `app/src/formula/meta/char/{Name}/formulas.ts` | **Generate** — Formula metadata (for `customDmg` entries) |
-| 6 | `app/src/localization/assets/locales/en/char_{Name}.json` | **Create** — English locale strings |
+| 1 | `packages/zzz/formula/src/data/char/sheets/{Name}.ts` | **Create** — Formula data sheet (core logic) |
+| 2 | `packages/zzz/formula-ui/src/char/sheets/{Name}.tsx` | **Create** — UI sheet (display fields & conditionals) |
+| 3 | `packages/zzz/formula/src/meta/char/{Name}/buffs.ts` | **Generate** — Buff metadata (auto-generated / manual) |
+| 4 | `packages/zzz/formula/src/meta/char/{Name}/conditionals.ts` | **Generate** — Conditional metadata |
+| 5 | `packages/zzz/formula/src/meta/char/{Name}/formulas.ts` | **Generate** — Formula metadata (for `customDmg` entries) |
+| 6 | `packages/zzz/localization/src/assets/locales/en/char_{Name}.json` | **Create** — English locale strings |
 
 ---
 
-### 1. Formula data sheet (`app/src/formula/data/char/sheets/{Name}.ts`)
+### 1. Formula data sheet (`packages/zzz/formula/src/data/char/sheets/{Name}.ts`)
 
 **Imports:**
 
@@ -28,8 +41,8 @@ import type { NumNode } from '@zenless-optimizer/pando/engine'
 import {
   cmpGE, max, min, prod, subscript, sum,
 } from '@zenless-optimizer/pando/engine'
-import { type CharacterKey } from '../../../../consts'
-import { allStats, mappedStats } from '../../../../stats'
+import { type CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { allStats, mappedStats } from '@zenless-optimizer/zzz/stats'
 import {
   allBoolConditionals,
   customDmg,
@@ -272,16 +285,16 @@ Only needed when a mindscape buff needs to apply to specific hits within a skill
 
 ---
 
-### 2. UI sheet (`app/src/formula-ui/char/sheets/{Name}.tsx`)
+### 2. UI sheet (`packages/zzz/formula-ui/src/char/sheets/{Name}.tsx`)
 
 **Imports:**
 
 ```typescript
 import { ImgIcon } from '@zenless-optimizer/common/ui'
-import { commonDefIcon, mindscapeDefIcon } from '../../../assets'
-import type { CharacterKey } from '../../../consts'
-import { Name } from '../../../formula'
-import { GameDesc } from '../../../i18n'
+import { commonDefIcon, mindscapeDefIcon } from '@zenless-optimizer/zzz/assets'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { Name } from '@zenless-optimizer/zzz/formula'
+import { GameDesc } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
 import { createBaseSheet, fieldForBuff } from '../sheetUtil'
 ```
@@ -408,7 +421,7 @@ title (e.g. "Anomaly Proficiency", "DEF Ignore") from the buff tag
 
 These files are marked `// WARNING: Generated file, do not modify`. They reflect the exact buff/conditional/formula names used in the data sheet.
 
-**`app/src/formula/meta/char/{Name}/buffs.ts`** — One entry per `registerBuff` call:
+**`packages/zzz/formula/src/meta/char/{Name}/buffs.ts`** — One entry per `registerBuff` call:
 
 ```typescript
 export const buffs = {
@@ -432,7 +445,7 @@ export const buffs = {
 }
 ```
 
-**`app/src/formula/meta/char/{Name}/conditionals.ts`** — One entry per conditional:
+**`packages/zzz/formula/src/meta/char/{Name}/conditionals.ts`** — One entry per conditional:
 
 ```typescript
 export const conditionals = {
@@ -446,7 +459,7 @@ export const conditionals = {
 }
 ```
 
-**`app/src/formula/meta/char/{Name}/formulas.ts`** — Only entries for `customDmg` calls:
+**`packages/zzz/formula/src/meta/char/{Name}/formulas.ts`** — Only entries for `customDmg` calls:
 
 ```typescript
 export const formulas = {
@@ -468,7 +481,7 @@ export const formulas = {
 
 ---
 
-### 4. Locale file (`app/src/localization/assets/locales/en/char_{Name}.json`)
+### 4. Locale file (`packages/zzz/localization/src/assets/locales/en/char_{Name}.json`)
 
 ```json
 {
@@ -485,26 +498,33 @@ export const formulas = {
 
 ## W-Engine Implementation
 
+### 0. Scaffold (same two generators, `sheet_type=wengine`)
+
+```bash
+npx nx g @zenless-optimizer/zzz/formula:gen-sheet --sheet_type=wengine --sheet={Name}
+npx nx g @zenless-optimizer/zzz/formula:gen-ui-sheet --sheet_type=wengine --sheet={Name}
+```
+
 ### Files to create/modify
 
 | # | File | Action |
 |---|------|--------|
-| 1 | `app/src/formula/data/wengine/sheets/{Name}.ts` | **Create** — Formula data sheet |
-| 2 | `app/src/formula-ui/wengine/sheets/{Name}.tsx` | **Create** — UI sheet |
-| 3 | `app/src/formula/meta/wengine/{Name}/conditionals.ts` | **Generate** — Conditional metadata |
-| 4 | `app/src/localization/assets/locales/en/wengine_{Name}.json` | **Create** — English locale strings |
+| 1 | `packages/zzz/formula/src/data/wengine/sheets/{Name}.ts` | **Create** — Formula data sheet |
+| 2 | `packages/zzz/formula-ui/src/wengine/sheets/{Name}.tsx` | **Create** — UI sheet |
+| 3 | `packages/zzz/formula/src/meta/wengine/{Name}/conditionals.ts` | **Generate** — Conditional metadata |
+| 4 | `packages/zzz/localization/src/assets/locales/en/wengine_{Name}.json` | **Create** — English locale strings |
 | 5 | `app/src/page-optimize/Optimize/WEngineConditionalsDisplay.tsx` | **Modify** — Custom desc components (if needed) |
 
 ---
 
-### 1. Formula data sheet (`app/src/formula/data/wengine/sheets/{Name}.ts`)
+### 1. Formula data sheet (`packages/zzz/formula/src/data/wengine/sheets/{Name}.ts`)
 
 **Imports:**
 
 ```typescript
 import { cmpEq, cmpGE, prod, subscript } from '@zenless-optimizer/pando/engine'
-import type { WengineKey } from '../../../../consts'
-import { mappedStats } from '../../../../stats'
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
+import { mappedStats } from '@zenless-optimizer/zzz/stats'
 import {
   allBoolConditionals,
   allNumConditionals,
@@ -708,14 +728,14 @@ ownBuff.base.atk.add(value)        // Base ATK
 
 ---
 
-### 2. UI sheet (`app/src/formula-ui/wengine/sheets/{Name}.tsx`)
+### 2. UI sheet (`packages/zzz/formula-ui/src/wengine/sheets/{Name}.tsx`)
 
 ```typescript
 import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
-import { wengineAsset } from '../../../assets'
-import type { WengineKey } from '../../../consts'
-import { ChiefSidekick } from '../../../formula'
-import { mappedStats } from '../../../stats'
+import { wengineAsset } from '@zenless-optimizer/zzz/assets'
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
+import { ChiefSidekick } from '@zenless-optimizer/zzz/formula'
+import { mappedStats } from '@zenless-optimizer/zzz/stats'
 import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
@@ -792,7 +812,7 @@ export default sheet
 
 ---
 
-### 3. Generated conditionals (`app/src/formula/meta/wengine/{Name}/conditionals.ts`)
+### 3. Generated conditionals (`packages/zzz/formula/src/meta/wengine/{Name}/conditionals.ts`)
 
 ```typescript
 export const conditionals = {
@@ -810,7 +830,7 @@ export const conditionals = {
 
 ---
 
-### 4. Locale file (`app/src/localization/assets/locales/en/wengine_{Name}.json`)
+### 4. Locale file (`packages/zzz/localization/src/assets/locales/en/wengine_{Name}.json`)
 
 ```json
 {
@@ -848,20 +868,20 @@ Then wire them into:
 ## Summary checklist
 
 ### Character
-- [ ] Create `app/src/formula/data/char/sheets/{Name}.ts`
-- [ ] Create `app/src/formula-ui/char/sheets/{Name}.tsx`
-- [ ] Create/update `app/src/formula/meta/char/{Name}/buffs.ts`
-- [ ] Create/update `app/src/formula/meta/char/{Name}/conditionals.ts`
-- [ ] Create/update `app/src/formula/meta/char/{Name}/formulas.ts` (if using `customDmg`)
-- [ ] Create `app/src/localization/assets/locales/en/char_{Name}.json`
+- [ ] Create `packages/zzz/formula/src/data/char/sheets/{Name}.ts`
+- [ ] Create `packages/zzz/formula-ui/src/char/sheets/{Name}.tsx`
+- [ ] Create/update `packages/zzz/formula/src/meta/char/{Name}/buffs.ts`
+- [ ] Create/update `packages/zzz/formula/src/meta/char/{Name}/conditionals.ts`
+- [ ] Create/update `packages/zzz/formula/src/meta/char/{Name}/formulas.ts` (if using `customDmg`)
+- [ ] Create `packages/zzz/localization/src/assets/locales/en/char_{Name}.json`
 - [ ] Run `npx nx run-many -t gen-file` to regenerate if generators exist
 - [ ] Run `bun run mini-ci` to verify
 
 ### W-Engine
-- [ ] Create `app/src/formula/data/wengine/sheets/{Name}.ts`
-- [ ] Create `app/src/formula-ui/wengine/sheets/{Name}.tsx`
-- [ ] Create/update `app/src/formula/meta/wengine/{Name}/conditionals.ts`
-- [ ] Create `app/src/localization/assets/locales/en/wengine_{Name}.json`
+- [ ] Create `packages/zzz/formula/src/data/wengine/sheets/{Name}.ts`
+- [ ] Create `packages/zzz/formula-ui/src/wengine/sheets/{Name}.tsx`
+- [ ] Create/update `packages/zzz/formula/src/meta/wengine/{Name}/conditionals.ts`
+- [ ] Create `packages/zzz/localization/src/assets/locales/en/wengine_{Name}.json`
 - [ ] (If needed) Add custom desc components in `WEngineConditionalsDisplay.tsx`
 - [ ] Run `npx nx run-many -t gen-file` to regenerate if generators exist
 - [ ] Run `bun run mini-ci` to verify

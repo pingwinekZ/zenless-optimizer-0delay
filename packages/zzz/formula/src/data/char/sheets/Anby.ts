@@ -1,4 +1,4 @@
-import { cmpGE, subscript } from '@zenless-optimizer/pando/engine'
+import { subscript } from '@zenless-optimizer/pando/engine'
 import { type CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { allStats, mappedStats } from '@zenless-optimizer/zzz/stats'
 import { isStunned } from '../../common/enemy'
@@ -13,6 +13,8 @@ import {
   dmgDazeAndAnomOverride,
   entriesForChar,
   getBaseTag,
+  hitBuff,
+  mGate,
   registerAllDmgDazeAndAnom,
 } from '../util'
 
@@ -20,8 +22,6 @@ const key: CharacterKey = 'Anby'
 const data_gen = allStats.char[key]
 const dm = mappedStats.char[key]
 const baseTag = getBaseTag(data_gen)
-
-const { char } = own
 
 const { core_after3rdBasic, m1After4thBasicHit, m6ChargeConsumed } =
   allBoolConditionals(key, undefined, {
@@ -37,11 +37,11 @@ const core_after3rdBasic_dazeInc_ = ownBuff.combat.dazeInc_.add(
 
 const m2_stunned_basic_dmg_ = ownBuff.combat.dmg_.addWithDmgType(
   'basic',
-  cmpGE(char.mindscape, 2, isStunned.ifOn(dm.m2.dmg_))
+  mGate(2, isStunned.ifOn(dm.m2.dmg_))
 )
 const m2_unstunned_ex_dazeInc_ = ownBuff.combat.dazeInc_.addWithDmgType(
   'exSpecial',
-  cmpGE(char.mindscape, 2, isStunned.ifOff(dm.m2.daze_))
+  mGate(2, isStunned.ifOff(dm.m2.daze_))
 )
 
 const sheet = register(
@@ -93,17 +93,11 @@ const sheet = register(
   ),
 
   // Buffs
-  registerBuff(
-    'core_after3rdBasic_dazeInc_',
-    core_after3rdBasic_dazeInc_,
-    undefined,
-    undefined,
-    false
-  ),
+  hitBuff('core_after3rdBasic_dazeInc_', core_after3rdBasic_dazeInc_),
   registerBuff(
     'm1_after4thHit_energyRegen_',
     ownBuff.combat.enerRegen_.add(
-      cmpGE(char.mindscape, 1, m1After4thBasicHit.ifOn(dm.m1.ener_))
+      mGate(1, m1After4thBasicHit.ifOn(dm.m1.ener_))
     )
   ),
   registerBuff(
@@ -124,14 +118,14 @@ const sheet = register(
     'm6_charge_basic_dmg_',
     ownBuff.combat.dmg_.addWithDmgType(
       'basic',
-      cmpGE(char.mindscape, 6, m6ChargeConsumed.ifOn(dm.m6.dmg_))
+      mGate(6, m6ChargeConsumed.ifOn(dm.m6.dmg_))
     )
   ),
   registerBuff(
     'm6_charge_dash_dmg_',
     ownBuff.combat.dmg_.addWithDmgType(
       'dash',
-      cmpGE(char.mindscape, 6, m6ChargeConsumed.ifOn(dm.m6.dmg_))
+      mGate(6, m6ChargeConsumed.ifOn(dm.m6.dmg_))
     )
   )
 )

@@ -1,8 +1,8 @@
 {
   "executors": {
     "gen-desc": {
-      "implementation": "./executors/gen-desc/executor",
-      "schema": "./executors/gen-desc/schema.json",
+      "implementation": "./src/executors/gen-desc/executor",
+      "schema": "./src/executors/gen-desc/schema.json",
       "description": "gen-desc executor"
     }
   }

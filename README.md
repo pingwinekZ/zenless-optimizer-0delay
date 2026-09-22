@@ -8,7 +8,7 @@ Fork of [hsr-optimizer](https://github.com/fribbels/hsr-optimizer) and [genshin-
 
 - **React 19 + TypeScript** (strict) — frontend
 - **Nx 23** monorepo, **Vite 8** build, **bun** as package manager
-- **Mantine v9** UI, Tabler icons, ag-grid, recharts
+- **Mantine v9** UI, Tabler icons, ag-grid
 - **Zustand v5** state, **zod** validation, **i18next** localization
 - **Jest / Vitest** tests, **Cypress** e2e, **Playwright** WebGPU e2e
 
@@ -31,20 +31,22 @@ bun nx build zzz-frontend
 ```
 
 > `gen-file` and full builds depend on the datamine submodule
-> (`app/src/dm/NanokaData`). Run
+> (`packages/zzz/dm/src/NanokaData`). Run
 > `bun run reload-dm` first if it is not initialized.
 
 ## Project Structure
 
 ```
 app/                    # Frontend application (Vite + React + Mantine)
-  src/<module>/         # ZZZ-specific code: db, formula, solver, stats,
-                        # pages/*, dm, schema, util, disc-scanner, ...
-  src/dm/NanokaData/   # git submodule — datamine data
+  src/app/              # Shell: router, layout, navigation
+  src/page-*/           # Pages: characters, discs, optimize, ...
 packages/
   common/               # Shared utilities (database, UI, pipeline, localization)
   game-opt/             # Optimizer logic (engine, formula, solver, sheet-ui)
   pando/engine/         # Pando calculation engine
+  zzz/*/                # ZZZ domain libs (db, formula, solver, stats,
+                        # consts, schema, assets, dm, pages-*, ui, ...)
+    src/NanokaData/     # git submodule (in zzz/dm) — datamine data
 ```
 
 Path aliases: `@zenless-optimizer/<scope>/<name>` → `packages/<scope>/<name>/src/index.ts` (see `tsconfig.base.json`).
@@ -70,7 +72,7 @@ bun biome check --write --formatter-enabled=true --linter-enabled=false --assist
 
 # Codegen & data
 bun run gen-file                   # Regenerate generated files (needs submodule data)
-bun nx run zzz-dm:get-nanoka       # Fetch Nanoka datamine JSON into app/src/dm/NanokaData
+bun nx run zzz-dm:get-nanoka       # Fetch Nanoka datamine JSON into packages/zzz/dm/src/NanokaData
 bun run reload-dm                  # git submodule update --init
 bun run update-dm                  # git submodule update --remote
 
@@ -84,7 +86,8 @@ bun run e2e:webgpu                 # Playwright WebGPU e2e
 - `packages/pando/engine/doc/` — Pando engine architecture (tags, nodes, propagation, optimization)
 - `packages/pando/doc/` — Pando calculation model (name-scoped buffs, damage survey)
 - `packages/game-opt/doc/overview.md` — game-opt layer (typed authoring API, solver)
-- `app/src/formula/doc/` — ZZZ formula authoring (`api.md`, `glue.md`, `tags.md`)
+- `docs/dev/character-wengine-implementation-guide.md` — adding characters/W-Engines
+- `docs/dev/formula-ui-character-sheet-guide.md` — formula UI sheets
 - `gpusolver.md` — WebGPU solver design notes
 
 ## Development Conventions
@@ -92,7 +95,7 @@ bun run e2e:webgpu                 # Playwright WebGPU e2e
 - **Formatter**: Biome (single quotes, `asNeeded` semicolons, trailing commas es5, 2-space indent, 80-char width). Biome's linter is disabled — linting is done by ESLint only.
 - **Linter**: ESLint with `@nx/typescript` rules, `unused-imports` (unused imports are errors), and module boundary enforcement.
 - **TypeScript 5.7+** strict mode: `exactOptionalPropertyTypes`, `noImplicitReturns`, `noPropertyAccessFromIndexSignature`.
-- **Tests**: Jest by default; Vitest for packages with a `vitest.config.ts`. Test files are `*.spec.ts` / `*.test.ts`.
+- **Tests**: `bun test` everywhere (`--jsdom` where DOM is needed). Test files are `*.spec.ts` / `*.test.ts`.
 
 ## CI
 

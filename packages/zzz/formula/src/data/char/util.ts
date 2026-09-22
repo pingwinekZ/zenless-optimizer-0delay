@@ -6,7 +6,9 @@ import {
   constant,
   custom,
   max,
+  type NumNode,
   prod,
+  type StrNode,
   subscript,
   sum,
 } from '@zenless-optimizer/pando/engine'
@@ -38,7 +40,9 @@ import {
   own,
   ownBuff,
   percent,
+  registerBuff,
   type TagMapNodeEntries,
+  type TagMapNodeEntry,
 } from '../util'
 
 type AbilityScalingType = SkillKey
@@ -52,6 +56,33 @@ type SkillOverides = Partial<
 
 export function getBaseTag(data_gen: CharacterDatum): DmgTag {
   return { attribute: data_gen.attribute }
+}
+
+/**
+ * Mindscape gate shorthand: `mGate(6, cond.ifOn(x))` ===
+ * `cmpGE(own.char.mindscape, 6, cond.ifOn(x))`. Pass the result straight
+ * into `.add()` / `.addWithDmgType()`.
+ */
+export function mGate(
+  m: number,
+  value: NumNode | number,
+  lt: NumNode | number = 0
+) {
+  return cmpGE(own.char.mindscape, m, value, lt)
+}
+
+/**
+ * Registers a pre-built buff that only applies to specific damage instances
+ * (passed as overrides into `dmgDazeAndAnomOverride`), so it is listed for
+ * display but does not add to the character's stats
+ * (`includeOriginalEntry: false`).
+ */
+export function hitBuff(
+  name: string,
+  entries: TagMapNodeEntry | TagMapNodeEntries,
+  cond: string | StrNode = 'infer'
+): TagMapNodeEntries {
+  return registerBuff(name, entries, cond, false, false)
 }
 
 /**

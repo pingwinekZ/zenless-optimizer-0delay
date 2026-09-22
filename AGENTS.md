@@ -9,9 +9,12 @@ Zenless Zone Zero optimizer app. Built with React, TypeScript, Nx, Mantine UI, a
   - `common/` — utilities (database, UI, pipeline, localization, plugin, etc.)
   - `game-opt/` — optimizer logic (engine, formula, solver, sheet-ui)
   - `pando/engine/` — Pando calculation engine
+  - `zzz/` — ZZZ domain libs (db, formula, solver, stats, consts, schema,
+    assets, dm, pages-*, ui, ...)
 
-- `app/src/<module>/` — ZZZ-specific source (db, formula, solver, pages, dm, stats, etc.)
-- `app/src/dm/NanokaData` — git submodule (datamine data)
+- `app/src/app/` — shell (router, layout, navigation)
+- `app/src/page-*/` — pages (characters, discs, optimize, ...)
+- `packages/zzz/dm/src/NanokaData` — git submodule (datamine data)
 
 Path aliases: `@zenless-optimizer/<scope>/<name>` → `packages/<scope>/<name>/src/index.ts` (defined in `tsconfig.base.json`).
 
@@ -39,7 +42,7 @@ bun nx build zzz-frontend               # Build frontend
 bun nx graph                            # Dependency graph
 npx nx run-many --target=typecheck      # Typecheck all
 npx nx run-many --target=eslint:lint --max-warnings=0  # Lint all
-npx nx run-many --target=test           # Test all (Jest + Vitest)
+npx nx run-many --target=test           # Test all (bun test)
 npx nx run-many -t gen-file             # Regenerate generated files
 bun biome ci                            # Format check only (read-only)
 bun biome format --write                # Auto-format (Biome)
@@ -66,7 +69,7 @@ bun run update-dm   # git submodule update --remote
 - **Formatter**: Biome (single quotes, `asNeeded` semicolons, trailing commas es5, 2-space indent, LF, 80 char line width). Biome linter is **disabled** — linting is done by ESLint only.
 - **Linter**: ESLint with `@nx/typescript` rules, `unused-imports` plugin (unused imports are errors), and module boundary enforcement (`@nx/enforce-module-boundaries`).
 - **TypeScript 5.7**: strict mode with `exactOptionalPropertyTypes`, `noImplicitReturns`, `noPropertyAccessFromIndexSignature`.
-- **Testing**: Jest (default, `@nx/jest:jest`) for most libs; Vitest for packages with `vitest.config.ts` (e.g., `pando/engine`, `zzz-frontend`). Test files are `*.spec.ts` or `*.test.ts`.
+- **Testing**: `bun test` is the **only** runner — every one of the 21 `test` targets uses it (`--jsdom` where DOM is needed, `--timeout=60000` for the solver-heavy ones). Test files are `*.spec.ts` or `*.test.ts`. Specs may `import { describe, expect, it } from 'vitest'`: `bun test` aliases `vitest` to `bun:test`, and that alias exists **only inside the test runner** — vitest is not installed, so `bun run`/`bun -e` and `tsc`-driven tooling cannot resolve those imports (knip reports them as unlisted; that is expected). Never import test helpers from `'vitest'` outside a spec.
 - **UI**: Mantine v9, `@mantine/core`, `@mantine/hooks`, `postcss-preset-mantine`, Tabler icons.
 - **State**: Zustand v5.
 - **i18n**: i18next, react-i18next, browser language detection. Locale assets copied at build via `viteStaticCopy`.

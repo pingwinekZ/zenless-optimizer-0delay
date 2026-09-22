@@ -119,16 +119,22 @@
       "@zenless-optimizer/zzz/localization/*": [
         "./packages/zzz/localization/src/*"
       ],
-      "@zenless-optimizer/zzz/page-home": ["./app/src/page-home/index.tsx"],
-      "@zenless-optimizer/zzz/page-home/*": ["./app/src/page-home/*"],
+      "@zenless-optimizer/zzz/page-home": [
+        "./packages/zzz/page-home/src/index.tsx"
+      ],
+      "@zenless-optimizer/zzz/page-home/*": ["./packages/zzz/page-home/src/*"],
       "@zenless-optimizer/zzz/page-settings": [
-        "./app/src/page-settings/index.tsx"
+        "./packages/zzz/page-settings/src/index.tsx"
       ],
-      "@zenless-optimizer/zzz/page-settings/*": ["./app/src/page-settings/*"],
+      "@zenless-optimizer/zzz/page-settings/*": [
+        "./packages/zzz/page-settings/src/*"
+      ],
       "@zenless-optimizer/zzz/page-wengines": [
-        "./app/src/page-wengines/index.tsx"
+        "./packages/zzz/page-wengines/src/index.tsx"
       ],
-      "@zenless-optimizer/zzz/page-wengines/*": ["./app/src/page-wengines/*"],
+      "@zenless-optimizer/zzz/page-wengines/*": [
+        "./packages/zzz/page-wengines/src/*"
+      ],
       "@zenless-optimizer/zzz/rendering/*": ["./packages/zzz/rendering/src/*"],
       "@zenless-optimizer/zzz/schema": ["./packages/zzz/schema/src/index.ts"],
       "@zenless-optimizer/zzz/schema/*": ["./packages/zzz/schema/src/*"],

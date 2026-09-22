@@ -3,7 +3,12 @@ import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { Lucy } from '@zenless-optimizer/zzz/formula'
 import { GameDesc, GameDescSlice } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
-import { createBaseSheet, fieldForBuff, SkillGameDesc } from '../sheetUtil'
+import {
+  condSection,
+  createBaseSheet,
+  fieldsSection,
+  SkillGameDesc,
+} from '../sheetUtil'
 import { getVariant } from '../util'
 
 const key: CharacterKey = 'Lucy'
@@ -16,40 +21,29 @@ const sheet = createBaseSheet(key, {
   perSkillAbility: {
     special: {
       CheerOn: [
-        {
-          type: 'conditional',
-          conditional: {
-            label: ch('cheerOnCond'),
-            description: (
-              <SkillGameDesc
-                characterKey={key}
-                ns="char_Lucy_gen"
-                key18="special.CheerOn.desc"
-              />
-            ),
-            metadata: cond.cheerOn,
-            fields: [fieldForBuff(buff.exSpecial_atk)],
-            linked: ['cheerOn_m4'],
-          },
-        },
+        condSection(cond.cheerOn, [buff.exSpecial_atk], {
+          label: ch('cheerOnCond'),
+          description: (
+            <SkillGameDesc
+              characterKey={key}
+              ns="char_Lucy_gen"
+              key18="special.CheerOn.desc"
+            />
+          ),
+          linked: ['cheerOn_m4'],
+        }),
       ],
     },
   },
   m4: [
-    {
-      type: 'conditional',
-      conditional: {
-        label: ch('cheerOnM4Cond'),
-        description: <GameDesc ns="char_Lucy_gen" key18="mindscapes.4.desc" />,
-        metadata: cond.cheerOn_m4,
-        fields: [fieldForBuff(buff.m4_crit_dmg_)],
-        linked: ['cheerOn'],
-      },
-    },
+    condSection(cond.cheerOn_m4, [buff.m4_crit_dmg_], {
+      label: ch('cheerOnM4Cond'),
+      description: <GameDesc ns="char_Lucy_gen" key18="mindscapes.4.desc" />,
+      linked: ['cheerOn'],
+    }),
   ],
   m6: [
-    {
-      type: 'fields',
+    fieldsSection(ch('m6_additional_dmg'), [], {
       description: (
         <GameDescSlice
           ns="char_Lucy_gen"
@@ -58,8 +52,7 @@ const sheet = createBaseSheet(key, {
           to="300% of the guard boar's ATK"
         />
       ),
-      header: { icon: null, text: ch('m6_additional_dmg') },
-      fields: [
+      extraFields: [
         {
           title: (
             <ColorText color={getVariant(formula.m6_dmg.tag)}>
@@ -69,7 +62,7 @@ const sheet = createBaseSheet(key, {
           fieldRef: formula.m6_dmg.tag,
         },
       ],
-    },
+    }),
   ],
 })
 

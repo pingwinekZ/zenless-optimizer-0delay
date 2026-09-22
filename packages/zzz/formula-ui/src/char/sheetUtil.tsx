@@ -1,9 +1,14 @@
 import { ColorText, ImgIcon } from '@zenless-optimizer/common/ui'
 import { objKeyMap } from '@zenless-optimizer/common/util'
-import type { IFormulaData } from '@zenless-optimizer/game-opt/engine'
+import type {
+  IConditionalData,
+  IFormulaData,
+} from '@zenless-optimizer/game-opt/engine'
 import { CalcContext, TagContext } from '@zenless-optimizer/game-opt/formula-ui'
 import type {
+  Conditional,
   Document,
+  Field,
   UISheetElement,
 } from '@zenless-optimizer/game-opt/sheet-ui'
 import { read } from '@zenless-optimizer/pando/engine'
@@ -167,6 +172,68 @@ export function fieldForBuff(buff: IFormulaData<Tag>) {
     title: <TagDisplay tag={buff.tag} preventRecursion />,
     fieldRef: buff.tag,
     ...(buff.team !== undefined ? { team: buff.team } : {}),
+  }
+}
+
+/**
+ * Mechanical `conditional` section builder. Label/description stay
+ * author-written (they carry the per-sheet custom copy); conditional
+ * metadata + buff-field wiring is generated. Rare `Conditional` options
+ * (`linked`, `section`, ...) pass through via `extra`.
+ */
+export function condSection(
+  metadata: IConditionalData,
+  buffs: Array<IFormulaData<Tag>>,
+  opts: {
+    label: Conditional['label']
+    description?: Conditional['description']
+  } & Partial<
+    Pick<
+      Conditional,
+      | 'header'
+      | 'badge'
+      | 'linked'
+      | 'section'
+      | 'targeted'
+      | 'noDimWhenZero'
+      | 'showInTeammateView'
+      | 'maxByMindscape'
+    >
+  >
+): Document {
+  const { label, description, ...extra } = opts
+  return {
+    type: 'conditional',
+    conditional: {
+      metadata,
+      label,
+      ...(description !== undefined ? { description } : {}),
+      fields: buffs.map(fieldForBuff),
+      ...extra,
+    },
+  }
+}
+
+/**
+ * Mechanical `fields` section builder with the standard
+ * `{ icon: null, text }` header. `extraFields` appends hand-built fields
+ * (e.g. custom-titled formula readouts) after the buff fields.
+ */
+export function fieldsSection(
+  headerText: ReactNode,
+  buffs: Array<IFormulaData<Tag>>,
+  opts?: {
+    description?: ReactNode
+    extraFields?: Field[]
+  }
+): Document {
+  return {
+    type: 'fields',
+    header: { icon: null, text: headerText },
+    ...(opts?.description !== undefined
+      ? { description: opts.description }
+      : {}),
+    fields: [...buffs.map(fieldForBuff), ...(opts?.extraFields ?? [])],
   }
 }
 

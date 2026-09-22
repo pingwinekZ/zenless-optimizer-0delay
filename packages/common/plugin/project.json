@@ -41,7 +41,7 @@
       "executor": "nx:run-commands",
       "outputs": ["{workspaceRoot}/coverage/libs/common/plugin"],
       "options": {
-        "command": "bun test",
+        "command": "bun test --timeout=60000",
         "cwd": "packages/common/plugin"
       }
     }

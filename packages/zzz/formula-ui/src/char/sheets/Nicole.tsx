@@ -6,8 +6,9 @@ import { trans } from '../../util'
 import {
   AbilityBodyText,
   CoreGameDesc,
+  condSection,
   createBaseSheet,
-  fieldForBuff,
+  fieldsSection,
 } from '../sheetUtil'
 import { getVariant } from '../util'
 
@@ -18,43 +19,30 @@ const buff = Nicole.buffs
 
 const sheet = createBaseSheet(key, {
   core: [
-    {
-      type: 'conditional',
-      conditional: {
-        label: ch('coreCond'),
-        description: <CoreGameDesc characterKey={key} />,
-        metadata: cond.bulletsOrFieldHit,
-        linked: ['bulletsOrFieldHit_ability'],
-        fields: [fieldForBuff(buff.core_defRed_)],
-      },
-    },
+    condSection(cond.bulletsOrFieldHit, [buff.core_defRed_], {
+      label: ch('coreCond'),
+      description: <CoreGameDesc characterKey={key} />,
+      linked: ['bulletsOrFieldHit_ability'],
+    }),
   ],
   ability: [
-    {
-      type: 'conditional',
-      conditional: {
-        label: ch('abilityCond'),
-        description: (
-          <>
-            <GameDesc ns="char_Nicole_gen" key18="ability.desc.0" />
-            <AbilityBodyText characterKey={key}>
-              <GameDesc ns="char_Nicole_gen" key18="ability.desc.1" />
-            </AbilityBodyText>
-          </>
-        ),
-        metadata: cond.bulletsOrFieldHit_ability,
-        linked: ['bulletsOrFieldHit'],
-        fields: [fieldForBuff(buff.ability_ether_dmg_)],
-      },
-    },
+    condSection(cond.bulletsOrFieldHit_ability, [buff.ability_ether_dmg_], {
+      label: ch('abilityCond'),
+      description: (
+        <>
+          <GameDesc ns="char_Nicole_gen" key18="ability.desc.0" />
+          <AbilityBodyText characterKey={key}>
+            <GameDesc ns="char_Nicole_gen" key18="ability.desc.1" />
+          </AbilityBodyText>
+        </>
+      ),
+      linked: ['bulletsOrFieldHit'],
+    }),
   ],
   m1: [
-    {
-      type: 'fields',
+    fieldsSection(ch('m1_header'), [buff.m1_exSpecial_dmg_], {
       description: <GameDesc ns="char_Nicole_gen" key18="mindscapes.1.desc" />,
-      header: { icon: null, text: ch('m1_header') },
-      fields: [
-        fieldForBuff(buff.m1_exSpecial_dmg_),
+      extraFields: [
         {
           title: (
             <ColorText color={getVariant(buff.m1_exSpecial_anomBuildup_.tag)}>
@@ -64,20 +52,13 @@ const sheet = createBaseSheet(key, {
           fieldRef: buff.m1_exSpecial_anomBuildup_.tag,
         },
       ],
-    },
+    }),
   ],
   m6: [
-    {
-      type: 'conditional',
-      conditional: {
-        label: ch('m6Cond'),
-        description: (
-          <GameDesc ns="char_Nicole_gen" key18="mindscapes.6.desc" />
-        ),
-        metadata: cond.fieldHitsEnemy,
-        fields: [fieldForBuff(buff.m6_crit_)],
-      },
-    },
+    condSection(cond.fieldHitsEnemy, [buff.m6_crit_], {
+      label: ch('m6Cond'),
+      description: <GameDesc ns="char_Nicole_gen" key18="mindscapes.6.desc" />,
+    }),
   ],
 })
 

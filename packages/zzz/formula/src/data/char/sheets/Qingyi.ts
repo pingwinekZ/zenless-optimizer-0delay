@@ -25,6 +25,8 @@ import {
   dmgDazeAndAnomOverride,
   entriesForChar,
   getBaseTag,
+  hitBuff,
+  mGate,
   registerAllDmgDazeAndAnom,
 } from '../util'
 
@@ -68,7 +70,7 @@ const ability_check = (node: NumNode) =>
     node
   )
 const m6_crit_dmg_ = ownBuff.combat.crit_dmg_.add(
-  cmpGE(char.mindscape, 6, percent(dm.m6.crit_dmg_))
+  mGate(6, percent(dm.m6.crit_dmg_))
 )
 
 const sheet = register(
@@ -153,7 +155,7 @@ const sheet = register(
 
   ...customShield(
     'm4_shield',
-    cmpGE(char.mindscape, 4, prod(own.final.hp, percent(dm.m4.shield)))
+    mGate(4, prod(own.final.hp, percent(dm.m4.shield)))
   ),
 
   // Buffs
@@ -171,7 +173,7 @@ const sheet = register(
     undefined,
     false
   ),
-  registerBuff('chain_dmg_', chain_dmg_, undefined, undefined, false),
+  hitBuff('chain_dmg_', chain_dmg_),
   registerBuff(
     'core_stun_',
     enemyDebuff.common.stun_.add(
@@ -179,7 +181,7 @@ const sheet = register(
         subjugation,
         // For some reason dm did not convert this to percent
         prod(percent(subscript(char.core, dm.core.stun_)), percent(0.01)),
-        cmpGE(char.mindscape, 2, percent(dm.m2.stun_mult_), percent(1))
+        mGate(2, percent(dm.m2.stun_mult_), percent(1))
       )
     ),
     undefined,
@@ -211,32 +213,28 @@ const sheet = register(
   ),
   registerBuff(
     'm1_defRed_',
-    enemyDebuff.common.defRed_.add(
-      cmpGE(char.mindscape, 1, m1_flash_max.ifOn(dm.m1.defRed_))
-    ),
+    enemyDebuff.common.defRed_.add(mGate(1, m1_flash_max.ifOn(dm.m1.defRed_))),
     undefined,
     true
   ),
   registerBuff(
     'm1_crit_',
-    ownBuff.combat.crit_.add(
-      cmpGE(char.mindscape, 1, m1_flash_max.ifOn(dm.m1.crit_))
-    )
+    ownBuff.combat.crit_.add(mGate(1, m1_flash_max.ifOn(dm.m1.crit_)))
   ),
   registerBuff(
     'm2_dazeInc_',
     ownBuff.combat.dazeInc_.add(
-      cmpGE(char.mindscape, 2, m2_subjugation_max.ifOn(dm.m2.dazeInc_))
+      mGate(2, m2_subjugation_max.ifOn(dm.m2.dazeInc_))
     )
   ),
   registerBuff(
     'm6_resRed_',
     enemyDebuff.common.resRed_.add(
-      cmpGE(char.mindscape, 6, moonlit_blossoms_hit.ifOn(dm.m6.resRed_))
+      mGate(6, moonlit_blossoms_hit.ifOn(dm.m6.resRed_))
     ),
     undefined,
     true
   ),
-  registerBuff('m6_crit_dmg_', m6_crit_dmg_, undefined, undefined, false)
+  hitBuff('m6_crit_dmg_', m6_crit_dmg_)
 )
 export default sheet

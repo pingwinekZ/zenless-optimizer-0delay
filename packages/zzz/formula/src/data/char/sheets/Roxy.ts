@@ -26,6 +26,8 @@ import {
   dmgDazeAndAnomOverride,
   entriesForChar,
   getBaseTag,
+  hitBuff,
+  mGate,
   registerAllDmgDazeAndAnom,
 } from '../util'
 
@@ -148,47 +150,47 @@ const ability_ex_anomBuildup_ = ownBuff.combat.anomBuildup_.add(
 // AstraYao resRed_ pattern, teamwide) + Roxy's own CRIT DMG (passive once M1,
 // self-only).
 const m1_allResRed_ = enemyDebuff.common.resRed_.add(
-  cmpGE(char.mindscape, 1, m1ResShred.ifOn(percent(dm.m1.allResRed_)))
+  mGate(1, m1ResShred.ifOn(percent(dm.m1.allResRed_)))
 )
 const m1_crit_dmg_ = ownBuff.combat.crit_dmg_.add(
-  cmpGE(char.mindscape, 1, percent(dm.m1.crit_dmg_))
+  mGate(1, percent(dm.m1.crit_dmg_))
 )
 
 // M2: EX Don't Catch a Chill Daze +5%. Scoped to the ability via overrides
 // (Velina Sweeping Cyclone pattern); the Windflow sustain is timing-only.
 const m2_ex_daze_ = ownBuff.combat.dazeInc_.add(
-  cmpGE(char.mindscape, 2, percent(dm.m2.exDaze_))
+  mGate(2, percent(dm.m2.exDaze_))
 )
 // M2: Stun DMG Multiplier while the target is stunned (Trigger pattern).
-const m2_stun = cmpGE(char.mindscape, 2, m2StunSurge.ifOn(percent(dm.m2.stun_)))
+const m2_stun = mGate(2, m2StunSurge.ifOn(percent(dm.m2.stun_)))
 
 // M4: Ultimate DMG/Daze up (Claret M4 buff + override pattern).
 const m4_ult_dmg_ = ownBuff.combat.common_dmg_.add(
-  cmpGE(char.mindscape, 4, percent(dm.m4.ult_dmg_))
+  mGate(4, percent(dm.m4.ult_dmg_))
 )
 const m4_ult_daze_ = ownBuff.combat.dazeInc_.add(
-  cmpGE(char.mindscape, 4, percent(dm.m4.ult_daze_))
+  mGate(4, percent(dm.m4.ult_daze_))
 )
 
 // M6: attacks ignore Wind RES (Soldier0Anby M4 resIgn_ pattern).
 const m6_wind_resIgn_ = ownBuff.combat.resIgn_.wind.add(
-  cmpGE(char.mindscape, 6, percent(dm.m6.wind_resIgn_))
+  mGate(6, percent(dm.m6.wind_resIgn_))
 )
 // M6 Afterecho: Giant Windstorm DMG "increases to 250%" = +150% additive,
 // scoped to Eye of the Storm hit 2 via override; Daze +20% likewise. The 2
 // extra storm instances are trigger counts, description-only. Passive once
 // M6 (no toggle — the windstorm is always empowered).
 const m6_afterecho_dmg_ = ownBuff.combat.common_dmg_.add(
-  cmpGE(char.mindscape, 6, percent(dm.m6.giantWindstormMult_ - 1))
+  mGate(6, percent(dm.m6.giantWindstormMult_ - 1))
 )
 // Display-only total multiplier (250%) for the UI row, following the Claret
 // m1_maim_mult_display_ pattern. The additive buff above is what the
 // override actually applies.
 const m6_afterecho_daze_ = ownBuff.combat.dazeInc_.add(
-  cmpGE(char.mindscape, 6, percent(dm.m6.giantWindstormDaze_))
+  mGate(6, percent(dm.m6.giantWindstormDaze_))
 )
 const m6_afterecho_mult_display_ = ownBuff.combat.common_dmg_.add(
-  cmpGE(char.mindscape, 6, percent(dm.m6.giantWindstormMult_))
+  mGate(6, percent(dm.m6.giantWindstormMult_))
 )
 
 const sheet = register(
@@ -265,7 +267,7 @@ const sheet = register(
   registerBuff('ability_ex_anomBuildup_', ability_ex_anomBuildup_),
   registerBuff('m1_allResRed_', m1_allResRed_, undefined, true),
   registerBuff('m1_crit_dmg_', m1_crit_dmg_),
-  registerBuff('m2_ex_daze_', m2_ex_daze_, undefined, undefined, false),
+  hitBuff('m2_ex_daze_', m2_ex_daze_),
   registerBuff(
     'm2_stun_',
     enemyDebuff.common.stun_.add(m2_stun),
@@ -275,8 +277,8 @@ const sheet = register(
   // Move-scoped buffs below are applied to their damage instances via the
   // overrides above, so they are display-only here (includeOriginalEntry
   // false) and must NOT leak into global stats.
-  registerBuff('m4_ult_dmg_', m4_ult_dmg_, undefined, undefined, false),
-  registerBuff('m4_ult_daze_', m4_ult_daze_, undefined, undefined, false),
+  hitBuff('m4_ult_dmg_', m4_ult_dmg_),
+  hitBuff('m4_ult_daze_', m4_ult_daze_),
   registerBuff('m6_wind_resIgn_', m6_wind_resIgn_),
   registerBuff(
     'm6_afterecho_daze_',
