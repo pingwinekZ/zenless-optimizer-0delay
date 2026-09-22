@@ -30,7 +30,7 @@ import type { Tag } from '@zenless-optimizer/zzz/formula'
 import {
   type ContributionTarget,
   convert,
-  explainContributions,
+  explainContributionsAsync,
   ownTag,
   Read,
   type SourceContribution,
@@ -142,26 +142,37 @@ export type StatContribution = {
   maxRef: number
 }
 
-export function buildAnalysisData(params: {
-  selectedBuild: { wengineKey?: string; discIds: DiscIds; value: number }
-  enrichedBuilds: EnrichedBuild[]
-  equippedBuildId: string
-  getDisc: (id: string) => ICachedDisc | undefined
-  team: Team
-  character: ICachedCharacter
-  getTeammateChar?: (key: CharacterKey) => ICachedCharacter | undefined
-  reference?: {
-    profile: TheoReferenceShape
-    value: number
-    date: number
-    stale: boolean
-    weights: Partial<Record<DiscSubStatKey, number>>
-    set4?: DiscSetKey
-    set2?: DiscSetKey
-    wengineKey?: string
-    combatStats?: TheoReferenceCombatStats
-  } | null
-}): AnalysisData {
+export interface BuildAnalysisOptions {
+  /**
+   * Checked while the per-source attribution runs; returning `true` abandons
+   * the run (newer inputs arrived, or the panel unmounted).
+   */
+  shouldCancel?: () => boolean
+}
+
+export async function buildAnalysisData(
+  params: {
+    selectedBuild: { wengineKey?: string; discIds: DiscIds; value: number }
+    enrichedBuilds: EnrichedBuild[]
+    equippedBuildId: string
+    getDisc: (id: string) => ICachedDisc | undefined
+    team: Team
+    character: ICachedCharacter
+    getTeammateChar?: (key: CharacterKey) => ICachedCharacter | undefined
+    reference?: {
+      profile: TheoReferenceShape
+      value: number
+      date: number
+      stale: boolean
+      weights: Partial<Record<DiscSubStatKey, number>>
+      set4?: DiscSetKey
+      set2?: DiscSetKey
+      wengineKey?: string
+      combatStats?: TheoReferenceCombatStats
+    } | null
+  },
+  options: BuildAnalysisOptions = {}
+): Promise<AnalysisData | null> {
   const {
     selectedBuild,
     enrichedBuilds,
@@ -220,13 +231,15 @@ export function buildAnalysisData(params: {
       }
     })
 
-  const targetInfo = buildTargetInfo(
+  const targetInfo = await buildTargetInfo(
     selectedBuild,
     getDisc,
     character,
     team,
-    getTeammateChar
+    getTeammateChar,
+    options.shouldCancel
   )
+  if (options.shouldCancel?.()) return null
 
   return {
     selectedStats:
@@ -309,13 +322,14 @@ function buildReferenceComparison(
   }
 }
 
-function buildTargetInfo(
+async function buildTargetInfo(
   selectedBuild: { wengineKey?: string; discIds: DiscIds },
   getDisc: (id: string) => ICachedDisc | undefined,
   character: ICachedCharacter,
   team: Team,
-  getTeammateChar?: (key: CharacterKey) => ICachedCharacter | undefined
-): TargetFormulaInfo | null {
+  getTeammateChar?: (key: CharacterKey) => ICachedCharacter | undefined,
+  shouldCancel?: () => boolean
+): Promise<TargetFormulaInfo | null> {
   const frame = getTeamFrame0(team)
   if (!frame.tag) return null
 
@@ -457,13 +471,17 @@ function buildTargetInfo(
 
   // Per-source attribution, computed once for all actions: one calculator
   // rebuild per source group, evaluated against every action's exact target
-  // read (preset-scoped). Gated behind this panel (not the solver loop).
-  const sourcesByAction = explainContributions(
+  // read (preset-scoped). Gated behind this panel (not the solver loop), and
+  // chunked/cancellable because `#groups + 1` full calculator builds is
+  // seconds of synchronous work that must not sit in a render pass.
+  const sourcesByAction = await explainContributionsAsync(
     entries,
     character.key,
     actionRows.map((r) => [r.target]),
-    (e) => zzzCalculatorWithEntries(e)
+    (e) => zzzCalculatorWithEntries(e),
+    { shouldCancel }
   )
+  if (!sourcesByAction) return null
   const perActionDamage: PerActionDamage[] = actionRows.map((row, i) => ({
     name: row.name,
     tag: row.tag,

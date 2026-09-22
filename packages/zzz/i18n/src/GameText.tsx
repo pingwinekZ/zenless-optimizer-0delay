@@ -54,7 +54,12 @@ export function GameText({ text }: { text: string }) {
  * <GameDesc ns="char_Miyabi_gen" key18="mindscapes.1.desc" />
  */
 export function GameDesc({ ns, key18 }: { ns: string; key18: string }) {
-  const { t } = useTranslation(ns)
+  const { t, ready } = useTranslation(ns)
+  // `ns` is per-entity game text (`char_X_gen`, …), which is fetched on demand
+  // rather than preloaded. Until it lands, `t` would return the raw
+  // `ns:key18` string — hold the row back for that fraction instead, then
+  // render the text once react-i18next re-renders with the loaded namespace.
+  if (!ready) return null
   const textKey = `${ns}:${key18}`
   const obj = t(textKey, { returnObjects: true })
 
@@ -116,7 +121,7 @@ export function GameDescSlice({
   /** End the slice at the `to` marker instead of the end of its sentence, to isolate a mid-sentence clause */
   toExact?: boolean
 }) {
-  const { t } = useTranslation(ns)
+  const { t, ready } = useTranslation(ns)
   const text = t(`${ns}:${key18}`)
   const slice = useMemo(() => {
     if (typeof text !== 'string') return undefined
@@ -126,6 +131,8 @@ export function GameDescSlice({
     return sliced.charAt(0).toUpperCase() + sliced.slice(1)
   }, [text, from, to, capitalize, toExact])
 
+  // Same on-demand namespace as `GameDesc`; see the note there.
+  if (!ready) return null
   if (slice === undefined) {
     console.warn(
       `GameDescSlice: could not slice "${ns}:${key18}" between "${from}" and "${to}"`

@@ -3,6 +3,7 @@ import {
   type ContributionTarget,
   convert,
   explainContributions,
+  explainContributionsAsync,
   ownTag,
   zzzCalculatorWithEntries,
 } from '@zenless-optimizer/zzz/formula'
@@ -117,6 +118,32 @@ describe('contribution attribution (Phase 1)', () => {
     expect(actionSources).toHaveLength(1)
     expect(actionSources![0]!.key).toBe('custom')
     expect(actionSources![0]!.value).toBeCloseTo(50, 6)
+  })
+
+  it('async variant attributes exactly like the sync one', async () => {
+    const targets = [[atkTarget('preset0')]]
+    const { entries, sources } = explain(teamWith({ cheerOn: 1 }), targets)
+    const asyncSources = await explainContributionsAsync(
+      entries,
+      'Anby',
+      targets,
+      (e) => zzzCalculatorWithEntries(e)
+    )
+    expect(asyncSources).not.toBeNull()
+    expect(asyncSources).toEqual(sources)
+  })
+
+  it('async variant abandons the run when the caller cancels', async () => {
+    const targets = [[atkTarget('preset0')]]
+    const { entries } = explain(teamWith({ cheerOn: 1 }), targets)
+    const cancelled = await explainContributionsAsync(
+      entries,
+      'Anby',
+      targets,
+      (e) => zzzCalculatorWithEntries(e),
+      { shouldCancel: () => true }
+    )
+    expect(cancelled).toBeNull()
   })
 
   it('only shows buffs targeting the opt target preset', () => {

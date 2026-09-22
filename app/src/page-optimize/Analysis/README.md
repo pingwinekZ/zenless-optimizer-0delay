@@ -40,6 +40,12 @@ and `explainContributions` recomputes each action's exact target reads
 without one group at a time. Delta = contribution. Zero-delta groups are
 dropped, so only buffs targeting the opt target appear.
 
+The panel goes through the async `explainContributionsAsync` instead:
+`#groups + 1` full calculator builds is seconds of synchronous work on a
+full team, far too much for one render pass, so it yields to the browser
+between builds and abandons the run as soon as newer inputs arrive or the
+page unmounts (`shouldCancel` → resolves `null`).
+
 Known V1 limits: W-Engine/disc sheet rows include that sheet's base
 (stats it adds, not just buffs); groups whose removal breaks a
 unique-accumulator read are skipped; `buffedStats` has no per-source rows.

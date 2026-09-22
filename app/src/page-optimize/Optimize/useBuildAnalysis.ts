@@ -131,43 +131,77 @@ export function useBuildAnalysis(inputs: BuildAnalysisInputs) {
     theoreticalDiscMapRef,
   ])
 
-  // Analysis data for the ExpandedDataPanel
-  const analysisData = useMemo((): AnalysisData | null => {
-    if (!selectedBuild || !team) return null
-    const getDisc = (id: string) =>
-      theoreticalDiscMapRef.current[id] ?? database.discs.get(id) ?? undefined
-    const equippedBuildId = buildRowId(equippedBuild)
-    // Pinned perfect reference (absent = feature invisible). Staleness
-    // compares the pin-time target/filter snapshot with the current one.
-    const reference = pinnedReference
-      ? {
-          profile: {
-            perfectRolls: pinnedReference.perfectRolls,
-            mainsBySlot: pinnedReference.mainsBySlot,
-          },
-          value: pinnedReference.value,
-          date: pinnedReference.date,
-          stale: isTheoReferenceStale(
-            pinnedReference,
-            buildTheoContextSnapshot(target, setFilter2, setFilter4)
-          ),
-          weights: getMergedSubstatWeights(characterKey, database),
-          set4: pinnedReference.set4,
-          set2: pinnedReference.set2,
-          wengineKey: pinnedReference.wengineKey,
-          combatStats: pinnedReference.referenceCombatStats,
-        }
-      : null
-    return buildAnalysisData({
-      selectedBuild,
-      enrichedBuilds,
-      equippedBuildId,
-      getDisc,
-      team,
-      character,
-      getTeammateChar: (key) => database.chars.get(key) ?? undefined,
-      reference,
-    })
+  // Analysis data for the ExpandedDataPanel.
+  //
+  // The per-source attribution rebuilds the calculator once per source group
+  // (`explainContributions`), which is seconds of work on a full team. Running
+  // that inside a render pass froze the whole page — and every navigation
+  // attempted while it ran — so it is deferred past the first paint, yields
+  // between builds, and abandons the run as soon as the inputs change or the
+  // page unmounts.
+  const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null)
+  const [isComputingAnalysis, setIsComputingAnalysis] = useState(false)
+  useEffect(() => {
+    if (!selectedBuild || !team) {
+      setAnalysisData(null)
+      setIsComputingAnalysis(false)
+      return
+    }
+    let cancelled = false
+    setIsComputingAnalysis(true)
+    const handle = setTimeout(() => {
+      const getDisc = (id: string) =>
+        theoreticalDiscMapRef.current[id] ?? database.discs.get(id) ?? undefined
+      const equippedBuildId = buildRowId(equippedBuild)
+      // Pinned perfect reference (absent = feature invisible). Staleness
+      // compares the pin-time target/filter snapshot with the current one.
+      const reference = pinnedReference
+        ? {
+            profile: {
+              perfectRolls: pinnedReference.perfectRolls,
+              mainsBySlot: pinnedReference.mainsBySlot,
+            },
+            value: pinnedReference.value,
+            date: pinnedReference.date,
+            stale: isTheoReferenceStale(
+              pinnedReference,
+              buildTheoContextSnapshot(target, setFilter2, setFilter4)
+            ),
+            weights: getMergedSubstatWeights(characterKey, database),
+            set4: pinnedReference.set4,
+            set2: pinnedReference.set2,
+            wengineKey: pinnedReference.wengineKey,
+            combatStats: pinnedReference.referenceCombatStats,
+          }
+        : null
+      buildAnalysisData(
+        {
+          selectedBuild,
+          enrichedBuilds,
+          equippedBuildId,
+          getDisc,
+          team,
+          character,
+          getTeammateChar: (key) => database.chars.get(key) ?? undefined,
+          reference,
+        },
+        { shouldCancel: () => cancelled }
+      )
+        .then((data) => {
+          if (cancelled) return
+          setAnalysisData(data)
+          setIsComputingAnalysis(false)
+        })
+        .catch((e) => {
+          console.error('[Analysis] failed to build analysis data:', e)
+          if (cancelled) return
+          setIsComputingAnalysis(false)
+        })
+    }, 0)
+    return () => {
+      cancelled = true
+      clearTimeout(handle)
+    }
   }, [
     selectedBuild,
     enrichedBuilds,
@@ -183,5 +217,5 @@ export function useBuildAnalysis(inputs: BuildAnalysisInputs) {
     characterKey,
   ])
 
-  return { enrichedBuilds, isComputingStats, analysisData }
+  return { enrichedBuilds, isComputingStats, analysisData, isComputingAnalysis }
 }

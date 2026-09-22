@@ -288,7 +288,12 @@ function OptimizeWrapper() {
   })
 
   // Recompute per-build stats + the selected build's analysis payload.
-  const { enrichedBuilds, isComputingStats, analysisData } = useBuildAnalysis({
+  const {
+    enrichedBuilds,
+    isComputingStats,
+    analysisData,
+    isComputingAnalysis,
+  } = useBuildAnalysis({
     equippedBuild,
     allBuilds,
     selectedBuild,
@@ -406,7 +411,10 @@ function OptimizeWrapper() {
 
           {/* Optimization Results Analysis */}
           <DeferCreate>
-            <ExpandedDataPanel analysisData={analysisData} />
+            <ExpandedDataPanel
+              analysisData={analysisData}
+              isComputingAnalysis={isComputingAnalysis}
+            />
           </DeferCreate>
         </Stack>
 
