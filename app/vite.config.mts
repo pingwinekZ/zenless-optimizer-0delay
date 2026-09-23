@@ -59,14 +59,14 @@ export default defineConfig(() => {
         resolve('../packages/zzz/localization/src/assets/locales')
       ),
       dest: 'assets',
-      rename: { stripBase: 3 },
+      rename: { stripBase: 5 },
     },
     {
       src: normalizePath(
         resolve('../packages/zzz/dm-localization/src/assets/locales')
       ),
       dest: 'assets',
-      rename: { stripBase: 3 },
+      rename: { stripBase: 5 },
     },
   ]
 
