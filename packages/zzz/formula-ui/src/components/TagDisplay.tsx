@@ -1,5 +1,5 @@
 import { iconInlineProps } from '@zenless-optimizer/common/svgicons'
-import { ColorText, SqBadge } from '@zenless-optimizer/common/ui'
+import { ColorText, TagPill } from '@zenless-optimizer/common/ui'
 import { evalIfFunc, getUnitStr } from '@zenless-optimizer/common/util'
 import type { Calculator as GameOptCalculator } from '@zenless-optimizer/game-opt/engine'
 import type { StatKey } from '@zenless-optimizer/zzz/consts'
@@ -14,6 +14,7 @@ import {
   getVariant,
   tagFieldMap,
 } from '../char'
+import { damageTypeColor } from '../damageTypeColors'
 import { useZzzCalcContext } from '../hooks'
 import { getTagLabel } from '../util'
 import { qtMap } from './qtMap'
@@ -44,19 +45,28 @@ export function FullTagDisplay({
   showPercent?: boolean
 }) {
   return (
-    <>
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 4,
+        flexWrap: 'wrap',
+      }}
+    >
       <TagDisplay tag={tag} showPercent={showPercent} />
       {/* Show DMG type */}
       {getDmgType(tag).map((dmgType) => (
-        <SqBadge key={dmgType}>{damageTypeKeysMap[dmgType]}</SqBadge>
+        <TagPill key={dmgType} color={damageTypeColor(dmgType)}>
+          {damageTypeKeysMap[dmgType]}
+        </TagPill>
       ))}
       {/* Show Attribute */}
       {tag.attribute && (
-        <SqBadge color={tag.attribute}>
+        <TagPill color={tag.attribute}>
           {<AttributeName attribute={tag.attribute} />}
-        </SqBadge>
+        </TagPill>
       )}
-    </>
+    </span>
   )
 }
 const extraHandlingStats = ['hp', 'hp_', 'atk', 'atk_', 'def', 'def_'] as const

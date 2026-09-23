@@ -8,6 +8,8 @@ import type {
   DiscSubStatKey,
 } from '@zenless-optimizer/zzz/consts'
 import {
+  allDiscSlotKeys,
+  allDiscSubStatKeys,
   getDiscSubStatBaseVal,
   statKeyTextMap,
 } from '@zenless-optimizer/zzz/consts'
@@ -17,7 +19,6 @@ import type {
   ICachedDisc,
   OptFrame,
   Team,
-  TeammateDatum,
   TheoReferenceCombatStats,
 } from '@zenless-optimizer/zzz/db'
 import {
@@ -39,9 +40,13 @@ import {
 import type { ISubstat } from '@zenless-optimizer/zzz/schema/disc'
 import type {
   BuildCombatStats,
+  BuildTargetInput,
   EnrichedBuild,
 } from '@zenless-optimizer/zzz/solver/buildStatsUtils'
-import { buildCalculatorEntries } from '@zenless-optimizer/zzz/solver/buildStatsUtils'
+import {
+  buildCalculatorEntries,
+  computeBuildStats,
+} from '@zenless-optimizer/zzz/solver/buildStatsUtils'
 import { efficiencyToGrade } from '@zenless-optimizer/zzz/util'
 import type {
   MainMismatch,
@@ -49,6 +54,7 @@ import type {
   TheoReferenceShape,
 } from '../reference/referenceScoring'
 import { compareToReference } from '../reference/referenceScoring'
+import { tagDamageTypes } from './damageTypes'
 
 export type SubstatRollInfo = {
   key: DiscSubStatKey
@@ -61,22 +67,23 @@ export type SubstatRollInfo = {
 export type StatComparisonEntry = {
   key: string
   label: string
+  /** Formula stat key, for `StatIcon` lookup (may have no icon). */
+  iconKey: string
   current: number
   improved: number
   unit: string
   isPercent: boolean
 }
 
-export type TeammateInfo = {
-  characterKey: CharacterKey
-  wengineKey?: string
-  discSetKeys: DiscSetKey[]
-  mindscape: number
-}
-
 export type PerActionDamage = {
   name: string
   tag: Tag
+  /**
+   * Damage types this action carries, primary first. The first entry colors and
+   * partitions the action; the whole list is what a damage-type filter matches
+   * against, so a dual-tagged hit matches either of its types.
+   */
+  damageTypes: string[]
   value: number
   calcResult: CalcResult<number, CalcMeta<Tag, string>>
   buffedStats: BuildCombatStats | null
@@ -121,25 +128,49 @@ export type ReferenceComparison = {
   combatStats?: TheoReferenceCombatStats
 }
 
+/**
+ * One row of the "what does another roll get me" table: adding a single
+ * substat roll of `key` to the selected build, and the resulting change on
+ * the optimization target (`value` raw, `percent` relative).
+ */
+export type StatUpgradeItem = {
+  key: DiscSubStatKey
+  label: string
+  value: number
+  percent: number
+}
+
+/**
+ * The metric the upgrades were measured against (`dmg` / `daze` /
+ * `buildup`), so the panel can label the columns without guessing.
+ */
+export type StatUpgradeGroup = {
+  metric: 'dmg' | 'daze' | 'buildup'
+  upgrades: StatUpgradeItem[]
+}
+
+export type EnemyConfig = {
+  level: number
+  defense: number
+  stunMultiplier: number
+}
+
 export type AnalysisData = {
   selectedStats: BuildCombatStats | null
   equippedStats: BuildCombatStats | null
   targetValue: number
+  /** Optimization-target value of the currently equipped build. */
+  equippedTargetValue: number
   selectedDiscSubstats: SubstatRollInfo[]
-  teammates: TeammateInfo[]
   selectedDiscSetIds: string[]
   characterKey: CharacterKey
   selectedWengineKey?: string
   targetInfo: TargetFormulaInfo | null
   referenceComparison: ReferenceComparison | null
-}
-
-export type StatContribution = {
-  name: string
-  key: string
-  value: number
-  color: string
-  maxRef: number
+  /** Per-substat "+1 roll" damage deltas for the selected build. */
+  statUpgrades: StatUpgradeGroup[]
+  /** Enemy configuration the target was computed against. */
+  enemyConfig: EnemyConfig
 }
 
 export interface BuildAnalysisOptions {
@@ -199,39 +230,7 @@ export async function buildAnalysisData(
     reference ?? null
   )
 
-  const teammates: TeammateInfo[] = team.teammates
-    .filter((t: TeammateDatum) => t.characterKey !== character.key)
-    .map((t: TeammateDatum) => {
-      const teammateChar = getTeammateChar?.(t.characterKey)
-      let discSetKeys: DiscSetKey[] = t.discSet4Key
-        ? [t.discSet4Key as DiscSetKey]
-        : []
-      if (discSetKeys.length === 0 && teammateChar) {
-        const setCounts = new Map<string, number>()
-        for (const slotKey of Object.keys(
-          teammateChar.equippedDiscs
-        ) as DiscSlotKey[]) {
-          const discId = teammateChar.equippedDiscs[slotKey]
-          if (!discId) continue
-          const disc = getDisc(discId)
-          if (disc?.setKey) {
-            setCounts.set(disc.setKey, (setCounts.get(disc.setKey) ?? 0) + 1)
-          }
-        }
-        discSetKeys = Array.from(setCounts.entries())
-          .filter(([_, count]) => count >= 2)
-          .sort((a, b) => b[1] - a[1])
-          .map(([key]) => key as DiscSetKey)
-      }
-      return {
-        characterKey: t.characterKey,
-        wengineKey: teammateChar?.wengineKey,
-        discSetKeys,
-        mindscape: t.mindscape ?? teammateChar?.mindscape ?? 0,
-      }
-    })
-
-  const targetInfo = await buildTargetInfo(
+  const targetAnalysis = await buildTargetInfo(
     selectedBuild,
     getDisc,
     character,
@@ -240,19 +239,26 @@ export async function buildAnalysisData(
     options.shouldCancel
   )
   if (options.shouldCancel?.()) return null
+  const targetInfo = targetAnalysis?.targetInfo ?? null
 
   return {
     selectedStats:
       targetInfo?.buffedStats ?? selectedEnriched?.combatStats ?? null,
     equippedStats: equippedEnriched?.combatStats ?? null,
     targetValue: selectedEnriched?.value ?? selectedBuild.value,
+    equippedTargetValue: equippedEnriched?.value ?? 0,
     selectedDiscSubstats,
-    teammates,
     selectedDiscSetIds: selectedEnriched?.discSetIds ?? [],
     characterKey: character.key,
     selectedWengineKey: selectedBuild.wengineKey,
     targetInfo,
     referenceComparison,
+    statUpgrades: targetAnalysis?.statUpgrades ?? [],
+    enemyConfig: {
+      level: team.enemyLvl,
+      defense: team.enemyDef,
+      stunMultiplier: team.enemyStunMultiplier,
+    },
   }
 }
 
@@ -322,6 +328,14 @@ function buildReferenceComparison(
   }
 }
 
+/** `buildTargetInfo` internals the panel reads beyond `TargetFormulaInfo`. */
+type TargetAnalysis = {
+  targetInfo: TargetFormulaInfo
+  /** Summed optimization-target value of the selected build. */
+  targetValue: number
+  statUpgrades: StatUpgradeGroup[]
+}
+
 async function buildTargetInfo(
   selectedBuild: { wengineKey?: string; discIds: DiscIds },
   getDisc: (id: string) => ICachedDisc | undefined,
@@ -329,11 +343,12 @@ async function buildTargetInfo(
   team: Team,
   getTeammateChar?: (key: CharacterKey) => ICachedCharacter | undefined,
   shouldCancel?: () => boolean
-): Promise<TargetFormulaInfo | null> {
+): Promise<TargetAnalysis | null> {
   const frame = getTeamFrame0(team)
   if (!frame.tag) return null
 
   const formulaTag = targetTag(frame.tag)
+  const targetInput = buildTargetInput(frame, formulaTag, team)
 
   const discEntries = Object.entries(selectedBuild.discIds).map(
     ([slot, id]) => {
@@ -388,6 +403,7 @@ async function buildTargetInfo(
   const actionRows: Array<{
     name: string
     tag: Tag
+    damageTypes: string[]
     value: number
     calcResult: CalcResult<number, CalcMeta<Tag, string>>
     buffedStats: BuildCombatStats | null
@@ -440,6 +456,7 @@ async function buildTargetInfo(
       actionRows.push({
         name: `${comboFrame.tag.sheet}.${comboFrame.tag.name}`,
         tag: actionTag,
+        damageTypes: tagDamageTypes(actionTag),
         value: actionResult.val * comboFrame.multiplier,
         calcResult: actionResult,
         buffedStats: readBuffedStats(comboFrame.tag.name, preset),
@@ -462,6 +479,7 @@ async function buildTargetInfo(
             ? `${frame.tag.q} (${frame.tag.qt})`
             : 'Target',
       tag: formulaTag,
+      damageTypes: tagDamageTypes(formulaTag),
       value,
       calcResult,
       buffedStats: readBuffedStats(actionName),
@@ -469,34 +487,205 @@ async function buildTargetInfo(
     })
   }
 
-  // Per-source attribution, computed once for all actions: one calculator
-  // rebuild per source group, evaluated against every action's exact target
-  // read (preset-scoped). Gated behind this panel (not the solver loop), and
-  // chunked/cancellable because `#groups + 1` full calculator builds is
-  // seconds of synchronous work that must not sit in a render pass.
+  // Per-source damage attribution, computed once for the actions: one
+  // calculator rebuild per source group, evaluated against every action's
+  // exact target read (preset-scoped). Gated behind this panel (not the
+  // solver loop), and chunked/cancellable because `#groups + 1` full
+  // calculator builds is seconds of synchronous work that must not sit in a
+  // render pass.
+  // The main character's sheet is *not* passed as `mainKey` here, so it becomes
+  // a source group like any other: it is where a kit's own gated buffs live,
+  // and excluding it made every one of them unattributable. Removing that
+  // group only drops her conditionals — the target formula and base stats are
+  // written against `sheet: agg`/`iso`, so the target still computes.
   const sourcesByAction = await explainContributionsAsync(
     entries,
-    character.key,
+    undefined,
     actionRows.map((r) => [r.target]),
     (e) => zzzCalculatorWithEntries(e),
     { shouldCancel }
   )
   if (!sourcesByAction) return null
+
   const perActionDamage: PerActionDamage[] = actionRows.map((row, i) => ({
     name: row.name,
     tag: row.tag,
+    damageTypes: row.damageTypes,
     value: row.value,
     calcResult: row.calcResult,
     buffedStats: row.buffedStats,
     sources: sourcesByAction[i] ?? [],
   }))
 
+  // Recompute through the same per-preset + multiplier summation that
+  // `computeBuildStats` uses, so the upgrade deltas line up with the row
+  // values above instead of drifting on a different read path.
+  const targetValue = computeBuildStats(
+    effectiveCharacter,
+    discs,
+    team,
+    targetInput,
+    getTeammateChar,
+    getDisc
+  ).targetValue
+  const baseValue =
+    targetValue ?? perActionDamage.reduce((sum, row) => sum + row.value, 0)
+
+  const statUpgrades = await computeStatUpgrades({
+    discs,
+    character: effectiveCharacter,
+    team,
+    getTeammateChar,
+    getDisc,
+    targetInput,
+    metric: metricFromTag(formulaTag),
+    baseValue,
+    shouldCancel,
+  })
+  if (!statUpgrades) return null
+
   return {
-    frame,
-    formulaTag,
-    perActionDamage,
-    buffedStats,
+    targetInfo: {
+      frame,
+      formulaTag,
+      perActionDamage,
+      buffedStats,
+    },
+    targetValue: baseValue,
+    statUpgrades,
   }
+}
+
+/**
+ * The optimization target as `computeBuildStats` expects it: a combo
+ * becomes one entry per hit bound to `preset${i}` with its multiplier, a
+ * single target stays a plain tag read on `preset0`.
+ */
+function buildTargetInput(
+  frame: OptFrame,
+  formulaTag: Tag,
+  team: Team
+): BuildTargetInput {
+  if (isComboTarget(frame.tag)) {
+    const rows: { tag: Tag; multiplier: number }[] = []
+    for (const comboFrame of getComboFrames(team)) {
+      if (!comboFrame.tag?.sheet || !comboFrame.tag?.name) continue
+      rows.push({
+        tag: targetTag({
+          sheet: comboFrame.tag.sheet,
+          name: comboFrame.tag.name,
+        }),
+        multiplier: comboFrame.multiplier,
+      })
+    }
+    if (rows.length > 0) return rows
+  }
+  return formulaTag
+}
+
+/** Damage-target `q`s a formula tag can carry, per `isDmg` in formula-ui. */
+const DAMAGE_QS = new Set([
+  'standardDmg',
+  'anomalyDmg',
+  'sheerDmg',
+  'sharpDmg',
+  'maimDmg',
+])
+
+function metricFromTag(tag: Tag): StatUpgradeGroup['metric'] {
+  const q = tag['q'] ?? ''
+  if (DAMAGE_QS.has(q)) return 'dmg'
+  if (q === 'daze' || q === 'daze_') return 'daze'
+  if (q.includes('buildup')) return 'buildup'
+  return 'dmg'
+}
+
+/**
+ * Copy the disc set with one extra substat roll of `key` appended to the
+ * first equipped disc. `discsToTagMapNodeEntries` sums substats by key, so
+ * where the roll lands does not matter — only that it exists once.
+ */
+function withSubstatRoll(
+  discs: Record<DiscSlotKey, ICachedDisc | undefined>,
+  key: DiscSubStatKey
+): Record<DiscSlotKey, ICachedDisc | undefined> {
+  const next: Record<DiscSlotKey, ICachedDisc | undefined> = { ...discs }
+  for (const slot of allDiscSlotKeys) {
+    const disc = next[slot]
+    if (!disc) continue
+    next[slot] = {
+      ...disc,
+      substats: [...disc.substats, { key, upgrades: 1 } as ISubstat],
+    }
+    break
+  }
+  return next
+}
+
+/**
+ * Simulate one extra substat roll per possible substat and report each
+ * roll's delta on the optimization target. One full calculator build per
+ * substat, so the loop yields between them and abandons the run on cancel.
+ */
+async function computeStatUpgrades(params: {
+  discs: Record<DiscSlotKey, ICachedDisc | undefined>
+  character: ICachedCharacter
+  team: Team
+  getTeammateChar?: (key: CharacterKey) => ICachedCharacter | undefined
+  getDisc: (id: string) => ICachedDisc | undefined
+  targetInput: BuildTargetInput
+  metric: StatUpgradeGroup['metric']
+  baseValue: number
+  shouldCancel?: () => boolean
+}): Promise<StatUpgradeGroup[] | null> {
+  const {
+    discs,
+    character,
+    team,
+    getTeammateChar,
+    getDisc,
+    targetInput,
+    metric,
+    baseValue,
+    shouldCancel,
+  } = params
+  if (!(baseValue > 0)) return []
+
+  const upgrades: StatUpgradeItem[] = []
+  for (const key of allDiscSubStatKeys) {
+    await yieldToMain()
+    if (shouldCancel?.()) return null
+    let upgraded: number | undefined
+    try {
+      upgraded = computeBuildStats(
+        character,
+        withSubstatRoll(discs, key),
+        team,
+        targetInput,
+        getTeammateChar,
+        getDisc
+      ).targetValue
+    } catch {
+      continue
+    }
+    if (upgraded === undefined) continue
+    const value = upgraded - baseValue
+    // Sub-rounding noise isn't a meaningful upgrade.
+    if (!(value > 1)) continue
+    upgrades.push({
+      key,
+      label: statKeyTextMap[key] ?? key,
+      value,
+      percent: value / baseValue,
+    })
+  }
+  upgrades.sort((a, b) => b.value - a.value)
+  return upgrades.length > 0 ? [{ metric, upgrades }] : []
+}
+
+/** Yield to the browser so a long analysis pass never blocks a paint. */
+function yieldToMain(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0))
 }
 
 function buildSubstatRolls(
@@ -538,73 +727,46 @@ function buildSubstatRolls(
     .sort((a, b) => b.totalRolls - a.totalRolls)
 }
 
-export function buildStatContributions(
-  stats: BuildCombatStats
-): StatContribution[] {
-  return [
-    {
-      name: 'ATK',
-      key: 'atk',
-      value: stats.atk,
-      color: '#4dabf7',
-      maxRef: stats.atk,
-    },
-    {
-      name: 'DMG%',
-      key: 'dmgBonus',
-      value: stats.dmgBonus * 100,
-      color: '#fcc419',
-      maxRef: 100,
-    },
-    {
-      name: 'CRIT Rate',
-      key: 'critRate',
-      value: stats.critRate * 100,
-      color: '#ff6b6b',
-      maxRef: 100,
-    },
-    {
-      name: 'CRIT DMG',
-      key: 'critDmg',
-      value: stats.critDmg * 100,
-      color: '#38d9a9',
-      maxRef: 200,
-    },
-    {
-      name: 'PEN Ratio',
-      key: 'penRatio',
-      value: stats.penRatio * 100,
-      color: '#da77f2',
-      maxRef: 100,
-    },
-    {
-      name: 'Impact',
-      key: 'impact',
-      value: stats.impact,
-      color: '#ff922b',
-      maxRef: stats.impact,
-    },
-  ]
-}
-
 const STAT_COMPARE_CONFIG: Array<{
   key: keyof BuildCombatStats
   label: string
+  iconKey: string
   isPercent: boolean
 }> = [
-  { key: 'atk', label: 'ATK', isPercent: false },
-  { key: 'hp', label: 'HP', isPercent: false },
-  { key: 'def', label: 'DEF', isPercent: false },
-  { key: 'impact', label: 'Impact', isPercent: false },
-  { key: 'critRate', label: 'CRIT Rate', isPercent: true },
-  { key: 'critDmg', label: 'CRIT DMG', isPercent: true },
-  { key: 'penRatio', label: 'PEN Ratio', isPercent: true },
-  { key: 'pen', label: 'PEN', isPercent: false },
-  { key: 'dmgBonus', label: 'DMG Bonus', isPercent: true },
-  { key: 'enerRegen', label: 'Energy Regen', isPercent: false },
-  { key: 'anomProf', label: 'Anomaly Prof.', isPercent: false },
-  { key: 'anomMas', label: 'Anomaly Mastery', isPercent: false },
-  { key: 'defIgn', label: 'DEF Ignore', isPercent: true },
+  { key: 'atk', label: 'ATK', iconKey: 'atk', isPercent: false },
+  { key: 'hp', label: 'HP', iconKey: 'hp', isPercent: false },
+  { key: 'def', label: 'DEF', iconKey: 'def', isPercent: false },
+  { key: 'impact', label: 'Impact', iconKey: 'impact', isPercent: false },
+  { key: 'critRate', label: 'CRIT Rate', iconKey: 'crit_', isPercent: true },
+  { key: 'critDmg', label: 'CRIT DMG', iconKey: 'crit_dmg_', isPercent: true },
+  { key: 'penRatio', label: 'PEN Ratio', iconKey: 'pen_', isPercent: true },
+  { key: 'pen', label: 'PEN', iconKey: 'pen', isPercent: false },
+  { key: 'dmgBonus', label: 'DMG Bonus', iconKey: 'dmg_', isPercent: true },
+  {
+    key: 'enerRegen',
+    label: 'Energy Regen',
+    iconKey: 'enerRegen',
+    isPercent: false,
+  },
+  {
+    key: 'anomProf',
+    label: 'Anomaly Prof.',
+    iconKey: 'anomProf',
+    isPercent: false,
+  },
+  {
+    key: 'anomMas',
+    label: 'Anomaly Mastery',
+    iconKey: 'anomMas',
+    isPercent: false,
+  },
+  {
+    key: 'sheerForce',
+    label: 'Sheer Force',
+    iconKey: 'sheerForce',
+    isPercent: false,
+  },
+  { key: 'defIgn', label: 'DEF Ignore', iconKey: 'defIgn_', isPercent: true },
 ]
 
 export function buildStatComparisons(
@@ -612,11 +774,12 @@ export function buildStatComparisons(
   selected: BuildCombatStats | null
 ): StatComparisonEntry[] {
   if (!equipped || !selected) return []
-  return STAT_COMPARE_CONFIG.map(({ key, label, isPercent }) => {
+  return STAT_COMPARE_CONFIG.map(({ key, label, iconKey, isPercent }) => {
     const unit = isPercent ? '%' : ''
     return {
       key,
       label,
+      iconKey,
       current: equipped[key],
       improved: selected[key],
       unit,

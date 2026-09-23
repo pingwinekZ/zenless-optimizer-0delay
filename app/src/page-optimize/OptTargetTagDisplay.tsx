@@ -1,18 +1,21 @@
-import { ColorText, SqBadge } from '@zenless-optimizer/common/ui'
+import { ColorText, TagPill } from '@zenless-optimizer/common/ui'
 import type { DamageType, Tag } from '@zenless-optimizer/zzz/formula'
 import {
+  damageTypeColor,
   damageTypeKeysMap,
-  FullTagDisplay,
   getDmgType,
   getVariant,
+  TagDisplay,
 } from '@zenless-optimizer/zzz/formula-ui'
 import { i18n } from '@zenless-optimizer/zzz/i18n'
 import { AttributeName } from '@zenless-optimizer/zzz/ui'
 
 // Page-optimize-only display: strip the redundant leading skill-type prefix
 // ("Special Attack: ...", "EXSpecial Attack ...", "Basic Attack ...") since
-// the DMG-type SqBadge already shows it (e.g. "Special"). Falls back to
-// FullTagDisplay for non-skill-formula tags so stat targets keep their icons.
+// the DMG-type tag pill already shows it (e.g. "Special"). Falls back to the
+// plain `TagDisplay` for non-skill-formula tags so stat targets keep their
+// icons. Passing `onDamageTypeClick` turns the damage-type pills into filter
+// toggles, matching hsr-optimizer's buff-summary tags.
 
 const skillPrefixRe =
   /^(E\s*X\s*Special Attack|Special Attack|Basic Attack|Chain Attack|Ultimate|Dodge Counter|Dash Attack|Quick Assist|Defensive Assist|Evasive Assist|Assist Follow[-\s]?Up|Counter Assist)\s*:?\s*/i
@@ -105,27 +108,61 @@ export function skillBadges(tag: Tag): DamageType[] {
   )
 }
 
-export function OptTargetTagDisplay({ tag }: { tag: Tag }) {
+export function OptTargetTagDisplay({
+  tag,
+  activeDamageType,
+  onDamageTypeClick,
+  withBadges = true,
+}: {
+  tag: Tag
+  /** Selected damage-type filter, marking pills `active` / `dimmed`. */
+  activeDamageType?: string | null
+  /** Makes each damage-type pill a filter toggle. */
+  onDamageTypeClick?: (damageType: DamageType) => void
+  /** Hide the damage-type / attribute pills, showing the name alone. */
+  withBadges?: boolean
+}) {
   const parsed = parseSkillVariant(tag)
   const badges = skillBadges(tag)
-  if (!parsed || badges.length === 0) return <FullTagDisplay tag={tag} />
-  const base = skillVariantBase(tag)
-  if (!base) return <FullTagDisplay tag={tag} />
+  const base = parsed && badges.length > 0 ? skillVariantBase(tag) : undefined
+
   return (
-    <>
-      <ColorText color={getVariant(tag)}>
-        <span>
-          {base} {variantTypeLabel(parsed.kind)}
-        </span>
-      </ColorText>
-      {badges.map((dmgType) => (
-        <SqBadge key={dmgType}>{damageTypeKeysMap[dmgType]}</SqBadge>
-      ))}
-      {tag.attribute && (
-        <SqBadge color={tag.attribute}>
-          {<AttributeName attribute={tag.attribute} />}
-        </SqBadge>
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 4,
+        flexWrap: 'wrap',
+      }}
+    >
+      {base && parsed ? (
+        <ColorText color={getVariant(tag)}>
+          <span>
+            {base} {variantTypeLabel(parsed.kind)}
+          </span>
+        </ColorText>
+      ) : (
+        <TagDisplay tag={tag} />
       )}
-    </>
+      {withBadges &&
+        badges.map((dmgType) => (
+          <TagPill
+            key={dmgType}
+            color={damageTypeColor(dmgType)}
+            active={activeDamageType === dmgType}
+            dimmed={!!activeDamageType && activeDamageType !== dmgType}
+            onClick={
+              onDamageTypeClick ? () => onDamageTypeClick(dmgType) : undefined
+            }
+          >
+            {damageTypeKeysMap[dmgType]}
+          </TagPill>
+        ))}
+      {withBadges && tag.attribute && (
+        <TagPill color={tag.attribute}>
+          {<AttributeName attribute={tag.attribute} />}
+        </TagPill>
+      )}
+    </span>
   )
 }

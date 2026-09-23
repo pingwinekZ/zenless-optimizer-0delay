@@ -22,7 +22,8 @@
   "FormRowLabels": {
     "Character options": "Character options",
     "Relic & stat filters": "Disc & stat filters",
-    "Character custom stats simulation": "Character custom stats simulation"
+    "Character custom stats simulation": "Character custom stats simulation",
+    "Analysis": "Optimization Results Analysis"
   },
   "TeammateRow": {
     "Header": "Teammates"
@@ -139,6 +140,64 @@
     "mobileBottomBar": "Quick actions bar",
     "closePanel": "Close panel",
     "toggleSection": "Toggle section"
+  },
+  "analysis": {
+    "computing": "Computing analysis...",
+    "metrics": {
+      "dmg": "DMG",
+      "daze": "Daze",
+      "buildup": "Buildup"
+    },
+    "statsDiff": {
+      "title": "Equipped → Selected",
+      "target": "Target",
+      "empty": "Select a build to compare stats."
+    },
+    "damageSplits": {
+      "title": "Combo Breakdown"
+    },
+    "damageTag": {
+      "title": "Damage Distribution"
+    },
+    "substatUpgrades": {
+      "title": "Substat Upgrades",
+      "hint": "Gain from one additional roll of each substat on the selected build.",
+      "substat": "Substat",
+      "percent": "Gain %",
+      "value": "Gain"
+    },
+    "teammateUpgrades": {
+      "title": "Teammate Upgrades",
+      "hint": "Each teammate’s buff contribution to the selected build.",
+      "teammate": "Teammate",
+      "percent": "Gain %",
+      "value": "Gain"
+    },
+    "buffs": {
+      "title": "Buff Sources",
+      "hint": "Attributable buffs on each action of the target.",
+      "summary": "Stat Summary",
+      "hits": "Actions",
+      "enemy": "Enemy Configuration",
+      "enemyLabel": "Enemy",
+      "enemyLevel": "Level",
+      "enemyDefense": "DEF",
+      "enemyStun": "Stun DMG",
+      "custom": "Custom buffs",
+      "enemyDebuffs": "Enemy Debuffs",
+      "allDamageTypes": "All",
+      "filterByDamageType": "Filter by this damage type",
+      "filterClear": "Show every damage type",
+      "sources": {
+        "sets": "Disc set",
+        "wengine": "W-Engine",
+        "teammate": "Teammate",
+        "primary": "Character",
+        "custom": "Custom",
+        "enemy": "Enemy",
+        "other": "Other"
+      }
+    }
   },
   "simulation": {
     "title": "Stat Simulation",
