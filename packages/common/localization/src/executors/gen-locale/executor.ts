@@ -6,7 +6,7 @@ type ProjNames = 'common' | 'zzz'
 export const projRootPath = (cat: ProjNames) =>
   cat === 'common'
     ? `${process.env['NX_WORKSPACE_ROOT']}/packages/${cat}/localization/`
-    : `${process.env['NX_WORKSPACE_ROOT']}/app/src/localization/`
+    : `${process.env['NX_WORKSPACE_ROOT']}/packages/zzz/localization/src/`
 
 export default async function runExecutor(_options: GenLocaleExecutorSchema) {
   const transDirPath = `${projRootPath('common')}Translated/`
