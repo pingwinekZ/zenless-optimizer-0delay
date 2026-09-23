@@ -19,6 +19,8 @@ export function OptimizerOptionsSection({
   setShowWenginePassives,
   useTheoreticalMax,
   setUseTheoreticalMax,
+  usePotentialBest,
+  setUsePotentialBest,
 }: {
   disabled?: boolean
   showCharPassives: boolean
@@ -27,6 +29,8 @@ export function OptimizerOptionsSection({
   setShowWenginePassives: (v: boolean) => void
   useTheoreticalMax: boolean
   setUseTheoreticalMax: (v: boolean) => void
+  usePotentialBest: boolean
+  setUsePotentialBest: (v: boolean) => void
 }) {
   const { optConfigId, optConfig } = useContext(OptConfigContext)
   const { database } = useDatabaseContext()
@@ -82,7 +86,7 @@ export function OptimizerOptionsSection({
         <Switch
           checked={useTheoreticalMax}
           onChange={(e) => setUseTheoreticalMax(e.currentTarget.checked)}
-          disabled={disabled}
+          disabled={disabled || usePotentialBest}
           size="xs"
         />
         <Text size="xs">Theoretical Max Discs</Text>
@@ -131,6 +135,24 @@ export function OptimizerOptionsSection({
             <Text size="xs">Skip dominated distributions</Text>
           </Flex>
         </>
+      )}
+
+      <Flex align="center" gap={5}>
+        <Switch
+          checked={usePotentialBest}
+          onChange={(e) => setUsePotentialBest(e.currentTarget.checked)}
+          disabled={disabled || useTheoreticalMax}
+          size="xs"
+        />
+        <Text size="xs">Potentially Best Discs</Text>
+      </Flex>
+
+      {usePotentialBest && (
+        <Text size="xs" c="orange" style={{ lineHeight: 1.3 }}>
+          Each disc is evaluated as if leveled to max with its remaining rolls
+          in this character's best substats. Results are optimistic — upgrade
+          your discs to reach them.
+        </Text>
       )}
 
       <Flex align="center" gap={5}>

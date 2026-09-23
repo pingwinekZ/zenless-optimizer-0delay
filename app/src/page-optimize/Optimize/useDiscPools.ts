@@ -1,8 +1,21 @@
 import { useDataManagerValues } from '@zenless-optimizer/common/database-ui'
 import { buildCount } from '@zenless-optimizer/game-opt/solver'
-import type { CharacterKey, WengineKey } from '@zenless-optimizer/zzz/consts'
-import type { OptConfig, ZzzDatabase } from '@zenless-optimizer/zzz/db'
+import type {
+  CharacterKey,
+  DiscSlotKey,
+  WengineKey,
+} from '@zenless-optimizer/zzz/consts'
+import type {
+  ICachedDisc,
+  OptConfig,
+  ZzzDatabase,
+} from '@zenless-optimizer/zzz/db'
 import { useEffect, useMemo } from 'react'
+import { boostDiscToPotential } from '../../page-discs/scoring/potentialDiscs'
+import {
+  getMergedEffectiveStats,
+  getMergedSubstatWeights,
+} from '../../page-discs/scoring/statWeightUtils'
 import {
   buildPermutationDetails,
   filterDiscsBySets,
@@ -17,6 +30,9 @@ export type DiscPoolInputs = {
   /** The character's equipped wengine (used by equipped-only search mode). */
   equippedWengineKey: WengineKey | '' | undefined
   optConfig: OptConfig
+  /** When true, discs are evaluated at max potential (max level + remaining
+   * rolls into the character's best substats), keeping original IDs. */
+  usePotentialBest: boolean
   setPermutationDetails: (
     details: ReturnType<typeof buildPermutationDetails>
   ) => void
@@ -35,6 +51,7 @@ export function useDiscPools(inputs: DiscPoolInputs) {
     characterKey,
     equippedWengineKey,
     optConfig,
+    usePotentialBest,
     setPermutationDetails,
     setPermutations,
   } = inputs
@@ -76,6 +93,34 @@ export function useDiscPools(inputs: DiscPoolInputs) {
     ]
   )
 
+  // Potentially-best view: same pools, but each disc is boosted to max
+  // potential for this character (max-level main stat + remaining rolls into
+  // the character's best substats). IDs are preserved so solver results still
+  // reference the real discs. Filtering above uses real levels.
+  const { boostedDiscsBySlot, potentialDiscMap } = useMemo(() => {
+    const empty = {
+      boostedDiscsBySlot: discsBySlot,
+      potentialDiscMap: {} as Record<string, ICachedDisc>,
+    }
+    if (!usePotentialBest) return empty
+    const effectiveStats = getMergedEffectiveStats(characterKey, database)
+    const weights = getMergedSubstatWeights(characterKey, database)
+    const map: Record<string, ICachedDisc> = {}
+    const boosted = Object.fromEntries(
+      (Object.entries(discsBySlot) as [DiscSlotKey, ICachedDisc[]][]).map(
+        ([slot, slotDiscs]) => [
+          slot,
+          slotDiscs.map((d) => {
+            const b = boostDiscToPotential(d, effectiveStats, weights)
+            if (b !== d) map[d.id] = b
+            return b
+          }),
+        ]
+      )
+    ) as Record<DiscSlotKey, ICachedDisc[]>
+    return { boostedDiscsBySlot: boosted, potentialDiscMap: map }
+  }, [discsBySlot, usePotentialBest, characterKey, database])
+
   const filteredWengineKeys = useMemo(
     () =>
       filterWengineKeys(allWengineData, {
@@ -97,19 +142,21 @@ export function useDiscPools(inputs: DiscPoolInputs) {
   const filteredDiscsBySlot = useMemo(
     () =>
       filterDiscsBySets(
-        discsBySlot,
+        boostedDiscsBySlot,
         optConfig.setFilter2,
         optConfig.setFilter4
       ),
-    [discsBySlot, optConfig.setFilter2, optConfig.setFilter4]
+    [boostedDiscsBySlot, optConfig.setFilter2, optConfig.setFilter4]
   )
 
   // Total permutations (unfiltered, used for progress calculation only).
   // The solver searches the full disc space; progress tracks actual builds
   // searched against this total, NOT against the filtered count.
   const totalPermutations = useMemo(
-    () => buildCount(Object.values(discsBySlot)) * filteredWengineKeys.length,
-    [filteredWengineKeys.length, discsBySlot]
+    () =>
+      buildCount(Object.values(boostedDiscsBySlot)) *
+      filteredWengineKeys.length,
+    [filteredWengineKeys.length, boostedDiscsBySlot]
   )
 
   // Filtered permutation count (displayed in sidebar — reflects set filters).
@@ -137,5 +184,10 @@ export function useDiscPools(inputs: DiscPoolInputs) {
     setPermutations,
   ])
 
-  return { discsBySlot, filteredWengineKeys, totalPermutations }
+  return {
+    discsBySlot: boostedDiscsBySlot,
+    filteredWengineKeys,
+    totalPermutations,
+    potentialDiscMap,
+  }
 }

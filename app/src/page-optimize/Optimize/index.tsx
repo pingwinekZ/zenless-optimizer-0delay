@@ -111,7 +111,19 @@ function OptimizeWrapper() {
   )
 
   // Theoretical max mode toggle (local state to avoid OptConfig re-render cascade)
-  const [useTheoreticalMax, setUseTheoreticalMax] = useState(false)
+  const [useTheoreticalMax, setUseTheoreticalMaxState] = useState(false)
+  // Potentially-best mode toggle (same session-local treatment). The two
+  // modes are mutually exclusive: theoretical ignores real discs entirely,
+  // while potentially-best boosts real discs to their max potential.
+  const [usePotentialBest, setUsePotentialBestState] = useState(false)
+  const setUseTheoreticalMax = (v: boolean) => {
+    setUseTheoreticalMaxState(v)
+    if (v) setUsePotentialBestState(false)
+  }
+  const setUsePotentialBest = (v: boolean) => {
+    setUsePotentialBestState(v)
+    if (v) setUseTheoreticalMaxState(false)
+  }
 
   // Theoretical max disc cache — maps fake disc IDs to ICachedDisc for stat computation
   // Uses a ref for synchronous access (avoids race with batchComputeBuildStats)
@@ -129,11 +141,17 @@ function OptimizeWrapper() {
 
   // Search space: disc pools per slot, wengine keys to sweep, and the
   // permutation counts the sidebar reports.
-  const { discsBySlot, filteredWengineKeys, totalPermutations } = useDiscPools({
+  const {
+    discsBySlot,
+    filteredWengineKeys,
+    totalPermutations,
+    potentialDiscMap,
+  } = useDiscPools({
     database,
     characterKey,
     equippedWengineKey: character.wengineKey,
     optConfig,
+    usePotentialBest,
     setPermutationDetails,
     setPermutations,
   })
@@ -308,6 +326,8 @@ function OptimizeWrapper() {
     theoreticalDiscMap,
     theoreticalDiscMapRef,
     enrichedValuesRef,
+    usePotentialBest,
+    potentialDiscMap,
   })
 
   const { t } = useTranslation('page_optimize')
@@ -351,6 +371,8 @@ function OptimizeWrapper() {
             onWengineChange={onWengineChange}
             useTheoreticalMax={useTheoreticalMax}
             setUseTheoreticalMax={setUseTheoreticalMax}
+            usePotentialBest={usePotentialBest}
+            setUsePotentialBest={setUsePotentialBest}
           />
 
           {/* Results Grid — kept mounted while stats recompute (overlay

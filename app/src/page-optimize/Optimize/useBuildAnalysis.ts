@@ -40,6 +40,10 @@ export type BuildAnalysisInputs = {
   /** Reactive form of the theoretical disc cache (drives recomputation). */
   theoreticalDiscMap: Record<string, ICachedDisc>
   theoreticalDiscMapRef: { current: Record<string, ICachedDisc> }
+  /** Boosted disc versions for "Potentially Best Discs" mode, keyed by real
+   * disc ID. Only consulted when `usePotentialBest` is true. */
+  usePotentialBest: boolean
+  potentialDiscMap: Record<string, ICachedDisc>
   /** Display-canonical build values, refreshed whenever stats are recomputed. */
   enrichedValuesRef: { current: Map<string, number> }
 }
@@ -65,6 +69,8 @@ export function useBuildAnalysis(inputs: BuildAnalysisInputs) {
     setFilter4,
     theoreticalDiscMap,
     theoreticalDiscMapRef,
+    usePotentialBest,
+    potentialDiscMap,
     enrichedValuesRef,
   } = inputs
 
@@ -97,7 +103,10 @@ export function useBuildAnalysis(inputs: BuildAnalysisInputs) {
     setIsComputingStats(true)
 
     const getDisc = (id: string) =>
-      theoreticalDiscMapRef.current[id] ?? database.discs.get(id) ?? undefined
+      theoreticalDiscMapRef.current[id] ??
+      (usePotentialBest ? potentialDiscMap[id] : undefined) ??
+      database.discs.get(id) ??
+      undefined
 
     batchComputeBuildStats(
       builds,
@@ -129,6 +138,8 @@ export function useBuildAnalysis(inputs: BuildAnalysisInputs) {
     database,
     theoreticalDiscMap,
     theoreticalDiscMapRef,
+    usePotentialBest,
+    potentialDiscMap,
   ])
 
   // Analysis data for the ExpandedDataPanel.
@@ -151,7 +162,10 @@ export function useBuildAnalysis(inputs: BuildAnalysisInputs) {
     setIsComputingAnalysis(true)
     const handle = setTimeout(() => {
       const getDisc = (id: string) =>
-        theoreticalDiscMapRef.current[id] ?? database.discs.get(id) ?? undefined
+        theoreticalDiscMapRef.current[id] ??
+        (usePotentialBest ? potentialDiscMap[id] : undefined) ??
+        database.discs.get(id) ??
+        undefined
       const equippedBuildId = buildRowId(equippedBuild)
       // Pinned perfect reference (absent = feature invisible). Staleness
       // compares the pin-time target/filter snapshot with the current one.
@@ -215,6 +229,8 @@ export function useBuildAnalysis(inputs: BuildAnalysisInputs) {
     setFilter2,
     setFilter4,
     characterKey,
+    usePotentialBest,
+    potentialDiscMap,
   ])
 
   return { enrichedBuilds, isComputingStats, analysisData, isComputingAnalysis }

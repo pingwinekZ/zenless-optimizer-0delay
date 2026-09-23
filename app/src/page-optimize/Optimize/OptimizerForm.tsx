@@ -50,6 +50,8 @@ export function OptimizerForm({
   onWengineChange,
   useTheoreticalMax,
   setUseTheoreticalMax,
+  usePotentialBest,
+  setUsePotentialBest,
 }: {
   characterKey: CharacterKey
   character: ICachedCharacter
@@ -61,6 +63,8 @@ export function OptimizerForm({
   onWengineChange: (wengineKey: WengineKey | '') => void
   useTheoreticalMax: boolean
   setUseTheoreticalMax: (v: boolean) => void
+  usePotentialBest: boolean
+  setUsePotentialBest: (v: boolean) => void
 }) {
   const [activeDrawer, setActiveDrawer] = useState<string | null>(null)
   const showCharPassives = useShowPassivesStore((s) => s.showCharPassives)
@@ -136,6 +140,8 @@ export function OptimizerForm({
             setShowWenginePassives={setShowWenginePassives}
             useTheoreticalMax={useTheoreticalMax}
             setUseTheoreticalMax={setUseTheoreticalMax}
+            usePotentialBest={usePotentialBest}
+            setUsePotentialBest={setUsePotentialBest}
           />
         </FormCard>
       </FormRow>
