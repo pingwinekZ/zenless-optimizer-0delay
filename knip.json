@@ -1,4 +1,30 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "tags": ["-lintignore"]
+  "tags": ["-lintignore"],
+  "workspaces": {
+    ".": {
+      "entry": ["tools/scripts/*.mjs", "tools/live_import_test.ts"],
+      "project": ["tools/**/*.{ts,mts,cts,mjs}"]
+    },
+    "app": {
+      "entry": [
+        "src/main.tsx",
+        "src/webgpu-harness.ts",
+        "tests/**/*.ts",
+        "src/**/*.spec.{ts,tsx}",
+        "src/**/*.test.{ts,tsx}"
+      ],
+      "project": ["src/**/*.{ts,tsx}", "tests/**/*.ts"]
+    },
+    "packages/*": {
+      "entry": [
+        "src/index.{ts,tsx}",
+        "src/executors/**/executor.ts",
+        "src/generators/**/*.ts",
+        "src/**/*.spec.{ts,tsx}",
+        "src/**/*.test.{ts,tsx}"
+      ],
+      "project": ["src/**/*.{ts,tsx}"]
+    }
+  }
 }

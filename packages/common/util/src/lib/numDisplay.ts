@@ -32,8 +32,14 @@ export function valueString(
  */
 export function truncateToFixed(value: number, fixed = 0): string {
   const factor = 10 ** fixed
+  const scaled = value * factor
+  // Binary floating point stores some decimals slightly below their intended
+  // value (e.g. `0.596 * 100 === 59.599999999999994`), which would truncate to
+  // `0.59` and lose 0.01. Nudge by a magnitude-relative epsilon so only
+  // representation noise is absorbed; genuine values stay untouched.
+  const epsilon = Math.abs(scaled) * 1e-12
   const truncated =
-    value < 0 ? Math.ceil(value * factor) : Math.floor(value * factor)
+    value < 0 ? Math.ceil(scaled - epsilon) : Math.floor(scaled + epsilon)
   return (truncated / factor).toFixed(fixed)
 }
 export function isPercentStat<Key extends string>(key: Key): boolean {

@@ -1,5 +1,9 @@
-import type { CharacterKey, MilestoneKey, WengineKey } from '../../consts'
-import { isWengineKey } from '../../consts'
+import type {
+  CharacterKey,
+  MilestoneKey,
+  WengineKey,
+} from '@zenless-optimizer/zzz/consts'
+import { isWengineKey } from '@zenless-optimizer/zzz/consts'
 import type {
   DiscIds,
   GeneratedBuild,
@@ -7,14 +11,14 @@ import type {
   OptConfig,
   Team,
   TeammateDatum,
-} from '../../db'
-import type { BuildPreviewOverride } from '../../page-characters/CharacterPreview'
+} from '@zenless-optimizer/zzz/db'
 import {
   BuildSource,
   type SavedBuild,
   type SavedBuildTeamSnapshot,
   type SavedTeammateGear,
-} from '../../zood'
+} from '@zenless-optimizer/zzz/zood'
+import type { BuildPreviewOverride } from '../../page-characters/CharacterPreview'
 
 export type EquippedSelection = {
   discIds: DiscIds

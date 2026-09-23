@@ -1,12 +1,12 @@
 import { getUnitStr } from '@zenless-optimizer/common/util'
+import { allDiscSubStatKeys } from '@zenless-optimizer/zzz/consts'
+import { Gradient } from '@zenless-optimizer/zzz/rendering/gradient'
 import type {
   ColDef,
   ValueFormatterParams,
   ValueGetterParams,
 } from 'ag-grid-community'
 import type { TFunction } from 'i18next'
-import { allDiscSubStatKeys } from '../../consts'
-import { Gradient } from '../../rendering/gradient'
 import type { ScoredDisc } from '../scoring/types'
 import {
   DiscSetCellRenderer,

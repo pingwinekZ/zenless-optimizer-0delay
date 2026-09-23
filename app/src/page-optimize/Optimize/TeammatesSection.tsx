@@ -1,5 +1,5 @@
 import { Flex } from '@mantine/core'
-import { useCharacterContext, useTeam } from '../../db-ui'
+import { useCharacterContext, useTeam } from '@zenless-optimizer/zzz/db-ui'
 import { TeammateCard } from './TeammateCard'
 
 const TEAMMATE_SLOTS = [0, 1] as const

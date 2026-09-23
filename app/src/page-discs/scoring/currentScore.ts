@@ -1,6 +1,6 @@
-import type { DiscSubStatKey } from '../../consts'
-import { calculateDiscScore } from '../../util'
-import type { IDisc } from '../../zood'
+import type { DiscSubStatKey } from '@zenless-optimizer/zzz/consts'
+import { calculateDiscScore } from '@zenless-optimizer/zzz/util'
+import type { IDisc } from '@zenless-optimizer/zzz/zood'
 
 export function computeCurrentScore(
   disc: IDisc,

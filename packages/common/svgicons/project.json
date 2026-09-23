@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/common/svgicons/src",
   "projectType": "library",
-  "tags": [],
+  "tags": ["scope:shared", "layer:shared"],
   "// targets": "to see all targets run: nx show project common-svgicons --web",
   "targets": {}
 }

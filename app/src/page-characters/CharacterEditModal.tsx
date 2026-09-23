@@ -14,10 +14,7 @@ import {
 import { IconX } from '@tabler/icons-react'
 import { DropdownButton, ImgIcon } from '@zenless-optimizer/common/ui'
 import { range } from '@zenless-optimizer/common/util'
-import type { ReactNode } from 'react'
-import { Suspense, useEffect, useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { commonDefIcon, wengineAsset } from '../assets'
+import { commonDefIcon, wengineAsset } from '@zenless-optimizer/zzz/assets'
 import {
   allPhaseKeys,
   allSkillKeys,
@@ -27,15 +24,18 @@ import {
   type SkillKey,
   skillByLevel,
   type WengineKey,
-} from '../consts'
-import { useDatabaseContext } from '../db-ui'
-import { getCharStat } from '../stats'
+} from '@zenless-optimizer/zzz/consts'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import { getCharStat } from '@zenless-optimizer/zzz/stats'
 import {
   CharacterName,
   useCharacterTabStore,
   WengineName,
   WengineSelectionModal,
-} from '../ui'
+} from '@zenless-optimizer/zzz/ui'
+import type { ReactNode } from 'react'
+import { Suspense, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 type CharacterEditForm = {
   mindscape: number

@@ -1,0 +1,21 @@
+{
+  "name": "zzz-assets-data",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/zzz/assets-data/src",
+  "projectType": "library",
+  "tags": ["scope:zzz", "layer:domain"],
+  "targets": {
+    "gen-file": {
+      "executor": "@zenless-optimizer/zzz/assets-data:gen-assets-data",
+      "outputs": ["{projectRoot}/src/AssetsData_gen.json"],
+      "inputs": ["default"]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun test --timeout=60000",
+        "cwd": "packages/zzz/assets-data"
+      }
+    }
+  }
+}

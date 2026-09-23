@@ -1,12 +1,15 @@
 import { Box, Stack, Text } from '@mantine/core'
 import { ImgIcon } from '@zenless-optimizer/common/ui'
+import { discDefIcon } from '@zenless-optimizer/zzz/assets'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import {
+  rarityColor as discRarityColor,
+  themeColorVar,
+} from '@zenless-optimizer/zzz/consts'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import { DiscSetName } from '@zenless-optimizer/zzz/ui'
+import type { IDisc } from '@zenless-optimizer/zzz/zood'
 import { Trans, useTranslation } from 'react-i18next'
-import { discDefIcon } from '../../assets'
-import type { CharacterKey } from '../../consts'
-import { rarityColor as discRarityColor, themeColorVar } from '../../consts'
-import { useDatabaseContext } from '../../db-ui'
-import { DiscSetName } from '../../ui'
-import type { IDisc } from '../../zood'
 import {
   DiscMainStatValueDisplay,
   DiscSubstatRow,

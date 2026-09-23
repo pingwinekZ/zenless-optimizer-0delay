@@ -1,5 +1,4 @@
 export { OptimizerControlsSection } from './OptimizerControlsSection'
-export { OptimizerSidebar } from './OptimizerSidebar'
 export { PermutationDisplay } from './PermutationDisplay'
 export { PermutationsSection } from './PermutationsSection'
 export { ProgressDisplay } from './ProgressDisplay'

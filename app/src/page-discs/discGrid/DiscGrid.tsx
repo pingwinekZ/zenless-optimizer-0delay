@@ -1,4 +1,5 @@
 import { useDataManagerValues } from '@zenless-optimizer/common/database-ui'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
 import {
   AllCommunityModule,
   type GetRowIdParams,
@@ -11,7 +12,6 @@ import { AgGridReact, type AgGridReactProps } from 'ag-grid-react'
 import { useCallback, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useShallow } from 'zustand/react/shallow'
-import { useDatabaseContext } from '../../db-ui'
 import { doesDiscPassFilters } from '../scoring/discFilters'
 import { scoreDiscs } from '../scoring/scoreDiscs'
 import type { ScoredDisc } from '../scoring/types'

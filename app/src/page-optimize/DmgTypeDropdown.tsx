@@ -1,7 +1,7 @@
 import { Box, MenuItem } from '@mantine/core'
 import { DropdownButton } from '@zenless-optimizer/common/ui'
-import type { DamageType } from '../formula'
-import { damageTypeKeysMap } from '../formula-ui'
+import type { DamageType } from '@zenless-optimizer/zzz/formula'
+import { damageTypeKeysMap } from '@zenless-optimizer/zzz/formula-ui'
 
 export function DmgTypeDropdown<T extends DamageType>({
   dmgType,

@@ -1,16 +1,20 @@
 import { Box, CloseButton, Flex, TextInput } from '@mantine/core'
 import { ImgIcon } from '@zenless-optimizer/common/ui'
-import { type ChangeEvent, memo } from 'react'
-import { useTranslation } from 'react-i18next'
-import { rarityDefIcon, specialityDefIcon } from '../assets'
-import type { AttributeKey, CharacterRarityKey, SpecialityKey } from '../consts'
+import { rarityDefIcon, specialityDefIcon } from '@zenless-optimizer/zzz/assets'
+import type {
+  AttributeKey,
+  CharacterRarityKey,
+  SpecialityKey,
+} from '@zenless-optimizer/zzz/consts'
 import {
   allAttributeKeys,
   allCharacterRarityKeys,
   allSpecialityKeys,
-} from '../consts'
-import { ElementIcon } from '../svgicons'
-import { SegmentedFilterRow } from '../ui'
+} from '@zenless-optimizer/zzz/consts'
+import { ElementIcon } from '@zenless-optimizer/zzz/svgicons'
+import { SegmentedFilterRow } from '@zenless-optimizer/zzz/ui'
+import { type ChangeEvent, memo } from 'react'
+import { useTranslation } from 'react-i18next'
 
 // Memoized — filter arrays keep referential identity across unrelated
 // displayCharacter writes (e.g. drag-reorder commits), so with stable

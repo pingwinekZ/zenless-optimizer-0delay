@@ -1,0 +1,159 @@
+import {
+  allAttributeKeys,
+  allCharacterKeys,
+  allDiscSetKeys,
+  allFactionKeys,
+  allSpecialityKeys,
+  allWengineKeys,
+} from '@zenless-optimizer/zzz/consts'
+
+export const stats = [
+  'hp',
+  'hp_',
+  'atk',
+  'atk_',
+  'def',
+  'def_',
+  'impact',
+  'impact_',
+  'crit_',
+  'crit_dmg_',
+  'pen_',
+  'pen',
+  'enerRegen',
+  'enerRegen_',
+  'anomProf',
+  'anomProf_',
+  'anomMas',
+  'anomMas_',
+  'anomBuildup_',
+  'anom_crit_',
+  'anom_crit_dmg_',
+  'anom_base_',
+  'anom_mv_mult_',
+  'dmg_',
+  'common_dmg_',
+  'buff_',
+  'defIgn_',
+  'resIgn_',
+  'shield_',
+  'directDmg_',
+  'dazeInc_',
+  'dazeRed_',
+  'dmg_red_',
+  'sheerForce',
+  'sheer_dmg_',
+  'sharp_dmg_',
+  'laceration_dmg_',
+  'gashBuildup_',
+  'gashStacks_',
+  'flat_dmg',
+  'anom_flat_dmg',
+  'addl_disorder_',
+  'veilVulnerabilityCap_',
+  'refringeCoeff_',
+] as const
+
+export const flatAndPercentStats = [
+  'atk',
+  'def',
+  'hp',
+  'impact',
+  'anomProf',
+  'anomMas',
+  'enerRegen',
+] as const
+/**
+ * Stats whose base value the game turns into an integer before applying %
+ * bonuses (game parity). ATK floors per-source (character + wengine) and DEF
+ * floors its single source; HP keeps its fractional base. Energy Regen is
+ * exempt — it is displayed with decimals in-game (e.g. 1.56).
+ */
+export const flooredBaseStats: readonly (typeof flatAndPercentStats)[number][] =
+  ['atk', 'def']
+
+export const nonFlatAndPercentStats = stats.filter(
+  (stat) =>
+    !flatAndPercentStats.flatMap((stat) => [stat, `${stat}_`]).includes(stat)
+)
+
+export const attributes = [...allAttributeKeys] as const
+
+export const damageTypes = [
+  'basic',
+  'dash',
+  'dodgeCounter',
+  'special',
+  'exSpecial',
+  'chain',
+  'ult',
+  'entrySkill',
+  'quickAssist',
+  'defensiveAssist',
+  'evasiveAssist',
+  'assistFollowUp',
+  'counterAssist',
+  'anomaly',
+  'disorder',
+  'aftershock',
+  'elemental',
+  'sheer',
+  'sharp',
+  'gash',
+  'maim',
+  'abloom',
+  'luminize',
+  'vortex',
+  'windswept',
+  'burn',
+] as const
+
+export const skillTypes = [
+  'basicSkill',
+  'dodgeSkill',
+  'specialSkill',
+  'chainSkill',
+  'assistSkill',
+] as const
+
+// Add any entries that have conditionals or shared formulas here, otherwise move them to 'sheets'
+export const commonSheets = ['enemy', 'anomaly'] as const
+
+export const sheets = [
+  'agg',
+  'iso',
+  'static',
+  ...allCharacterKeys,
+  ...allWengineKeys,
+  ...allDiscSetKeys,
+  'char',
+  'wengine',
+  'disc',
+  'dyn',
+  'custom',
+  ...commonSheets,
+] as const
+
+export const members = [...allCharacterKeys] as const
+
+export const specialties = [...allSpecialityKeys] as const
+
+export const factions = [...allFactionKeys] as const
+
+export type Stat = (typeof stats)[number]
+export type Attribute = (typeof attributes)[number]
+export type DamageType = (typeof damageTypes)[number]
+export type SkillType = (typeof skillTypes)[number]
+export type Sheet = (typeof sheets)[number]
+export type Member = (typeof members)[number]
+export type Src = Member
+export type Dst = Member | null
+export type Specialty = (typeof specialties)[number]
+export type Faction = (typeof factions)[number]
+
+export function isMember(x: string): x is Member {
+  return members.includes(x as Member)
+}
+export function isSheet(x: string): x is Sheet {
+  return sheets.includes(x as Sheet)
+}

@@ -8,8 +8,8 @@ import pkg from './package.json' with { type: 'json' }
 // Source directories for locale files (relative to Vite root = app/)
 const localeDirs = [
   resolve('../packages/common/localization/assets/locales'),
-  resolve('./src/localization/assets/locales'),
-  resolve('./src/dm-localization/assets/locales'),
+  resolve('../packages/zzz/localization/src/assets/locales'),
+  resolve('../packages/zzz/dm-localization/src/assets/locales'),
 ]
 
 function serveLocaleFiles(): Plugin {
@@ -55,12 +55,16 @@ export default defineConfig(() => {
       rename: { stripBase: 4 },
     },
     {
-      src: normalizePath(resolve('./src/localization/assets/locales')),
+      src: normalizePath(
+        resolve('../packages/zzz/localization/src/assets/locales')
+      ),
       dest: 'assets',
       rename: { stripBase: 3 },
     },
     {
-      src: normalizePath(resolve('./src/dm-localization/assets/locales')),
+      src: normalizePath(
+        resolve('../packages/zzz/dm-localization/src/assets/locales')
+      ),
       dest: 'assets',
       rename: { stripBase: 3 },
     },
@@ -85,6 +89,15 @@ export default defineConfig(() => {
       fs: {
         allow: ['../..'],
       },
+      // Pre-transform the app at server start. Vite warms the *static* imports
+      // of whatever it transforms, so the entry covers every page (the tabs are
+      // eager — see `src/app/routes.tsx`). Without this, the browser's first
+      // request pays for transforming ~2800 modules. Runs in the background;
+      // the server does not wait on it. Same trick the hsr-optimizer config
+      // uses for its tabs.
+      warmup: {
+        clientFiles: ['src/main.tsx'],
+      },
     },
 
     preview: {
@@ -95,6 +108,19 @@ export default defineConfig(() => {
     resolve: {
       tsconfigPaths: true,
     },
+
+    // Full-bundle dev mode (rolldown): serve the app as bundled chunks instead
+    // of a module per source file. Unbundled, every tab switch costs ~600 extra
+    // module requests on top of the ~2200 the initial load already made (the
+    // sheet registries, AG Grid, the disc editor), which is the multi-second
+    // pause when switching tabs — a bundled app pays one chunk instead.
+    // Opt-in because it is marked experimental and its HMR semantics differ:
+    // an `import.meta.hot.accept()` inside a dead branch no longer suppresses
+    // the update, so some edits fall back to a full page reload.
+    // Try it with `ZZZ_BUNDLED_DEV=1 bun nx serve zzz-frontend`.
+    ...(process.env.ZZZ_BUNDLED_DEV === '1'
+      ? { experimental: { bundledDev: true } }
+      : {}),
 
     plugins: [
       react(),

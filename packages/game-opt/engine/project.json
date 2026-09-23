@@ -3,6 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/game-opt/engine/src",
   "projectType": "library",
-  "tags": [],
+  "tags": ["scope:game-opt", "layer:engine"],
   "targets": {}
 }

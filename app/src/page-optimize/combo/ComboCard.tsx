@@ -15,16 +15,21 @@ import {
   IconRefresh,
   IconSettings,
 } from '@tabler/icons-react'
-import { useCallback, useMemo } from 'react'
-import type { CharacterKey } from '../../consts'
-import type { ComboHit, ComboKindKey, ComboTypeKey, Team } from '../../db'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import type {
+  ComboHit,
+  ComboKindKey,
+  ComboTypeKey,
+  Team,
+} from '@zenless-optimizer/zzz/db'
 import {
   comboKindKeys,
   getTeamFrame0,
   MAX_COMBO_HITS,
   remapComboState,
-} from '../../db'
-import { useDatabaseContext } from '../../db-ui'
+} from '@zenless-optimizer/zzz/db'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import { useCallback, useMemo } from 'react'
 import { HeaderText } from '../layout'
 import { CascaderSelect } from './CascaderSelect'
 import classes from './ComboCard.module.css'

@@ -2,10 +2,9 @@ import { Box, Button, Divider, Group, Menu, Stack, Text } from '@mantine/core'
 import {
   ColorText,
   DropdownButton,
-  SqBadge,
+  TagPill,
 } from '@zenless-optimizer/common/ui'
-import { useCallback, useMemo } from 'react'
-import type { ComboKindKey, TargetTag } from '../db'
+import type { ComboKindKey, TargetTag } from '@zenless-optimizer/zzz/db'
 import {
   comboKindKeys,
   getTeamFrame0,
@@ -13,18 +12,20 @@ import {
   isComboTarget,
   type Team,
   targetTag,
-} from '../db'
-import { useDatabaseContext } from '../db-ui'
-import type { Tag } from '../formula'
-import { own } from '../formula'
+} from '@zenless-optimizer/zzz/db'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import type { Tag } from '@zenless-optimizer/zzz/formula'
+import { own } from '@zenless-optimizer/zzz/formula'
 import {
+  damageTypeColor,
   damageTypeKeysMap,
   getDmgType,
   getVariant,
   useZzzCalcContext,
-} from '../formula-ui'
-import { getCharStat } from '../stats'
-import { AttributeName } from '../ui'
+} from '@zenless-optimizer/zzz/formula-ui'
+import { getCharStat } from '@zenless-optimizer/zzz/stats'
+import { AttributeName } from '@zenless-optimizer/zzz/ui'
+import { useCallback, useMemo } from 'react'
 import {
   OptTargetTagDisplay,
   parseSkillVariant,
@@ -372,12 +373,14 @@ export function OptTargetSelector({
               }}
             >
               {badges.map((dmgType) => (
-                <SqBadge key={dmgType}>{damageTypeKeysMap[dmgType]}</SqBadge>
+                <TagPill key={dmgType} color={damageTypeColor(dmgType)}>
+                  {damageTypeKeysMap[dmgType]}
+                </TagPill>
               ))}
               {repTag.attribute && (
-                <SqBadge color={repTag.attribute}>
+                <TagPill color={repTag.attribute}>
                   {<AttributeName attribute={repTag.attribute} />}
-                </SqBadge>
+                </TagPill>
               )}
             </Box>
             <Group gap={4} wrap="nowrap" style={{ flexShrink: 0 }}>
@@ -427,7 +430,7 @@ export function OptTargetSelector({
           title={
             isActive && tag ? (
               <Box style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                <OptTargetTagDisplay tag={tag} />
+                <OptTargetTagDisplay tag={tag} withBadges={false} />
               </Box>
             ) : (
               cat.label
@@ -471,7 +474,7 @@ export function OptTargetSelector({
                   {comboKindLabel(comboKind)} ({rotationCount})
                 </Text>
               ) : (
-                <OptTargetTagDisplay tag={tag} />
+                <OptTargetTagDisplay tag={tag} withBadges={false} />
               )}
             </Box>
           ) : (

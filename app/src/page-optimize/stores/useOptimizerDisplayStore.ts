@@ -1,5 +1,5 @@
+import type { DiscIds } from '@zenless-optimizer/zzz/db'
 import { create } from 'zustand'
-import type { DiscIds } from '../../db'
 import { initialMenuState } from '../layout/optimizerMenuIds'
 
 export interface PinnedBuild {

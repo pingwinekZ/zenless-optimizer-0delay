@@ -1,0 +1,54 @@
+import type { UISheet } from '@zenless-optimizer/game-opt/sheet-ui'
+import { discDefIcon } from '@zenless-optimizer/zzz/assets'
+import type { DiscSetKey } from '@zenless-optimizer/zzz/consts'
+import { PufferElectro } from '@zenless-optimizer/zzz/formula'
+import { tagToTagField, trans } from '../../util'
+import { Set2Display, Set4Display } from '../components'
+
+const key: DiscSetKey = 'PufferElectro'
+const [chg, ch] = trans('disc', key)
+const icon = discDefIcon(key)
+const cond = PufferElectro.conditionals
+const buff = PufferElectro.buffs
+
+const sheet: UISheet<'2' | '4'> = {
+  2: {
+    title: <Set2Display />,
+    img: icon,
+    documents: [
+      {
+        type: 'text',
+        text: chg('desc2'),
+      },
+    ],
+  },
+  4: {
+    title: <Set4Display />,
+    img: icon,
+    documents: [
+      {
+        type: 'text',
+        text: chg('desc4'),
+      },
+      {
+        type: 'fields',
+        fields: [
+          {
+            title: 'Ultimate DMG', // TODO: L10n
+            fieldRef: buff.set4_dmg_.tag,
+          },
+        ],
+      },
+      {
+        type: 'conditional',
+        conditional: {
+          label: ch('set4_cond'),
+          description: ch('set4_cond_desc'),
+          metadata: cond.launching_ult,
+          fields: [tagToTagField(buff.set4_cond_launching_ult_atk_.tag)],
+        },
+      },
+    ],
+  },
+}
+export default sheet

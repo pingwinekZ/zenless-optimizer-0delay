@@ -5,36 +5,45 @@ import {
   type Field,
   TagFieldDisplay,
 } from '@zenless-optimizer/game-opt/sheet-ui'
-import { type ReactNode, Suspense, useContext, useMemo } from 'react'
-import { characterAsset, discDefIcon, wengineAsset } from '../../assets'
+import {
+  characterAsset,
+  discDefIcon,
+  wengineAsset,
+} from '@zenless-optimizer/zzz/assets'
 import {
   allCharacterKeys,
   type CharacterKey,
   type DiscSetKey,
   type DiscSlotKey,
+  elementalData,
   isDiscSetKey,
   isWengineKey,
   type WengineKey,
-} from '../../consts'
+} from '@zenless-optimizer/zzz/consts'
 import {
   comboCondHash,
   type ICachedDisc,
   type Team,
   type TeamConditional,
-} from '../../db'
-import { useDatabaseContext } from '../../db-ui'
+} from '@zenless-optimizer/zzz/db'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
 import {
   conditionals as allConditionalsMeta,
   getConditional,
   zzzCalculatorWithEntries,
-} from '../../formula'
-import { charSheets, discUiSheets, wengineUiSheets } from '../../formula-ui'
-import { GameDesc } from '../../i18n'
-import { CharacterName } from '../../ui/Character/CharacterTrans'
-import { DiscSetName } from '../../ui/Disc/DiscTrans'
-import { WengineName } from '../../ui/Wengine/WengineTrans'
+} from '@zenless-optimizer/zzz/formula'
+import {
+  charSheets,
+  discUiSheets,
+  wengineUiSheets,
+} from '@zenless-optimizer/zzz/formula-ui'
+import { GameDesc } from '@zenless-optimizer/zzz/i18n'
+import { buildCalculatorEntries } from '@zenless-optimizer/zzz/solver/buildStatsUtils'
+import { CharacterName } from '@zenless-optimizer/zzz/ui/Character/CharacterTrans'
+import { DiscSetName } from '@zenless-optimizer/zzz/ui/Disc/DiscTrans'
+import { WengineName } from '@zenless-optimizer/zzz/ui/Wengine/WengineTrans'
+import { type ReactNode, Suspense, useContext, useMemo } from 'react'
 import { condLabel } from '../Optimize/conditionalUtils'
-import { buildCalculatorEntries } from '../Util/buildStatsUtils'
 import { useComboDrawerStore } from './useComboDrawerStore'
 import type { ComboMember } from './useComboMembers'
 
@@ -132,7 +141,27 @@ export function comboCondLabel(sheet: string, condKey: string): ReactNode {
     }
     return condLabel(condKey, `disc_${sheet}`)
   }
+  if (sheet === 'enemy') {
+    if (condKey === 'isStunned') return 'Enemy is Stunned'
+    if (condKey === 'isWindswept') return 'Enemy is Windswept'
+    if (condKey === 'windsweptInfusion') return 'Windswept Infusion'
+  }
   return condLabel(condKey, sheet)
+}
+
+/**
+ * Display label for a list-conditional option in the drawer. Windswept
+ * infusion options are attribute keys — show the same display names as the
+ * rest of the app ("Fire", not "fire").
+ */
+export function comboListOptionLabel(
+  sheet: string,
+  condKey: string,
+  option: string
+): string {
+  if (sheet === 'enemy' && condKey === 'windsweptInfusion')
+    return (elementalData as Record<string, string>)[option] ?? option
+  return option
 }
 
 type UiDescDoc = {
@@ -588,5 +617,6 @@ export function ComboSheetName({ sheetKey }: { sheetKey: string }) {
     return <WengineName wKey={sheetKey as WengineKey} />
   if (isDiscSetKey(sheetKey))
     return <DiscSetName setKey={sheetKey as DiscSetKey} />
+  if (sheetKey === 'enemy') return <span>Enemy</span>
   return <span>{sheetKey}</span>
 }

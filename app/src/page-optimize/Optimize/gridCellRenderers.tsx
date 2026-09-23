@@ -4,8 +4,9 @@
  * These use the ICellRendererComp pattern (getGui) instead of React components
  * to avoid React mount/unmount overhead during grid scroll virtualization.
  */
+
+import { discDefIcon } from '@zenless-optimizer/zzz/assets'
 import type { ICellRendererComp, ICellRendererParams } from 'ag-grid-community'
-import { discDefIcon } from '../../assets'
 
 // ── Disc Set Image Cache ──
 // Pre-warm disc set images from the assets module

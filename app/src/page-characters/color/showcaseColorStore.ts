@@ -1,7 +1,7 @@
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import chroma from 'chroma-js'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { CharacterKey } from '../../consts'
 
 type ShowcaseColorState = {
   portraitColorByCharKey: Partial<Record<CharacterKey, string>>

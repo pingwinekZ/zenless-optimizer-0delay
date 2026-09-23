@@ -1,18 +1,18 @@
 import { ActionIcon, Box, Flex, Tooltip } from '@mantine/core'
 import { IconEdit, IconTrash } from '@tabler/icons-react'
 import { ImgIcon } from '@zenless-optimizer/common/ui'
-import { rarityDefIcon, specialityDefIcon } from '../../assets'
+import { rarityDefIcon, specialityDefIcon } from '@zenless-optimizer/zzz/assets'
 import type {
   AttributeKey,
   CharacterKey,
   CharacterRarityKey,
   SpecialityKey,
-} from '../../consts'
-import { milestoneMaxLevel } from '../../consts'
-import type { ICachedCharacter } from '../../db'
-import { getCharStat } from '../../stats'
-import { ElementIcon } from '../../svgicons'
-import { CharacterName } from '../../ui'
+} from '@zenless-optimizer/zzz/consts'
+import { milestoneMaxLevel } from '@zenless-optimizer/zzz/consts'
+import type { ICachedCharacter } from '@zenless-optimizer/zzz/db'
+import { getCharStat } from '@zenless-optimizer/zzz/stats'
+import { ElementIcon } from '@zenless-optimizer/zzz/svgicons'
+import { CharacterName } from '@zenless-optimizer/zzz/ui'
 import classes from './ShowcaseCharacterHeader.module.css'
 import { StatText } from './StatText'
 

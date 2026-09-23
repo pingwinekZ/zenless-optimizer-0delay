@@ -1,5 +1,5 @@
-import type { AttributeKey, SpecialityKey } from '../consts'
-import type { BonusStatTag, EnemyStatsTag } from '../db'
+import type { AttributeKey, SpecialityKey } from '@zenless-optimizer/zzz/consts'
+import type { BonusStatTag, EnemyStatsTag } from '@zenless-optimizer/zzz/db'
 
 // Enemy stat keys that should be routed to enemyStats instead of bonusStats
 const enemyStatKeys = new Set([

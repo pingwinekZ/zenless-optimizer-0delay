@@ -1,6 +1,6 @@
 import { Flex, NumberInput, Slider } from '@mantine/core'
+import { i18n } from '@zenless-optimizer/zzz/i18n'
 import { memo, useState } from 'react'
-import { i18n } from '../../i18n'
 
 export function ConditionalText({
   style,

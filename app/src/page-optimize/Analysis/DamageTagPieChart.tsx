@@ -1,188 +1,113 @@
-import { Box, Group, Table, Text } from '@mantine/core'
+import { Box, Flex, Text } from '@mantine/core'
 import { CardThemed } from '@zenless-optimizer/common/ui'
+import type { CSSProperties } from 'react'
 import { useMemo } from 'react'
-import {
-  Cell,
-  Legend,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-} from 'recharts'
+import { useTranslation } from 'react-i18next'
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
+import type { DamageTagSlice } from './damageSplitUtils'
+import { extractDamageByTag } from './damageSplitUtils'
 import type { AnalysisData } from './ExpandedDataPanelController'
+import { formatInt } from './format'
 
-const PIE_COLORS = [
-  '#4dabf7',
-  '#fcc419',
-  '#ff6b6b',
-  '#38d9a9',
-  '#da77f2',
-  '#ff922b',
-  '#d6336c',
-]
+const PIE_HEIGHT = 240
+const OUTER_RADIUS = 92
+const INNER_RADIUS = 58
 
-type StatSlice = {
-  name: string
-  value: number
-  color: string
-  raw: string
+const TOOLTIP_STYLE: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  background: 'var(--layer-3)',
+  border: '1px solid var(--border-default)',
+  padding: 8,
+  borderRadius: 6,
 }
 
+function ChartTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean
+  payload?: Array<{ payload?: DamageTagSlice }>
+}) {
+  const slice = payload?.[0]?.payload
+  if (!active || !slice) return null
+  return (
+    <Box style={TOOLTIP_STYLE}>
+      <Text size="xs" fw={700}>
+        {slice.label}
+      </Text>
+      <Text size="xs">{formatInt(slice.value)}</Text>
+      <Text size="xs" c="dimmed">
+        {(slice.percent * 100).toFixed(1)}%
+      </Text>
+    </Box>
+  )
+}
+
+/** Damage distribution across the target's damage types. */
 export function DamageTagPieChart({
   analysisData,
 }: {
   analysisData: AnalysisData
 }) {
-  const { selectedStats } = analysisData
-
-  const slices = useMemo((): StatSlice[] => {
-    if (!selectedStats) return []
-    const items: StatSlice[] = [
-      {
-        name: 'ATK',
-        value: selectedStats.atk,
-        color: PIE_COLORS[0],
-        raw: Math.round(selectedStats.atk).toLocaleString(),
-      },
-      {
-        name: 'CRIT Rate',
-        value: selectedStats.critRate * 100,
-        color: PIE_COLORS[1],
-        raw: `${(selectedStats.critRate * 100).toFixed(1)}%`,
-      },
-      {
-        name: 'CRIT DMG',
-        value: selectedStats.critDmg * 100,
-        color: PIE_COLORS[2],
-        raw: `${(selectedStats.critDmg * 100).toFixed(1)}%`,
-      },
-      {
-        name: 'DMG%',
-        value: selectedStats.dmgBonus * 100,
-        color: PIE_COLORS[3],
-        raw: `${(selectedStats.dmgBonus * 100).toFixed(1)}%`,
-      },
-      {
-        name: 'PEN Ratio',
-        value: selectedStats.penRatio * 100,
-        color: PIE_COLORS[4],
-        raw: `${(selectedStats.penRatio * 100).toFixed(1)}%`,
-      },
-      {
-        name: 'Impact',
-        value: selectedStats.impact,
-        color: PIE_COLORS[5],
-        raw: Math.round(selectedStats.impact).toLocaleString(),
-      },
-    ]
-    const total = items.reduce((s, i) => s + i.value, 0)
-    return items.map((i) => ({
-      ...i,
-      value: total > 0 ? (i.value / total) * 100 : 0,
-    }))
-  }, [selectedStats])
+  const { t } = useTranslation('page_optimize', { keyPrefix: 'analysis' })
+  const slices = useMemo(
+    () => extractDamageByTag(analysisData.targetInfo?.perActionDamage ?? []),
+    [analysisData.targetInfo]
+  )
 
   if (slices.length === 0) return null
-
-  const totalPct = 100
 
   return (
     <CardThemed>
       <Box p="md">
         <Text fw={700} size="sm" mb="xs">
-          Stat Distribution
+          {t('damageTag.title', 'Damage Distribution')}
         </Text>
-        <Text size="xs" c="dimmed" mb="md">
-          Relative proportion of key combat stats
-        </Text>
-
-        <ResponsiveContainer width="100%" height={240}>
+        <ResponsiveContainer width="100%" height={PIE_HEIGHT}>
           <PieChart>
             <Pie
               data={slices}
+              dataKey="value"
+              nameKey="label"
               cx="50%"
               cy="50%"
-              innerRadius={45}
-              outerRadius={85}
-              paddingAngle={2}
-              dataKey="value"
-              nameKey="name"
+              outerRadius={OUTER_RADIUS}
+              innerRadius={INNER_RADIUS}
+              stroke="var(--layer-2)"
+              isAnimationActive={false}
             >
-              {slices.map((_entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={PIE_COLORS[index % PIE_COLORS.length]}
-                />
+              {slices.map((slice) => (
+                <Cell key={slice.damageType} fill={slice.fill} />
               ))}
             </Pie>
-            <Tooltip
-              formatter={(value, name) => [
-                `${Number(value ?? 0).toFixed(1)}%`,
-                name,
-              ]}
-              contentStyle={{
-                backgroundColor: 'var(--layer-2)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: 4,
-                fontSize: 12,
-              }}
-            />
-            <Legend wrapperStyle={{ fontSize: 10 }} />
+            <Tooltip content={<ChartTooltip />} />
           </PieChart>
         </ResponsiveContainer>
-
-        <Table striped highlightOnHover mt="sm">
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Stat</Table.Th>
-              <Table.Th style={{ textAlign: 'right' }}>Value</Table.Th>
-              <Table.Th style={{ textAlign: 'right' }}>%</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {slices.map((entry) => (
-              <Table.Tr key={entry.name}>
-                <Table.Td>
-                  <Group gap={4} wrap="nowrap">
-                    <Box
-                      style={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: '50%',
-                        backgroundColor: entry.color,
-                        flexShrink: 0,
-                      }}
-                    />
-                    <Text size="xs">{entry.name}</Text>
-                  </Group>
-                </Table.Td>
-                <Table.Td style={{ textAlign: 'right' }}>
-                  <Text size="xs">{entry.raw}</Text>
-                </Table.Td>
-                <Table.Td style={{ textAlign: 'right' }}>
-                  <Text size="xs" c="dimmed">
-                    {entry.value.toFixed(1)}%
-                  </Text>
-                </Table.Td>
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
-          <Table.Tfoot>
-            <Table.Tr>
-              <Table.Th>
-                <Text size="xs" fw={700}>
-                  Total
-                </Text>
-              </Table.Th>
-              <Table.Th style={{ textAlign: 'right' }} />
-              <Table.Th style={{ textAlign: 'right' }}>
-                <Text size="xs" fw={700}>
-                  {totalPct.toFixed(0)}%
-                </Text>
-              </Table.Th>
-            </Table.Tr>
-          </Table.Tfoot>
-        </Table>
+        <Flex direction="column" gap={4}>
+          {slices.map((slice) => (
+            <Flex key={slice.damageType} align="center" gap={6}>
+              <Box
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 2,
+                  backgroundColor: slice.color,
+                  flexShrink: 0,
+                }}
+              />
+              <Text size="xs" style={{ flex: 1 }}>
+                {slice.label}
+              </Text>
+              <Text size="xs" c="dimmed">
+                {(slice.percent * 100).toFixed(1)}%
+              </Text>
+              <Text size="xs" style={{ width: 80, textAlign: 'right' }}>
+                {formatInt(slice.value)}
+              </Text>
+            </Flex>
+          ))}
+        </Flex>
       </Box>
     </CardThemed>
   )

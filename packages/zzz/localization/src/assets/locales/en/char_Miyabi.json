@@ -1,0 +1,16 @@
+{
+  "core_header": "Additional DMG",
+  "core_frostburnBreak_dmg": "Frostburn - Break DMG",
+  "ability_header": "DMG",
+  "ability_dmg_": "Shimotsuki DMG",
+  "abilityCond": "Disorder · RES Ignore",
+  "ability_ice_resIgn_": "Shimotsuki Ice RES Ignore",
+  "m1Cond": "Fallen Frost · DEF Ignore",
+  "m1_defIgn_": "Shimotsuki DEF Ignore",
+  "m2_dmg_header": "DMG",
+  "m2_dmg_": "Kazahana DMG",
+  "m2_crit_header": "CR",
+  "m6Cond": "Polar · DMG",
+  "m6_dmg_": "Shimotsuki DMG",
+  "ultIceDmgCond": "Ultimate · DMG"
+}

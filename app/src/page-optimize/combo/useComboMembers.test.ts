@@ -1,6 +1,6 @@
-import { allCharacterKeys } from '../../consts'
-import type { TeamConditional } from '../../db'
-import { conditionals as allConditionalsMeta } from '../../formula'
+import { allCharacterKeys } from '@zenless-optimizer/zzz/consts'
+import type { TeamConditional } from '@zenless-optimizer/zzz/db'
+import { conditionals as allConditionalsMeta } from '@zenless-optimizer/zzz/formula'
 import {
   type ComboMember,
   filterRelevantConditionals,
@@ -117,6 +117,26 @@ describe('filterRelevantConditionals teammate teamwide', () => {
       'Sunna:m1DefReductionStacks',
       'BlazingLaurel:wilt',
       `${mainKey}:k`,
+    ])
+  })
+})
+
+describe('filterRelevantConditionals enemy state', () => {
+  it('keeps main-member enemy rows but drops teammate-src ones', () => {
+    const conds = [
+      entry('enemy', 'isStunned', mainKey, 1),
+      entry('enemy', 'isWindswept', mainKey, 1),
+      entry('enemy', 'windsweptInfusion', mainKey, 0),
+      // Enemy rows under a teammate src are not effective — dropped.
+      entry('enemy', 'isStunned', 'Lucy', 1),
+      entry(mainKey, 'k', mainKey, 1),
+    ]
+    const result = filterRelevantConditionals(conds, members())
+    expect(result.map((c) => `${c.sheet}:${c.condKey}:${c.src}`)).toEqual([
+      `enemy:isStunned:${mainKey}`,
+      `enemy:isWindswept:${mainKey}`,
+      `enemy:windsweptInfusion:${mainKey}`,
+      `${mainKey}:k:${mainKey}`,
     ])
   })
 })

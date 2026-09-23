@@ -33,6 +33,13 @@ describe('test @zenless-optimizer/common-util/numDisplay', () => {
     expect(truncateToFixed(5, 0)).toEqual('5')
   })
 
+  it('does not lose 0.01 to binary floating point noise', () => {
+    // `0.596 * 100 === 59.599999999999994` must still print as `59.6%`
+    expect(valueString(0.596, '%')).toEqual('59.6%')
+    expect(valueString(0.016 + 0.596, '%')).toEqual('61.2%')
+    expect(truncateToFixed(59.6, 2)).toEqual('59.60')
+  })
+
   it('detects percent stat keys', () => {
     expect(getUnitStr('ice_dmg_')).toEqual('%')
     expect(getUnitStr('atk')).toEqual('')

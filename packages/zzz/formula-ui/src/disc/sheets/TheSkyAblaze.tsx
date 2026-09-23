@@ -1,0 +1,49 @@
+import type { UISheet } from '@zenless-optimizer/game-opt/sheet-ui'
+import { discDefIcon } from '@zenless-optimizer/zzz/assets'
+import type { DiscSetKey } from '@zenless-optimizer/zzz/consts'
+import { TheSkyAblaze } from '@zenless-optimizer/zzz/formula'
+import { tagToTagField, trans } from '../../util'
+import { Set2Display, Set4Display } from '../components'
+
+const key: DiscSetKey = 'TheSkyAblaze'
+const [chg, ch] = trans('disc', key)
+const icon = discDefIcon(key)
+const cond = TheSkyAblaze.conditionals
+const buff = TheSkyAblaze.buffs
+
+const sheet: UISheet<'2' | '4'> = {
+  2: {
+    title: <Set2Display />,
+    img: icon,
+    documents: [
+      {
+        type: 'text',
+        text: chg('desc2'),
+      },
+    ],
+  },
+  4: {
+    title: <Set4Display />,
+    img: icon,
+    documents: [
+      {
+        type: 'text',
+        text: chg('desc4'),
+      },
+      {
+        type: 'fields',
+        fields: [tagToTagField(buff.set4_ether_crit_dmg_.tag)],
+      },
+      {
+        type: 'conditional',
+        conditional: {
+          label: ch('set4_ex_ult_atk_cond'),
+          description: ch('set4_ex_ult_atk_cond_desc'),
+          metadata: cond.ex_ult_atk_active,
+          fields: [tagToTagField(buff.set4_ex_ult_atk_.tag)],
+        },
+      },
+    ],
+  },
+}
+export default sheet

@@ -1,6 +1,6 @@
+import { OptTargetTagRowSxProvider } from '@zenless-optimizer/zzz/formula-ui'
+import { StatHighlightContext } from '@zenless-optimizer/zzz/ui'
 import { useMemo, useState } from 'react'
-import { OptTargetTagRowSxProvider } from '../formula-ui'
-import { StatHighlightContext } from '../ui'
 import Optimize from './Optimize'
 
 export function CharacterOptDisplay() {

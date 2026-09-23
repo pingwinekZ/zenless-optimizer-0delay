@@ -39,3 +39,21 @@
   font-size: 10px;
   line-height: 17px;
 }
+
+.wengineCard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+  background-color: var(--layer-2);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.diffColumn {
+  width: 90px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  align-items: center;
+}

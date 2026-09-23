@@ -1,4 +1,4 @@
-import type { IDisc } from '../../zood'
+import type { IDisc } from '@zenless-optimizer/zzz/zood'
 import type { DiscTabFilters } from '../discGrid/useDiscTabStore'
 
 export function doesDiscPassFilters(

@@ -1,0 +1,17 @@
+{
+  "coreCond": "Zeroed In · ATK",
+  "abilityCond": "Zeroed In · DEF Ign",
+  "m1Cond": "Zeroed In · DMG",
+  "core_header": "CR & DMG",
+  "m1_header": "RES Ignore",
+  "m1_corrosiveFlash_resIgn_": "Corrosive Flash RES Ignore",
+  "m1_crimsonVortex_resIgn_": "Crimson Vortex RES Ignore",
+  "m1_heatCharge_resIgn_": "Heat Charge RES Ignore",
+  "m1_fieryEruption_resIgn_": "Fiery Eruption RES Ignore",
+  "m2Cond": "Ult Used · ATK",
+  "m4_header": "DMG",
+  "m4_heatCharge_dmg_": "Heat Charge DMG",
+  "m4_ultimate_dmg_": "Dance With Fire DMG",
+  "m6_dmg": "Additional DMG",
+  "m6AdditionalDmg": "Heat Charge Additional DMG"
+}

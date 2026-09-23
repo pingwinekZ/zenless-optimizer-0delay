@@ -2,16 +2,20 @@ import { Box, Flex, HoverCard, Select, Switch, Text } from '@mantine/core'
 import { ImgIcon } from '@zenless-optimizer/common/ui'
 import type { IConditionalData } from '@zenless-optimizer/game-opt/engine'
 import type { Field } from '@zenless-optimizer/game-opt/sheet-ui'
+import { discDefIcon } from '@zenless-optimizer/zzz/assets'
+import type { CharacterKey, DiscSetKey } from '@zenless-optimizer/zzz/consts'
+import { discSetNames } from '@zenless-optimizer/zzz/consts'
+import {
+  useCharacterContext,
+  useDatabaseContext,
+  useTeam,
+} from '@zenless-optimizer/zzz/db-ui'
+import { buffs as allBuffs, conditionals } from '@zenless-optimizer/zzz/formula'
+import { discUiSheets } from '@zenless-optimizer/zzz/formula-ui'
+import { buffAppliesToMainUnit } from '@zenless-optimizer/zzz/formula-ui/teammate'
+import { GameDesc } from '@zenless-optimizer/zzz/i18n'
 import type { ReactNode } from 'react'
 import { memo, Suspense, useMemo } from 'react'
-import { discDefIcon } from '../../assets'
-import type { CharacterKey, DiscSetKey } from '../../consts'
-import { discSetNames } from '../../consts'
-import { useCharacterContext, useDatabaseContext, useTeam } from '../../db-ui'
-import { buffs as allBuffs, conditionals } from '../../formula'
-import { discUiSheets } from '../../formula-ui'
-import { buffAppliesToMainUnit } from '../../formula-ui/teammate'
-import { GameDesc } from '../../i18n'
 import { HeaderText } from '../layout'
 import {
   ConditionalText,

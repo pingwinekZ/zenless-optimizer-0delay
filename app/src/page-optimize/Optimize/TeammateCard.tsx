@@ -10,32 +10,36 @@ import {
 } from '@mantine/core'
 import { useBoolState } from '@zenless-optimizer/common/react-util'
 import { ImgIcon } from '@zenless-optimizer/common/ui'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
-import { characterAsset, discDefIcon, wengineAsset } from '../../assets'
+import {
+  characterAsset,
+  discDefIcon,
+  wengineAsset,
+} from '@zenless-optimizer/zzz/assets'
 import type {
   CharacterKey,
   DiscSetKey,
   PhaseKey,
   WengineKey,
-} from '../../consts'
-import { allPhaseKeys } from '../../consts'
-import type { TeammateDatum } from '../../db'
+} from '@zenless-optimizer/zzz/consts'
+import { allPhaseKeys } from '@zenless-optimizer/zzz/consts'
+import type { TeammateDatum } from '@zenless-optimizer/zzz/db'
 import {
   useCharacter,
   useCharacterContext,
   useDatabaseContext,
   useDiscSets,
   useDiscs,
-} from '../../db-ui'
-import { discUiSheets } from '../../formula-ui'
-import { getCharStat } from '../../stats'
+} from '@zenless-optimizer/zzz/db-ui'
+import { discUiSheets } from '@zenless-optimizer/zzz/formula-ui'
+import { getCharStat } from '@zenless-optimizer/zzz/stats'
 import {
   CharacterName,
   CharacterSingleSelectionModal,
   DiscSetName,
   WengineName,
   WengineSelectionModal,
-} from '../../ui'
+} from '@zenless-optimizer/zzz/ui'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { CharacterConditionalsDisplay } from './CharacterConditionalsDisplay'
 import { DiscConditionalsDisplay } from './DiscConditionalsDisplay'
 import classes from './TeammateCard.module.css'

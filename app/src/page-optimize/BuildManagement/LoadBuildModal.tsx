@@ -1,12 +1,16 @@
 import { Button, Flex, Modal } from '@mantine/core'
 import { modals } from '@mantine/modals'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import {
+  OptConfigContext,
+  useCharacter,
+  useDatabaseContext,
+} from '@zenless-optimizer/zzz/db-ui'
+import { Message } from '@zenless-optimizer/zzz/ui'
+import type { SavedBuild } from '@zenless-optimizer/zzz/zood'
 import i18next from 'i18next'
 import { memo, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { CharacterKey } from '../../consts'
-import { OptConfigContext, useCharacter, useDatabaseContext } from '../../db-ui'
-import { Message } from '../../ui'
-import type { SavedBuild } from '../../zood'
 import { BuildList } from './BuildList'
 import { BuildPreview } from './BuildPreview'
 import styles from './BuildsModal.module.css'

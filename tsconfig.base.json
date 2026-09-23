@@ -74,17 +74,87 @@
       "@zenless-optimizer/pando/engine": [
         "./packages/pando/engine/src/index.ts"
       ],
-      "@zenless-optimizer/zzz/dm": ["./app/src/dm/index.ts"],
+      "@zenless-optimizer/zzz/assets": ["./packages/zzz/assets/src/index.ts"],
+      "@zenless-optimizer/zzz/assets/*": ["./packages/zzz/assets/src/*"],
+      "@zenless-optimizer/zzz/assets-data": [
+        "./packages/zzz/assets-data/src/index.ts"
+      ],
+      "@zenless-optimizer/zzz/assets-data/*": [
+        "./packages/zzz/assets-data/src/*"
+      ],
+      "@zenless-optimizer/zzz/consts": ["./packages/zzz/consts/src/index.ts"],
+      "@zenless-optimizer/zzz/consts/*": ["./packages/zzz/consts/src/*"],
+      "@zenless-optimizer/zzz/db": ["./packages/zzz/db/src/index.ts"],
+      "@zenless-optimizer/zzz/db/*": ["./packages/zzz/db/src/*"],
+      "@zenless-optimizer/zzz/db-ui": ["./packages/zzz/db-ui/src/index.ts"],
+      "@zenless-optimizer/zzz/db-ui/*": ["./packages/zzz/db-ui/src/*"],
+      "@zenless-optimizer/zzz/disc-scanner": [
+        "./packages/zzz/disc-scanner/src/index.ts"
+      ],
+      "@zenless-optimizer/zzz/disc-scanner/*": [
+        "./packages/zzz/disc-scanner/src/*"
+      ],
+      "@zenless-optimizer/zzz/dm": ["./packages/zzz/dm/src/index.ts"],
+      "@zenless-optimizer/zzz/dm/*": ["./packages/zzz/dm/src/*"],
+      "@zenless-optimizer/zzz/dm/*": ["./app/src/dm/*"],
       "@zenless-optimizer/zzz/dm-localization": [
-        "./app/src/dm-localization/index.ts"
+        "./packages/zzz/dm-localization/src/index.ts"
       ],
-      "@zenless-optimizer/zzz/stats": ["./app/src/stats/index.ts"],
-      "@zenless-optimizer/zzz/assets": ["./app/src/assets/index.ts"],
-      "@zenless-optimizer/zzz/assets-data": ["./app/src/assets-data/index.ts"],
+      "@zenless-optimizer/zzz/dm-localization/*": [
+        "./packages/zzz/dm-localization/src/*"
+      ],
+      "@zenless-optimizer/zzz/formula": ["./packages/zzz/formula/src/index.ts"],
+      "@zenless-optimizer/zzz/formula/*": ["./packages/zzz/formula/src/*"],
+      "@zenless-optimizer/zzz/formula-ui": [
+        "./packages/zzz/formula-ui/src/index.ts"
+      ],
+      "@zenless-optimizer/zzz/formula-ui/*": [
+        "./packages/zzz/formula-ui/src/*"
+      ],
+      "@zenless-optimizer/zzz/i18n": ["./packages/zzz/i18n/src/index.ts"],
+      "@zenless-optimizer/zzz/i18n/*": ["./packages/zzz/i18n/src/*"],
       "@zenless-optimizer/zzz/localization": [
-        "./app/src/localization/index.ts"
+        "./packages/zzz/localization/src/index.ts"
       ],
-      "@zenless-optimizer/zzz/formula": ["./app/src/formula/index.ts"]
+      "@zenless-optimizer/zzz/localization/*": [
+        "./packages/zzz/localization/src/*"
+      ],
+      "@zenless-optimizer/zzz/page-home": [
+        "./packages/zzz/page-home/src/index.tsx"
+      ],
+      "@zenless-optimizer/zzz/page-home/*": ["./packages/zzz/page-home/src/*"],
+      "@zenless-optimizer/zzz/page-settings": [
+        "./packages/zzz/page-settings/src/index.tsx"
+      ],
+      "@zenless-optimizer/zzz/page-settings/*": [
+        "./packages/zzz/page-settings/src/*"
+      ],
+      "@zenless-optimizer/zzz/page-wengines": [
+        "./packages/zzz/page-wengines/src/index.tsx"
+      ],
+      "@zenless-optimizer/zzz/page-wengines/*": [
+        "./packages/zzz/page-wengines/src/*"
+      ],
+      "@zenless-optimizer/zzz/rendering/*": ["./packages/zzz/rendering/src/*"],
+      "@zenless-optimizer/zzz/schema": ["./packages/zzz/schema/src/index.ts"],
+      "@zenless-optimizer/zzz/schema/*": ["./packages/zzz/schema/src/*"],
+      "@zenless-optimizer/zzz/solver": ["./packages/zzz/solver/src/index.ts"],
+      "@zenless-optimizer/zzz/solver/*": ["./packages/zzz/solver/src/*"],
+      "@zenless-optimizer/zzz/stats": ["./packages/zzz/stats/src/index.ts"],
+      "@zenless-optimizer/zzz/stats/*": ["./packages/zzz/stats/src/*"],
+      "@zenless-optimizer/zzz/svgicons": [
+        "./packages/zzz/svgicons/src/index.ts"
+      ],
+      "@zenless-optimizer/zzz/svgicons/*": ["./packages/zzz/svgicons/src/*"],
+      "@zenless-optimizer/zzz/theme": ["./packages/zzz/theme/src/index.ts"],
+      "@zenless-optimizer/zzz/theme/*": ["./packages/zzz/theme/src/*"],
+      "@zenless-optimizer/zzz/ui": ["./packages/zzz/ui/src/index.tsx"],
+      "@zenless-optimizer/zzz/ui/*": ["./packages/zzz/ui/src/*"],
+      "@zenless-optimizer/zzz/util": ["./packages/zzz/util/src/index.ts"],
+      "@zenless-optimizer/zzz/util/*": ["./packages/zzz/util/src/*"],
+      "@zenless-optimizer/zzz/websocket/*": ["./packages/zzz/websocket/src/*"],
+      "@zenless-optimizer/zzz/zood": ["./packages/zzz/zood/src/index.ts"],
+      "@zenless-optimizer/zzz/zood/*": ["./packages/zzz/zood/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

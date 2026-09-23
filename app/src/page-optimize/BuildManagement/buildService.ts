@@ -1,7 +1,11 @@
-import type { CharacterKey } from '../../consts'
-import { isWengineKey } from '../../consts'
-import type { ZzzDatabase } from '../../db'
-import { BuildSource, type ICharacter, type SavedBuild } from '../../zood'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { isWengineKey } from '@zenless-optimizer/zzz/consts'
+import type { ZzzDatabase } from '@zenless-optimizer/zzz/db'
+import {
+  BuildSource,
+  type ICharacter,
+  type SavedBuild,
+} from '@zenless-optimizer/zzz/zood'
 import type { EquippedSelection } from './buildConverter'
 import {
   deserializeBuild,

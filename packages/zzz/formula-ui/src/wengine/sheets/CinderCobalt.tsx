@@ -1,0 +1,37 @@
+import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
+import { wengineAsset } from '@zenless-optimizer/zzz/assets'
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
+import { CinderCobalt } from '@zenless-optimizer/zzz/formula'
+import { st, tagToTagField, trans } from '../../util'
+import { PhaseWrapper } from '../components'
+
+const key: WengineKey = 'CinderCobalt'
+const [chg] = trans('wengine', key)
+const icon = wengineAsset(key)
+const cond = CinderCobalt.conditionals
+const buff = CinderCobalt.buffs
+
+const sheet: UISheetElement = {
+  title: chg('phase'),
+  img: icon,
+  documents: [
+    {
+      type: 'text',
+      text: (
+        <PhaseWrapper wKey={key}>
+          {(phase) => chg(`phaseDescs.${phase - 1}`)}
+        </PhaseWrapper>
+      ),
+    },
+    {
+      type: 'conditional',
+      conditional: {
+        label: st('enterCombatOrSwitchIn'),
+        metadata: cond.enteringCombatOrSwitchingIn,
+        fields: [tagToTagField(buff.enteringCombatOrSwitchingIn_atk_.tag)],
+      },
+    },
+  ],
+}
+
+export default sheet

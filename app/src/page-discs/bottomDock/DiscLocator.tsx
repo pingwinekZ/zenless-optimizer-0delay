@@ -1,11 +1,11 @@
 import { NumberInput, Popover } from '@mantine/core'
 import { IconSettings } from '@tabler/icons-react'
 import { useDataManagerValues } from '@zenless-optimizer/common/database-ui'
+import { discDefIcon } from '@zenless-optimizer/zzz/assets'
+import type { ICachedDisc } from '@zenless-optimizer/zzz/db'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { discDefIcon } from '../../assets'
-import type { ICachedDisc } from '../../db'
-import { useDatabaseContext } from '../../db-ui'
 
 type LocatorFilters = { set?: string; slot?: string }
 

@@ -1,6 +1,9 @@
-import type { CharacterKey, DiscSubStatKey } from '../../consts'
-import type { ZzzDatabase } from '../../db'
-import type { IDisc } from '../../zood'
+import type {
+  CharacterKey,
+  DiscSubStatKey,
+} from '@zenless-optimizer/zzz/consts'
+import type { ZzzDatabase } from '@zenless-optimizer/zzz/db'
+import type { IDisc } from '@zenless-optimizer/zzz/zood'
 import { computeCurrentScore } from './currentScore'
 import { computeMaxPotential } from './potentialScore'
 import {

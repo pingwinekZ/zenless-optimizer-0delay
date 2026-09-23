@@ -1,7 +1,11 @@
+import type { SpecificDmgTypeKey } from '@zenless-optimizer/zzz/db'
+import { getTeamFrame0, specificDmgTypeKeys } from '@zenless-optimizer/zzz/db'
+import {
+  useCharacterContext,
+  useDatabaseContext,
+  useTeam,
+} from '@zenless-optimizer/zzz/db-ui'
 import { useCallback } from 'react'
-import type { SpecificDmgTypeKey } from '../../db'
-import { getTeamFrame0, specificDmgTypeKeys } from '../../db'
-import { useCharacterContext, useDatabaseContext, useTeam } from '../../db-ui'
 import { DmgTypeDropdown } from '../DmgTypeDropdown'
 
 export function SpecificDmgTypeSelector() {

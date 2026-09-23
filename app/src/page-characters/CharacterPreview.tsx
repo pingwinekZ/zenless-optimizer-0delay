@@ -2,32 +2,54 @@ import { Box, Center, Flex, Text } from '@mantine/core'
 import { IconUser } from '@tabler/icons-react'
 import { useDataManagerBase } from '@zenless-optimizer/common/database-ui'
 import { TagContext } from '@zenless-optimizer/game-opt/formula-ui'
+import { characterAsset } from '@zenless-optimizer/zzz/assets'
+import type {
+  CharacterKey,
+  DiscSlotKey,
+  PhaseKey,
+} from '@zenless-optimizer/zzz/consts'
+import type {
+  DiscIds,
+  ICachedCharacter,
+  ICachedDisc,
+  Team,
+} from '@zenless-optimizer/zzz/db'
+import {
+  getComboFrames,
+  getTeamFrame0,
+  isComboTarget,
+  targetTag,
+} from '@zenless-optimizer/zzz/db'
+import {
+  useCharacter,
+  useDatabaseContext,
+  useDiscs,
+  useTeam,
+} from '@zenless-optimizer/zzz/db-ui'
+import type { Tag } from '@zenless-optimizer/zzz/formula'
+import { own, Read } from '@zenless-optimizer/zzz/formula'
+import {
+  CharCalcProvider,
+  useZzzCalcContext,
+} from '@zenless-optimizer/zzz/formula-ui'
+import type { SavedTeammateGear } from '@zenless-optimizer/zzz/schema/savedBuild'
+import { getCharStat } from '@zenless-optimizer/zzz/stats'
+import {
+  DiscEditorModal,
+  useCharacterTabStore,
+  useDiscEditorModalStore,
+} from '@zenless-optimizer/zzz/ui'
+import {
+  calculateSubstatEfficiency,
+  efficiencyToGrade,
+  gradeColor,
+} from '@zenless-optimizer/zzz/util'
 import { memo, useCallback, useEffect, useMemo } from 'react'
-import { characterAsset } from '../assets'
-import type { CharacterKey, DiscSlotKey, PhaseKey } from '../consts'
-import type { DiscIds, ICachedCharacter, ICachedDisc, Team } from '../db'
-import { getComboFrames, getTeamFrame0, isComboTarget, targetTag } from '../db'
-import { useCharacter, useDatabaseContext, useDiscs, useTeam } from '../db-ui'
-import type { Tag } from '../formula'
-import { own, Read } from '../formula'
-import { CharCalcProvider, useZzzCalcContext } from '../formula-ui'
 import {
   getMergedEffectiveStats,
   getMergedMainStats,
   getMergedSubstatWeights,
 } from '../page-discs/scoring/statWeightUtils'
-import type { SavedTeammateGear } from '../schema/savedBuild'
-import { getCharStat } from '../stats'
-import {
-  DiscEditorModal,
-  useCharacterTabStore,
-  useDiscEditorModalStore,
-} from '../ui'
-import {
-  calculateSubstatEfficiency,
-  efficiencyToGrade,
-  gradeColor,
-} from '../util'
 import {
   ShowcaseBackgroundBlur,
   showcaseShadow,

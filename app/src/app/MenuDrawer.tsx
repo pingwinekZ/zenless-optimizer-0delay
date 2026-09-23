@@ -16,8 +16,9 @@ import {
   useState,
 } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useLocation, useNavigate } from 'react-router'
+import { pathToTab, TAB_PATHS, type TabKey } from './routes'
 import classes from './Sidebar.module.css'
-import { type TabKey, useTabStore } from './useTabStore'
 
 type NavItem = {
   value: TabKey
@@ -160,8 +161,9 @@ function SidebarNavCollapsed({
 
 export function MenuDrawer({ collapsed }: { collapsed: boolean }) {
   const { t } = useTranslation('sidebar')
-  const activeTab = useTabStore((s) => s.activeTab)
-  const setActiveTab = useTabStore((s) => s.setActiveTab)
+  const location = useLocation()
+  const navigate = useNavigate()
+  const activeTab = pathToTab(location.pathname)
 
   const groups: NavGroup[] = useMemo(
     () => [
@@ -218,9 +220,9 @@ export function MenuDrawer({ collapsed }: { collapsed: boolean }) {
 
   const handleNavigate = useCallback(
     (item: NavItem) => {
-      setActiveTab(item.value)
+      navigate(TAB_PATHS[item.value])
     },
-    [setActiveTab]
+    [navigate]
   )
 
   return (

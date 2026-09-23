@@ -2,10 +2,13 @@ import { Button, Group, Tooltip } from '@mantine/core'
 import { modals } from '@mantine/modals'
 import { IconCopy, IconEdit, IconPlus, IconTrash } from '@tabler/icons-react'
 import { useBoolState } from '@zenless-optimizer/common/react-util'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import {
+  DiscEditorModal,
+  useDiscEditorModalStore,
+} from '@zenless-optimizer/zzz/ui'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useDatabaseContext } from '../../db-ui'
-import { DiscEditorModal, useDiscEditorModalStore } from '../../ui'
 import { useDiscTabStore } from '../discGrid/useDiscTabStore'
 import { DiscLocator } from './DiscLocator'
 

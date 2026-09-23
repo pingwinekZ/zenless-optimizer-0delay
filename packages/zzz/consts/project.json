@@ -1,0 +1,8 @@
+{
+  "name": "zzz-consts",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/zzz/consts/src",
+  "projectType": "library",
+  "tags": ["scope:zzz", "layer:domain"],
+  "targets": {}
+}

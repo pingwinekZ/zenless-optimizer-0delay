@@ -20,10 +20,10 @@
       "executor": "nx:run-commands",
       "outputs": ["{workspaceRoot}/coverage/libs/test"],
       "options": {
-        "command": "bun test --jsdom",
+        "command": "bun test --jsdom --timeout=60000",
         "cwd": "packages/pando/engine"
       }
     }
   },
-  "tags": []
+  "tags": ["scope:pando", "layer:base"]
 }

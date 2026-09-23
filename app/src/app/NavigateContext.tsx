@@ -1,7 +1,7 @@
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
 import { createContext, type ReactNode, useCallback, useContext } from 'react'
-import type { CharacterKey } from '../consts'
-import { useDatabaseContext } from '../db-ui'
-import { useTabStore } from './useTabStore'
+import { useNavigate } from 'react-router'
 
 interface NavigateContextValue {
   navigateToOptimize: (characterKey: CharacterKey) => void
@@ -21,23 +21,23 @@ export function useNavigateContext() {
 
 export function NavigateContextProvider({ children }: { children: ReactNode }) {
   const { database } = useDatabaseContext()
+  const navigate = useNavigate()
 
   const navigateToOptimize = useCallback(
     (characterKey: CharacterKey) => {
       database.dbMeta.set({ optCharKey: characterKey })
-      window.history.pushState({}, '', `#/optimize?character=${characterKey}`)
-      useTabStore.getState().setActiveTab('optimize', false)
+      navigate(`/optimize?character=${characterKey}`)
     },
-    [database]
+    [database, navigate]
   )
 
   const navigateToHome = useCallback(() => {
-    useTabStore.getState().setActiveTab('home')
-  }, [])
+    navigate('/')
+  }, [navigate])
 
   const navigateToCharacters = useCallback(() => {
-    useTabStore.getState().setActiveTab('characters')
-  }, [])
+    navigate('/characters')
+  }, [navigate])
 
   return (
     <NavigateContext.Provider

@@ -1,0 +1,8 @@
+{
+  "name": "zzz-localization",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/zzz/localization/src",
+  "projectType": "library",
+  "tags": ["scope:zzz", "layer:domain"],
+  "implicitDependencies": ["common-localization"]
+}

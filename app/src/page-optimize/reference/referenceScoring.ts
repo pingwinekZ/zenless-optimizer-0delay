@@ -3,10 +3,10 @@ import type {
   DiscSetKey,
   DiscSlotKey,
   DiscSubStatKey,
-} from '../../consts'
-import { statKeyTextMap } from '../../consts'
-import { targetTag } from '../../db'
-import type { BuildRecipe } from '../../solver'
+} from '@zenless-optimizer/zzz/consts'
+import { statKeyTextMap } from '@zenless-optimizer/zzz/consts'
+import type { BuildRecipe } from '@zenless-optimizer/zzz/db'
+import { targetTag } from '@zenless-optimizer/zzz/db'
 
 export type TheoReferenceShape = {
   /** Exact substat roll totals of the pinned perfect build. */

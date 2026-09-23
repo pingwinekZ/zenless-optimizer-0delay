@@ -16,8 +16,8 @@ import {
   FormulaTextContext,
 } from '@zenless-optimizer/game-opt/sheet-ui'
 import type { CalcResult } from '@zenless-optimizer/pando/engine'
+import type { Tag as AppTag } from '@zenless-optimizer/zzz/formula'
 import { useCallback, useContext, useMemo } from 'react'
-import type { Tag as AppTag } from '../../formula'
 import { OptTargetTagDisplay } from '../OptTargetTagDisplay'
 import type { AnalysisData } from './ExpandedDataPanelController'
 
@@ -79,7 +79,6 @@ export function ActionBreakdown({
           <>
             <Box mb="sm">
               {displayActions.map((entry, i) => {
-                const pct = totalDmg > 0 ? (entry.value / totalDmg) * 100 : 0
                 return (
                   <Box
                     key={`${entry.name}_${i}`}
@@ -120,15 +119,6 @@ export function ActionBreakdown({
                       >
                         {Math.floor(entry.value).toLocaleString()}
                       </Text>
-                      {isRotation && (
-                        <Text
-                          size="xs"
-                          c="dimmed"
-                          style={{ textAlign: 'right', width: 50 }}
-                        >
-                          {pct.toFixed(1)}%
-                        </Text>
-                      )}
                     </Group>
                   </Box>
                 )

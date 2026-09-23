@@ -10,7 +10,7 @@ import {
   allDiscSetKeys,
   allDiscSlotKeys,
   allDiscSubStatKeys,
-} from '../app/src/consts'
+} from '@zenless-optimizer/zzz/consts'
 import { ZzzDatabase } from '../app/src/db'
 
 const setKey = allDiscSetKeys[0]

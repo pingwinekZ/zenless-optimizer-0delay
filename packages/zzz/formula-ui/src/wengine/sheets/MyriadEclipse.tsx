@@ -1,0 +1,42 @@
+import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
+import { wengineAsset } from '@zenless-optimizer/zzz/assets'
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
+import { MyriadEclipse } from '@zenless-optimizer/zzz/formula'
+import { tagToTagField, trans } from '../../util'
+import { PhaseWrapper } from '../components'
+
+const key: WengineKey = 'MyriadEclipse'
+const [chg, ch] = trans('wengine', key)
+const icon = wengineAsset(key)
+const cond = MyriadEclipse.conditionals
+const buff = MyriadEclipse.buffs
+
+const sheet: UISheetElement = {
+  title: chg('phase'),
+  img: icon,
+  documents: [
+    {
+      type: 'text',
+      text: (
+        <PhaseWrapper wKey={key}>
+          {(phase) => chg(`phaseDescs.${phase - 1}`)}
+        </PhaseWrapper>
+      ),
+    },
+    {
+      type: 'fields',
+      header: { icon: null, text: ch('passive_header') },
+      fields: [tagToTagField(buff.crit_dmg_.tag)],
+    },
+    {
+      type: 'conditional',
+      conditional: {
+        label: ch('deathSentenceCond'),
+        metadata: cond.deathSentence,
+        fields: [tagToTagField(buff.deathSentence_defIgn_.tag)],
+      },
+    },
+  ],
+}
+
+export default sheet

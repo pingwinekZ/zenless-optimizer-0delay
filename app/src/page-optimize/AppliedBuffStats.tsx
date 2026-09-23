@@ -14,8 +14,7 @@ import {
   NumberInputLazy,
 } from '@zenless-optimizer/common/ui'
 import { isIn } from '@zenless-optimizer/common/util'
-import { useCallback } from 'react'
-import { allAttributeKeys, type StatKey } from '../consts'
+import { allAttributeKeys, type StatKey } from '@zenless-optimizer/zzz/consts'
 import {
   type BonusStatKey,
   type BonusStatTag,
@@ -30,11 +29,16 @@ import {
   newBonusStatTag,
   newEnemyStatTag,
   type TeamBonusStat,
-} from '../db'
-import { useCharacterContext, useDatabaseContext, useTeam } from '../db-ui'
-import type { Attribute, Tag } from '../formula'
-import { qtMap, TagDisplay } from '../formula-ui'
-import { AttributeName, StatDisplay } from '../ui'
+} from '@zenless-optimizer/zzz/db'
+import {
+  useCharacterContext,
+  useDatabaseContext,
+  useTeam,
+} from '@zenless-optimizer/zzz/db-ui'
+import type { Attribute, Tag } from '@zenless-optimizer/zzz/formula'
+import { qtMap, TagDisplay } from '@zenless-optimizer/zzz/formula-ui'
+import { AttributeName, StatDisplay } from '@zenless-optimizer/zzz/ui'
+import { useCallback } from 'react'
 import { AfterShockToggleButton } from './AfterShockToggleButton'
 import { DmgTypeDropdown } from './DmgTypeDropdown'
 

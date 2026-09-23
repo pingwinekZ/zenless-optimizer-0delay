@@ -1,4 +1,4 @@
-import type { BuildRecipe } from '../../solver'
+import type { BuildRecipe } from '@zenless-optimizer/zzz/db'
 import { buildReferenceProfile, compareToReference } from './referenceScoring'
 
 function recipe(

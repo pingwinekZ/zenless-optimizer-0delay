@@ -3,12 +3,19 @@ import { correctConditionalValue } from '@zenless-optimizer/game-opt/engine'
 import { CalcContext, TagContext } from '@zenless-optimizer/game-opt/formula-ui'
 import type { Field } from '@zenless-optimizer/game-opt/sheet-ui'
 import { TagFieldDisplay } from '@zenless-optimizer/game-opt/sheet-ui'
+import type { CharacterKey, DiscSlotKey } from '@zenless-optimizer/zzz/consts'
+import type {
+  ICachedDisc,
+  Team,
+  TeamConditional,
+} from '@zenless-optimizer/zzz/db'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import {
+  getConditional,
+  zzzCalculatorWithEntries,
+} from '@zenless-optimizer/zzz/formula'
+import { buildCalculatorEntries } from '@zenless-optimizer/zzz/solver/buildStatsUtils'
 import { useContext, useMemo } from 'react'
-import type { CharacterKey, DiscSlotKey } from '../../consts'
-import type { ICachedDisc, Team, TeamConditional } from '../../db'
-import { useDatabaseContext } from '../../db-ui'
-import { getConditional, zzzCalculatorWithEntries } from '../../formula'
-import { buildCalculatorEntries } from '../Util/buildStatsUtils'
 
 /**
  * Calculator for optimize-page conditional hover buffs that matches the

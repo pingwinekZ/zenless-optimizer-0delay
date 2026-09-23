@@ -1,0 +1,45 @@
+import { subscript } from '@zenless-optimizer/pando/engine'
+import type { WengineKey } from '@zenless-optimizer/zzz/consts'
+import { mappedStats } from '@zenless-optimizer/zzz/stats'
+import { own, ownBuff, registerBuff } from '../../util'
+import {
+  cmpSpecialtyAndEquipped,
+  entriesForWengine,
+  registerWengine,
+  showSpecialtyAndEquipped,
+} from '../util'
+
+const key: WengineKey = 'PeacekeeperSpecialized'
+const dm = mappedStats.wengine[key]
+const { phase } = own.wengine
+
+const sheet = registerWengine(
+  key,
+  // Handles base stats and passive buffs
+  entriesForWengine(key),
+
+  // Passive buffs
+  registerBuff(
+    'passive_exSpecial_anomBuildup_',
+    ownBuff.combat.anomBuildup_.addWithDmgType(
+      'exSpecial',
+      cmpSpecialtyAndEquipped(
+        key,
+        subscript(phase, dm.passive_exSpecial_assist_anomBuildup_)
+      )
+    ),
+    showSpecialtyAndEquipped(key)
+  ),
+  registerBuff(
+    'passive_assist_anomBuildup_',
+    ownBuff.combat.anomBuildup_.addWithDmgType(
+      'assistFollowUp',
+      cmpSpecialtyAndEquipped(
+        key,
+        subscript(phase, dm.passive_exSpecial_assist_anomBuildup_)
+      )
+    ),
+    showSpecialtyAndEquipped(key)
+  )
+)
+export default sheet

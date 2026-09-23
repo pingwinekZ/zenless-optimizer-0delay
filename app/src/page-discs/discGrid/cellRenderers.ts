@@ -1,15 +1,15 @@
-import type {
-  ICellRendererComp,
-  ICellRendererParams,
-  ValueFormatterParams,
-} from 'ag-grid-community'
-import { characterAsset, discDefIcon } from '../../assets'
+import { characterAsset, discDefIcon } from '@zenless-optimizer/zzz/assets'
 import {
   type CharacterKey,
   type DiscRarityKey,
   rarityColor as discRarityColor,
   statKeyTextMap,
-} from '../../consts'
+} from '@zenless-optimizer/zzz/consts'
+import type {
+  ICellRendererComp,
+  ICellRendererParams,
+  ValueFormatterParams,
+} from 'ag-grid-community'
 
 const setImageCache = new Map<string, string>()
 

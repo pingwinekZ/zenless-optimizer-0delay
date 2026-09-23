@@ -1,6 +1,9 @@
 import { Flex, Text } from '@mantine/core'
-import { getEnerRegenLabel, statKeyTextMap } from '../../consts'
-import { StatIcon } from '../../svgicons'
+import {
+  getEnerRegenLabel,
+  statKeyTextMap,
+} from '@zenless-optimizer/zzz/consts'
+import { StatIcon } from '@zenless-optimizer/zzz/svgicons'
 import { separatorColor } from '../constantsUi'
 import classes from './CharacterStatSummary.module.css'
 import { StatText } from './StatText'

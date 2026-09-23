@@ -16,21 +16,21 @@ import {
 import { IconPlus, IconX } from '@tabler/icons-react'
 import { CardThemed } from '@zenless-optimizer/common/ui'
 import { getUnitStr } from '@zenless-optimizer/common/util'
-import { memo, useCallback, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import type {
   DiscMainStatKey,
   DiscSetKey,
   DiscSlotKey,
   DiscSubStatKey,
-} from '../../consts'
+} from '@zenless-optimizer/zzz/consts'
 import {
   allDiscSetKeys,
   allDiscSubStatKeys,
   discSlotToMainStatKeys,
   statKeyTextMap,
-} from '../../consts'
-import { StatDisplay } from '../../ui'
+} from '@zenless-optimizer/zzz/consts'
+import { StatDisplay } from '@zenless-optimizer/zzz/ui'
+import { memo, useCallback, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 /**
  * A single simulation configuration — defines the stats of a hypothetical build.

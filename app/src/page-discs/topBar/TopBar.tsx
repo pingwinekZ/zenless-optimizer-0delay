@@ -2,9 +2,12 @@ import { Button, Divider } from '@mantine/core'
 import { IconEraser, IconPlus, IconSettings } from '@tabler/icons-react'
 import { useBoolState } from '@zenless-optimizer/common/react-util'
 import { ImgIcon } from '@zenless-optimizer/common/ui'
+import { characterAsset } from '@zenless-optimizer/zzz/assets'
+import {
+  CharacterName,
+  CharacterSingleSelectionModal,
+} from '@zenless-optimizer/zzz/ui'
 import { useTranslation } from 'react-i18next'
-import { characterAsset } from '../../assets'
-import { CharacterName, CharacterSingleSelectionModal } from '../../ui'
 import { useDiscTabStore } from '../discGrid/useDiscTabStore'
 import { FilterPillBar } from './FilterPillBar'
 import { StatWeightEditorModal } from './StatWeightEditorModal'

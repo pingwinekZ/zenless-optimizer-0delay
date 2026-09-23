@@ -13,17 +13,20 @@ import {
 } from '@mantine/core'
 import { ModalWrapper } from '@zenless-optimizer/common/ui'
 import { toggleInArr } from '@zenless-optimizer/common/util'
-import { memo, useCallback, useContext, useMemo, useState } from 'react'
-import { discDefIcon } from '../../assets'
-import type { DiscSetKey, DiscSlotKey } from '../../consts'
+import { discDefIcon } from '@zenless-optimizer/zzz/assets'
+import type { DiscSetKey, DiscSlotKey } from '@zenless-optimizer/zzz/consts'
 import {
   allDiscSetKeys,
   disc2pEffect,
   discSetNames,
   statKeyTextMap,
-} from '../../consts'
-import type { ICachedDisc } from '../../db'
-import { OptConfigContext, useDatabaseContext } from '../../db-ui'
+} from '@zenless-optimizer/zzz/consts'
+import type { ICachedDisc } from '@zenless-optimizer/zzz/db'
+import {
+  OptConfigContext,
+  useDatabaseContext,
+} from '@zenless-optimizer/zzz/db-ui'
+import { memo, useCallback, useContext, useMemo, useState } from 'react'
 import classes from './DiscSetFilterModal.module.css'
 
 export function DiscSetFilterModal({

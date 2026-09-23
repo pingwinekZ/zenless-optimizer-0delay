@@ -15,20 +15,25 @@ import {
   SrcDstDisplayContext,
 } from '@zenless-optimizer/game-opt/sheet-ui'
 import type { BaseRead } from '@zenless-optimizer/pando/engine'
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import type { CharacterKey } from '../consts'
-import { allCharacterKeys } from '../consts'
-import type { TeamConditional } from '../db'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { allCharacterKeys } from '@zenless-optimizer/zzz/consts'
+import type { TeamConditional } from '@zenless-optimizer/zzz/db'
 import {
   CharacterContext,
   useCharacter,
   useDatabaseContext,
   useTeam,
-} from '../db-ui'
-import { getConditional, isMember, isSheet, type Tag } from '../formula'
-import { CharCalcProvider } from '../formula-ui'
-import { CharacterName } from '../ui'
+} from '@zenless-optimizer/zzz/db-ui'
+import {
+  getConditional,
+  isMember,
+  isSheet,
+  type Tag,
+} from '@zenless-optimizer/zzz/formula'
+import { CharCalcProvider } from '@zenless-optimizer/zzz/formula-ui'
+import { CharacterName } from '@zenless-optimizer/zzz/ui'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { CharacterOptDisplay } from './CharacterOptDisplay'
 import { TeamHeaderHeightContext } from './context/TeamHeaderHeightContext'
 

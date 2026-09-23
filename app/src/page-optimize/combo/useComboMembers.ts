@@ -1,10 +1,21 @@
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import type { Team, TeamConditional } from '@zenless-optimizer/zzz/db'
+import {
+  useCharacter,
+  useDiscSets,
+  useDiscs,
+} from '@zenless-optimizer/zzz/db-ui'
+import {
+  conditionals as allConditionalsMeta,
+  buffs,
+} from '@zenless-optimizer/zzz/formula'
+import {
+  charSheets,
+  discUiSheets,
+  wengineUiSheets,
+} from '@zenless-optimizer/zzz/formula-ui'
+import { buffAppliesToMainUnit } from '@zenless-optimizer/zzz/formula-ui/teammate'
 import { useMemo } from 'react'
-import type { CharacterKey } from '../../consts'
-import type { Team, TeamConditional } from '../../db'
-import { useCharacter, useDiscSets, useDiscs } from '../../db-ui'
-import { conditionals as allConditionalsMeta, buffs } from '../../formula'
-import { charSheets, discUiSheets, wengineUiSheets } from '../../formula-ui'
-import { buffAppliesToMainUnit } from '../../formula-ui/teammate'
 
 export type ComboMember = {
   key: CharacterKey
@@ -263,6 +274,9 @@ export function filterRelevantConditionals(
 ): TeamConditional[] {
   const mainKey = members[0]?.key
   return conditionals.filter((c) => {
+    // Enemy state (stunned, windswept, ...) applies to every hit, so it is
+    // always relevant in the main member's context.
+    if (c.sheet === 'enemy' && c.src === mainKey) return true
     const owner = members.find(
       (m) =>
         c.src === m.key &&

@@ -1,9 +1,12 @@
 import { Menu, Stack, Text } from '@mantine/core'
 import { DropdownButton } from '@zenless-optimizer/common/ui'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import {
+  OptConfigContext,
+  useDatabaseContext,
+} from '@zenless-optimizer/zzz/db-ui'
 import { useCallback, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { CharacterKey } from '../consts'
-import { OptConfigContext, useDatabaseContext } from '../db-ui'
 import {
   getRecommendedPresets,
   mergeStatFilters,
