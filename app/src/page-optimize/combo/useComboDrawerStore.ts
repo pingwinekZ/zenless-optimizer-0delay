@@ -6,7 +6,10 @@ import {
   parseComboState,
 } from '@zenless-optimizer/zzz/db'
 import { own } from '@zenless-optimizer/zzz/formula'
-import { useZzzCalcContext } from '@zenless-optimizer/zzz/formula-ui'
+import {
+  getTagLabel,
+  useZzzCalcContext,
+} from '@zenless-optimizer/zzz/formula-ui'
 import { useMemo } from 'react'
 import { create } from 'zustand'
 import { parseSkillVariant, skillVariantBase } from '../OptTargetTagDisplay'
@@ -71,7 +74,12 @@ export function useComboFormulaGroups(): CascaderData {
       const rank = parsed ? variantPreference.indexOf(parsed.kind) : 0
       const prev = byKey.get(key)
       if (prev && prev.rank <= rank) continue
-      const label = skillVariantBase(tag as never) ?? name
+      // `getTagLabel` keeps non-skill formulas readable (e.g. "Anomaly DMG"
+      // instead of the raw `anomalyDmgInst`) — no badge renders the type here.
+      const label =
+        skillVariantBase(tag as never) ||
+        getTagLabel(tag as never, { includeDamageType: true }) ||
+        name
       const rawDamageType = (tag as { damageType1?: string }).damageType1 ?? ''
       byKey.set(key, {
         sheet,

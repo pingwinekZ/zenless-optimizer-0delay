@@ -70,6 +70,7 @@
     "@mantine/modals": "^9.6.1",
     "@mantine/notifications": "^9.6.1",
     "@tabler/icons-react": "^3.46.0",
+    "@zumer/snapdom": "^2.8.0",
     "ag-grid-community": "^36.1.0",
     "ag-grid-react": "^36.1.0",
     "chroma-js": "^3.2.0",

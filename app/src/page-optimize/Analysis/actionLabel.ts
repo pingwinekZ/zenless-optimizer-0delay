@@ -27,5 +27,12 @@ export function optTargetLabel(tag: Tag): string {
     if (title && title !== name) return title
   }
 
-  return getTagLabel(tag) || [sheet, name].filter(Boolean).join('.') || 'Target'
+  // `includeDamageType` keeps labels like `anomalyDmgInst` → "Anomaly DMG"
+  // instead of losing them to the badge-based display and falling back to the
+  // raw `sheet.name` below.
+  return (
+    getTagLabel(tag, { includeDamageType: true }) ||
+    [sheet, name].filter(Boolean).join('.') ||
+    'Target'
+  )
 }

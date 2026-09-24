@@ -33,3 +33,15 @@
 .recharts-wrapper *:focus:not(:focus-visible) {
   outline: none !important;
 }
+
+/* Goon Corner: stretch the embedded tweet to the full embed-area width. X
+   sizes the iframe in inline styles at render time (capped at its card max),
+   which a one-time JS set can't beat on re-measure — `!important` CSS does.
+   The bands left past X's ~550px card max stay transparent (the embed area
+   declares no background fill), so the widget surface shows through. */
+.goon-embed-area twitter-widget {
+  width: 100% !important;
+}
+.goon-embed-area twitter-widget iframe {
+  width: 100% !important;
+}

@@ -6,17 +6,16 @@
   cursor: pointer;
   box-shadow: var(--showcase-shadow, none);
   background: var(--showcase-card-bg-bridge-high);
-  min-height: 240px;
 }
 
-.wengineOverlay {
+.wengineBar {
   position: relative;
   z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 8px 14px;
+  padding: 10px 14px;
   width: 100%;
   background: linear-gradient(
     to right,

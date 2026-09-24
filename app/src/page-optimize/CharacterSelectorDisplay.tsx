@@ -129,6 +129,7 @@ export function CharacterSelectorDisplay({
         show={showCharModal}
         onHide={onHideCharModal}
         onSelect={setCharacterKey}
+        restrictToDatabase
       />
       <WengineSelectionModal
         show={showWengineModal}

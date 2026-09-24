@@ -17,36 +17,20 @@ export function ShowcaseWengine({
   return (
     <Box className={styles.wengineCard} onClick={onClick}>
       {wengineKey ? (
-        <>
-          <Box
-            component="img"
-            src={wengineAsset(wengineKey)}
-            alt=""
-            style={{
-              position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              display: 'block',
-            }}
-          />
-          <Box className={styles.wengineOverlay}>
-            <Box style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <ImgIcon src={wengineAsset(wengineKey)} size={1.4} />
-              <Text className={styles.wengineName} component="span">
-                <WengineName wKey={wengineKey} />
-              </Text>
-            </Box>
-            <Text className={styles.wenginePhase}>P{phase}</Text>
+        <Box className={styles.wengineBar}>
+          <Box style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <ImgIcon src={wengineAsset(wengineKey)} size={2.8} />
+            <Text className={styles.wengineName} component="span">
+              <WengineName wKey={wengineKey} />
+            </Text>
           </Box>
-        </>
+          <Text className={styles.wenginePhase}>P{phase}</Text>
+        </Box>
       ) : (
         <Box
-          className={styles.wengineOverlay}
+          className={styles.wengineBar}
           style={{
             justifyContent: 'center',
-            minHeight: 44,
           }}
         >
           <Text size="sm" c="dimmed">

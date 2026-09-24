@@ -19,13 +19,15 @@
       "options": {
         "commands": [
           "node app/src/page-optimize/scripts/gen-da-seasons.mjs",
-          "node app/src/page-optimize/scripts/gen-sd-seasons.mjs"
+          "node app/src/page-optimize/scripts/gen-sd-seasons.mjs",
+          "bun app/src/goonCorner/scripts/gen-bookmarks.ts"
         ],
         "parallel": true
       },
       "outputs": [
         "{projectRoot}/src/page-optimize/daSeasons_gen.json",
-        "{projectRoot}/src/page-optimize/shiyuSeasons_gen.json"
+        "{projectRoot}/src/page-optimize/shiyuSeasons_gen.json",
+        "{projectRoot}/src/goonCorner/tweets_gen.ts"
       ]
     }
   },

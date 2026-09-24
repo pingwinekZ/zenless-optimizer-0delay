@@ -74,6 +74,10 @@ export function TeammateCard({
   const [showWengineModal, onShowWengineModal, onHideWengineModal] =
     useBoolState()
 
+  // The optimized character can't also be a teammate, so it never appears in
+  // the teammate picker. Memoized to keep a stable reference for the modal.
+  const hiddenCharacterKeys = useMemo(() => [mainChar.key], [mainChar.key])
+
   // Deferred teammate selection: save the selection, close the modal first,
   // then apply the DB mutation. This avoids a race where the database mutation
   // triggers a synchronous re-render (via useSyncExternalStore) before the
@@ -163,6 +167,8 @@ export function TeammateCard({
         onHide={onHideCharModal}
         onSelect={onCharSelect}
         showNone={!!characterKey}
+        restrictToDatabase
+        hiddenCharacterKeys={hiddenCharacterKeys}
       />
       {!characterKey ? (
         <Flex className={classes.card} p={16} align="center" justify="center">

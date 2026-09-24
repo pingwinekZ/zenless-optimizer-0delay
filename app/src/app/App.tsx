@@ -12,6 +12,7 @@ import {
 } from '@zenless-optimizer/zzz/theme'
 import { Suspense, useEffect, useMemo } from 'react'
 import { HashRouter, Navigate, Route, Routes } from 'react-router'
+import { GoonCorner } from '../goonCorner/GoonCorner'
 import { LayoutSider } from './LayoutSider'
 import { NavigateContextProvider, useNavigateContext } from './NavigateContext'
 import {
@@ -60,6 +61,7 @@ export default function App() {
             <NavigateContextProvider>
               <Content />
               <ScrollTop />
+              <GoonCorner />
             </NavigateContextProvider>
           </HashRouter>
         </ModalsProvider>
@@ -71,6 +73,11 @@ export default function App() {
 function CharactersRoute() {
   const { navigateToOptimize } = useNavigateContext()
   return <PageCharacters onNavigateToOptimize={navigateToOptimize} />
+}
+
+function OptimizeRoute() {
+  const { navigateToCharacters } = useNavigateContext()
+  return <PageOptimize onNavigateToCharacters={navigateToCharacters} />
 }
 
 function Content() {
@@ -98,7 +105,7 @@ function Content() {
               <Route path="/discs" element={<PageDiscs />} />
               <Route path="/wengines" element={<PageWengines />} />
               <Route path="/characters" element={<CharactersRoute />} />
-              <Route path="/optimize" element={<PageOptimize />} />
+              <Route path="/optimize" element={<OptimizeRoute />} />
               <Route path="/settings" element={<PageSettings />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

@@ -58,7 +58,18 @@ const formulaLabelMap: Record<string, string> = {
   sharpDmgInst: 'Sharp DMG',
 }
 
-export function getTagLabel(tag: Tag | undefined | null): string {
+export function getTagLabel(
+  tag: Tag | undefined | null,
+  opts?: {
+    /**
+     * Keep the label's own damage-type qualifier even when `FullTagDisplay`
+     * renders it as a badge. Plain-text callers (chart labels, option lists)
+     * have no badge, so they pass `true`.
+     */
+    includeDamageType?: boolean
+  }
+): string {
+  const includeDamageType = opts?.includeDamageType ?? false
   if (!tag) return ''
   const { et, q, qt, name, damageType1, damageType2 } = tag
   if (et === 'own' && qt === 'formula' && q !== 'base') {
@@ -67,8 +78,10 @@ export function getTagLabel(tag: Tag | undefined | null): string {
       // the Sharp qualifier (already shown as a badge by FullTagDisplay),
       // so only the suffix is returned here. Gash keeps its qualifier
       // ("Electric Gash Buildup") since it has no badge.
-      if (name === 'sharpDmgInst' && damageType1 === 'sharp') return 'Damage'
-      if (name === 'gashBuildupInst' && damageType1 === 'gash') return 'Buildup'
+      if (name === 'sharpDmgInst' && damageType1 === 'sharp')
+        return includeDamageType ? 'Sharp DMG' : 'Damage'
+      if (name === 'gashBuildupInst' && damageType1 === 'gash')
+        return includeDamageType ? 'Gash Buildup' : 'Buildup'
       // Match formula names like 'vortexDmgInst_fire' → 'Vortex DMG',
       // 'disorderDmgInst_fire' → 'Disorder DMG'
       for (const [prefix, label] of Object.entries(formulaLabelMap)) {
@@ -76,7 +89,8 @@ export function getTagLabel(tag: Tag | undefined | null): string {
           // If the label matches a damage type already shown via qualifiers,
           // return empty to avoid redundancy (e.g. "Fire Anomaly Vortex" + "Vortex DMG")
           const dmgType = prefix.replace(/(DmgInst|BuildupInst)$/, '')
-          if (damageType1 === dmgType || damageType2 === dmgType) return ''
+          if (damageType1 === dmgType || damageType2 === dmgType)
+            return includeDamageType ? label : ''
           return label
         }
       }

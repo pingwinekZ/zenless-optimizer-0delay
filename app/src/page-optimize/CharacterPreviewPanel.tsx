@@ -61,6 +61,7 @@ export function CharacterPreviewPanel({
         show={showCharModal}
         onHide={onHideCharModal}
         onSelect={(ck) => ck && onCharacterChange(ck)}
+        restrictToDatabase
       />
       <WengineSelectionModal
         show={showWengineModal}

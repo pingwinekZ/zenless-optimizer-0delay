@@ -443,6 +443,7 @@ function PreviewContent({
       {!preview && (
         <ShowcaseCustomizationSidebar
           id={previewId}
+          characterKey={characterKey}
           seedColor={seedColor}
           effectiveColorMode={effectiveColorMode}
           portraitSwatches={portraitSwatches}

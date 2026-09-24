@@ -1,12 +1,16 @@
-import { ColorInput, Flex, SegmentedControl } from '@mantine/core'
+import { Button, ColorInput, Flex, SegmentedControl } from '@mantine/core'
 import {
+  IconCamera,
   IconCircleHalf2,
+  IconDownload,
   IconMoon,
   IconPalette,
   IconSun,
 } from '@tabler/icons-react'
 import { HorizontalDivider } from '@zenless-optimizer/common/ui'
-import { useCallback, useMemo, useState } from 'react'
+import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { memo, useCallback, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { DEFAULT_CONFIG } from '../color/colorPipelineConfig'
 import { withAlpha } from '../color/colorUtils'
 import {
@@ -14,12 +18,14 @@ import {
   ShowcaseColorMode,
 } from '../color/showcaseColorService'
 import { defaultGap, defaultPadding } from '../constantsUi'
+import { useScreenshotAction } from '../screenshot/useScreenshotAction'
 import classes from './ShowcaseCustomizationSidebar.module.css'
 
 export type ShowcasePreset = 'shine' | 'natural'
 
 interface ShowcaseCustomizationSidebarProps {
   id: string
+  characterKey: CharacterKey
   seedColor: string
   effectiveColorMode: ShowcaseColorMode
   portraitSwatches: string[]
@@ -34,6 +40,7 @@ interface ShowcaseCustomizationSidebarProps {
 
 export function ShowcaseCustomizationSidebar({
   id,
+  characterKey,
   seedColor,
   effectiveColorMode,
   portraitSwatches,
@@ -52,6 +59,7 @@ export function ShowcaseCustomizationSidebar({
       className={classes.sidebarContainer}
       style={{ left: '100%', marginLeft: 8 }}
     >
+      <ScreenshotPanel id={id} characterKey={characterKey} />
       <CustomizationPanel
         id={id}
         seedColor={seedColor}
@@ -68,6 +76,51 @@ export function ShowcaseCustomizationSidebar({
     </Flex>
   )
 }
+
+// =============================================================================
+
+const ScreenshotPanel = memo(function ScreenshotPanel({
+  id,
+  characterKey,
+}: {
+  id: string
+  characterKey: CharacterKey
+}) {
+  const { loading, trigger: screenshot } = useScreenshotAction(id)
+  const { t } = useTranslation(['page_characters', 'charNames_gen'])
+  const characterName = t(`charNames_gen:${characterKey}`)
+
+  return (
+    <Flex direction="column" gap={6} style={cardStyle}>
+      <Flex gap={6}>
+        <Button
+          loading={loading}
+          onClick={() => screenshot('clipboard', characterName)}
+          className={classes.actionButton}
+          variant="default"
+          style={{ height: 'auto' }}
+          title={t('page_characters:screenshot.copy')}
+          aria-label={t('page_characters:screenshot.copy')}
+        >
+          <IconCamera size={18} />
+        </Button>
+        <Button
+          loading={loading}
+          onClick={() => screenshot('download', characterName)}
+          className={classes.actionButton}
+          variant="default"
+          style={{ height: 'auto' }}
+          title={t('page_characters:screenshot.download')}
+          aria-label={t('page_characters:screenshot.download')}
+        >
+          <IconDownload size={18} />
+        </Button>
+      </Flex>
+    </Flex>
+  )
+})
+
+// =============================================================================
 
 const CustomizationPanel = ({
   id,

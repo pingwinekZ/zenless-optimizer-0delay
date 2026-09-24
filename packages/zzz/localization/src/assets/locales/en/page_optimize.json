@@ -1,4 +1,9 @@
 {
+  "noCharacters": {
+    "title": "No characters yet",
+    "description": "Add a character on the Characters page to start optimizing for them.",
+    "action": "Go to Characters"
+  },
   "char": "Character",
   "opt": "Optimize",
   "builds": "Builds",

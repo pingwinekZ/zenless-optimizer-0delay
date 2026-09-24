@@ -1,5 +1,9 @@
-import { Box } from '@mantine/core'
-import { useDataEntryBase } from '@zenless-optimizer/common/database-ui'
+import { Box, Button, Flex, Text } from '@mantine/core'
+import { IconUserPlus } from '@tabler/icons-react'
+import {
+  useDataEntryBase,
+  useDataManagerKeys,
+} from '@zenless-optimizer/common/database-ui'
 import { useTitle } from '@zenless-optimizer/common/ui'
 import { objKeyMap, stableArr } from '@zenless-optimizer/common/util'
 import type { DebugReadContextObj } from '@zenless-optimizer/game-opt/formula-ui'
@@ -16,7 +20,6 @@ import {
 } from '@zenless-optimizer/game-opt/sheet-ui'
 import type { BaseRead } from '@zenless-optimizer/pando/engine'
 import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
-import { allCharacterKeys } from '@zenless-optimizer/zzz/consts'
 import type { TeamConditional } from '@zenless-optimizer/zzz/db'
 import {
   CharacterContext,
@@ -37,20 +40,33 @@ import { useTranslation } from 'react-i18next'
 import { CharacterOptDisplay } from './CharacterOptDisplay'
 import { TeamHeaderHeightContext } from './context/TeamHeaderHeightContext'
 
-export default function PageOptimize() {
+export default function PageOptimize({
+  onNavigateToCharacters,
+}: {
+  onNavigateToCharacters?: () => void
+} = {}) {
   const { database } = useDatabaseContext()
   const { optCharKey } = useDataEntryBase(database.dbMeta)
-  const characterKey = optCharKey ?? allCharacterKeys[0]
+  const databaseCharKeys = useDataManagerKeys(database.chars)
+  // The optimizer is scoped to the characters added on the characters page and
+  // never creates one itself. A saved `optCharKey` that was since removed falls
+  // back to the first added character, and an empty database stays empty so the
+  // empty state renders.
+  const characterKey =
+    (optCharKey && databaseCharKeys.includes(optCharKey)
+      ? optCharKey
+      : undefined) ?? databaseCharKeys[0]
   const { t } = useTranslation(['charNames_gen', 'page_character'])
   const character = useCharacter(characterKey)
   const team = useTeam(characterKey)
 
-  // Create character/team if they don't exist yet — in useEffect to avoid
-  // triggering state updates on other components during render
+  // Team records are still created on demand (a character can arrive from an
+  // import without one) — in useEffect to avoid triggering state updates on
+  // other components during render. Character records themselves are only ever
+  // created on the characters page.
   useEffect(() => {
-    if (characterKey && !character) database.chars.getOrCreate(characterKey)
     if (characterKey && !team) database.teams.getOrCreate(characterKey)
-  }, [characterKey, character, team, database])
+  }, [characterKey, team, database.teams])
   useTitle(
     useMemo(() => {
       const charName = characterKey && t(`charNames_gen:${characterKey}`)
@@ -78,6 +94,7 @@ export default function PageOptimize() {
       dst: string | null,
       condValue: number
     ) => {
+      if (!characterKey) return
       if (!isSheet(sheet) || !isMember(src) || !(dst === null || isMember(dst)))
         return
       const cond = getConditional(sheet, condKey)
@@ -95,12 +112,15 @@ export default function PageOptimize() {
     },
     [characterKey, database.teams]
   )
-  const tag = useMemo<Tag>(
-    () => ({
-      src: characterKey,
-      dst: characterKey,
-      preset: `preset0`,
-    }),
+  const tag = useMemo<Tag | undefined>(
+    () =>
+      characterKey
+        ? {
+            src: characterKey,
+            dst: characterKey,
+            preset: `preset0`,
+          }
+        : undefined,
     [characterKey]
   )
 
@@ -112,9 +132,16 @@ export default function PageOptimize() {
     }),
     [debugRead]
   )
+
+  if (!characterKey) {
+    return (
+      <OptimizeEmptyState onNavigateToCharacters={onNavigateToCharacters} />
+    )
+  }
+
   return (
     <Box>
-      {character && team && (
+      {character && team && tag && (
         <CharacterContext.Provider value={character}>
           <TagContext.Provider value={tag}>
             <CharCalcProvider
@@ -152,6 +179,40 @@ export default function PageOptimize() {
         </CharacterContext.Provider>
       )}
     </Box>
+  )
+}
+
+/**
+ * Shown when the local database has no characters at all. The optimizer used to
+ * silently add the game's first character in this situation, which made an
+ * empty database impossible to reach.
+ */
+function OptimizeEmptyState({
+  onNavigateToCharacters,
+}: {
+  onNavigateToCharacters?: () => void
+}) {
+  const { t } = useTranslation('page_optimize')
+  return (
+    <Flex
+      direction="column"
+      align="center"
+      justify="center"
+      gap={8}
+      mih={320}
+      c="dimmed"
+    >
+      <IconUserPlus size={48} opacity={0.3} />
+      <Text fw={600}>{t('noCharacters.title')}</Text>
+      <Text size="sm" ta="center" maw={360}>
+        {t('noCharacters.description')}
+      </Text>
+      {onNavigateToCharacters && (
+        <Button variant="default" mt={4} onClick={onNavigateToCharacters}>
+          {t('noCharacters.action')}
+        </Button>
+      )}
+    </Flex>
   )
 }
 

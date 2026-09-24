@@ -1,6 +1,9 @@
 import { Box, CloseButton, Flex, Text, TextInput } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
-import { useDataEntryBase } from '@zenless-optimizer/common/database-ui'
+import {
+  useDataEntryBase,
+  useDataManagerKeys,
+} from '@zenless-optimizer/common/database-ui'
 import { ImgIcon, ModalWrapper } from '@zenless-optimizer/common/ui'
 import { filterFunction } from '@zenless-optimizer/common/util'
 import {
@@ -35,19 +38,34 @@ const CLIP_SKEW_PCT = 31
 const LAYOUT_OVERLAP_PCT = 32
 const H_OVERLAP = Math.round((CARD_WIDTH * LAYOUT_OVERLAP_PCT) / 100)
 
+// Module-level so the default keeps a stable identity across renders — an inline
+// `[]` default would invalidate the memo below on every render.
+const NO_HIDDEN_KEYS: readonly CharacterKey[] = []
+
 export function CharacterSingleSelectionModal({
   show,
   onHide,
   onSelect,
   showNone = false,
+  restrictToDatabase = false,
+  hiddenCharacterKeys = NO_HIDDEN_KEYS,
 }: {
   show: boolean
   onHide: () => void
   onSelect: (cKey: CharacterKey | null) => void
   showNone?: boolean
+  /**
+   * Only offer characters that were added to the local database (the ones
+   * listed on the characters page), instead of every character in the game.
+   */
+  restrictToDatabase?: boolean
+  /** Characters to omit from the list — e.g. the optimized character when
+   *  picking a teammate, who may not be duplicated on the same team. */
+  hiddenCharacterKeys?: readonly CharacterKey[]
 }) {
   const { database } = useDatabaseContext()
   const displayCharacter = useDataEntryBase(database.displayCharacter)
+  const databaseCharKeys = useDataManagerKeys(database.chars)
   const [searchTerm, setSearchTerm] = useState('')
   const deferredSearchTerm = useDeferredValue(searchTerm)
   const deferredState = useDeferredValue(displayCharacter)
@@ -56,22 +74,32 @@ export function CharacterSingleSelectionModal({
   const [hoveredKey, setHoveredKey] = useState<string | null>(null)
   const characterKeyList = useMemo(() => {
     const { rarity } = deferredState
-    const filteredKeys = allCharacterKeys.filter(
-      filterFunction(
-        {
-          attribute: attributeFilter,
-          specialtyType: specialtyFilter,
-          rarity,
-          name: deferredSearchTerm,
-        },
-        characterFilterConfigs(database)
+    const addedKeys = restrictToDatabase ? new Set(databaseCharKeys) : null
+    const hiddenKeys = hiddenCharacterKeys.length
+      ? new Set(hiddenCharacterKeys)
+      : null
+    const filteredKeys = allCharacterKeys
+      .filter((ck) => !addedKeys || addedKeys.has(ck))
+      .filter((ck) => !hiddenKeys || !hiddenKeys.has(ck))
+      .filter(
+        filterFunction(
+          {
+            attribute: attributeFilter,
+            specialtyType: specialtyFilter,
+            rarity,
+            name: deferredSearchTerm,
+          },
+          characterFilterConfigs(database)
+        )
       )
-    )
     return filteredKeys
   }, [
     deferredState,
     deferredSearchTerm,
     database,
+    databaseCharKeys,
+    restrictToDatabase,
+    hiddenCharacterKeys,
     attributeFilter,
     specialtyFilter,
   ])

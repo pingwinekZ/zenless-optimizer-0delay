@@ -64,6 +64,14 @@ bun run reload-dm   # git submodule update --init
 bun run update-dm   # git submodule update --remote
 ```
 
+### Goon Corner bookmarks
+
+```bash
+bun app/src/goonCorner/scripts/gen-bookmarks.ts <path>  # regenerate app/src/goonCorner/tweets_gen.ts from X bookmark export
+```
+
+`<path>` is a bookmark-export browser-extension JSON or an official X data-archive root (uses `data/bookmark*.js`). Also reads `X_BOOKMARKS_FILE` / `X_ARCHIVE_DIR` env vars. Runs as part of `gen-file`; with nothing configured it exits 0 without writing.
+
 ## Code Style
 
 - **Formatter**: Biome (single quotes, `asNeeded` semicolons, trailing commas es5, 2-space indent, LF, 80 char line width). Biome linter is **disabled** — linting is done by ESLint only.

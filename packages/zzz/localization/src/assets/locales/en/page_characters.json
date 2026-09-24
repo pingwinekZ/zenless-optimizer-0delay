@@ -50,5 +50,13 @@
       "shine": "Shine",
       "natural": "Natural"
     }
+  },
+  "screenshot": {
+    "copy": "Copy image to clipboard",
+    "download": "Download image",
+    "success": "Copied to clipboard",
+    "downloadSuccess": "Image downloaded",
+    "failed": "Could not generate the image",
+    "notAllowed": "Clipboard access was blocked"
   }
 }
