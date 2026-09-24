@@ -41,7 +41,7 @@
  */
 
 import { Message } from '@zenless-optimizer/zzz/ui'
-import { preCache, type SnapdomPlugin, snapdom } from '@zumer/snapdom'
+import { type SnapdomPlugin, snapdom } from '@zumer/snapdom'
 import i18next from 'i18next'
 import { cardTotalW, parentH } from '../constantsUi'
 
@@ -161,11 +161,9 @@ export async function screenshotElementById(
       /* best-effort */
     })
 
-    try {
-      await preCache(element)
-    } catch {
-      /* best-effort */
-    }
+    // v3 embeds the card's web fonts automatically and caches resources
+    // internally, so no preCache / manual font dance is needed beyond this
+    // best-effort wait for "Maven Pro" before serializing.
     const imageCache = await buildImageDataUriCache(element)
 
     let blob: Blob | null = null
@@ -174,13 +172,13 @@ export async function screenshotElementById(
       try {
         const capture = await withTimeout(
           snapdom(element, {
-            scale: 1,
+            // v3: width/height take precedence over scale, and font embedding
+            // is automatic ('auto'), so neither scale nor embedFonts is passed.
             dpr: SCREENSHOT_EXPORT_DPR,
             width: cardTotalW,
             height: parentH,
             backgroundColor: 'transparent',
             outerShadows: true,
-            embedFonts: true,
             fallbackURL:
               'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
             plugins: [buildImageInliningPlugin(imageCache)],
@@ -188,7 +186,7 @@ export async function screenshotElementById(
           attemptTimeoutMs
         )
         blob = await capture.toBlob({
-          type: SCREENSHOT_IMAGE_TYPE,
+          format: SCREENSHOT_IMAGE_TYPE,
           quality: 1.0,
         })
         // A small blob means the rasterizer dropped content — retry.

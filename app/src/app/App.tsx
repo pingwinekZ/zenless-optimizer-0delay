@@ -4,6 +4,7 @@ import { Notifications } from '@mantine/notifications'
 import { ScrollTop } from '@zenless-optimizer/common/ui'
 import { DatabaseProvider } from '@zenless-optimizer/zzz/db-ui'
 import '@zenless-optimizer/zzz/i18n' // import to load translations
+import { LiveImportProvider } from '@zenless-optimizer/zzz/websocket/LiveImportProvider'
 import { Gradient } from '@zenless-optimizer/zzz/rendering/gradient'
 import {
   createMantineTheme,
@@ -50,21 +51,23 @@ export default function App() {
       defaultColorScheme="dark"
     >
       <DatabaseProvider>
-        <ModalsProvider>
-          {/* `width: fit-content` keeps short messages narrow instead of
+        <LiveImportProvider>
+          <ModalsProvider>
+            {/* `width: fit-content` keeps short messages narrow instead of
               always occupying the full `containerWidth` (440px) */}
-          <Notifications
-            position="top-right"
-            styles={{ root: { width: 'fit-content' } }}
-          />
-          <HashRouter>
-            <NavigateContextProvider>
-              <Content />
-              <ScrollTop />
-              <GoonCorner />
-            </NavigateContextProvider>
-          </HashRouter>
-        </ModalsProvider>
+            <Notifications
+              position="top-right"
+              styles={{ root: { width: 'fit-content' } }}
+            />
+            <HashRouter>
+              <NavigateContextProvider>
+                <Content />
+                <ScrollTop />
+                <GoonCorner />
+              </NavigateContextProvider>
+            </HashRouter>
+          </ModalsProvider>
+        </LiveImportProvider>
       </DatabaseProvider>
     </MantineProvider>
   )
