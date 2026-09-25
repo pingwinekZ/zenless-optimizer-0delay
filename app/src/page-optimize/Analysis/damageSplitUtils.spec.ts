@@ -72,6 +72,19 @@ describe('extractDamageSplits', () => {
     const entries = extractDamageSplits([noType])
     expect(entries[0]!.segments[0]!.damageType).toBe('ice')
   })
+
+  it('colors names by tag variant, mirroring the combo card', () => {
+    const entries = extractDamageSplits([
+      {
+        name: 'Basic.1',
+        tag: { damageType1: 'basic', attribute: 'fire' },
+        value: 100,
+      } as unknown as PerActionDamage,
+      action('Basic.2', 100, 'basic'),
+    ])
+    expect(entries[0]!.nameColor).toBe('var(--mantine-color-fire-filled)')
+    expect(entries[1]!.nameColor).toBeUndefined()
+  })
 })
 
 describe('extractDamageByTag', () => {

@@ -32,6 +32,7 @@ const TOOLTIP_STYLE: CSSProperties = {
 
 type BarDatum = {
   name: string
+  nameColor?: string
   value: number
   color: string
   label: string
@@ -48,7 +49,11 @@ function ChartTooltip({
   if (!active || !datum) return null
   return (
     <Box style={TOOLTIP_STYLE}>
-      <Text size="xs" fw={700}>
+      <Text
+        size="xs"
+        fw={700}
+        style={datum.nameColor ? { color: datum.nameColor } : undefined}
+      >
         {datum.name}
       </Text>
       <Text size="xs" c="dimmed">
@@ -56,6 +61,33 @@ function ChartTooltip({
       </Text>
       <Text size="xs">{formatInt(datum.value)}</Text>
     </Box>
+  )
+}
+
+/** Y-axis tick mirroring the combo card's attack-name coloring. */
+function NameTick({
+  x,
+  y,
+  payload,
+  colors,
+}: {
+  x?: number
+  y?: number
+  payload?: { value?: string | number }
+  colors: Map<string, string>
+}) {
+  const name = String(payload?.value ?? '')
+  return (
+    <text
+      x={x}
+      y={y}
+      dy={4}
+      textAnchor="end"
+      fontSize={12}
+      style={{ fill: colors.get(name) ?? CHART_COLOR }}
+    >
+      {name}
+    </text>
   )
 }
 
@@ -76,6 +108,7 @@ export function DamageSplitsChart({
         const segment = entry.segments[0]
         return {
           name: entry.name,
+          nameColor: entry.nameColor,
           value: entry.total,
           color: segment?.color ?? CHART_COLOR,
           label: segment?.label ?? '',
@@ -83,6 +116,13 @@ export function DamageSplitsChart({
       }),
     [entries]
   )
+
+  const nameColors = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const datum of data)
+      if (datum.nameColor) map.set(datum.name, datum.nameColor)
+    return map
+  }, [data])
 
   const labelWidth = useMemo(() => {
     const longest = data.reduce((max, d) => Math.max(max, d.name.length), 0)
@@ -104,7 +144,7 @@ export function DamageSplitsChart({
           type="category"
           dataKey="name"
           width={labelWidth}
-          tick={{ fontSize: 12, fill: CHART_COLOR }}
+          tick={<NameTick colors={nameColors} />}
           axisLine={false}
           tickLine={false}
         />

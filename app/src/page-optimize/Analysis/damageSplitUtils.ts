@@ -1,4 +1,5 @@
 import type { Tag } from '@zenless-optimizer/zzz/formula'
+import { getVariant } from '@zenless-optimizer/zzz/formula-ui'
 import { damageTypeColor, damageTypeLabel, tagDamageType } from './damageTypes'
 import type { PerActionDamage } from './ExpandedDataPanelController'
 
@@ -11,6 +12,12 @@ export type DamageSplitSegment = {
 
 export type DamageSplitEntry = {
   name: string
+  /**
+   * Variant color for the name label, mirroring `ColorText` + `getVariant`
+   * (the combo card's attack-name coloring). Absent when the tag has no
+   * variant color.
+   */
+  nameColor?: string
   segments: DamageSplitSegment[]
   total: number
 }
@@ -22,6 +29,15 @@ export type DamageTagSlice = {
   fill: string
   value: number
   percent: number
+}
+
+/**
+ * CSS color for an action name label, mirroring `ColorText` + `getVariant`
+ * (the combo card's attack-name coloring, without the tag pills).
+ */
+export function tagNameColor(tag: Tag): string | undefined {
+  const color = getVariant(tag)
+  return color ? `var(--mantine-color-${color}-filled)` : undefined
 }
 
 /**
@@ -43,6 +59,7 @@ export function extractDamageSplits(
     const damageType = tagDamageType(action.tag)
     entries.push({
       name: label ? label(action.tag) : action.name,
+      nameColor: tagNameColor(action.tag),
       segments: [
         {
           damageType,

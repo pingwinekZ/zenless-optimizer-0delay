@@ -41,4 +41,18 @@ describe('optTargetLabel', () => {
 
     expect(optTargetLabel(tag)).toBe('someUnmappedFormula')
   })
+
+  it('labels skill variants like the combo card: base name only, no suffix', () => {
+    const tag = {
+      et: 'own',
+      qt: 'formula',
+      q: 'standardDmg',
+      sheet: 'Alice',
+      attribute: 'physical',
+      damageType1: 'basic',
+      name: 'BasicAttackEnlightenedMindSunderlight_0_dmg',
+    } as unknown as Tag
+
+    expect(optTargetLabel(tag)).toBe('Enlightened Mind Sunderlight #1')
+  })
 })

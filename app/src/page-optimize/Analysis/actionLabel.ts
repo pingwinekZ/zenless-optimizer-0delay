@@ -1,25 +1,21 @@
 import type { Tag } from '@zenless-optimizer/zzz/formula'
 import { getTagLabel } from '@zenless-optimizer/zzz/formula-ui'
 import { i18n } from '@zenless-optimizer/zzz/i18n'
-import {
-  parseSkillVariant,
-  skillVariantBase,
-  variantTypeLabel,
-} from '../OptTargetTagDisplay'
+import { parseSkillVariant, skillVariantBase } from '../OptTargetTagDisplay'
 
 /**
  * Plain-text label for a target/action tag, mirroring what
- * `OptTargetTagDisplay` renders.
- *
- * Order matters: skill variants resolve through the character's localized
- * ability names, then sheet-authored formula titles (`char_<sheet>` keys, e.g.
- * `luminizeRainbowsEndDmgInst` → "Rainbow's End Luminize"), then the shared
- * formula/damage-type labels, and only then the raw tag fields.
+ * `ComboHitDisplay` renders (combo card parity): the localized skill name +
+ * hit index with no DMG/Daze/Buildup suffix — the combo metric already
+ * selects the variant — then sheet-authored formula titles
+ * (`char_<sheet>` keys, e.g. `luminizeRainbowsEndDmgInst` → "Rainbow's End
+ * Luminize"), then the shared formula/damage-type labels, and only then the
+ * raw tag fields.
  */
 export function optTargetLabel(tag: Tag): string {
   const parsed = parseSkillVariant(tag)
   const base = parsed ? skillVariantBase(tag) : undefined
-  if (parsed && base) return `${base} ${variantTypeLabel(parsed.kind)}`
+  if (parsed && base) return base
 
   const { sheet, name } = tag
   if (typeof sheet === 'string' && typeof name === 'string') {
