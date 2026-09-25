@@ -7,7 +7,6 @@ import {
   Paper,
   Portal,
   Text,
-  useComputedColorScheme,
 } from '@mantine/core'
 import {
   IconChevronDown,
@@ -16,12 +15,13 @@ import {
   IconChevronUp,
   IconExternalLink,
   IconGhost,
-  IconGripVertical,
+  IconHeart,
   IconPhoto,
+  IconPlayerPlay,
   IconRefresh,
   IconX,
 } from '@tabler/icons-react'
-import type { PointerEvent as ReactPointerEvent } from 'react'
+import type { ReactNode } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { GoonState, GoonStorage } from './dailyPick'
 import {
@@ -33,19 +33,8 @@ import {
   todayKey,
   writeState,
 } from './dailyPick'
-import type { GoonMediaItem } from './goonMedia'
-import { fetchGoonMedia } from './goonMedia'
-import type { GoonGeometry, ViewportSize } from './widgetGeometry'
-import {
-  COLLAPSED_WIDTH,
-  clampDragPosition,
-  defaultGeometry,
-  fitIntoView,
-  HEADER_HEIGHT,
-  MIN_HEIGHT,
-  MIN_WIDTH,
-  VIEWPORT_MARGIN,
-} from './widgetGeometry'
+import type { GoonMediaItem, GoonStatusCard } from './goonMedia'
+import { fetchGoonMedia, fetchGoonStatus, isGoonTweetGone } from './goonMedia'
 
 const Z_INDEX = 1000
 /** The gallery modal must sit above the always-on-top widget. */
@@ -53,131 +42,199 @@ const GALLERY_Z_INDEX = 2000
 /** Deleted-tweet skips allowed per day before giving up on the list. */
 const MAX_SKIPS = 10
 
-function viewportSize(): ViewportSize {
-  return { width: window.innerWidth, height: window.innerHeight }
-}
+/**
+ * Pinned bottom-right layout at an official-like fixed width; the height
+ * hugs the content (scrolling internally past the viewport cap) so there is
+ * never a dead gap below the card.
+ */
+const VIEWPORT_MARGIN = 16
+const WIDGET_WIDTH = 500
+const COLLAPSED_WIDTH = 260
+const HEADER_HEIGHT = 34
 
 type EmbedStatus = 'idle' | 'loading' | 'ready' | 'error' | 'empty'
 type GalleryStatus = 'idle' | 'loading' | 'ready' | 'empty' | 'error'
-type EmbedTheme = 'light' | 'dark'
 
-/** Rounded corners for the embed area, matching X's own card. */
-const EMBED_RADIUS = 16
+/** FxEmbed fetch budgets; failures surface as Retry, never a stuck spinner. */
+const STATUS_TIMEOUT_MS = 10_000
+const GONE_CHECK_TIMEOUT_MS = 10_000
 
-interface TwitterWidgets {
-  widgets: {
-    createTweet: (
-      id: string,
-      el: HTMLElement,
-      options?: Record<string, unknown>
-    ) => Promise<HTMLElement | undefined>
-  }
-}
-
-declare global {
-  interface Window {
-    twttr?: TwitterWidgets
-  }
-}
-
-const WIDGETS_SRC = 'https://platform.twitter.com/widgets.js'
-let widgetsPromise: Promise<TwitterWidgets> | null = null
-
-function waitForWidgets(timeoutMs = 15_000): Promise<TwitterWidgets> {
-  return new Promise((resolve, reject) => {
-    const started = Date.now()
-    const tick = () => {
-      if (window.twttr?.widgets) {
-        resolve(window.twttr)
-        return
-      }
-      if (Date.now() - started > timeoutMs) {
-        reject(new Error('twitter widgets timed out'))
-        return
-      }
-      window.setTimeout(tick, 100)
-    }
-    tick()
+/** Short local date for the card byline; '' when the stamp is unusable. */
+function formatGoonDate(raw: string): string {
+  if (!raw) return ''
+  const time = new Date(raw).getTime()
+  if (Number.isNaN(time)) return ''
+  return new Date(time).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
   })
 }
 
-/** Inject `widgets.js` once and resolve with the global it publishes. */
-function loadTwitterWidgets(): Promise<TwitterWidgets> {
-  if (window.twttr?.widgets) return Promise.resolve(window.twttr)
-  if (widgetsPromise) return widgetsPromise
-  if (!document.querySelector(`script[src="${WIDGETS_SRC}"]`)) {
-    const script = document.createElement('script')
-    script.src = WIDGETS_SRC
-    script.async = true
-    document.head.appendChild(script)
-  }
-  widgetsPromise = waitForWidgets()
-  widgetsPromise.catch(() => {
-    widgetsPromise = null
-  })
-  return widgetsPromise
-}
-
-async function renderTweet(
-  id: string,
-  el: HTMLElement,
-  theme: EmbedTheme
-): Promise<boolean> {
-  const twttr = await loadTwitterWidgets()
-  el.replaceChildren()
-  const node = await twttr.widgets.createTweet(id, el, {
-    theme,
-    dnt: true,
-    align: 'center',
-  })
-  if (!node || el.childElementCount === 0) return false
-  // Stretch the embed to the full embed-area width immediately (the CSS rule
-  // in components.css keeps it applied across X's re-measures; this covers
-  // the first paint before stylesheets are re-evaluated).
-  node.style.setProperty('width', '100%')
-  node.shadowRoot
-    ?.querySelector<HTMLIFrameElement>('iframe')
-    ?.style.setProperty('width', '100%')
-  return true
-}
-
-/** oEmbed answers 404/403 for deleted, private or suspended tweets. */
-async function isTweetDeleted(id: string): Promise<boolean> {
-  try {
-    const response = await fetch(
-      `https://publish.twitter.com/oembed?url=${encodeURIComponent(
-        `https://twitter.com/i/status/${id}`
-      )}`
+/** Plain tweet text with bare URLs linkified. */
+function renderGoonText(text: string): ReactNode[] {
+  return text.split(/(https?:\/\/\S+)/g).map((part, index) =>
+    /^https?:\/\/\S+$/.test(part) ? (
+      <a key={index} href={part} target="_blank" rel="noreferrer">
+        {part}
+      </a>
+    ) : (
+      <span key={index}>{part}</span>
     )
-    return response.status === 404 || response.status === 403
-  } catch {
-    return false
-  }
+  )
 }
 
 /**
- * Embed one tweet: `createTweet` both rejects and silently renders nothing
- * depending on why it failed, so try twice and only then ask oEmbed whether
- * the tweet is actually gone. A network failure is never treated as deleted —
- * the caller keeps the id and offers Retry.
+ * Video player that fetches through a blob URL. The CDN 403s media requests
+ * carrying the page as `Referer`, and `<video>` supports no referrer policy
+ * attribute — but `fetch` does, and the CDN answers `*` to CORS.
  */
-async function embedTweet(
-  id: string,
-  el: HTMLElement,
-  theme: EmbedTheme
-): Promise<'ok' | 'deleted' | 'error'> {
-  try {
-    if (await renderTweet(id, el, theme)) return 'ok'
-  } catch {
-    // Either "not found" or a transient network error; verify below.
+function GoonVideoPlayer({
+  url,
+  poster,
+  onReady,
+}: {
+  url: string
+  poster?: string
+  onReady?: () => void
+}) {
+  const [src, setSrc] = useState<string | null>(null)
+  const [failed, setFailed] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    let objectUrl: string | null = null
+    setSrc(null)
+    setFailed(false)
+    void (async () => {
+      try {
+        const response = await fetch(url, {
+          referrerPolicy: 'no-referrer',
+        })
+        if (!response.ok) throw new Error(`video fetch failed`)
+        const blob = await response.blob()
+        if (cancelled) return
+        objectUrl = URL.createObjectURL(blob)
+        setSrc(objectUrl)
+      } catch {
+        if (!cancelled) setFailed(true)
+      }
+    })()
+    return () => {
+      cancelled = true
+      if (objectUrl) URL.revokeObjectURL(objectUrl)
+    }
+  }, [url])
+
+  if (failed) {
+    return (
+      <Text size="sm" c="dimmed">
+        Couldn't load this video.
+      </Text>
+    )
   }
-  try {
-    if (await renderTweet(id, el, theme)) return 'ok'
-  } catch {
-    // Still failing — fall through to the oEmbed check.
-  }
-  if (await isTweetDeleted(id)) return 'deleted'
-  return 'error'
+  if (!src) return <Loader size="sm" />
+  return (
+    <video
+      src={src}
+      poster={poster}
+      controls
+      autoPlay
+      loop
+      playsInline
+      preload="metadata"
+      onLoadedMetadata={onReady}
+      ref={(el) => {
+        // `muted` must land as a property for autoplay policies to honor
+        // it; the attribute alone is unreliable in React.
+        if (el) {
+          el.muted = true
+          void el.play().catch(() => {})
+        }
+      }}
+      style={{
+        width: 'auto',
+        height: '100%',
+        maxWidth: '100%',
+        objectFit: 'contain',
+      }}
+    />
+  )
+}
+
+/** Poster thumb for a mosaic cell: photos use the full image. */
+function goonThumb(item: GoonMediaItem): string {
+  return item.type === 'photo' ? item.url : (item.thumbnailUrl ?? item.url)
+}
+
+/** Centered play chip over video/gif thumbs, like the official client. */
+function GoonPlayBadge() {
+  return (
+    <Box
+      style={{
+        position: 'absolute',
+        inset: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        pointerEvents: 'none',
+      }}
+    >
+      <Box
+        style={{
+          borderRadius: '50%',
+          background: 'rgba(0, 0, 0, 0.55)',
+          padding: 10,
+          display: 'flex',
+        }}
+      >
+        <IconPlayerPlay size={22} color="white" />
+      </Box>
+    </Box>
+  )
+}
+
+/** One mosaic cell: fills its grid area, cover-cropped, opens the gallery. */
+function GoonMosaicItem({
+  item,
+  onOpen,
+  spanRows,
+}: {
+  item: GoonMediaItem
+  onOpen: () => void
+  spanRows?: boolean
+}) {
+  return (
+    <Box
+      component="button"
+      type="button"
+      aria-label="open media viewer"
+      onClick={onOpen}
+      style={{
+        padding: 0,
+        border: 'none',
+        background: 'none',
+        cursor: 'pointer',
+        position: 'relative',
+        height: '100%',
+        minHeight: 0,
+        ...(spanRows ? { gridRow: '1 / span 2' } : {}),
+      }}
+    >
+      <img
+        src={goonThumb(item)}
+        alt=""
+        referrerPolicy="no-referrer"
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          display: 'block',
+        }}
+      />
+      {item.type !== 'photo' ? <GoonPlayBadge /> : null}
+    </Box>
+  )
 }
 
 function safeStorage(): GoonStorage | null {
@@ -187,37 +244,6 @@ function safeStorage(): GoonStorage | null {
     return null
   }
 }
-function readGeometry(): GoonGeometry | null {
-  const storage = safeStorage()
-  if (!storage) return null
-  try {
-    const raw = storage.getItem(GOON_STORAGE_KEYS.geom)
-    if (!raw) return null
-    const value = JSON.parse(raw) as Partial<GoonGeometry>
-    if (
-      typeof value.x === 'number' &&
-      typeof value.y === 'number' &&
-      typeof value.w === 'number' &&
-      typeof value.h === 'number' &&
-      [value.x, value.y, value.w, value.h].every((n) => Number.isFinite(n))
-    ) {
-      return {
-        x: value.x,
-        y: value.y,
-        w: Math.max(MIN_WIDTH, value.w),
-        h: Math.max(MIN_HEIGHT, value.h),
-      }
-    }
-    return null
-  } catch {
-    return null
-  }
-}
-
-function writeGeometry(geometry: GoonGeometry): void {
-  safeStorage()?.setItem(GOON_STORAGE_KEYS.geom, JSON.stringify(geometry))
-}
-
 function readOpen(): boolean {
   const raw = safeStorage()?.getItem(GOON_STORAGE_KEYS.open)
   return raw === 'true'
@@ -247,34 +273,20 @@ function writeIntroSeen(): void {
 }
 
 /**
- * Always-on-top floating widget serving one random tweet per user per local
- * day. Collapsed on first run; once opened it reopens that way on reload, and
- * closing it (X) keeps it closed across reloads until reopened from the ghost
- * button.
+ * Always-on-top widget pinned to the bottom-right corner, serving one random
+ * tweet per user per local day. Collapsed on first run; once opened it
+ * reopens that way on reload, and closing it (X) keeps it closed across
+ * reloads until reopened from the ghost button.
  */
 export function GoonCorner() {
   const allIds = useMemo(() => goonIds(), [])
-  // Follow the app's scheme rather than hardcoding one, so the tweet card
-  // always matches the surface it sits on.
-  const colorScheme = useComputedColorScheme('dark', {
-    // Read the real scheme on the first render so we don't embed twice.
-    getInitialValueInEffect: false,
-  })
-  const embedTheme: EmbedTheme = colorScheme === 'dark' ? 'dark' : 'light'
   const [open, setOpen] = useState(readOpen)
   const [dismissed, setDismissed] = useState(readDismissed)
-  // A persisted geometry may come from a larger window, so fit it on load.
-  const [geometry, setGeometry] = useState(() =>
-    fitIntoView(
-      readGeometry() ?? defaultGeometry(viewportSize()),
-      viewportSize()
-    )
-  )
   const [pick, setPick] = useState<GoonState | null>(null)
   const [status, setStatus] = useState<EmbedStatus>('idle')
+  const [card, setCard] = useState<GoonStatusCard | null>(null)
   const [retryToken, setRetryToken] = useState(0)
-  // Fullscreen gallery (hybrid): media fetched from FxEmbed, shown in our own
-  // modal because clicks inside the official iframe cannot be intercepted.
+  // Fullscreen gallery: the card's media shown large in our own modal.
   const [galleryOpen, setGalleryOpen] = useState(false)
   const [galleryStatus, setGalleryStatus] = useState<GalleryStatus>('idle')
   const [galleryItems, setGalleryItems] = useState<GoonMediaItem[]>([])
@@ -289,22 +301,10 @@ export function GoonCorner() {
   )
 
   const pickRef = useRef<GoonState | null>(null)
-  const embedRef = useRef<HTMLDivElement | null>(null)
   const skipRef = useRef({ date: '', count: 0 })
-  const dragRef = useRef<{
-    pointerId: number
-    startX: number
-    startY: number
-    originX: number
-    originY: number
-  } | null>(null)
-  const resizeRef = useRef<{
-    pointerId: number
-    startX: number
-    startY: number
-    originW: number
-    originH: number
-  } | null>(null)
+  // Mirrors `card` for the fetch effect so reopening a cached tweet skips
+  // the network without adding state to the dependency list.
+  const cardRef = useRef<GoonStatusCard | null>(null)
 
   const syncPick = useCallback(() => {
     const storage = safeStorage()
@@ -333,21 +333,7 @@ export function GoonCorner() {
     writeDismissed(dismissed)
   }, [dismissed])
 
-  useEffect(() => {
-    writeGeometry(geometry)
-  }, [geometry])
-
-  // A window that shrinks can leave the box off screen.
-  useEffect(() => {
-    const handleResize = () =>
-      setGeometry((current) => fitIntoView(current, viewportSize()))
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
-
-  // Expanding from a corner would otherwise render the body off screen.
   const toggleOpen = () => {
-    if (!open) setGeometry((current) => fitIntoView(current, viewportSize()))
     setOpen(!open)
   }
 
@@ -358,6 +344,9 @@ export function GoonCorner() {
 
   const currentId = pick?.current?.id ?? null
   const tweetUrl = currentId ? `https://x.com/i/status/${currentId}` : null
+  const likeUrl = currentId
+    ? `https://x.com/intent/like?tweet_id=${encodeURIComponent(currentId)}`
+    : null
   const galleryItem = galleryItems[galleryIndex] ?? null
   // Measure at runtime: the viewer gets exactly the space between its top and
   // the footer, so no viewport-height guessing is needed regardless of theme
@@ -383,50 +372,64 @@ export function GoonCorner() {
     )
 
   useEffect(() => {
-    // `dismissed` is a dependency because closing unmounts the embed host:
-    // reopening has to mount the embed again.
+    // `dismissed` is a dependency so closing and reopening re-runs the
+    // cache check above for the current pick.
     if (!open || dismissed || !currentId || !introSeen) return
-    const host = embedRef.current
     const state = pickRef.current
-    if (!host || !state) return
+    if (!state) return
 
     const date = state.current?.date ?? todayKey()
     if (skipRef.current.date !== date) skipRef.current = { date, count: 0 }
 
-    // Each run owns its node: StrictMode mounts effects twice in dev and the
-    // widget script appends after an await, so a shared node would collect
-    // iframes from both runs.
-    const target = document.createElement('div')
-    host.replaceChildren(target)
+    const wanted = currentId
+    // Collapse keeps the card: reopening the same tweet reuses the cache
+    // instead of refetching. Only a new pick (or Retry) hits the network.
+    if (cardRef.current?.id === wanted) return
     let cancelled = false
     setStatus('loading')
+    setCard(null)
+    cardRef.current = null
 
-    void embedTweet(currentId, target, embedTheme).then((result) => {
-      if (cancelled) return
-      if (result === 'ok') {
+    void (async () => {
+      try {
+        const fetched = await fetchGoonStatus(wanted, fetch, STATUS_TIMEOUT_MS)
+        if (cancelled) return
         skipRef.current.count = 0
+        setCard(fetched)
+        cardRef.current = fetched
         setStatus('ready')
         return
+      } catch {
+        // Gone or transient — distinguished below.
       }
-      if (result === 'deleted' && skipRef.current.count < MAX_SKIPS) {
+      if (cancelled) return
+      const gone = await isGoonTweetGone(wanted, fetch, GONE_CHECK_TIMEOUT_MS)
+      if (cancelled) return
+      if (gone && skipRef.current.count < MAX_SKIPS) {
         skipRef.current.count += 1
         const latest = pickRef.current
-        if (!latest) return
-        const next = markCurrentInvalid({ state: latest, allIds, today: date })
+        if (!latest) {
+          setStatus('empty')
+          return
+        }
+        const next = markCurrentInvalid({
+          state: latest,
+          allIds,
+          today: date,
+        })
         const storage = safeStorage()
         if (storage) writeState(storage, next)
         pickRef.current = next
         setPick(next)
         return
       }
-      setStatus(result === 'deleted' ? 'empty' : 'error')
-    })
+      setStatus(gone ? 'empty' : 'error')
+    })()
 
     return () => {
       cancelled = true
-      target.remove()
     }
-  }, [open, dismissed, currentId, allIds, retryToken, embedTheme, introSeen])
+  }, [open, dismissed, currentId, allIds, retryToken, introSeen])
 
   // Gallery fetch: runs when the modal opens (or Retry is hit), scoped to the
   // tweet it opened for. A stale response from a previous tweet is dropped.
@@ -462,80 +465,6 @@ export function GoonCorner() {
     return () => window.removeEventListener('resize', fitGalleryViewer)
   }, [galleryOpen, galleryStatus, galleryItems.length, fitGalleryViewer])
 
-  const handleDragStart = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (event.button !== 0) return
-    // Let the header's buttons receive their own clicks.
-    if ((event.target as HTMLElement).closest('button')) return
-    dragRef.current = {
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      originX: geometry.x,
-      originY: geometry.y,
-    }
-    event.currentTarget.setPointerCapture(event.pointerId)
-  }
-
-  const handleDragMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const drag = dragRef.current
-    if (!drag || drag.pointerId !== event.pointerId) return
-    const next = clampDragPosition(
-      drag.originX + (event.clientX - drag.startX),
-      drag.originY + (event.clientY - drag.startY),
-      viewportSize()
-    )
-    setGeometry((current) => ({ ...current, x: next.x, y: next.y }))
-  }
-
-  const handleDragEnd = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const drag = dragRef.current
-    if (!drag || drag.pointerId !== event.pointerId) return
-    dragRef.current = null
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId)
-    }
-  }
-
-  const handleResizeStart = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (event.button !== 0) return
-    event.stopPropagation()
-    resizeRef.current = {
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      originW: geometry.w,
-      originH: geometry.h,
-    }
-    event.currentTarget.setPointerCapture(event.pointerId)
-  }
-
-  const handleResizeMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const resize = resizeRef.current
-    if (!resize || resize.pointerId !== event.pointerId) return
-    const maxW = Math.max(MIN_WIDTH, window.innerWidth - geometry.x - 16)
-    const maxH = Math.max(MIN_HEIGHT, window.innerHeight - geometry.y - 16)
-    setGeometry((current) => ({
-      ...current,
-      w: Math.min(
-        Math.max(MIN_WIDTH, resize.originW + (event.clientX - resize.startX)),
-        maxW
-      ),
-      h: Math.min(
-        Math.max(MIN_HEIGHT, resize.originH + (event.clientY - resize.startY)),
-        maxH
-      ),
-    }))
-  }
-
-  const handleResizeEnd = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const resize = resizeRef.current
-    if (!resize || resize.pointerId !== event.pointerId) return
-    resizeRef.current = null
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId)
-    }
-  }
-
   if (dismissed) {
     return (
       <Portal>
@@ -554,7 +483,6 @@ export function GoonCorner() {
           onClick={() => {
             setDismissed(false)
             setOpen(true)
-            setGeometry((current) => fitIntoView(current, viewportSize()))
           }}
         >
           <IconGhost size={18} />
@@ -570,10 +498,13 @@ export function GoonCorner() {
         shadow="md"
         style={{
           position: 'fixed',
-          left: geometry.x,
-          top: geometry.y,
-          width: open ? geometry.w : COLLAPSED_WIDTH,
-          height: open ? geometry.h : HEADER_HEIGHT,
+          right: VIEWPORT_MARGIN,
+          bottom: VIEWPORT_MARGIN,
+          width: open
+            ? `min(${WIDGET_WIDTH}px, calc(100vw - ${VIEWPORT_MARGIN * 2}px))`
+            : COLLAPSED_WIDTH,
+          height: open ? undefined : HEADER_HEIGHT,
+          maxHeight: `calc(100vh - ${VIEWPORT_MARGIN * 2}px)`,
           zIndex: Z_INDEX,
           display: 'flex',
           flexDirection: 'column',
@@ -581,10 +512,6 @@ export function GoonCorner() {
         }}
       >
         <Box
-          onPointerDown={handleDragStart}
-          onPointerMove={handleDragMove}
-          onPointerUp={handleDragEnd}
-          onPointerCancel={handleDragEnd}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -593,12 +520,8 @@ export function GoonCorner() {
             flex: '0 0 auto',
             padding: '0 4px 0 6px',
             background: 'var(--mantine-color-dark-6)',
-            cursor: 'grab',
-            touchAction: 'none',
-            userSelect: 'none',
           }}
         >
-          <IconGripVertical size={14} opacity={0.6} />
           <Text size="sm" fw={600} c="white" style={{ flex: 1 }}>
             Goon Corner
           </Text>
@@ -636,53 +559,220 @@ export function GoonCorner() {
         {open ? (
           introSeen ? (
             <Box
-              className="goon-embed-area"
               style={{
-                position: 'relative',
                 flex: 1,
                 minHeight: 0,
-                overflow: 'hidden',
-                borderRadius: EMBED_RADIUS,
-                // The iframe gets its own compositing layer, and Chrome can skip
-                // a `border-radius` clip on those; `clip-path` always applies.
-                clipPath: `inset(0 round ${EMBED_RADIUS}px)`,
-                // No background fill: the iframe is transparent (see below), so
-                // the widget's own surface shows through everywhere the tweet
-                // card doesn't cover — corner arcs included.
-                //
-                // Deliberately NOT inheriting the app's dark `color-scheme`.
-                // Mantine sets `color-scheme: dark` on the page, and for a
-                // cross-origin iframe Chrome then paints an opaque fallback
-                // canvas behind it (crbug 40157837) — which is what showed up as
-                // white corner arcs around the tweet card. Keeping a light scheme
-                // here leaves the iframe transparent. The tweet itself still
-                // renders dark via `theme`.
-                colorScheme: 'light',
+                overflow: 'auto',
+                padding: 'clamp(8px, 2cqw, 12px)',
+                // Children size themselves in `cqw` so the card scales
+                // with the widget width instead of staying fixed-size.
+                containerType: 'inline-size',
               }}
             >
-              {/* No padding here on purpose: the iframe has to sit flush with
-                the clipping box for its corners to be clipped away. */}
-              <Box
-                ref={embedRef}
-                style={{ height: '100%', overflow: 'auto' }}
-              />
-              {!pick ||
-              !currentId ||
-              status === 'loading' ||
-              status === 'error' ||
-              status === 'empty' ? (
+              {status === 'ready' && card ? (
                 <Box
                   style={{
-                    position: 'absolute',
-                    inset: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '2cqw',
+                  }}
+                >
+                  <Box
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                    }}
+                  >
+                    {card.author.avatarUrl ? (
+                      <img
+                        src={card.author.avatarUrl}
+                        alt=""
+                        referrerPolicy="no-referrer"
+                        style={{
+                          width: 'clamp(32px, 10cqw, 56px)',
+                          aspectRatio: '1',
+                          borderRadius: '50%',
+                        }}
+                      />
+                    ) : null}
+                    <Box style={{ flex: 1, minWidth: 0 }}>
+                      <Text
+                        fw={600}
+                        truncate
+                        style={{ fontSize: 'clamp(13px, 4.2cqw, 17px)' }}
+                      >
+                        {card.author.name}
+                      </Text>
+                      <Text
+                        c="dimmed"
+                        truncate
+                        style={{ fontSize: 'clamp(11px, 3.4cqw, 13px)' }}
+                      >
+                        {`@${card.author.screenName}${formatGoonDate(card.createdAt) ? ` · ${formatGoonDate(card.createdAt)}` : ''}`}
+                      </Text>
+                    </Box>
+                    {card.sensitive ? (
+                      <Text
+                        c="dimmed"
+                        style={{ fontSize: 'clamp(11px, 3.4cqw, 13px)' }}
+                      >
+                        Sensitive
+                      </Text>
+                    ) : null}
+                  </Box>
+                  {card.text ? (
+                    <Text
+                      style={{
+                        fontSize: 'clamp(13px, 4cqw, 15px)',
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
+                      }}
+                    >
+                      {renderGoonText(card.text)}
+                    </Text>
+                  ) : null}
+                  {card.media.length === 1 ? (
+                    <Box
+                      component="button"
+                      type="button"
+                      aria-label="open media viewer"
+                      onClick={() => setGalleryOpen(true)}
+                      style={{
+                        padding: 0,
+                        border: 'none',
+                        background: 'none',
+                        cursor: 'pointer',
+                        position: 'relative',
+                        borderRadius: 12,
+                        overflow: 'hidden',
+                        width: '100%',
+                      }}
+                    >
+                      <img
+                        src={goonThumb(card.media[0])}
+                        alt=""
+                        referrerPolicy="no-referrer"
+                        style={{
+                          width: '100%',
+                          ...(card.media[0].width && card.media[0].height
+                            ? {
+                                aspectRatio: `${card.media[0].width} / ${card.media[0].height}`,
+                              }
+                            : {}),
+                          objectFit: 'cover',
+                          display: 'block',
+                        }}
+                      />
+                      {card.media[0].type !== 'photo' ? (
+                        <GoonPlayBadge />
+                      ) : null}
+                    </Box>
+                  ) : card.media.length === 2 ? (
+                    <Box
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gap: 2,
+                        aspectRatio: '2 / 1',
+                        borderRadius: 12,
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {card.media.slice(0, 2).map((item) => (
+                        <GoonMosaicItem
+                          key={item.url}
+                          item={item}
+                          onOpen={() => setGalleryOpen(true)}
+                        />
+                      ))}
+                    </Box>
+                  ) : card.media.length === 3 ? (
+                    <Box
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '3fr 2fr',
+                        gridTemplateRows: '1fr 1fr',
+                        gap: 2,
+                        aspectRatio: '7 / 5',
+                        borderRadius: 12,
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {card.media.slice(0, 3).map((item, index) => (
+                        <GoonMosaicItem
+                          key={item.url}
+                          item={item}
+                          onOpen={() => setGalleryOpen(true)}
+                          spanRows={index === 0}
+                        />
+                      ))}
+                    </Box>
+                  ) : card.media.length >= 4 ? (
+                    <Box
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gridTemplateRows: '1fr 1fr',
+                        gap: 2,
+                        aspectRatio: '1 / 1',
+                        borderRadius: 12,
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {card.media.slice(0, 4).map((item) => (
+                        <GoonMosaicItem
+                          key={item.url}
+                          item={item}
+                          onOpen={() => setGalleryOpen(true)}
+                        />
+                      ))}
+                    </Box>
+                  ) : null}
+                  <Text
+                    c="dimmed"
+                    style={{ fontSize: 'clamp(11px, 3.4cqw, 13px)' }}
+                  >
+                    {`${card.likes.toLocaleString()} likes · ${card.reposts.toLocaleString()} reposts · ${card.replies.toLocaleString()} replies`}
+                  </Text>
+                  <Box style={{ display: 'flex', gap: 8 }}>
+                    {likeUrl ? (
+                      <Button
+                        size="xs"
+                        variant="light"
+                        component="a"
+                        href={likeUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        leftSection={<IconHeart size={14} />}
+                      >
+                        Like
+                      </Button>
+                    ) : null}
+                    <Button
+                      size="xs"
+                      variant="subtle"
+                      component="a"
+                      href={card.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      leftSection={<IconExternalLink size={14} />}
+                    >
+                      Open post on X
+                    </Button>
+                  </Box>
+                </Box>
+              ) : (
+                <Box
+                  style={{
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: 8,
+                    minHeight: '100%',
                     padding: 16,
                     textAlign: 'center',
-                    background: 'var(--mantine-color-body)',
                   }}
                 >
                   {!pick || status === 'loading' ? <Loader size="sm" /> : null}
@@ -705,6 +795,19 @@ export function GoonCorner() {
                       >
                         Retry
                       </Button>
+                      {tweetUrl ? (
+                        <Button
+                          size="xs"
+                          variant="subtle"
+                          component="a"
+                          href={tweetUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          leftSection={<IconExternalLink size={14} />}
+                        >
+                          Open post on X
+                        </Button>
+                      ) : null}
                     </>
                   ) : status === 'empty' ? (
                     <Text size="sm" c="dimmed">
@@ -712,7 +815,7 @@ export function GoonCorner() {
                     </Text>
                   ) : null}
                 </Box>
-              ) : null}
+              )}
             </Box>
           ) : (
             <Box
@@ -747,27 +850,6 @@ export function GoonCorner() {
               </Button>
             </Box>
           )
-        ) : null}
-
-        {open ? (
-          <Box
-            aria-hidden
-            onPointerDown={handleResizeStart}
-            onPointerMove={handleResizeMove}
-            onPointerUp={handleResizeEnd}
-            onPointerCancel={handleResizeEnd}
-            style={{
-              position: 'absolute',
-              right: 0,
-              bottom: 0,
-              width: 16,
-              height: 16,
-              cursor: 'nwse-resize',
-              touchAction: 'none',
-              background:
-                'linear-gradient(135deg, transparent 50%, var(--mantine-color-dark-4) 50%)',
-            }}
-          />
         ) : null}
 
         <Modal
@@ -895,7 +977,7 @@ export function GoonCorner() {
                   <ActionIcon
                     aria-label="previous media"
                     variant="filled"
-                    color="gray"
+                    color="primary"
                     onClick={galleryPrev}
                     style={{
                       position: 'absolute',
@@ -910,6 +992,7 @@ export function GoonCorner() {
                   <img
                     src={galleryItem.url}
                     alt={`Tweet media ${galleryIndex + 1}`}
+                    referrerPolicy="no-referrer"
                     onLoad={fitGalleryViewer}
                     style={{
                       width: 'auto',
@@ -919,26 +1002,18 @@ export function GoonCorner() {
                     }}
                   />
                 ) : (
-                  <video
+                  <GoonVideoPlayer
                     key={galleryItem.url}
-                    src={galleryItem.url}
+                    url={galleryItem.url}
                     poster={galleryItem.thumbnailUrl}
-                    controls
-                    preload="metadata"
-                    onLoadedMetadata={fitGalleryViewer}
-                    style={{
-                      width: 'auto',
-                      height: '100%',
-                      maxWidth: '100%',
-                      objectFit: 'contain',
-                    }}
+                    onReady={fitGalleryViewer}
                   />
                 )}
                 {galleryItems.length > 1 ? (
                   <ActionIcon
                     aria-label="next media"
                     variant="filled"
-                    color="gray"
+                    color="primary"
                     onClick={galleryNext}
                     style={{
                       position: 'absolute',
@@ -1000,6 +1075,7 @@ export function GoonCorner() {
                                 : (item.thumbnailUrl ?? item.url)
                             }
                             alt=""
+                            referrerPolicy="no-referrer"
                             style={{
                               width: '100%',
                               height: '100%',

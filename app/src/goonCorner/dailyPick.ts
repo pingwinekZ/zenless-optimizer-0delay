@@ -2,8 +2,8 @@ import { GOON_BOOKMARK_TWEETS } from './tweets_gen'
 
 /**
  * localStorage keys owned by the Goon Corner widget. The pick keys
- * (`queue`/`seen`/`invalid`/`current`) hold per-user daily state; `open`,
- * `geom` and `dismissed` hold the widget UI preferences.
+ * (`queue`/`seen`/`invalid`/`current`) hold per-user daily state; `open`
+ * and `dismissed` hold the widget UI preferences.
  */
 export const GOON_STORAGE_KEYS = {
   queue: 'goon-queue',
@@ -11,7 +11,6 @@ export const GOON_STORAGE_KEYS = {
   invalid: 'goon-invalid',
   current: 'goon-current',
   open: 'goon-open',
-  geom: 'goon-geom',
   intro: 'goon-intro-seen',
   dismissed: 'goon-dismissed',
 } as const

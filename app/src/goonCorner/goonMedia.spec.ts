@@ -1,4 +1,10 @@
-import { fetchGoonMedia, parseStatusMedia } from './goonMedia'
+import {
+  fetchGoonMedia,
+  fetchGoonStatus,
+  isGoonTweetGone,
+  parseStatusCard,
+  parseStatusMedia,
+} from './goonMedia'
 
 function photoEntry(overrides: object = {}) {
   return {
@@ -21,6 +27,30 @@ function videoEntry(overrides: object = {}) {
     height: 1280,
     format: 'video/mp4',
     ...overrides,
+  }
+}
+
+function statusPayload(overrides: object = {}) {
+  return {
+    code: 200,
+    status: {
+      id: '9',
+      text: 'hello https://t.co/x',
+      url: 'https://x.com/someone/status/9',
+      created_at: 'Sun Sep 13 20:08:01 +0000 2026',
+      possibly_sensitive: true,
+      likes: 93,
+      reposts: 4,
+      replies: 0,
+      views: 785,
+      author: {
+        name: 'Cheremsha',
+        screen_name: 'Cheremsha_cos',
+        avatar_url: 'https://pbs.twimg.com/profile_images/x.jpg',
+      },
+      media: { all: [photoEntry()] },
+      ...overrides,
+    },
   }
 }
 
@@ -97,5 +127,136 @@ describe('fetchGoonMedia', () => {
     const stubGone = async () =>
       jsonResponse({ code: 404, message: 'NOT_FOUND' })
     await expect(fetchGoonMedia('9', stubGone)).rejects.toThrow()
+  })
+})
+
+describe('isGoonTweetGone', () => {
+  function goneHttp(status: number) {
+    return {
+      ok: false,
+      status,
+      json: async () => ({}),
+    } as Response
+  }
+
+  function apiCode(code: number) {
+    return {
+      ok: true,
+      status: 200,
+      json: async () => ({ code }),
+    } as Response
+  }
+
+  it('reports gone on definitive http and api signals', async () => {
+    await expect(isGoonTweetGone('9', async () => goneHttp(404))).resolves.toBe(
+      true
+    )
+    await expect(isGoonTweetGone('9', async () => goneHttp(401))).resolves.toBe(
+      true
+    )
+    await expect(isGoonTweetGone('9', async () => apiCode(404))).resolves.toBe(
+      true
+    )
+    await expect(isGoonTweetGone('9', async () => apiCode(401))).resolves.toBe(
+      true
+    )
+  })
+
+  it('never retires on unknown outcomes', async () => {
+    const exists = async () =>
+      ({
+        ok: true,
+        status: 200,
+        json: async () => ({ code: 200, status: { id: '9' } }),
+      }) as Response
+    await expect(isGoonTweetGone('9', exists)).resolves.toBe(false)
+    // Rate-limited or server error: unknown, not gone.
+    await expect(isGoonTweetGone('9', async () => goneHttp(429))).resolves.toBe(
+      false
+    )
+    const networkDown = async () => {
+      throw new TypeError('offline')
+    }
+    await expect(isGoonTweetGone('9', networkDown)).resolves.toBe(false)
+  })
+})
+
+describe('parseStatusCard', () => {
+  it('reads a card with author, counts and media', () => {
+    const card = parseStatusCard(statusPayload())
+    expect(card?.id).toBe('9')
+    expect(card?.text).toContain('hello')
+    expect(card?.author).toEqual({
+      name: 'Cheremsha',
+      screenName: 'Cheremsha_cos',
+      avatarUrl: 'https://pbs.twimg.com/profile_images/x.jpg',
+    })
+    expect(card?.likes).toBe(93)
+    expect(card?.reposts).toBe(4)
+    expect(card?.sensitive).toBe(true)
+    expect(card?.url).toContain('/status/9')
+    expect(card?.media).toHaveLength(1)
+  })
+
+  it('falls back to raw text and fills defaults for missing fields', () => {
+    const card = parseStatusCard(
+      statusPayload({
+        text: undefined,
+        author: {},
+        likes: 'many',
+        possibly_sensitive: undefined,
+      })
+    )
+    expect(card?.text).toBe('')
+    expect(card?.author.name).toBe('Unknown')
+    expect(card?.author.screenName).toBe('unknown')
+    expect(card?.author.avatarUrl).toBeUndefined()
+    expect(card?.likes).toBe(0)
+    expect(card?.sensitive).toBe(false)
+    expect(card?.url).toContain('/status/9')
+  })
+
+  it('returns undefined for malformed payloads', () => {
+    expect(parseStatusCard(null)).toBeUndefined()
+    expect(parseStatusCard({})).toBeUndefined()
+    expect(parseStatusCard({ status: { text: 'no id' } })).toBeUndefined()
+  })
+})
+
+describe('fetchGoonStatus', () => {
+  it('resolves the card on success', async () => {
+    const stub = async () =>
+      ({
+        ok: true,
+        status: 200,
+        json: async () => statusPayload(),
+      }) as Response
+    const card = await fetchGoonStatus('9', stub)
+    expect(card.id).toBe('9')
+    expect(card.media).toHaveLength(1)
+  })
+
+  it('rejects on http, api and unrecognized payloads', async () => {
+    const stub404 = async () =>
+      ({
+        ok: false,
+        status: 404,
+        json: async () => ({}),
+      }) as Response
+    await expect(fetchGoonStatus('9', stub404)).rejects.toThrow('404')
+    const stubGone = async () =>
+      ({
+        ok: true,
+        status: 200,
+        json: async () => ({ code: 401 }),
+      }) as Response
+    await expect(fetchGoonStatus('9', stubGone)).rejects.toThrow('401')
+    const stubBare = async () =>
+      ({
+        ok: true,
+        status: 200,
+        json: async () => ({ code: 200 }),
+      }) as Response
+    await expect(fetchGoonStatus('9', stubBare)).rejects.toThrow()
   })
 })

@@ -9,7 +9,7 @@ export function ScrollTop() {
     if (anchor) {
       anchor.scrollIntoView({
         behavior: 'smooth',
-        block: 'center',
+        block: 'start',
       })
     }
   }
@@ -21,7 +21,7 @@ export function ScrollTop() {
           <div style={transitionStyle}>
             <ActionIcon
               variant="filled"
-              color="gray"
+              color="primary"
               size="md"
               aria-label="scroll back to top"
               onClick={handleClick}

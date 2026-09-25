@@ -319,6 +319,7 @@ export function DeadlyAssaultBuffs() {
           <ActionIcon
             size="sm"
             variant="subtle"
+            color="primary"
             disabled={seasonIdx <= minSeasonIdx}
             onClick={() => setSeasonIdx((i) => i - 1)}
           >
@@ -332,6 +333,7 @@ export function DeadlyAssaultBuffs() {
           <ActionIcon
             size="sm"
             variant="subtle"
+            color="primary"
             disabled={seasonIdx >= validSeasons.length - 1}
             onClick={() => setSeasonIdx((i) => i + 1)}
           >
