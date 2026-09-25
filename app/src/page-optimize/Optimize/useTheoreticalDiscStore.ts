@@ -19,20 +19,44 @@ export function useTheoreticalDiscStore() {
   const [theoreticalDiscMap, setTheoreticalDiscMap] = useState<
     Record<string, ICachedDisc>
   >({})
+  // Recipe metadata resolved from the live solver pipeline — rebuilt on every
+  // theoretical run and gone again the moment the page unmounts.
+  const runRecipeMetaRef = useRef<
+    (recipeId: string) => BuildRecipe | undefined
+  >(() => undefined)
+  // Recipe metadata persisted with the current result set (see the hydration
+  // effect in `Optimize/index.tsx`). Consulted first by the composed resolver
+  // below: while rows of an older run are still on screen, only the persisted
+  // copy describes them correctly — a newer run's pipeline would resolve the
+  // same `recipe_<n>` ids to different recipes.
+  const persistedRecipesRef = useRef<Record<string, BuildRecipe>>({})
+  // Identity (`optConfigId:buildDate`) of the result set whose recipe discs
+  // are currently in the map. Bumped by completed runs and compared by the
+  // hydration effect in `Optimize/index.tsx` — a change means the map's
+  // `recipe_*` layer belongs to another result set (page/character switch)
+  // and must be rebuilt, since recipe ids are only unique within a run.
+  const discMapIdentityRef = useRef('')
+  // Stable composed resolver handed to display/pinning. Stable identity
+  // matters: consumers capture `recipeMetaRef.current` at render time.
+  const recipeMetaRef = useRef<(recipeId: string) => BuildRecipe | undefined>(
+    (recipeId) =>
+      persistedRecipesRef.current[recipeId] ??
+      runRecipeMetaRef.current(recipeId)
+  )
   // Recipe metadata for TheoreticalBuildSummary display. This is a resolver,
   // not a map: the recipe space can run to millions of entries, so metadata is
   // rebuilt on demand from the generator's compact descriptor index for the
   // handful of recipes that actually surface (the solver's top-N and the
   // selected row). Retaining a BuildRecipe for every recipe used to be the
   // single largest allocation in the whole pipeline.
-  const recipeMetaRef = useRef<(recipeId: string) => BuildRecipe | undefined>(
-    () => undefined
-  )
   return {
     theoreticalDiscMapRef,
     enrichedValuesRef,
     theoreticalDiscMap,
     setTheoreticalDiscMap,
+    runRecipeMetaRef,
+    persistedRecipesRef,
+    discMapIdentityRef,
     recipeMetaRef,
   }
 }

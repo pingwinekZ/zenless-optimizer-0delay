@@ -201,8 +201,8 @@ export function DeadlyAssaultBuffs() {
   const normalZones = zones.filter((z) => !('hard' in z) || !z.hard)
 
   // Selection state is encoded in the frame description so it survives
-  // drawer close/reopen: `da_boss:<name>` plus optional
-  // `|da_buffs:<id>,<id>` for stacked selectable buffs.
+  // drawer close/reopen: `da_boss:<name>` plus optional `|da_buffs:<id>` for
+  // the single selectable buff.
   const { bossName: selectedBossName, buffIds: appliedBuffIds } =
     parseDaSelection(getTeamFrame0(team).description)
   const selectedZone = zones.find((z) => z.name === selectedBossName) ?? null
@@ -291,17 +291,17 @@ export function DeadlyAssaultBuffs() {
   // previously stacked selectable buffs are cleared.
   const selectBoss = (zone: SeasonZone) => writeDaFrame(zone, [])
 
-  // Selectable buffs toggle on top of the zone base stats.
-  // IDs from another season view are pruned since they can't resolve here.
+  // Only one selectable buff may be active at a time, matching Deadly
+  // Assault. Clicking the active buff clears it, clicking another replaces
+  // it. IDs from another season view are pruned since they can't resolve
+  // here.
   const toggleBuff = (buff: DaBuff) => {
     const knownIds = new Set(
       zones.flatMap((z) => (z.buffs ?? []).map((b) => b.id))
     )
-    const nextIds = (
-      appliedBuffIds.includes(buff.id)
-        ? appliedBuffIds.filter((id) => id !== buff.id)
-        : [...appliedBuffIds, buff.id]
-    ).filter((id) => knownIds.has(id))
+    const nextIds = (appliedBuffIds.includes(buff.id) ? [] : [buff.id]).filter(
+      (id) => knownIds.has(id)
+    )
     writeDaFrame(selectedZone, nextIds)
   }
 

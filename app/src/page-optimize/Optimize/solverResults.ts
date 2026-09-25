@@ -4,6 +4,7 @@ import type { DiscSlotKey } from '@zenless-optimizer/zzz/consts'
 import { allDiscSlotKeys } from '@zenless-optimizer/zzz/consts'
 import type {
   BuildRecipe,
+  DiscIds,
   ICachedDisc,
   TargetTag,
   Team,
@@ -17,6 +18,10 @@ export type StoredBuild = {
   discIds: Record<DiscSlotKey, string | undefined>
   value: number
 }
+
+/** Minimal row shape the recipe helpers need — stored solver builds and
+ * persisted build-list rows alike. */
+type RecipeBuildRow = { discIds: DiscIds }
 
 /**
  * Solver frames for the run: combo frames carry per-hit tags/multipliers
@@ -85,11 +90,11 @@ export function toStoredBuilds(results: BuildResult<string>[]): StoredBuild[] {
  * pre-creating discs for ALL recipes) via the recipe metadata resolver.
  */
 export function materializeReturnedDiscs(
-  storedBuilds: StoredBuild[],
+  builds: RecipeBuildRow[],
   resolveRecipe: (recipeId: string) => BuildRecipe | undefined
 ): Record<string, ICachedDisc> {
   const returnedDiscMap: Record<string, ICachedDisc> = {}
-  for (const build of storedBuilds) {
+  for (const build of builds) {
     const rid = build.discIds['1']?.replace(/_\d+$/, '')
     const recipe = rid ? resolveRecipe(rid) : undefined
     if (rid && recipe) {
@@ -100,4 +105,28 @@ export function materializeReturnedDiscs(
     }
   }
   return returnedDiscMap
+}
+
+/**
+ * Recipe metadata for the rows of a result set that survive a reload —
+ * the top `limit` recipe builds, keyed by recipe id. Only those rows are
+ * persisted (see `maxPersistedGeneratedBuilds`), so only their recipes
+ * need to be; the rest of the session is covered by the run's in-memory
+ * resolver.
+ */
+export function collectReturnedRecipes(
+  builds: RecipeBuildRow[],
+  resolveRecipe: (recipeId: string) => BuildRecipe | undefined,
+  limit: number
+): Record<string, BuildRecipe> {
+  const out: Record<string, BuildRecipe> = {}
+  for (const build of builds.slice(0, limit)) {
+    const slot1 = build.discIds['1']
+    if (!slot1?.startsWith('recipe_')) continue
+    const recipeId = slot1.replace(/_\d+$/, '')
+    if (recipeId in out) continue
+    const recipe = resolveRecipe(recipeId)
+    if (recipe) out[recipeId] = recipe
+  }
+  return out
 }

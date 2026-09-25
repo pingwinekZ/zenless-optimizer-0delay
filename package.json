@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build-all": "nx run-many -t build",
-    "mini-ci": "bun biome check --formatter-enabled=true --linter-enabled=false --assist-enabled=true --write && npx nx affected -t eslint:lint --max-warnings=0 && CI=true npx nx affected -t typecheck,test --parallel=5",
+    "mini-ci": "bun biome check --formatter-enabled=true --linter-enabled=false --assist-enabled=true --write && npx nx affected -t eslint:lint --max-warnings=0 --parallel=2 && CI=true npx nx affected -t test --parallel=2 && npx nx affected -t typecheck --parallel=1",
     "reload-dm": "git submodule update --init",
     "update-dm": "git submodule update --remote",
     "gen-file": "nx run-many -t gen-file",
@@ -56,7 +56,7 @@
     "sass-embedded": "^1.105.0",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "typescript-eslint": "^8.70.1",
-    "vite": "^8.3.0",
+    "vite": "^8.3.1",
     "vite-plugin-dts": "5.1.1",
     "vite-plugin-static-copy": "^4.1.1"
   },
@@ -71,7 +71,7 @@
     "@mantine/modals": "^9.6.2",
     "@mantine/notifications": "^9.6.2",
     "@tabler/icons-react": "^3.48.0",
-    "@zumer/snapdom": "^3.1.0",
+    "@zumer/snapdom": "^3.1.1",
     "ag-grid-community": "^36.2.0",
     "ag-grid-react": "^36.2.0",
     "chroma-js": "^3.2.0",

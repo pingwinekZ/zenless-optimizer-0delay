@@ -262,7 +262,13 @@ function validateCombatStats(
   return found ? out : undefined
 }
 
-function validateRecipe(raw: unknown): BuildRecipe | undefined {
+/**
+ * Validate an untrusted `BuildRecipe` (pinned references and the recipe
+ * metadata persisted with theoretical result sets both go through this).
+ * Returns undefined when the core shape — sets and one main stat per slot
+ * — does not check out.
+ */
+export function validateRecipe(raw: unknown): BuildRecipe | undefined {
   const parsed = recipeSchema.safeParse(raw)
   if (!parsed.success) return undefined
   const data = parsed.data

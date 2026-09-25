@@ -4,13 +4,13 @@ import { Notifications } from '@mantine/notifications'
 import { ScrollTop } from '@zenless-optimizer/common/ui'
 import { DatabaseProvider } from '@zenless-optimizer/zzz/db-ui'
 import '@zenless-optimizer/zzz/i18n' // import to load translations
-import { LiveImportProvider } from '@zenless-optimizer/zzz/websocket/LiveImportProvider'
 import { Gradient } from '@zenless-optimizer/zzz/rendering/gradient'
 import {
   createMantineTheme,
   themeResolver,
   useThemeStore,
 } from '@zenless-optimizer/zzz/theme'
+import { LiveImportProvider } from '@zenless-optimizer/zzz/websocket/LiveImportProvider'
 import { Suspense, useEffect, useMemo } from 'react'
 import { HashRouter, Navigate, Route, Routes } from 'react-router'
 import { GoonCorner } from '../goonCorner/GoonCorner'

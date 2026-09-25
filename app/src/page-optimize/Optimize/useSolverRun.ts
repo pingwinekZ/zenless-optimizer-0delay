@@ -16,6 +16,7 @@ import type {
   Team,
   ZzzDatabase,
 } from '@zenless-optimizer/zzz/db'
+import { maxPersistedGeneratedBuilds } from '@zenless-optimizer/zzz/db'
 import type { useCharacterContext } from '@zenless-optimizer/zzz/db-ui'
 import type { useZzzCalcContext } from '@zenless-optimizer/zzz/formula-ui'
 import type { TheoryPipelineOutput } from '@zenless-optimizer/zzz/solver'
@@ -35,6 +36,7 @@ import {
 import type { filterDiscsBySlot, filterWengineKeys } from './discFiltering'
 import { getGpuTuningParams } from './optimizeUtils'
 import {
+  collectReturnedRecipes,
   materializeReturnedDiscs,
   resolveSolverFrames,
   toStoredBuilds,
@@ -74,7 +76,14 @@ export type SolverRunInputs = {
   setSortTrigger: Dispatch<SetStateAction<number>>
   theoreticalDiscMapRef: { current: Record<string, ICachedDisc> }
   setTheoreticalDiscMap: Dispatch<SetStateAction<Record<string, ICachedDisc>>>
-  recipeMetaRef: { current: (recipeId: string) => BuildRecipe | undefined }
+  /** Per-run recipe metadata resolver — written on each theoretical run. */
+  runRecipeMetaRef: { current: (recipeId: string) => BuildRecipe | undefined }
+  /** Recipe metadata persisted with the result set; updated in lockstep
+   * with the build-list write so persisted-first resolution never goes stale. */
+  persistedRecipesRef: { current: Record<string, BuildRecipe> }
+  /** Identity of the result set the disc map was built for — bumped on
+   * every completed run (see `useTheoreticalDiscStore`). */
+  discMapIdentityRef: { current: string }
 }
 
 /**
@@ -109,7 +118,9 @@ export function useSolverRun(inputs: SolverRunInputs) {
     setSortTrigger,
     theoreticalDiscMapRef,
     setTheoreticalDiscMap,
-    recipeMetaRef,
+    runRecipeMetaRef,
+    persistedRecipesRef,
+    discMapIdentityRef,
   } = inputs
   const [numWorkers] = useState(() =>
     Math.min(navigator.hardwareConcurrency || 4, 8)
@@ -275,7 +286,7 @@ export function useSolverRun(inputs: SolverRunInputs) {
         // Keep only the resolver: the descriptor index plus the generator's
         // (plain-data) context are all a recipe's metadata needs, so nothing is
         // stored per-recipe here.
-        recipeMetaRef.current = createRecipeMetaResolver(pipeline)
+        runRecipeMetaRef.current = createRecipeMetaResolver(pipeline)
         // Start with empty disc map; we populate it after the solver returns
         // with only the recipes that end up in the final build results
         activeDiscMap = {}
@@ -370,22 +381,42 @@ export function useSolverRun(inputs: SolverRunInputs) {
 
       // After solver returns, create disc objects only for the returned
       // builds (avoids OOM from pre-creating discs for ALL recipes).
-      // The recipeMetaRef stores the full recipe metadata needed to
-      // reconstruct disc objects for any recipe on demand.
+      // The run resolver materializes them from the pipeline's compact
+      // descriptor index — no per-recipe metadata is retained.
       if (useTheoreticalMax) {
         const returnedDiscMap = materializeReturnedDiscs(
           storedBuilds,
-          recipeMetaRef.current
+          runRecipeMetaRef.current
         )
         activeDiscMap = returnedDiscMap
         theoreticalDiscMapRef.current = returnedDiscMap
         setTheoreticalDiscMap(returnedDiscMap)
       }
 
+      // Recipe metadata for the rows that survive a reload, stored with the
+      // build list so the `recipe_*` disc ids stay resolvable after a page
+      // switch or refresh (the pipeline resolver above never outlives the
+      // session). Assigned synchronously so the composed resolver sees the
+      // new result set the moment it lands; `{}` clears a previous
+      // theoretical run's recipes when this run used real discs.
+      const recipes = useTheoreticalMax
+        ? collectReturnedRecipes(
+            storedBuilds,
+            runRecipeMetaRef.current,
+            maxPersistedGeneratedBuilds
+          )
+        : {}
+      persistedRecipesRef.current = recipes
+
+      const buildDate = Date.now()
       database.optConfigs.newOrSetGeneratedBuildList(optConfigId, {
         builds: storedBuilds,
-        buildDate: Date.now(),
+        buildDate,
+        recipes,
       })
+      // The disc map above now belongs to this result set — tell the
+      // hydration effect so it doesn't rebuild (and re-stats) it.
+      discMapIdentityRef.current = `${optConfigId}:${buildDate}`
       setPermutationsResults(results.length)
       setSortTrigger((g) => g + 1)
     },
@@ -394,7 +425,9 @@ export function useSolverRun(inputs: SolverRunInputs) {
       target,
       team,
       statFiltersRef,
-      recipeMetaRef,
+      runRecipeMetaRef,
+      persistedRecipesRef,
+      discMapIdentityRef,
       setTheoreticalDiscMap,
       theoreticalDiscMapRef,
       useTheoreticalMax,

@@ -110,6 +110,7 @@ export const bonusStatDmgTypeIncStats = [
   'dmg_',
   'crit_',
   'crit_dmg_',
+  'pen_',
   'resIgn_',
 ] as const
 

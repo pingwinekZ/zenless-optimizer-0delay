@@ -192,4 +192,157 @@ describe('parseBuffDescription', () => {
       }),
     ])
   })
+
+  it('scopes a mid-sentence specialty to its own clause (Collapse buff)', () => {
+    const desc =
+      "· Agent <color=#FE437E>Ether DMG</color> and <color=#F0D12B>Physical DMG</color> <color=#2BAD00>increase by 25%</color>, and Daze dealt by Agents with the <color=#FFFFFF>Stun</color> specialty <color=#2BAD00>increases by 20%</color>.\n· After an Agent stuns an enemy, the enemy's Stun DMG Multiplier <color=#2BAD00>increases by 40%</color> and they recover from Stun <color=#2BAD00>15% slower</color> for 20s. Repeated triggers reset the duration."
+    const { bonusStats, enemyStats } = parseBuffDescription(desc)
+    // Ether/Physical DMG apply to every Agent; only the Daze clause is Stun-scoped
+    expect(bonusStats).toEqual([
+      expect.objectContaining({
+        tag: { q: 'dmg_', qt: 'combat', attribute: 'ether' },
+        value: 25,
+      }),
+      expect.objectContaining({
+        tag: { q: 'dmg_', qt: 'combat', attribute: 'physical' },
+        value: 25,
+      }),
+      expect.objectContaining({
+        tag: { q: 'dazeInc_', qt: 'combat' },
+        value: 20,
+        specialty: 'stun',
+      }),
+    ])
+    expect(bonusStats[0].specialty).toBeUndefined()
+    expect(bonusStats[1].specialty).toBeUndefined()
+    expect(enemyStats).toEqual([
+      expect.objectContaining({
+        tag: { q: 'stun_' },
+        value: 40,
+        conditional: true,
+      }),
+    ])
+  })
+
+  it('treats "attacks ignore" as an untyped RES ignore (Ultimate Edge buff)', () => {
+    const desc =
+      '· Agent Sharp DMG increases by 15%, and their DEF increases by 15%.\n· After an Agent uses an EX Special Attack, Special Attack or Ultimate, attacks ignore 20% of enemy Electric RES on hit for 20s. Repeated triggers reset the duration.'
+    const { bonusStats } = parseBuffDescription(desc)
+    // The damage-type list qualifies the trigger, not the ignore itself
+    expect(bonusStats.filter((s) => s.tag.q === 'resIgn_')).toEqual([
+      expect.objectContaining({
+        tag: { q: 'resIgn_', qt: 'combat', attribute: 'electric' },
+        value: 20,
+        conditional: true,
+      }),
+    ])
+  })
+
+  it('parses a shared "<Type> DMG and <Type> DMG" list (Frigidity buff)', () => {
+    const desc =
+      '· When an Agent triggers Abloom or Disorder on an enemy, Attribute Anomaly DMG and Disorder DMG dealt by the whole squad increase by 25%, and their Buildup Rate increases by 15% for 15s.'
+    const { bonusStats } = parseBuffDescription(desc)
+    expect(bonusStats.filter((s) => s.tag.q === 'dmg_')).toEqual([
+      expect.objectContaining({
+        tag: { q: 'dmg_', qt: 'combat', damageType1: 'anomaly' },
+        value: 25,
+        conditional: true,
+      }),
+      expect.objectContaining({
+        tag: { q: 'dmg_', qt: 'combat', damageType1: 'disorder' },
+        value: 25,
+        conditional: true,
+      }),
+    ])
+  })
+
+  it('does not carry specialty into a new-subject sentence (Knife Edge buff)', () => {
+    const desc =
+      '· For Agents with the Stun specialty, Daze dealt by their EX Special Attack increases by 20%. After an Agent uses an EX Special Attack or Special Attack, Electric DMG and Wind DMG increase by 30% for 15s.'
+    const { bonusStats } = parseBuffDescription(desc)
+    expect(bonusStats.filter((s) => s.tag.q === 'dazeInc_')).toEqual([
+      expect.objectContaining({ value: 20, specialty: 'stun' }),
+    ])
+    const dmgStats = bonusStats.filter((s) => s.tag.q === 'dmg_')
+    expect(dmgStats.map((s) => s.tag.attribute).sort()).toEqual([
+      'electric',
+      'wind',
+    ])
+    for (const s of dmgStats) expect(s.specialty).toBeUndefined()
+  })
+
+  it('scales per-stack values by "gains N stacks" and "(max N stacks)" (Into Flames)', () => {
+    const desc =
+      '· After Scorched Horizon activates Gale Scorcher, they gain 5 stacks of Into Flames. Each stack of Into Flames increases DMG dealt by 10%. With Into Flames stacks, every time Scorched Horizon is inflicted with an Anomaly, one stack is lost, and subsequent Abloom DMG taken increases by 10% for 15s (max 3 stacks).'
+    const { bonusStats } = parseBuffDescription(desc)
+    expect(bonusStats).toEqual([
+      expect.objectContaining({
+        tag: { q: 'dmg_', qt: 'combat' },
+        value: 50,
+      }),
+      expect.objectContaining({
+        tag: { q: 'dmg_', qt: 'combat', damageType1: 'abloom' },
+        value: 30,
+      }),
+    ])
+  })
+
+  it('maps "N% bonus Sharp DMG" to sharp_dmg_ (Integrated - Girtablullu)', () => {
+    const desc =
+      '· While in the Dissonant state, enemies take 40% bonus Attribute Anomaly DMG and 75% bonus Sharp DMG for 10s.'
+    const { bonusStats } = parseBuffDescription(desc)
+    expect(bonusStats).toEqual([
+      expect.objectContaining({
+        tag: { q: 'dmg_', qt: 'combat', damageType1: 'anomaly' },
+        value: 40,
+        conditional: true,
+      }),
+      expect.objectContaining({
+        tag: { q: 'sharp_dmg_', qt: 'combat' },
+        value: 75,
+        conditional: true,
+      }),
+    ])
+  })
+
+  it('scopes PEN Ratio to the listed hit types and drops one-time Energy', () => {
+    const desc =
+      "· Agent Sharp DMG increases by 20%. After defeating normal enemies, Agents with the Stun specialty restore 15 Energy.\n· When Agents' Basic Attack, Special Attack, and Ultimate hit enemies, PEN Ratio increases by 10%. If the enemy is Stunned, ignore 15% of their Electric RES."
+    const { bonusStats } = parseBuffDescription(desc)
+    const penStats = bonusStats.filter((s) => s.tag.q === 'pen_')
+    expect(penStats.map((s) => s.tag.damageType1).sort()).toEqual([
+      'basic',
+      'special',
+      'ult',
+    ])
+    for (const s of penStats)
+      expect(s).toMatchObject({ value: 10, conditional: true })
+    expect(bonusStats.filter((s) => s.tag.q === 'enerRegen_')).toEqual([])
+    expect(bonusStats).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          tag: { q: 'sharp_dmg_', qt: 'combat' },
+          value: 20,
+        }),
+        expect.objectContaining({
+          tag: { q: 'resIgn_', qt: 'combat', attribute: 'electric' },
+          value: 15,
+          conditional: true,
+        }),
+      ])
+    )
+  })
+
+  it('uses the higher split value without squad-count gating (Turbulent Resonance)', () => {
+    const desc =
+      '· If there are 2/3 Agents with the Anomaly specialty in the squad, Attribute Anomaly DMG dealt by Agents increases by 10%/60%, and the whole squad initially gains 500/1,500 Decibels upon entering combat.'
+    const { bonusStats } = parseBuffDescription(desc)
+    expect(bonusStats).toEqual([
+      expect.objectContaining({
+        tag: { q: 'dmg_', qt: 'combat', damageType1: 'anomaly' },
+        value: 60,
+        conditional: true,
+      }),
+    ])
+  })
 })

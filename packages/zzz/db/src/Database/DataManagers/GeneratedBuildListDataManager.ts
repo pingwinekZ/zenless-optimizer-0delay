@@ -3,7 +3,9 @@ import { objKeyMap } from '@zenless-optimizer/common/util'
 import { allDiscSlotKeys } from '@zenless-optimizer/zzz/consts'
 import { z } from 'zod'
 import type { DiscIds, ZzzDatabase } from '../..'
+import type { BuildRecipe } from '../../Interfaces/BuildRecipe'
 import { DataManager } from '../DataManager'
+import { validateRecipe } from './TheoReferenceDataManager'
 
 const discIdValueSchema = z.union([z.string(), z.undefined()])
 // JSON drops undefined values, so stored discIds may omit empty slots.
@@ -27,6 +29,17 @@ export type GeneratedBuild = z.infer<typeof generatedBuildSchema>
 const generatedBuildListSchema = z.object({
   builds: z.array(generatedBuildSchema).catch([]),
   buildDate: z.number().int().catch(0),
+  // Theoretical runs: recipe metadata for the returned rows, keyed by
+  // recipe id. The `recipe_*` disc ids in `builds` survive a reload, but
+  // nothing can turn them back into discs without these recipes — they are
+  // the only handle on the (otherwise in-memory) recipe space. Each entry
+  // is validated individually in `validate`.
+  recipes: z
+    .custom<Record<string, BuildRecipe>>(
+      (v) => typeof v === 'object' && v !== null && !Array.isArray(v)
+    )
+    .optional()
+    .catch(undefined),
 })
 
 export type GeneratedBuildList = z.infer<typeof generatedBuildListSchema>
@@ -56,7 +69,7 @@ export class GeneratedBuildListDataManager extends DataManager<
     const result = generatedBuildListSchema.safeParse(obj)
     if (!result.success) return undefined
 
-    const { builds: rawBuilds, buildDate } = result.data
+    const { builds: rawBuilds, buildDate, recipes: rawRecipes } = result.data
 
     // Validate builds with database lookups
     const builds: GeneratedBuild[] = rawBuilds.map((build) => {
@@ -80,20 +93,34 @@ export class GeneratedBuildListDataManager extends DataManager<
       return { discIds, wengineKey, value }
     })
 
+    const recipes = validateRecipes(rawRecipes)
     return {
       builds,
       buildDate,
+      ...(recipes ? { recipes } : {}),
     }
   }
   override saveStorageEntry(key: string, cached: GeneratedBuildList): void {
-    super.saveStorageEntry(
-      key,
+    const capped: GeneratedBuildList =
       cached.builds.length > maxPersistedGeneratedBuilds
         ? {
             ...cached,
             builds: cached.builds.slice(0, maxPersistedGeneratedBuilds),
           }
         : cached
+    if (!capped.recipes) {
+      super.saveStorageEntry(key, capped)
+      return
+    }
+    // Recipes only need to cover the rows that survive the cap: the full
+    // list stays in memory (and so does the in-session recipe resolver),
+    // while storage restores just the top rows of the last run.
+    const recipes = recipesForBuilds(capped.recipes, capped.builds)
+    super.saveStorageEntry(
+      key,
+      recipes
+        ? { ...capped, recipes }
+        : { builds: capped.builds, buildDate: capped.buildDate }
     )
   }
 
@@ -102,4 +129,33 @@ export class GeneratedBuildListDataManager extends DataManager<
     this.set(id, { ...data })
     return id
   }
+}
+
+/** Keep only recipes that pass validation; drop the field when none do. */
+function validateRecipes(
+  raw: Record<string, BuildRecipe> | undefined
+): Record<string, BuildRecipe> | undefined {
+  if (!raw) return undefined
+  const out: Record<string, BuildRecipe> = {}
+  for (const [recipeId, recipe] of Object.entries(raw)) {
+    const valid = validateRecipe(recipe)
+    if (valid) out[recipeId] = valid
+  }
+  return Object.keys(out).length > 0 ? out : undefined
+}
+
+/** Recipe metadata subset referenced by the given rows (`recipe_3_1` -> `recipe_3`). */
+function recipesForBuilds(
+  recipes: Record<string, BuildRecipe>,
+  builds: GeneratedBuild[]
+): Record<string, BuildRecipe> | undefined {
+  const out: Record<string, BuildRecipe> = {}
+  for (const build of builds) {
+    const slot1 = build.discIds['1']
+    if (!slot1?.startsWith('recipe_')) continue
+    const recipeId = slot1.replace(/_\d+$/, '')
+    const recipe = recipes[recipeId]
+    if (recipe) out[recipeId] = recipe
+  }
+  return Object.keys(out).length > 0 ? out : undefined
 }

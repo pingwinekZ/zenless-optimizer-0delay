@@ -227,6 +227,17 @@ function writeOpen(open: boolean): void {
   safeStorage()?.setItem(GOON_STORAGE_KEYS.open, open ? 'true' : 'false')
 }
 
+function readDismissed(): boolean {
+  return safeStorage()?.getItem(GOON_STORAGE_KEYS.dismissed) === 'true'
+}
+
+function writeDismissed(dismissed: boolean): void {
+  safeStorage()?.setItem(
+    GOON_STORAGE_KEYS.dismissed,
+    dismissed ? 'true' : 'false'
+  )
+}
+
 function readIntroSeen(): boolean {
   return safeStorage()?.getItem(GOON_STORAGE_KEYS.intro) === 'true'
 }
@@ -237,7 +248,9 @@ function writeIntroSeen(): void {
 
 /**
  * Always-on-top floating widget serving one random tweet per user per local
- * day. Collapsed on first run; once opened it reopens that way on reload.
+ * day. Collapsed on first run; once opened it reopens that way on reload, and
+ * closing it (X) keeps it closed across reloads until reopened from the ghost
+ * button.
  */
 export function GoonCorner() {
   const allIds = useMemo(() => goonIds(), [])
@@ -249,7 +262,7 @@ export function GoonCorner() {
   })
   const embedTheme: EmbedTheme = colorScheme === 'dark' ? 'dark' : 'light'
   const [open, setOpen] = useState(readOpen)
-  const [dismissed, setDismissed] = useState(false)
+  const [dismissed, setDismissed] = useState(readDismissed)
   // A persisted geometry may come from a larger window, so fit it on load.
   const [geometry, setGeometry] = useState(() =>
     fitIntoView(
@@ -315,6 +328,10 @@ export function GoonCorner() {
   useEffect(() => {
     writeOpen(open)
   }, [open])
+
+  useEffect(() => {
+    writeDismissed(dismissed)
+  }, [dismissed])
 
   useEffect(() => {
     writeGeometry(geometry)

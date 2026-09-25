@@ -1,5 +1,6 @@
 import type { BuildRecipe, Team } from '@zenless-optimizer/zzz/db'
 import {
+  collectReturnedRecipes,
   materializeReturnedDiscs,
   resolveSolverFrames,
   type StoredBuild,
@@ -86,5 +87,47 @@ describe('materializeReturnedDiscs', () => {
   })
   it('returns an empty map when nothing resolves', () => {
     expect(materializeReturnedDiscs(stored, () => undefined)).toEqual({})
+  })
+})
+
+describe('collectReturnedRecipes', () => {
+  const recipe = {
+    id: 'recipe_3',
+    mainStats: { '1': 'hp' },
+    totalRolls: {},
+    appearances: {},
+    perDiscSubstats: [[], [], [], [], [], []],
+    set4: 'PufferElectro',
+    set2: 'SwingJazz',
+  } as unknown as BuildRecipe
+  const row = (slot1: string, value: number): StoredBuild => ({
+    wengineKey: 'we0',
+    discIds: { '1': slot1 } as never,
+    value,
+  })
+  const resolve = (rid: string) => ({ ...recipe, id: rid })
+
+  it('collects recipes for the top recipe rows, skipping plain disc rows', () => {
+    const builds = [
+      row('recipe_3_1', 10),
+      row('d_plain', 9),
+      row('recipe_4_1', 8),
+    ]
+    const out = collectReturnedRecipes(builds, resolve, 100)
+    expect(Object.keys(out).sort()).toEqual(['recipe_3', 'recipe_4'])
+    expect(out['recipe_4'].id).toBe('recipe_4')
+  })
+
+  it('caps collection at the persistence limit', () => {
+    const builds = [row('recipe_3_1', 10), row('recipe_4_1', 8)]
+    expect(Object.keys(collectReturnedRecipes(builds, resolve, 1))).toEqual([
+      'recipe_3',
+    ])
+  })
+
+  it('returns an empty object when no recipe resolves', () => {
+    expect(
+      collectReturnedRecipes([row('recipe_3_1', 10)], () => undefined, 100)
+    ).toEqual({})
   })
 })

@@ -1,5 +1,9 @@
 import type { AttributeKey, SpecialityKey } from '@zenless-optimizer/zzz/consts'
-import type { BonusStatTag, EnemyStatsTag } from '@zenless-optimizer/zzz/db'
+import {
+  type BonusStatTag,
+  bonusStatDmgTypeIncStats,
+  type EnemyStatsTag,
+} from '@zenless-optimizer/zzz/db'
 
 // Enemy stat keys that should be routed to enemyStats instead of bonusStats
 const enemyStatKeys = new Set([
@@ -216,6 +220,28 @@ function extractDamageTypes(text: string): string[] {
 }
 
 /**
+ * Specialty qualifiers are scoped to the clause they appear in and everything
+ * after it within the same sentence. Clauses that precede a qualifier (e.g.
+ * the "Ether DMG and Physical DMG increase by 25%" half of "Ether DMG and
+ * Physical DMG increase by 25%, and Daze dealt by Agents with the Stun
+ * specialty increases by 20%") must not inherit it. A specialty stated in an
+ * earlier sentence still carries over via `effectiveSpecialty`.
+ */
+function specialtyForClause(
+  sentence: string,
+  clauseIndex: number,
+  effectiveSpecialty: SpecialityKey | undefined,
+  sentSpecialty: SpecialityKey | undefined
+): SpecialityKey | undefined {
+  if (!effectiveSpecialty) return undefined
+  if (!sentSpecialty) return effectiveSpecialty
+  const specIdx = sentence.search(/specialty/i)
+  return specIdx !== -1 && specIdx < clauseIndex
+    ? effectiveSpecialty
+    : undefined
+}
+
+/**
  * Sentence-level pre-pass: detect and extract ignore/DEF-ign patterns that
  * have damage type qualifiers (e.g. "Basic Attack, EX Special Attack, and
  * Ultimate ignore 10% of enemy Physical RES").
@@ -230,7 +256,8 @@ function extractTypedIgnore(
   sentence: string,
   bonusStats: BuffBonusStat[],
   conditional: boolean,
-  specialty: SpecialityKey | undefined
+  specialty: SpecialityKey | undefined,
+  sentSpecialty: SpecialityKey | undefined
 ): string {
   // Match "...<text> ignore[sd]? N% of [the] [enemy's] [all-DMG/attribute] RES/DEF [...]"
   // or "...<text> ignore[sd]? N%/M% of [the] [enemy's] [attribute] RES/DEF [...]"
@@ -251,9 +278,25 @@ function extractTypedIgnore(
 
   // Extract damage types from everything before the "ignore" clause
   const ignoreStart = sentence.indexOf(match[0])
+  const ignoreSpecialty = specialtyForClause(
+    sentence,
+    ignoreStart,
+    specialty,
+    sentSpecialty
+  )
   const beforeIgnore = sentence.substring(0, ignoreStart)
   const dmgTypes = extractDamageTypes(beforeIgnore)
   const attrs: (AttributeKey | undefined)[] = [attr]
+
+  // When the subject directly before "ignore" is a generic attack noun (e.g.
+  // "After an Agent uses an EX Special Attack, ..., attacks ignore 20% of
+  // enemy Electric RES"), the ignore applies to all attacks and any damage
+  // type keywords earlier in the sentence describe the trigger, not the
+  // subject. Leave it for the generic RES-ignore handlers, which produce an
+  // untyped ignore.
+  if (/(?:^|[\s,;])(?:attacks?|hits?)\s*$/i.test(beforeIgnore)) {
+    return sentence
+  }
 
   // Check for "and <Attr> RES/DEF" after the first match (same value, different attribute)
   const afterMatch = sentence.substring(ignoreStart + match[0].length)
@@ -279,7 +322,7 @@ function extractTypedIgnore(
             },
             value,
             ...(conditional || values.length > 1 ? { conditional: true } : {}),
-            ...(specialty && { specialty }),
+            ...(ignoreSpecialty && { specialty: ignoreSpecialty }),
           })
         }
       }
@@ -316,7 +359,7 @@ function extractTypedIgnore(
             ...(conditional || extraValues.length > 1
               ? { conditional: true }
               : {}),
-            ...(specialty && { specialty }),
+            ...(ignoreSpecialty && { specialty: ignoreSpecialty }),
           })
         }
       }
@@ -346,7 +389,8 @@ function extractAttrDmgList(
   sentence: string,
   bonusStats: BuffBonusStat[],
   conditional: boolean,
-  specialty: SpecialityKey | undefined
+  specialty: SpecialityKey | undefined,
+  sentSpecialty: SpecialityKey | undefined
 ): string {
   // Match "increase(s) by N%" or "is/are increased by N%" at the end of a clause
   const incMatch = sentence.match(
@@ -355,6 +399,12 @@ function extractAttrDmgList(
   if (!incMatch) return sentence
 
   const incIdx = sentence.indexOf(incMatch[0])
+  const attrSpecialty = specialtyForClause(
+    sentence,
+    incIdx,
+    specialty,
+    sentSpecialty
+  )
   const beforeInc = sentence.substring(0, incIdx)
   const value = incMatch[2] ? Number(incMatch[2]) : Number(incMatch[1])
 
@@ -373,7 +423,7 @@ function extractAttrDmgList(
         tag: { q: 'dmg_', qt: 'combat', attribute: attr },
         value,
         ...(conditional && { conditional: true }),
-        ...(specialty && { specialty }),
+        ...(attrSpecialty && { specialty: attrSpecialty }),
       })
     }
     // Remove the matched portion from the sentence
@@ -396,7 +446,8 @@ function extractTypedDmgIncrease(
   sentence: string,
   bonusStats: BuffBonusStat[],
   conditional: boolean,
-  specialty: SpecialityKey | undefined
+  specialty: SpecialityKey | undefined,
+  sentSpecialty: SpecialityKey | undefined
 ): string {
   // Match "<DMG type list> deal(s) N% (increased|more) DMG"
   const dealMatch = sentence.match(
@@ -406,6 +457,12 @@ function extractTypedDmgIncrease(
     const dmgListPart = dealMatch[1]
     const value = Number(dealMatch[2])
     const dmgTypes = extractDamageTypes(dmgListPart)
+    const dealSpecialty = specialtyForClause(
+      sentence,
+      sentence.indexOf(dealMatch[0]),
+      specialty,
+      sentSpecialty
+    )
 
     if (dmgTypes.length > 0) {
       for (const dmgType of dmgTypes) {
@@ -417,7 +474,7 @@ function extractTypedDmgIncrease(
           },
           value,
           ...(conditional && { conditional: true }),
-          ...(specialty && { specialty }),
+          ...(dealSpecialty && { specialty: dealSpecialty }),
         })
       }
       return sentence.replace(dealMatch[0], '').trim()
@@ -428,13 +485,22 @@ function extractTypedDmgIncrease(
   // Also handles "DMG dealt by <types> increases by N%" where types appear
   // between "DMG" and "increases" rather than before "DMG".
   const dmgIncMatch = sentence.match(
-    /(?<![-\w])DMG\s+(?:<[^>]+>)?(?:is\s+|are\s+)?.*?increas\w*\s+by\s+(\d+)%/i
+    /(?<![-\w])DMG\s+(?:<[^>]+>)?(?:is\s+|are\s+)?.*?increas\w*\s+by\s+(\d+)(?:%\/(\d+))?%/i
   )
   if (dmgIncMatch) {
     const fullMatch = dmgIncMatch[0]
     const dmgIdx = sentence.indexOf(fullMatch)
+    const dmgSpecialty = specialtyForClause(
+      sentence,
+      dmgIdx,
+      specialty,
+      sentSpecialty
+    )
     const beforeDmg = sentence.substring(0, dmgIdx).trim()
-    const value = Number(dmgIncMatch[1])
+    // Split values ("10%/60%") use the higher, per-condition value
+    const value = dmgIncMatch[2]
+      ? Number(dmgIncMatch[2])
+      : Number(dmgIncMatch[1])
 
     // Skip if DMG is part of a stat keyword like "CRIT DMG" or "Sheer DMG"
     const lastWord = beforeDmg.split(/[\s,]+/).pop() ?? ''
@@ -445,22 +511,21 @@ function extractTypedDmgIncrease(
     const incrIdx = afterDmg.search(/increas\w*/i)
     const betweenText = afterDmg.substring(0, incrIdx).trim()
 
-    // Check if the word immediately before "DMG" is a damage type keyword
-    // (to avoid false matches on stat keywords like "CRIT DMG")
-    let dmgTypes = matchDamageType(lastWord)
-      ? extractDamageTypes(beforeDmg)
-      : extractDamageTypes(betweenText)
-
-    // Fallback: if betweenText is empty and beforeDmg has content,
-    // check the clause directly preceding DMG for shared-construct patterns
-    // (e.g., "Ultimate and Chain Attack DMG" where DMG applies to both).
-    // Only scan the last clause (after the final comma) to avoid picking
-    // up conditional trigger types like "uses an EX Special Attack" that
-    // appear earlier in the sentence.
-    if (dmgTypes.length === 0 && beforeDmg && !betweenText) {
-      const lastClause = beforeDmg.split(/[,;]/).pop()?.trim() ?? ''
-      dmgTypes = extractDamageTypes(lastClause)
-    }
+    // Damage types qualified by the "DMG" noun being increased. They can sit
+    // before it (its own qualifier, e.g. "Attribute Anomaly DMG", or a shared
+    // list such as "Ultimate and Chain Attack DMG") and/or between it and the
+    // increase verb ("DMG dealt by Attribute Anomaly", or a second entry in
+    // "Attribute Anomaly DMG and Disorder DMG ... increase by 25%").
+    // Only the clause directly before "DMG" is scanned, so trigger types
+    // earlier in the sentence ("... triggers Abloom or Disorder on an
+    // enemy, Attribute Anomaly DMG ...") are not misattributed.
+    const lastClause = beforeDmg.split(/[,;]/).pop()?.trim() ?? ''
+    const leadType = matchQualifierDamageType(lastWord)
+    const dmgTypes = [
+      ...(leadType ? [leadType] : []),
+      ...extractDamageTypes(lastClause),
+      ...extractDamageTypes(betweenText),
+    ].filter((t, i, all) => all.indexOf(t) === i)
 
     if (dmgTypes.length > 0) {
       for (const dmgType of dmgTypes) {
@@ -472,7 +537,7 @@ function extractTypedDmgIncrease(
           },
           value,
           ...(conditional && { conditional: true }),
-          ...(specialty && { specialty }),
+          ...(dmgSpecialty && { specialty: dmgSpecialty }),
         })
       }
       return (
@@ -487,7 +552,7 @@ function extractTypedDmgIncrease(
         tag: { q: 'dmg_', qt: 'combat' },
         value,
         ...(conditional && { conditional: true }),
-        ...(specialty && { specialty }),
+        ...(dmgSpecialty && { specialty: dmgSpecialty }),
       })
       return (
         sentence.substring(0, dmgIdx) +
@@ -497,6 +562,59 @@ function extractTypedDmgIncrease(
   }
 
   return sentence
+}
+
+/**
+ * Sentence-level pre-pass: scopes a plain stat increase to the hit types named
+ * in its trigger ("When Agents' Basic Attack, Special Attack, and Ultimate hit
+ * enemies, PEN Ratio increases by 10%"). Emits one entry per listed hit type
+ * so the bonus only applies to hits of those types.
+ *
+ * Only stats that support damage-type scoping are handled; others fall through
+ * to the generic handlers.
+ *
+ * Returns the sentence with the matched clause removed.
+ */
+function extractHitScopedStat(
+  sentence: string,
+  bonusStats: BuffBonusStat[],
+  conditional: boolean,
+  specialty: SpecialityKey | undefined
+): string {
+  const match = sentence.match(
+    /^(.*?)\bhit(?:s)?\s+enemies?,\s*(.+?)\s+(?:<[^>]+>)?increas(?:e[sd]?|ing)\s+by\s+(\d+)(?:%\/(\d+))?%/i
+  )
+  if (!match) return sentence
+
+  const dmgTypes = extractDamageTypes(match[1])
+  if (dmgTypes.length === 0) return sentence
+
+  const statPart = match[2].trim()
+  const statKey = Object.entries(statKeywords)
+    .sort((a, b) => b[0].length - a[0].length)
+    .find(([kw]) => statPart.toUpperCase().startsWith(kw.toUpperCase()))?.[1]
+  if (
+    !statKey ||
+    !bonusStatDmgTypeIncStats.includes(
+      statKey as (typeof bonusStatDmgTypeIncStats)[number]
+    )
+  )
+    return sentence
+
+  const value = match[4] ? Number(match[4]) : Number(match[3])
+  for (const dmgType of dmgTypes) {
+    bonusStats.push({
+      tag: {
+        q: statKey as BonusStatTag['q'],
+        qt: 'combat',
+        damageType1: dmgType as BonusStatTag['damageType1'],
+      },
+      value,
+      ...(conditional && { conditional: true }),
+      ...(specialty && { specialty }),
+    })
+  }
+  return ''
 }
 
 /**
@@ -527,11 +645,11 @@ export function parseBuffDescription(desc: string): BuffConfig {
 
   // Description-level stack cap for per-stack phrasing split across
   // sentences/bullets (e.g. "...stacking up to 2 times... For every stack
-  // of Blight Mark... take 8% more Attribute Anomaly DMG").
-  // No description in the data mixes different cap values, so a single
-  // max cap is unambiguous.
+  // of Blight Mark... take 8% more Attribute Anomaly DMG", or "they gain 5
+  // stacks of Into Flames. Each stack ... increases DMG dealt by 10%.").
+  // Effects with their own same-sentence cap ("(max 3 stacks)") override this.
   const descCapMatch = stripped.match(
-    /(?:stacking|stack)\s+up\s+to\s+(\d+)\s+times|up\s+to\s+a\s+maximum\s+of\s+(\d+)\s+stacks|can\s+stack\s+up\s+to\s+(\d+)\s+times/gi
+    /(?:stacking|stack)\s+up\s+to\s+(\d+)\s+times|up\s+to\s+a\s+maximum\s+of\s+(\d+)\s+stacks|can\s+stack\s+up\s+to\s+(\d+)\s+times|gains?\s+(\d+)\s+stacks?\s+of/gi
   )
   const descCap = descCapMatch
     ? Math.max(
@@ -555,29 +673,42 @@ export function parseBuffDescription(desc: string): BuffConfig {
     let bulletSpecialty: SpecialityKey | undefined
 
     for (const sentence of sentences) {
-      // Detect specialty condition at sentence level
+      // Detect specialty condition at sentence level. Squad-composition
+      // conditions ("... 2/3 Agents with the Anomaly specialty in the
+      // squad") describe the team, not the optimized Agent, so they must not
+      // scope the stats that follow.
       const sentSpecialtyMatch = sentence.match(
         /(?:for (?:Agents? )?(?:with|of) )(\w+) specialty|(?:with|of) (?:the )?(\w+) specialty|(\w+) specialty Agents?/i
       )
-      const sentSpecialty = sentSpecialtyMatch
-        ? matchSpecialty(
-            sentSpecialtyMatch[1] ??
-              sentSpecialtyMatch[2] ??
-              sentSpecialtyMatch[3]
-          )
-        : undefined
+      const sentSpecialty =
+        sentSpecialtyMatch && !/\bthere\s+(?:are|is)\b/i.test(sentence)
+          ? matchSpecialty(
+              sentSpecialtyMatch[1] ??
+                sentSpecialtyMatch[2] ??
+                sentSpecialtyMatch[3]
+            )
+          : undefined
       // Update bullet-level specialty if this sentence has an explicit one
       if (sentSpecialty) bulletSpecialty = sentSpecialty
+      // A specialty only carries into a later sentence when that sentence
+      // refers back to its subject ("...their Basic Attack DMG..."). A
+      // sentence that introduces a new subject ("After an Agent uses...")
+      // must not inherit it.
+      const inheritsBullet =
+        !!bulletSpecialty && /\b(their|they|them|its)\b/i.test(sentence)
       // Use bullet-level specialty as fallback for sentences that don't re-state it
-      const effectiveSpecialty = sentSpecialty ?? bulletSpecialty
+      const effectiveSpecialty =
+        sentSpecialty ?? (inheritsBullet ? bulletSpecialty : undefined)
 
       // Detect stack multiplier: "stacking up to N times",
       // "stack up to N times", "up to a maximum of N stacks"
       const stackMatch = sentence.match(
-        /(?:stacking|stack)\s+up\s+to\s+(\d+)\s+times|up\s+to\s+a\s+maximum\s+of\s+(\d+)\s+stacks|can\s+stack\s+up\s+to\s+(\d+)\s+times/i
+        /(?:stacking|stack)\s+up\s+to\s+(\d+)\s+times|up\s+to\s+a\s+maximum\s+of\s+(\d+)\s+stacks|can\s+stack\s+up\s+to\s+(\d+)\s+times|\(\s*max(?:imum)?\s+(\d+)\s+stacks?\s*\)/i
       )
       const stackMult = stackMatch
-        ? Number(stackMatch[1] ?? stackMatch[2] ?? stackMatch[3])
+        ? Number(
+            stackMatch[1] ?? stackMatch[2] ?? stackMatch[3] ?? stackMatch[4]
+          )
         : 1
 
       // Track how many bonus/enemy stats existed before this sentence
@@ -587,13 +718,24 @@ export function parseBuffDescription(desc: string): BuffConfig {
 
       const sentenceConditional = isConditional(sentence)
 
-      // Pre-pass: extract damage-type-qualified ignore patterns before
-      // comma/and splitting destroys the damage type list context
-      let processedSentence = extractTypedIgnore(
+      // Pre-pass: scope a stat increase to a hit-type trigger list
+      // (e.g. "...Basic Attack, Special Attack, and Ultimate hit enemies,
+      // PEN Ratio increases by 10%")
+      let processedSentence = extractHitScopedStat(
         sentence,
         bonusStats,
         sentenceConditional,
         effectiveSpecialty
+      )
+
+      // Pre-pass: extract damage-type-qualified ignore patterns before
+      // comma/and splitting destroys the damage type list context
+      processedSentence = extractTypedIgnore(
+        processedSentence,
+        bonusStats,
+        sentenceConditional,
+        effectiveSpecialty,
+        sentSpecialty
       )
 
       // Pre-pass: extract <Attribute> DMG lists (e.g. "Electric DMG and Physical DMG increase by 20%")
@@ -604,7 +746,8 @@ export function parseBuffDescription(desc: string): BuffConfig {
         processedSentence,
         bonusStats,
         sentenceConditional,
-        effectiveSpecialty
+        effectiveSpecialty,
+        sentSpecialty
       )
 
       // Pre-pass: extract damage-type-qualified "deal N% increased DMG" patterns
@@ -612,7 +755,8 @@ export function parseBuffDescription(desc: string): BuffConfig {
         processedSentence,
         bonusStats,
         sentenceConditional,
-        effectiveSpecialty
+        effectiveSpecialty,
+        sentSpecialty
       )
 
       // Split by commas and conjunctions to isolate individual effects
@@ -620,6 +764,10 @@ export function parseBuffDescription(desc: string): BuffConfig {
         .split(/,|(?: and )|(?:; )/)
         .map((s) => s.trim())
         .filter(Boolean)
+
+      // Whether the specialty qualifier stated in this sentence has already
+      // been passed; only clauses after it may inherit it.
+      let specialtyScopePassed = false
 
       for (const seg of segments) {
         // Skip sentences that are purely conditional without a stat effect
@@ -638,9 +786,17 @@ export function parseBuffDescription(desc: string): BuffConfig {
         const segmentSpecialty = specialtyMatch
           ? matchSpecialty(specialtyMatch[1] ?? specialtyMatch[2])
           : undefined
-        // Fall back to sentence/bullet-level specialty if segment doesn't have its own
-        // (e.g. "Their Basic Attack DMG..." continuing from "Agents with Attack specialty")
-        const specialty = segmentSpecialty ?? effectiveSpecialty
+        if (/specialty/i.test(seg)) specialtyScopePassed = true
+        // Fall back to the specialty stated earlier in this sentence, or one
+        // inherited from an earlier sentence in the same bullet
+        // (e.g. "Their Basic Attack DMG..." continuing from "Agents with
+        // Attack specialty"). Clauses that precede a qualifier stated in this
+        // sentence stay unqualified.
+        const specialty =
+          segmentSpecialty ??
+          (sentSpecialty && !specialtyScopePassed
+            ? undefined
+            : effectiveSpecialty)
 
         // Handle split percentage values like "5%/15%" in ignore clauses
         // (conditional buffs with different values based on e.g. number of Anomaly agents)
@@ -933,6 +1089,23 @@ export function parseBuffDescription(desc: string): BuffConfig {
           continue
         }
 
+        // --- Agent-side "Daze dealt ... increases by N%" (attacker Daze
+        // multiplier). Keep the specialty qualifier so it only applies to
+        // matching Agents. Must run before the generic keyword fallback, which
+        // would misroute it to the enemy dazeInc_ stat.
+        const dazeDealtIncMatch = seg.match(
+          /Daze(?:\s+value)?\s+dealt\b.*?increas\w*(?:\s+by)?\s+(\d+)%/i
+        )
+        if (dazeDealtIncMatch) {
+          bonusStats.push({
+            tag: { q: 'dazeInc_', qt: 'combat' },
+            value: Number(dazeDealtIncMatch[1]),
+            ...(conditional && { conditional: true }),
+            ...(specialty && { specialty }),
+          })
+          continue
+        }
+
         // --- Zone buffs: "DMG it/they takes is reduced by N%" (enemy takes less DMG) ---
         // There is no enemy damage-taken stat; skip so the generic fallback
         // below does not misread it as a damage increase.
@@ -1101,9 +1274,16 @@ export function parseBuffDescription(desc: string): BuffConfig {
           const dmgType = qualifier
             ? matchQualifierDamageType(qualifier)
             : undefined
+          // Qualifiers that name their own stat ("Sharp DMG", "Sheer DMG",
+          // "Laceration DMG") map to it instead of generic DMG.
+          const qualifierStatKey = qualifier
+            ? Object.entries(statKeywords).find(
+                ([kw]) => kw.toUpperCase() === `${qualifier} DMG`.toUpperCase()
+              )?.[1]
+            : undefined
           bonusStats.push({
             tag: {
-              q: 'dmg_',
+              q: (qualifierStatKey as BonusStatTag['q']) ?? 'dmg_',
               qt: 'combat',
               ...(attr && { attribute: attr }),
               ...(dmgType && {
@@ -1134,17 +1314,10 @@ export function parseBuffDescription(desc: string): BuffConfig {
           }
         }
 
-        // "recover N Energy" / "recovers N Energy"
-        const energyRecoverMatch = seg.match(/recovers?\s+(\d+)\s+Energy/i)
-        if (energyRecoverMatch) {
-          bonusStats.push({
-            tag: { q: 'enerRegen_', qt: 'combat' },
-            value: Number(energyRecoverMatch[1]),
-            ...(conditional && { conditional: true }),
-            ...(specialty && { specialty }),
-          })
+        // One-time Energy restores are not a modeled regen rate, so they are
+        // intentionally skipped (Decibels below are still captured).
+        if (/restores?|recovers?/i.test(seg) && /\d+\s*Energy/i.test(seg))
           continue
-        }
 
         // "recover N additional Decibels"
         const decibelRecoverMatch = seg.match(
@@ -1154,18 +1327,6 @@ export function parseBuffDescription(desc: string): BuffConfig {
           bonusStats.push({
             tag: { q: 'enerRegen_', qt: 'combat' },
             value: Number(decibelRecoverMatch[1]),
-            ...(conditional && { conditional: true }),
-            ...(specialty && { specialty }),
-          })
-          continue
-        }
-
-        // "restores N Energy"
-        const energyRestoreMatch = seg.match(/restores?\s+(\d+)\s+Energy/i)
-        if (energyRestoreMatch) {
-          bonusStats.push({
-            tag: { q: 'enerRegen_', qt: 'combat' },
-            value: Number(energyRestoreMatch[1]),
             ...(conditional && { conditional: true }),
             ...(specialty && { specialty }),
           })

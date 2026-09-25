@@ -4,6 +4,7 @@ import { DeferCreate, DeferCreateProvider } from '@zenless-optimizer/common/ui'
 import {
   type GeneratedBuild,
   getTeamFrame0,
+  type ICachedDisc,
   type StatFilters,
 } from '@zenless-optimizer/zzz/db'
 import {
@@ -17,11 +18,19 @@ import { useZzzCalcContext } from '@zenless-optimizer/zzz/formula-ui'
 import { buildRowId } from '@zenless-optimizer/zzz/solver/buildStatsUtils'
 import { getCharStat } from '@zenless-optimizer/zzz/stats'
 import { DiscEditorModal } from '@zenless-optimizer/zzz/ui'
-import { useContext, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import { useResponsive } from '../hooks'
 import type { StatDisplay } from '../Sidebar'
 import { useOptimizerDisplayStore } from '../stores/useOptimizerDisplayStore'
+import { useOptModeStore } from '../stores/useOptModeStore'
 import { nextSelectedBuild } from './buildSelection'
 import { ExpandedDataPanel } from './ExpandedDataPanel'
 import { useEngineSelection } from './engineSelection'
@@ -29,6 +38,7 @@ import { OptimizerForm } from './OptimizerForm'
 import { OptimizerGrid } from './OptimizerGrid'
 import { OptimizerSidebarPanel } from './OptimizerSidebarPanel'
 import { SelectedBuildPanel } from './SelectedBuildPanel'
+import { materializeReturnedDiscs } from './solverResults'
 import { useBuildActions } from './useBuildActions'
 import { useBuildAnalysis } from './useBuildAnalysis'
 import { useDiscPools } from './useDiscPools'
@@ -110,20 +120,28 @@ function OptimizeWrapper() {
     (s) => s.setOptimizerProgress
   )
 
-  // Theoretical max mode toggle (local state to avoid OptConfig re-render cascade)
-  const [useTheoreticalMax, setUseTheoreticalMaxState] = useState(false)
-  // Potentially-best mode toggle (same session-local treatment). The two
-  // modes are mutually exclusive: theoretical ignores real discs entirely,
-  // while potentially-best boosts real discs to their max potential.
-  const [usePotentialBest, setUsePotentialBestState] = useState(false)
-  const setUseTheoreticalMax = (v: boolean) => {
-    setUseTheoreticalMaxState(v)
-    if (v) setUsePotentialBestState(false)
-  }
-  const setUsePotentialBest = (v: boolean) => {
-    setUsePotentialBestState(v)
-    if (v) setUseTheoreticalMaxState(false)
-  }
+  // Theoretical max / potentially-best mode toggles — persisted per
+  // character (see useOptModeStore) so a page switch or refresh keeps
+  // displaying the last result set the same way the run produced it.
+  // The two modes are mutually exclusive (enforced in the store):
+  // theoretical ignores real discs entirely, while potentially-best boosts
+  // real discs to their max potential.
+  const useTheoreticalMax = useOptModeStore(
+    (s) => s.modes[characterKey]?.theoretical ?? false
+  )
+  const usePotentialBest = useOptModeStore(
+    (s) => s.modes[characterKey]?.potential ?? false
+  )
+  const setTheoreticalMode = useOptModeStore((s) => s.setTheoretical)
+  const setPotentialMode = useOptModeStore((s) => s.setPotential)
+  const setUseTheoreticalMax = useCallback(
+    (v: boolean) => setTheoreticalMode(characterKey, v),
+    [setTheoreticalMode, characterKey]
+  )
+  const setUsePotentialBest = useCallback(
+    (v: boolean) => setPotentialMode(characterKey, v),
+    [setPotentialMode, characterKey]
+  )
 
   // Theoretical max disc cache — maps fake disc IDs to ICachedDisc for stat computation
   // Uses a ref for synchronous access (avoids race with batchComputeBuildStats)
@@ -133,6 +151,9 @@ function OptimizeWrapper() {
     enrichedValuesRef,
     theoreticalDiscMap,
     setTheoreticalDiscMap,
+    runRecipeMetaRef,
+    persistedRecipesRef,
+    discMapIdentityRef,
     recipeMetaRef,
   } = useTheoreticalDiscStore()
 
@@ -184,7 +205,9 @@ function OptimizeWrapper() {
     setSortTrigger,
     theoreticalDiscMapRef,
     setTheoreticalDiscMap,
-    recipeMetaRef,
+    runRecipeMetaRef,
+    persistedRecipesRef,
+    discMapIdentityRef,
   })
 
   // Equipped build: the character's currently equipped discs + wengine (always first row)
@@ -232,6 +255,54 @@ function OptimizeWrapper() {
     () => generatedBuildList?.builds ?? [],
     [generatedBuildList?.builds]
   )
+
+  // Theoretical results are half-persisted: the build list (with its
+  // `recipe_*` disc ids) is stored in the database, but the fake disc map
+  // and recipe metadata live only in React state. Rebuild both from the
+  // recipes stored with the list so theoretical rows keep their stats —
+  // and summary/pinning keep working — after a page switch or refresh.
+  // When the result-set identity changes (page/character switch), the map's
+  // recipe layer first drops: recipe ids are only unique within a run, so
+  // leftovers would let the new rows resolve to another run's discs.
+  // Completed runs stamp the identity themselves, so their freshly
+  // materialized (full) disc map is never rebuilt or re-statted here.
+  useEffect(() => {
+    const recipes = generatedBuildList?.recipes
+    persistedRecipesRef.current = recipes ?? {}
+    const identity = generatedBuildList
+      ? `${optConfigId}:${generatedBuildList.buildDate}`
+      : ''
+    if (discMapIdentityRef.current === identity) return
+    discMapIdentityRef.current = identity
+
+    const current = theoreticalDiscMapRef.current
+    const hasStaleRecipeDiscs = Object.keys(current).some((id) =>
+      id.startsWith('recipe_')
+    )
+    const discs =
+      generatedBuildList && recipes
+        ? materializeReturnedDiscs(
+            generatedBuildList.builds,
+            (id) => recipes[id]
+          )
+        : {}
+    if (!hasStaleRecipeDiscs && Object.keys(discs).length === 0) return
+    // Non-recipe discs (pinned-reference `theoref_*` ids) are not tied to a
+    // result set and survive the swap.
+    const next: Record<string, ICachedDisc> = {}
+    for (const [id, disc] of Object.entries(current))
+      if (!id.startsWith('recipe_')) next[id] = disc
+    Object.assign(next, discs)
+    theoreticalDiscMapRef.current = next
+    setTheoreticalDiscMap(next)
+  }, [
+    optConfigId,
+    generatedBuildList,
+    persistedRecipesRef,
+    theoreticalDiscMapRef,
+    setTheoreticalDiscMap,
+    discMapIdentityRef,
+  ])
 
   // Pinned theoretical reference for this character (reactive). Absent
   // means the reference feature stays invisible for this character.
