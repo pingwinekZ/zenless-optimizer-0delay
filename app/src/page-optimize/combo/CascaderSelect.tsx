@@ -11,7 +11,7 @@ import { type ReactNode, useMemo } from 'react'
 // === Types ===
 
 export type CascaderOption = {
-  label: string
+  label: ReactNode
   value: string
   leftSection?: ReactNode
 }

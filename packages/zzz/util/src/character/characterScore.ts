@@ -99,6 +99,15 @@ export function gradeColor(grade: string): string {
   return GRADE_COLORS[grade] ?? '#0A72FB'
 }
 
+/**
+ * Display label for a grade. The max tier is styled distinctly (pink) but
+ * reads as plain `SSS+` — the `Crown` suffix is internal only, so grading
+ * stays `SSS+` in orange below the ceiling and `SSS+` in pink at it.
+ */
+export function gradeDisplay(grade: string): string {
+  return grade === 'SSS+ Crown' ? 'SSS+' : grade
+}
+
 export function calculateCharacterScore(
   discs: (IDisc | undefined)[],
   charKey: CharacterKey

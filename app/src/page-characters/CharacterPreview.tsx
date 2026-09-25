@@ -43,6 +43,7 @@ import {
   calculateSubstatEfficiency,
   efficiencyToGrade,
   gradeColor,
+  gradeDisplay,
 } from '@zenless-optimizer/zzz/util'
 import { memo, useCallback, useEffect, useMemo } from 'react'
 import {
@@ -591,7 +592,7 @@ function PreviewContent({
                       }}
                       title="Weighted substat efficiency + main-stat alignment"
                     >
-                      {score.grade}
+                      {gradeDisplay(score.grade)}
                     </Text>
                     <Text
                       style={{
@@ -647,7 +648,7 @@ function PreviewContent({
                           }}
                           title="Equipped build value vs the pinned perfect value"
                         >
-                          {efficiencyToGrade(referenceScore)}
+                          {gradeDisplay(efficiencyToGrade(referenceScore))}
                         </Text>
                         <Text
                           style={{

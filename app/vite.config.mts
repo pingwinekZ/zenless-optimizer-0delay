@@ -96,7 +96,10 @@ export default defineConfig(() => {
       // the server does not wait on it. Same trick the hsr-optimizer config
       // uses for its tabs.
       warmup: {
-        clientFiles: ['src/main.tsx'],
+        clientFiles: ['src/main.tsx', 'src/app/Tabs.tsx', 'src/app/routes.tsx'],
+      },
+      watch: {
+        ignored: ['**/assets/**', '**/dist/**', '**/coverage/**', '**/.*/**'],
       },
     },
 
@@ -171,6 +174,9 @@ export default defineConfig(() => {
     build: {
       outDir: '../dist/app',
       reportCompressedSize: true,
+      target: 'esnext',
+      modulePreload: { polyfill: false },
+      cssCodeSplit: true,
       commonjsOptions: {
         transformMixedEsModules: true,
       },
@@ -182,8 +188,13 @@ export default defineConfig(() => {
               id.includes('node_modules/react/')
             )
               return 'react-vendor'
-            if (id.includes('node_modules/@mantine/')) return 'mantine'
             if (id.includes('node_modules/ag-grid')) return 'ag-grid'
+            if (
+              id.includes('node_modules/recharts') ||
+              id.includes('node_modules/d3-')
+            )
+              return 'recharts'
+            if (id.includes('node_modules/@mantine/')) return 'mantine'
             if (id.includes('node_modules/@tabler/icons-react'))
               return 'tabler-icons'
             if (
@@ -191,6 +202,7 @@ export default defineConfig(() => {
               id.includes('node_modules/react-i18next')
             )
               return 'i18n'
+            if (id.includes('node_modules')) return 'vendor-misc'
           },
         },
       },

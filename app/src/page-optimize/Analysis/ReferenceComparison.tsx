@@ -21,7 +21,7 @@ import { allDiscSlotKeys, statKeyTextMap } from '@zenless-optimizer/zzz/consts'
 import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
 import { StatIcon } from '@zenless-optimizer/zzz/svgicons'
 import { DiscSetName } from '@zenless-optimizer/zzz/ui/Disc/DiscTrans'
-import { gradeColor } from '@zenless-optimizer/zzz/util'
+import { gradeColor, gradeDisplay } from '@zenless-optimizer/zzz/util'
 import { useTranslation } from 'react-i18next'
 import type { AnalysisData } from './ExpandedDataPanelController'
 
@@ -137,7 +137,7 @@ export function ReferenceComparison({
               {t('reference.title', 'Perfect Reference')}
             </Text>
             <Badge size="xs" variant="light" style={{ color: gradeHex }}>
-              {grade}
+              {gradeDisplay(grade)}
             </Badge>
           </Flex>
           <Button

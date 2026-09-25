@@ -5,15 +5,14 @@ import {
   MAX_COMBO_HITS,
   parseComboState,
 } from '@zenless-optimizer/zzz/db'
+import type { Tag } from '@zenless-optimizer/zzz/formula'
 import { own } from '@zenless-optimizer/zzz/formula'
-import {
-  getTagLabel,
-  useZzzCalcContext,
-} from '@zenless-optimizer/zzz/formula-ui'
-import { useMemo } from 'react'
+import { useZzzCalcContext } from '@zenless-optimizer/zzz/formula-ui'
+import { createElement, useMemo } from 'react'
 import { create } from 'zustand'
-import { parseSkillVariant, skillVariantBase } from '../OptTargetTagDisplay'
+import { parseSkillVariant } from '../OptTargetTagDisplay'
 import type { CascaderData } from './CascaderSelect'
+import { ComboHitDisplay } from './ComboHitDisplay'
 import type { ComboMember } from './useComboMembers'
 
 export const hitValue = (sheet: string, name: string) => `${sheet}|||${name}`
@@ -61,7 +60,7 @@ export function useComboFormulaGroups(): CascaderData {
     if (!calc) return []
     const byKey = new Map<
       string,
-      { sheet: string; name: string; label: string; rank: number; cat: string }
+      { sheet: string; name: string; tag: Tag; rank: number; cat: string }
     >()
     for (const { tag } of calc.listFormulas(own.listing.formulas)) {
       const sheet = tag.sheet ?? ''
@@ -74,25 +73,24 @@ export function useComboFormulaGroups(): CascaderData {
       const rank = parsed ? variantPreference.indexOf(parsed.kind) : 0
       const prev = byKey.get(key)
       if (prev && prev.rank <= rank) continue
-      // `getTagLabel` keeps non-skill formulas readable (e.g. "Anomaly DMG"
-      // instead of the raw `anomalyDmgInst`) — no badge renders the type here.
-      const label =
-        skillVariantBase(tag as never) ||
-        getTagLabel(tag as never, { includeDamageType: true }) ||
-        name
       const rawDamageType = (tag as { damageType1?: string }).damageType1 ?? ''
       byKey.set(key, {
         sheet,
         name,
-        label,
+        tag: tag as Tag,
         rank,
         cat: categorizeDamageType(rawDamageType),
       })
     }
-    const byCat = new Map<string, Array<{ value: string; label: string }>>()
-    for (const { sheet, name, label, cat } of byKey.values()) {
+    const byCat = new Map<string, CascaderData[number]['options']>()
+    for (const { sheet, name, tag, cat } of byKey.values()) {
       const list = byCat.get(cat) ?? []
-      list.push({ value: hitValue(sheet, name), label })
+      // Localized + colored attack name, mirroring OptTargetTagDisplay
+      // without the tag pills.
+      list.push({
+        value: hitValue(sheet, name),
+        label: createElement(ComboHitDisplay, { tag }),
+      })
       byCat.set(cat, list)
     }
     return categoryOrder

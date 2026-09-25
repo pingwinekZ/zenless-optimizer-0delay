@@ -1,4 +1,4 @@
-import { Box, Center, Flex, Loader, MantineProvider } from '@mantine/core'
+import { Box, Flex, MantineProvider } from '@mantine/core'
 import { ModalsProvider } from '@mantine/modals'
 import { Notifications } from '@mantine/notifications'
 import { ScrollTop } from '@zenless-optimizer/common/ui'
@@ -11,19 +11,12 @@ import {
   useThemeStore,
 } from '@zenless-optimizer/zzz/theme'
 import { LiveImportProvider } from '@zenless-optimizer/zzz/websocket/LiveImportProvider'
-import { Suspense, useEffect, useMemo } from 'react'
-import { HashRouter, Navigate, Route, Routes } from 'react-router'
+import { useEffect, useMemo } from 'react'
+import { HashRouter } from 'react-router'
 import { GoonCorner } from '../goonCorner/GoonCorner'
 import { LayoutSider } from './LayoutSider'
-import { NavigateContextProvider, useNavigateContext } from './NavigateContext'
-import {
-  PageCharacters,
-  PageDiscs,
-  PageHome,
-  PageOptimize,
-  PageSettings,
-  PageWengines,
-} from './routes'
+import { NavigateContextProvider } from './NavigateContext'
+import { Tabs } from './Tabs'
 
 // Initial gradient setup before first render. The Discs grid colors score
 // columns from a theme-derived scale, so it needs a value before the first
@@ -73,16 +66,6 @@ export default function App() {
   )
 }
 
-function CharactersRoute() {
-  const { navigateToOptimize } = useNavigateContext()
-  return <PageCharacters onNavigateToOptimize={navigateToOptimize} />
-}
-
-function OptimizeRoute() {
-  const { navigateToCharacters } = useNavigateContext()
-  return <PageOptimize onNavigateToCharacters={navigateToCharacters} />
-}
-
 function Content() {
   return (
     <Flex direction="column" mih="100vh" pos="relative" id="back-to-top-anchor">
@@ -96,23 +79,7 @@ function Content() {
             width: '100%',
           }}
         >
-          <Suspense
-            fallback={
-              <Center mih={280}>
-                <Loader />
-              </Center>
-            }
-          >
-            <Routes>
-              <Route path="/" element={<PageHome />} />
-              <Route path="/discs" element={<PageDiscs />} />
-              <Route path="/wengines" element={<PageWengines />} />
-              <Route path="/characters" element={<CharactersRoute />} />
-              <Route path="/optimize" element={<OptimizeRoute />} />
-              <Route path="/settings" element={<PageSettings />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Suspense>
+          <Tabs />
         </Box>
       </Flex>
     </Flex>

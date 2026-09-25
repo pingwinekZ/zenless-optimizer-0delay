@@ -16,7 +16,11 @@ import {
 } from '@zenless-optimizer/zzz/consts'
 import type { ICachedDisc } from '@zenless-optimizer/zzz/db'
 import { StatIcon } from '@zenless-optimizer/zzz/svgicons'
-import { efficiencyToGrade, gradeColor } from '@zenless-optimizer/zzz/util'
+import {
+  efficiencyToGrade,
+  gradeColor,
+  gradeDisplay,
+} from '@zenless-optimizer/zzz/util'
 import { type CSSProperties, useMemo } from 'react'
 import { computeCurrentScore } from '../../page-discs/scoring/currentScore'
 import { computeMaxPotential } from '../../page-discs/scoring/potentialScore'
@@ -512,7 +516,8 @@ export function ShowcaseDiscCard({
             }}
             title="Current substat efficiency"
           >
-            {(discScore.efficiency * 100).toFixed(1)} ({discScore.grade})
+            {(discScore.efficiency * 100).toFixed(1)} (
+            {gradeDisplay(discScore.grade)})
           </Text>
         </Flex>
         {disc.level < discMaxLevel[disc.rarity] && (
@@ -536,7 +541,8 @@ export function ShowcaseDiscCard({
               }}
               title="Best score with remaining rolls"
             >
-              {(discScore.maxPotential * 100).toFixed(1)} ({discScore.maxGrade})
+              {(discScore.maxPotential * 100).toFixed(1)} (
+              {gradeDisplay(discScore.maxGrade)})
             </Text>
           </Flex>
         )}
