@@ -1,18 +1,14 @@
 import type { NumNode } from '@zenless-optimizer/pando/engine'
+import { cmpGE, prod, subscript, sum } from '@zenless-optimizer/pando/engine'
 import {
-  cmpEq,
-  cmpGE,
-  prod,
-  subscript,
-  sum,
-} from '@zenless-optimizer/pando/engine'
-import {
+  type AttributeAnomalyKey,
   allAttributeAnomalyKeys,
   type CharacterKey,
 } from '@zenless-optimizer/zzz/consts'
 import { allStats, mappedStats } from '@zenless-optimizer/zzz/stats'
 import {
   allBoolConditionals,
+  allNumConditionals,
   customAnomalyDmg,
   customDmg,
   own,
@@ -47,6 +43,17 @@ const { prophecy, fluttering_featherbloom_used } = allBoolConditionals(
   }
 )
 
+// M6: Guard Feathers consumed by Basic Attack: Fluttering Frock - Suspension.
+// 0 = M6 Abloom bonus disabled.
+const { m6_guard_feathers } = allNumConditionals(
+  key,
+  true,
+  0,
+  dm.m6.max_guard_feathers_consumed,
+  undefined,
+  { m6_guard_feathers: 6 }
+)
+
 const abilityCheck = (node: NumNode | number) =>
   cmpGE(
     sum(team.common.count.withSpecialty('anomaly'), team.common.count.ether),
@@ -59,6 +66,36 @@ const m4_suspension_crit_ = ownBuff.combat.crit_.add(
 const m4_featherbloom_crit_ = ownBuff.combat.crit_.add(
   cmpGE(char.mindscape, 4, percent(1))
 )
+const m2_ether_anomBuildup_ = ownBuff.combat.anomBuildup_.ether.add(
+  cmpGE(char.mindscape, 2, dm.m2.ether_anomBuildup_)
+)
+// M6: the special Abloom instance's additional DMG scales with Guard Feathers
+// consumed — n feathers adds n × 100% Anomaly DMG (0 = disabled).
+const m6_abloom_dmg_ = ownBuff.combat.common_dmg_.addWithDmgType(
+  'abloom',
+  cmpGE(char.mindscape, 6, m6_guard_feathers)
+)
+
+// Abloom deals an additional instance of DMG equal to the core's Abloom ratio
+// (X% per 10 Anomaly Proficiency of the original Anomaly's DMG, ×1.3 at M2).
+// That ratio is a multiplier on the original anomaly DMG, so it folds into the
+// base anomaly MV instead of being added to the generic anomaly MV multiplier
+// (which would compute `original × (1 + ratio)` instead of `original × ratio`).
+const abloomRatio = (dmgPerAp: number[]) =>
+  prod(
+    percent(subscript(char.core, dmgPerAp)),
+    percent(1 / dm.core.anomProf_step),
+    own.final.anomProf,
+    cmpGE(char.mindscape, 2, dm.m2.abloom_bonus, 1)
+  )
+const abloomRatioByAttr: Record<AttributeAnomalyKey, NumNode> = {
+  ether: abloomRatio(dm.core.dmg_ether),
+  electric: abloomRatio(dm.core.dmg_electric),
+  fire: abloomRatio(dm.core.dmg_fire),
+  physical: abloomRatio(dm.core.dmg_physical),
+  ice: abloomRatio(dm.core.dmg_ice),
+  wind: abloomRatio(dm.core.dmg_wind),
+}
 
 const sheet = register(
   key,
@@ -132,25 +169,26 @@ const sheet = register(
     prod(own.final.atk, percent(dm.core.dmg))
   ),
 
-  // Abloom DMG opt targets for other attributes (Ether is registered by entriesForChar)
-  ...allAttributeAnomalyKeys
-    .filter((attr) => attr !== data_gen.attribute)
-    .map((attr) =>
-      customAnomalyDmg(
-        `abloomDmgInst_${attr}`,
-        {
-          attribute: attr,
-          damageType1: 'anomaly',
-          damageType2: 'abloom',
-        },
-        prod(
-          percent(anomalyMultipliers[attr]),
-          own.final.atk,
-          sum(percent(1), own.final.anom_mv_mult_)
-        ),
-        { cond: cmpEq(own.final.anom_mv_mult_, 0, '', 'infer') }
+  // Abloom DMG instances — an additional hit equal to the Abloom ratio of the
+  // original anomaly's DMG, registered for every anomaly attribute. The bare
+  // `abloomDmgInst` from `entriesForChar` stays hidden (no abloom MV-mult
+  // source), so ether is registered here too with the correct ratio.
+  ...allAttributeAnomalyKeys.map((attr) =>
+    customAnomalyDmg(
+      `abloomDmgInst_${attr}`,
+      {
+        attribute: attr,
+        damageType1: 'anomaly',
+        damageType2: 'abloom',
+      },
+      prod(
+        percent(anomalyMultipliers[attr]),
+        abloomRatioByAttr[attr],
+        own.final.atk,
+        sum(percent(1), own.final.anom_mv_mult_)
       )
-    ),
+    )
+  ),
 
   registerBuff(
     'core_prophecy_dmg',
@@ -165,85 +203,61 @@ const sheet = register(
     'core_ether_anom_mv_mult_',
     ownBuff.combat.anom_mv_mult_.ether.addWithDmgType(
       'abloom',
-      prod(
-        percent(subscript(char.core, dm.core.dmg_ether)),
-        percent(1 / dm.core.anomProf_step),
-        own.final.anomProf,
-        cmpGE(char.mindscape, 2, dm.m2.abloom_bonus, 1)
-      )
+      abloomRatioByAttr.ether
     ),
     undefined,
-    undefined
+    undefined,
+    false
   ),
   registerBuff(
     'core_electric_anom_mv_mult_',
     ownBuff.combat.anom_mv_mult_.electric.addWithDmgType(
       'abloom',
-      prod(
-        percent(subscript(char.core, dm.core.dmg_electric)),
-        percent(1 / dm.core.anomProf_step),
-        own.final.anomProf,
-        cmpGE(char.mindscape, 2, dm.m2.abloom_bonus, 1)
-      )
+      abloomRatioByAttr.electric
     ),
     undefined,
-    undefined
+    undefined,
+    false
   ),
   registerBuff(
     'core_fire_anom_mv_mult_',
     ownBuff.combat.anom_mv_mult_.fire.addWithDmgType(
       'abloom',
-      prod(
-        percent(subscript(char.core, dm.core.dmg_fire)),
-        percent(1 / dm.core.anomProf_step),
-        own.final.anomProf,
-        cmpGE(char.mindscape, 2, dm.m2.abloom_bonus, 1)
-      )
+      abloomRatioByAttr.fire
     ),
     undefined,
-    undefined
+    undefined,
+    false
   ),
   registerBuff(
     'core_physical_anom_mv_mult_',
     ownBuff.combat.anom_mv_mult_.physical.addWithDmgType(
       'abloom',
-      prod(
-        percent(subscript(char.core, dm.core.dmg_physical)),
-        percent(1 / dm.core.anomProf_step),
-        own.final.anomProf,
-        cmpGE(char.mindscape, 2, dm.m2.abloom_bonus, 1)
-      )
+      abloomRatioByAttr.physical
     ),
     undefined,
-    undefined
+    undefined,
+    false
   ),
   registerBuff(
     'core_ice_anom_mv_mult_',
     ownBuff.combat.anom_mv_mult_.ice.addWithDmgType(
       'abloom',
-      prod(
-        percent(subscript(char.core, dm.core.dmg_ice)),
-        percent(1 / dm.core.anomProf_step),
-        own.final.anomProf,
-        cmpGE(char.mindscape, 2, dm.m2.abloom_bonus, 1)
-      )
+      abloomRatioByAttr.ice
     ),
     undefined,
-    undefined
+    undefined,
+    false
   ),
   registerBuff(
     'core_wind_anom_mv_mult_',
     ownBuff.combat.anom_mv_mult_.wind.addWithDmgType(
       'abloom',
-      prod(
-        percent(subscript(char.core, dm.core.dmg_wind)),
-        percent(1 / dm.core.anomProf_step),
-        own.final.anomProf,
-        cmpGE(char.mindscape, 2, dm.m2.abloom_bonus, 1)
-      )
+      abloomRatioByAttr.wind
     ),
     undefined,
-    undefined
+    undefined,
+    false
   ),
   registerBuff(
     'ability_corruption_dmg_',
@@ -281,12 +295,10 @@ const sheet = register(
     undefined,
     true
   ),
+  registerBuff('m2_ether_anomBuildup_', m2_ether_anomBuildup_),
   registerBuff(
     'm2_resIgn_',
-    teamBuff.combat.resIgn_.addWithDmgType(
-      'anomaly',
-      cmpGE(char.mindscape, 2, dm.m2.resIgn_)
-    ),
+    teamBuff.combat.resIgn_.add(cmpGE(char.mindscape, 2, dm.m2.resIgn_)),
     undefined,
     true
   ),
@@ -313,6 +325,7 @@ const sheet = register(
   registerBuff(
     'm6_ether_dmg_',
     ownBuff.combat.dmg_.ether.add(cmpGE(char.mindscape, 6, dm.m6.ether_dmg_))
-  )
+  ),
+  registerBuff('m6_abloom_dmg_', m6_abloom_dmg_)
 )
 export default sheet

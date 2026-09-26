@@ -201,6 +201,9 @@ export default function PageCharacter({
         <CharacterSingleSelectionModal
           show={newCharacter}
           onHide={() => setnewCharacter(false)}
+          // Hide characters already added to the current database so they
+          // can't be added twice from the "add character" modal.
+          hiddenCharacterKeys={charKeys}
           onSelect={(ck) => {
             editCharacter(ck)
             setnewCharacter(false)

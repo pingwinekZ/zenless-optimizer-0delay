@@ -1,9 +1,10 @@
 import type { IFormulaData } from '@zenless-optimizer/game-opt/engine'
 import type { Tag } from '@zenless-optimizer/zzz/formula'
-import { Lucy, Nicole, Pyrois } from '@zenless-optimizer/zzz/formula'
+import { Lucy, Nicole, Pyrois, Vivian } from '@zenless-optimizer/zzz/formula'
 import LucySheet from './sheets/Lucy'
 import NicoleSheet from './sheets/Nicole'
 import PyroisSheet from './sheets/Pyrois'
+import VivianSheet from './sheets/Vivian'
 import { condSection, fieldsSection } from './sheetUtil'
 
 const fakeBuff = (name: string) =>
@@ -112,6 +113,49 @@ describe('migrated sheets keep their shape', () => {
       Nicole.buffs.m1_exSpecial_dmg_.tag,
       Nicole.buffs.m1_exSpecial_anomBuildup_.tag,
     ])
+  })
+  it('Vivian: sliced descriptions on core/ability/mindscape docs', () => {
+    // `ability` addl docs merge into the `core` element (createBaseSheet),
+    // so core fields are: Abloom, Prophecy, then the ability field.
+    const coreFields = docsOf(VivianSheet, 'core').filter(
+      (d) => d.type === 'fields'
+    )
+    expect(coreFields).toHaveLength(3)
+    expect(coreFields[0].description).toBeDefined()
+    expect(coreFields[0].fields.map((f: AnyDoc) => f.fieldRef)).toEqual([
+      Vivian.buffs.core_ether_anom_mv_mult_.tag,
+      Vivian.buffs.core_electric_anom_mv_mult_.tag,
+      Vivian.buffs.core_fire_anom_mv_mult_.tag,
+      Vivian.buffs.core_physical_anom_mv_mult_.tag,
+      Vivian.buffs.core_ice_anom_mv_mult_.tag,
+      Vivian.buffs.core_wind_anom_mv_mult_.tag,
+    ])
+    expect(coreFields[1].description).toBeDefined()
+    expect(coreFields[2].description).toBeDefined()
+    expect(coreFields[2].fields.map((f: AnyDoc) => f.fieldRef)).toEqual([
+      Vivian.buffs.ability_corruption_dmg_.tag,
+      Vivian.buffs.ability_corruption_disorder_dmg_.tag,
+    ])
+    const m1 = docsOf(VivianSheet, 'm1').find((d) => d.type === 'conditional')
+    expect(m1.conditional.metadata).toBe(Vivian.conditionals.prophecy)
+    expect(m1.conditional.description).toBeDefined()
+    // M2 Ether Anomaly Buildup is its own passive block, separate from RES Ign.
+    const m2Fields = docsOf(VivianSheet, 'm2').filter(
+      (d) => d.type === 'fields'
+    )
+    expect(m2Fields).toHaveLength(2)
+    expect(m2Fields[0].fields.map((f: AnyDoc) => f.fieldRef)).toEqual([
+      Vivian.buffs.m2_ether_anomBuildup_.tag,
+    ])
+    expect(m2Fields[1].fields.map((f: AnyDoc) => f.fieldRef)).toEqual([
+      Vivian.buffs.m2_resIgn_.tag,
+    ])
+    for (const slot of ['m4', 'm6']) {
+      const fieldsDoc = docsOf(VivianSheet, slot).find(
+        (d) => d.type === 'fields'
+      )
+      expect(fieldsDoc.description).toBeDefined()
+    }
   })
   it('Lucy: per-skill conditional + m4 link + m6 formula field', () => {
     const cheerOn = allDocs(LucySheet).find(

@@ -6,6 +6,15 @@ export const conditionals = {
     type: 'bool',
     mindscapeRequirement: 4,
   },
+  m6_guard_feathers: {
+    sheet: 'Vivian',
+    name: 'm6_guard_feathers',
+    type: 'num',
+    int_only: true,
+    min: 0,
+    max: 5,
+    mindscapeRequirement: 6,
+  },
   prophecy: {
     sheet: 'Vivian',
     name: 'prophecy',

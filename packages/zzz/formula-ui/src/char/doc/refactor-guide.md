@@ -10,6 +10,8 @@ The worked example is **Seed** — already fully refactored and exercising every
 
 Read those three files alongside this guide. All snippets below are taken verbatim from them.
 
+The **description dimming/slicing** layer (§3.10–3.13) came out of the 1.6-and-older sheet refactor and is not present in Seed's UI sheet — read `Trigger.tsx`, `Rina.tsx`, `Nekomata.tsx`, and `Soldier0Anby.tsx` for those snippets.
+
 ## The 4 layers
 
 | # | Layer | Path | Auto-gen? |
@@ -571,6 +573,101 @@ registerBuff(
 
 This keeps the conditional description self-contained (core text + the relevant M line) and removes a separate mindscape section when the mindscape only augments an existing effect.
 
+`GameDescSlice` takes two more options:
+
+- `capitalize` — upper-cases the first letter, for slices that start mid-sentence.
+- `toExact` — ends the slice **at** the `to` marker instead of through the end of its sentence. Use it to isolate a mid-sentence clause:
+
+```tsx
+<GameDescSlice
+  ns="char_Caesar_gen"
+  key18="mindscapes.2.desc"
+  from="While <ct color=#FFFFFF>Radiant Aegis</ct> from"
+  to="increases by 10%"
+  toExact
+/>
+```
+
+### 3.11 Ability description dimming — `AbilityBodyText`
+
+`createBaseSheet` already renders the Additional Ability text through
+`AbilityDescBody`, which wraps it in `AbilityBodyText` — so the base ability
+description dims (opacity 0.5) whenever the trigger condition is not met, for
+every character. You do **not** add that yourself.
+
+When a sheet supplies its **own** core/ability description (the refactored
+pattern), wrap the trigger/effect part in `AbilityBodyText` so it dims the same
+way. `ability.desc.0` is the trigger condition and usually stays undimmed:
+
+```tsx
+function AbilityDescription() {
+  return (
+    <>
+      <GameDesc ns="char_Nekomata_gen" key18="ability.desc.0" />
+      <AbilityBodyText characterKey={key}>
+        <GameDesc ns="char_Nekomata_gen" key18="ability.desc.1" />
+      </AbilityBodyText>
+    </>
+  )
+}
+```
+
+Or with slicing (Trigger):
+
+```tsx
+<AbilityBodyText characterKey={key}>
+  <GameDescSlice
+    ns="char_Trigger_gen"
+    key18="ability.desc.1"
+    from="When Trigger's CRIT Rate exceeds"
+    to="75%"
+  />
+</AbilityBodyText>
+```
+
+- `AbilityBodyText` only dims — it never hides. Children are always rendered.
+- `useAbilityActive(characterKey)` is the hook underneath (returns `true` when
+  any `ability_*` buff computes > 0). Reach for it directly when you need the
+  boolean, e.g. to combine the gate with a mindscape check:
+  `<PrefixedLine prefix="M6" dimmed={mindscape < 6 || !abilityActive}>` (Pulchra).
+- Newer/unrefactored sheets render a bare `<GameDesc>` here, so the text never
+  dims — that is the gap this pattern closes.
+
+### 3.12 Mindscape-gated lines — `PrefixedLine` + `useEffectiveMindscape`
+
+When a mindscape only augments an existing effect, append its line to the
+parent description instead of creating a separate mindscape document. Prefix
+it with `M#` and dim it when the mindscape is not unlocked (see §3.10 for
+folding the value into the parent buff):
+
+```tsx
+function CoreDescription() {
+  const mindscape = useEffectiveMindscape(key)
+  return (
+    <>
+      <CoreGameDesc characterKey={key} />
+      <PrefixedLine prefix="M1" dimmed={mindscape < 1}>
+        <GameDescSlice
+          ns="char_Trigger_gen"
+          key18="mindscapes.1.desc"
+          from="The Stun DMG Multiplier"
+          to="Soul-Searching Gaze"
+        />
+      </PrefixedLine>
+    </>
+  )
+}
+```
+
+- Always dim against `useEffectiveMindscape(key)`, **not** a raw character
+  lookup — it reads `EffectiveMindscapeContext` (the teammate override) and
+  falls back to `char.mindscape`, so dimming is correct in the teammate view.
+- `PrefixedLine` renders `prefix: {children}` with `marginTop: 8` and
+  `opacity: 0.5` when `dimmed` — same dimming style as `AbilityBodyText`.
+- Potential is always max: use `prefix="P"` and `dimmed={false}`, or
+  `dimmed={!active}` when the potential line is tied to the ability trigger.
+  Chain/Ultimate · Aftershock lines get **no** prefix and are always enabled.
+
 ---
 
 ## Part 4 — Localization (`char_Seed.json`)
@@ -624,7 +721,7 @@ Never edit `char_<Key>_gen.json` — that comes from the datamine.
 
 - [ ] **1. Formula data** — add conditionals (`allBoolConditionals` with mindscape requirements, `allNumConditionals` for sliders); `addWithDmgType` + `dmgDazeAndAnomOverride` extras + `includeOriginalEntry: false` for skill-scoped buffs; `notOwnBuff` + `team: true` for teammate buffs; `customDmg` paired with a matching `registerBuff`; `cmpGE(char.mindscape, N, cond.ifOn(...))` for toggleable M effects; per-hit element/damage-type overrides; **potential always max** — use `dm.potential.*[6]` directly, no `char.potential` gates (see 1.8).
 - [ ] **2. Run `bun nx run-many -t gen-file`** to regenerate `buffs.ts` / `conditionals.ts` / `formulas.ts`.
-- [ ] **3. UI sheet** — group documents by effect (3.1); wire `metadata: cond.<name>`; add `linked` arrays for effects split across sections; `targeted: true` for teammate conditionals; `fieldForBuff` for generic titles, custom `ColorText` fields for per-skill names; headers on all `fields` docs; descriptions via `CoreGameDesc`/`GameDesc`/`SkillGameDesc`/`GameDescSlice` (3.8, 3.10); **potential always max** — plain keys (`potential.desc.6`), generic `P` prefix or no prefix for Chain/Ultimate, no `minPotential` (see 1.8 and `doc/character-sheet-description-guide.md` §6).
+- [ ] **3. UI sheet** — group documents by effect (3.1); wire `metadata: cond.<name>`; add `linked` arrays for effects split across sections; `targeted: true` for teammate conditionals; `fieldForBuff` for generic titles, custom `ColorText` fields for per-skill names; headers on all `fields` docs; descriptions via `CoreGameDesc`/`GameDesc`/`SkillGameDesc`/`GameDescSlice` (3.8, 3.10); **wrap ability-trigger text in `AbilityBodyText`** and **mindscape/potential lines in `PrefixedLine`** (3.11, 3.12); **potential always max** — plain keys (`potential.desc.6`), generic `P` prefix or no prefix for Chain/Ultimate, no `minPotential` (see 1.8 and `doc/character-sheet-description-guide.md` §6).
 - [ ] **4. Localization** — add `Cond` keys, header keys, and field title keys to `char_<Key>.json`.
 - [ ] **5. Format** — `bun biome check --write --formatter-enabled=true --linter-enabled=false --assist-enabled=true`
 - [ ] **6. Typecheck** — `npx nx run-many --target=typecheck`
@@ -646,6 +743,9 @@ Never edit `char_<Key>_gen.json` — that comes from the datamine.
 - **`linked` not symmetric** — every conditional in a linked group must list all the others, and all names must come from the same `allBoolConditionals` call (3.3).
 - **Missing `targeted: true`** — a conditional whose buffs apply to another agent needs `targeted: true`, or there's no way to aim the toggle at the teammate (3.5).
 - **Wrong description component** — core paragraphs need `CoreGameDesc` (uses the real core level), mindscapes need `GameDesc` with `ns="char_<Key>_gen"`; skill abilities with `{CAL:...}` tokens need `SkillGameDesc` (3.8).
+- **Ability text not dimming** — any hand-written ability/conditional description that describes the Additional Ability trigger must wrap its effect text in `AbilityBodyText characterKey={key}` (the base sheet text is auto-dimmed, custom text is not) (3.11).
+- **Mindscape/potential lines not dimming** — use `PrefixedLine` with `useEffectiveMindscape(key)` (not a raw `useCharacter` lookup) so teammate overrides dim correctly (3.12).
+- **`GameDescSlice` returns nothing** — `from`/`to` must be exact substrings of the translated text (including `<ct>` tags); a miss logs `GameDescSlice: could not slice ...` and renders `null`. Prefer stable phrases over values (3.10).
 - **Paragraph indexes on non-dict descs** — `core.desc.<level>` is a plain string for some characters; `CoreGameDesc paragraph={N}` renders nothing in that case. When a description is not a dict of paragraphs, render the whole string (no `paragraph` prop) or use `GameDescSlice` for partial text (3.8, 3.10).
 - **Missing `getVariant` / `ColorText` imports** — always add them when using custom fields.
 - **Grouping by stat instead of effect** — the sheet must show one doc per effect, not one doc per stat. When in doubt, split docs when the buffs come from different descriptions (3.1).

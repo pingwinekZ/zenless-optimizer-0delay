@@ -901,6 +901,20 @@ export const formulas = {
       name: 'abloomDmgInst_physical',
     },
   },
+  abloomDmgInst_ether: {
+    sheet: 'Vivian',
+    name: 'abloomDmgInst_ether',
+    tag: {
+      et: 'own',
+      qt: 'formula',
+      q: 'anomalyDmg',
+      sheet: 'Vivian',
+      attribute: 'ether',
+      damageType1: 'anomaly',
+      damageType2: 'abloom',
+      name: 'abloomDmgInst_ether',
+    },
+  },
   abloomDmgInst_wind: {
     sheet: 'Vivian',
     name: 'abloomDmgInst_wind',
