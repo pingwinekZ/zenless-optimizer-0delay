@@ -886,6 +886,7 @@ export const formulas = {
       qt: 'formula',
       q: 'standardDmg',
       sheet: 'JuFufu',
+      attribute: 'fire',
       damageType1: 'chain',
       name: 'm6_dmg',
     },

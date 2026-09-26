@@ -1,8 +1,9 @@
 import { ColorText } from '@zenless-optimizer/common/ui'
 import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { Yixuan } from '@zenless-optimizer/zzz/formula'
+import { GameDesc, GameDescSlice } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
-import { createBaseSheet, fieldForBuff, SkillGameDesc } from '../sheetUtil'
+import { AbilityBodyText, createBaseSheet, fieldForBuff } from '../sheetUtil'
 import { getVariant } from '../util'
 
 const key: CharacterKey = 'Yixuan'
@@ -49,8 +50,20 @@ const sheet = createBaseSheet(key, {
   ability: [
     {
       type: 'fields',
-      paragraph: 2,
-      header: { icon: null, text: ch('ability_header') },
+      header: { icon: null, text: ch('ability_lightning_header') },
+      description: (
+        <>
+          <GameDesc ns="char_Yixuan_gen" key18="ability.desc.0" />
+          <AbilityBodyText characterKey={key}>
+            <GameDescSlice
+              ns="char_Yixuan_gen"
+              key18="ability.desc.1"
+              from="If Yixuan is switched out"
+              to="5 Adrenaline"
+            />
+          </AbilityBodyText>
+        </>
+      ),
       fields: [
         {
           title: (
@@ -60,6 +73,20 @@ const sheet = createBaseSheet(key, {
           ),
           fieldRef: formula.ability_dmg.tag,
         },
+      ],
+    },
+    {
+      type: 'fields',
+      header: { icon: null, text: ch('ability_header') },
+      description: (
+        <>
+          <GameDesc ns="char_Yixuan_gen" key18="ability.desc.0" />
+          <AbilityBodyText characterKey={key}>
+            <GameDesc ns="char_Yixuan_gen" key18="ability.desc.2" />
+          </AbilityBodyText>
+        </>
+      ),
+      fields: [
         {
           title: (
             <ColorText color={getVariant(buff.ability_cloudShaper_dmg_.tag)}>
@@ -83,24 +110,45 @@ const sheet = createBaseSheet(key, {
       conditional: {
         label: ch('meditationCond'),
         description: (
-          <SkillGameDesc
-            characterKey={key}
-            ns="char_Yixuan_gen"
-            key18="ability.desc.3"
-          />
+          <>
+            <GameDesc ns="char_Yixuan_gen" key18="ability.desc.0" />
+            <AbilityBodyText characterKey={key}>
+              <GameDesc ns="char_Yixuan_gen" key18="ability.desc.3" />
+            </AbilityBodyText>
+          </>
         ),
         metadata: cond.meditation,
         fields: [fieldForBuff(buff.ability_crit_dmg_)],
-        linked: 'm6_meditation',
+        linked: ['m6_meditation'],
       },
     },
   ],
   m1: [
     {
       type: 'fields',
-      header: { icon: null, text: ch('m1_header') },
+      header: { icon: null, text: ch('m1_crit_header') },
+      description: (
+        <GameDescSlice
+          ns="char_Yixuan_gen"
+          key18="mindscapes.1.desc"
+          from="Upon entering combat"
+          to="CRIT Rate increases by 10%"
+        />
+      ),
+      fields: [fieldForBuff(buff.m1_crit_)],
+    },
+    {
+      type: 'fields',
+      header: { icon: null, text: ch('m1_dmg_header') },
+      description: (
+        <GameDescSlice
+          ns="char_Yixuan_gen"
+          key18="mindscapes.1.desc"
+          from="When any squad member lands a hit"
+          to="once every 6s"
+        />
+      ),
       fields: [
-        fieldForBuff(buff.m1_crit_),
         {
           title: (
             <ColorText color={getVariant(formula.m1_dmg.tag)}>
@@ -115,10 +163,33 @@ const sheet = createBaseSheet(key, {
   m2: [
     {
       type: 'fields',
-      header: { icon: null, text: ch('m2_header') },
+      header: { icon: null, text: ch('m2_resIgn_header') },
+      description: (
+        <GameDescSlice
+          ns="char_Yixuan_gen"
+          key18="mindscapes.2.desc"
+          from="When an"
+          to="Ether RES"
+        />
+      ),
       fields: [
         fieldForBuff(buff.m2_ult_ether_resIgn_),
         fieldForBuff(buff.m2_exSpecial_ether_resIgn_),
+      ],
+    },
+    {
+      type: 'fields',
+      header: { icon: null, text: ch('m2_dmg_header') },
+      description: (
+        <GameDescSlice
+          ns="char_Yixuan_gen"
+          key18="mindscapes.2.desc"
+          from="when using"
+          to="held at a time"
+          capitalize
+        />
+      ),
+      fields: [
         {
           title: (
             <ColorText color={getVariant(formula.m2_dmg.tag)}>
@@ -136,11 +207,7 @@ const sheet = createBaseSheet(key, {
       conditional: {
         label: ch('m4Cond'),
         description: (
-          <SkillGameDesc
-            characterKey={key}
-            ns="char_Yixuan_gen"
-            key18="mindscapes.4.desc"
-          />
+          <GameDesc ns="char_Yixuan_gen" key18="mindscapes.4.desc" />
         ),
         metadata: cond.tranquility,
         fields: [
@@ -168,16 +235,18 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
-        label: ch('m6_header'),
+        label: ch('m6Cond'),
         description: (
-          <SkillGameDesc
-            characterKey={key}
+          <GameDescSlice
             ns="char_Yixuan_gen"
             key18="mindscapes.6.desc"
+            from="while in the"
+            to="increased by 20%"
+            capitalize
           />
         ),
         metadata: cond.m6_meditation,
-        linked: 'meditation',
+        linked: ['meditation'],
         fields: [
           {
             title: (

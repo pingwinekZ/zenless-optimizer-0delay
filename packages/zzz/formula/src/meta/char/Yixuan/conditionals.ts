@@ -6,12 +6,7 @@ export const conditionals = {
     type: 'bool',
     mindscapeRequirement: 6,
   },
-  meditation: {
-    sheet: 'Yixuan',
-    name: 'meditation',
-    type: 'bool',
-    mindscapeRequirement: 6,
-  },
+  meditation: { sheet: 'Yixuan', name: 'meditation', type: 'bool' },
   tranquility: {
     sheet: 'Yixuan',
     name: 'tranquility',

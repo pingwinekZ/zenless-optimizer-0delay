@@ -27,6 +27,7 @@ import { getCharStat } from '@zenless-optimizer/zzz/stats'
 import { AttributeName } from '@zenless-optimizer/zzz/ui'
 import { useCallback, useMemo } from 'react'
 import {
+  isCustomInstanceTag,
   OptTargetTagDisplay,
   parseSkillVariant,
   type SkillVariantKind,
@@ -323,24 +324,64 @@ export function OptTargetSelector({
     [tag, isRotation]
   )
 
-  // Render a menu item for a formula
+  // Render a menu item for a formula. Custom damage instances (e.g.
+  // Yixuan's Break) get a DMG pill like grouped skill variants do.
+  const renderVariantPill = useCallback(
+    (key: string, label: string, active: boolean, onClick: () => void) => (
+      <Button
+        key={key}
+        size="compact-xs"
+        variant="filled"
+        styles={{
+          root: {
+            backgroundColor: active ? '#214886' : '#1E2C4B',
+            color: '#fff',
+            '&:hover': {
+              backgroundColor: active ? '#2b56a3' : '#27395c',
+            },
+          },
+        }}
+        onClick={onClick}
+      >
+        {label}
+      </Button>
+    ),
+    []
+  )
+
   const renderFormulaItem = useCallback(
     (ftag: Tag) => {
       const { name, sheet } = ftag
       if (!name || !sheet) return null
+      const showDmgPill = isCustomInstanceTag(ftag)
       return (
         <Menu.Item
           key={`${sheet}_${name}`}
           onClick={() => handleFormulaSelect(sheet, name)}
           style={{ fontWeight: isFormulaActive(ftag) ? 'bold' : undefined }}
         >
-          <Box style={{ display: 'flex', gap: 4 }}>
-            <OptTargetTagDisplay tag={ftag} />
+          <Box
+            style={{
+              display: 'flex',
+              gap: 4,
+              alignItems: 'center',
+            }}
+          >
+            <Box style={{ flex: 1, minWidth: 0 }}>
+              <OptTargetTagDisplay tag={ftag} />
+            </Box>
+            {showDmgPill &&
+              renderVariantPill(
+                `${sheet}_${name}_dmg`,
+                variantPillLabel('dmg'),
+                isFormulaActive(ftag),
+                () => handleFormulaSelect(sheet, name)
+              )}
           </Box>
         </Menu.Item>
       )
     },
-    [handleFormulaSelect, isFormulaActive]
+    [handleFormulaSelect, isFormulaActive, renderVariantPill]
   )
 
   // Render a grouped "{attack name} DMG | Daze | Buildup" row: colored name +
@@ -388,24 +429,11 @@ export function OptTargetSelector({
                 const { name, sheet } = vtag
                 if (!name || !sheet) return null
                 const active = isFormulaActive(vtag)
-                return (
-                  <Button
-                    key={`${sheet}_${name}`}
-                    size="compact-xs"
-                    variant="filled"
-                    styles={{
-                      root: {
-                        backgroundColor: active ? '#214886' : '#1E2C4B',
-                        color: '#fff',
-                        '&:hover': {
-                          backgroundColor: active ? '#2b56a3' : '#27395c',
-                        },
-                      },
-                    }}
-                    onClick={() => handleFormulaSelect(sheet, name)}
-                  >
-                    {variantPillLabel(kind)}
-                  </Button>
+                return renderVariantPill(
+                  `${sheet}_${name}`,
+                  variantPillLabel(kind),
+                  active,
+                  () => handleFormulaSelect(sheet, name)
                 )
               })}
             </Group>
@@ -413,7 +441,7 @@ export function OptTargetSelector({
         </Box>
       )
     },
-    [handleFormulaSelect, isFormulaActive]
+    [handleFormulaSelect, isFormulaActive, renderVariantPill]
   )
 
   // Render a category-specific dropdown button

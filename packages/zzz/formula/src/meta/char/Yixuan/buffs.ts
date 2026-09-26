@@ -1,5 +1,44 @@
 // WARNING: Generated file, do not modify
 export const buffs = {
+  ability_dmg: {
+    sheet: 'Yixuan',
+    name: 'ability_dmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Yixuan',
+      damageType1: 'elemental',
+      name: 'ability_dmg',
+    },
+    team: false,
+  },
+  m1_dmg: {
+    sheet: 'Yixuan',
+    name: 'm1_dmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Yixuan',
+      damageType1: 'elemental',
+      name: 'm1_dmg',
+    },
+    team: false,
+  },
+  m2_dmg: {
+    sheet: 'Yixuan',
+    name: 'm2_dmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Yixuan',
+      damageType1: 'elemental',
+      name: 'm2_dmg',
+    },
+    team: false,
+  },
   core_hpSheerForce: {
     sheet: 'Yixuan',
     name: 'core_hpSheerForce',

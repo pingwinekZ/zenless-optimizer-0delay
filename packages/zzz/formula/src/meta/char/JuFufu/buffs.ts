@@ -75,15 +75,15 @@ export const buffs = {
     },
     team: false,
   },
-  m2_crit_dmg_: {
+  m1_stun_: {
     sheet: 'JuFufu',
-    name: 'm2_crit_dmg_',
+    name: 'm1_stun_',
     tag: {
       et: 'display',
-      qt: 'combat',
-      q: 'crit_dmg_',
+      qt: 'common',
+      q: 'stun_',
       sheet: 'JuFufu',
-      name: 'm2_crit_dmg_',
+      name: 'm1_stun_',
     },
     team: true,
   },

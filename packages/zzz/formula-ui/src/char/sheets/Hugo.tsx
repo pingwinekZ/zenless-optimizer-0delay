@@ -1,9 +1,16 @@
 import { ColorText } from '@zenless-optimizer/common/ui'
 import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { Hugo } from '@zenless-optimizer/zzz/formula'
-import { GameDesc } from '@zenless-optimizer/zzz/i18n'
+import { GameDesc, GameDescSlice } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
-import { CoreGameDesc, createBaseSheet, fieldForBuff } from '../sheetUtil'
+import {
+  AbilityBodyText,
+  CoreGameDesc,
+  createBaseSheet,
+  fieldForBuff,
+  PrefixedLine,
+  useEffectiveMindscape,
+} from '../sheetUtil'
 import { getVariant } from '../util'
 
 const key: CharacterKey = 'Hugo'
@@ -11,13 +18,30 @@ const [, ch] = trans('char', key)
 const cond = Hugo.conditionals
 const buff = Hugo.buffs
 
+function ReverbDescription() {
+  const mindscape = useEffectiveMindscape(key)
+  return (
+    <>
+      <CoreGameDesc characterKey={key} paragraph={0} />
+      <PrefixedLine prefix="M6" dimmed={mindscape < 6}>
+        <GameDescSlice
+          ns="char_Hugo_gen"
+          key18="mindscapes.6.desc"
+          from="All shooting attacks"
+          to="reset the duration"
+        />
+      </PrefixedLine>
+    </>
+  )
+}
+
 const sheet = createBaseSheet(key, {
   core: [
     {
       type: 'conditional',
       conditional: {
-        label: ch('coreDarkAbyssReverb'),
-        description: <CoreGameDesc characterKey={key} paragraph={0} />,
+        label: ch('darkAbyssReverbCond'),
+        description: <ReverbDescription />,
         metadata: cond.core_dark_abyss_reverb,
         linked: ['m1_dark_abyss_reverb'],
         fields: [
@@ -35,7 +59,7 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
-        label: ch('coreStunLeft'),
+        label: ch('remainingStunCond'),
         description: <CoreGameDesc characterKey={key} paragraph={2} />,
         metadata: cond.stun_left,
         fields: [
@@ -61,7 +85,7 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
-        label: ch('core_dazeInc_header'),
+        label: ch('exSpecialDazeCond'),
         description: <CoreGameDesc characterKey={key} paragraph={4} />,
         metadata: cond.ex_special_daze_inc,
         fields: [
@@ -79,24 +103,51 @@ const sheet = createBaseSheet(key, {
   ],
   ability: [
     {
-      type: 'fields',
-      paragraph: 1,
-      header: { icon: null, text: ch('abilityCond') },
-      fields: [
-        {
-          title: (
-            <ColorText color={getVariant(buff.ability_chain_dmg_.tag)}>
-              {ch('ability_chain_dmg_')}
-            </ColorText>
-          ),
-          fieldRef: buff.ability_chain_dmg_.tag,
-        },
-      ],
+      type: 'conditional',
+      conditional: {
+        label: ch('normalEnemyCond'),
+        description: (
+          <>
+            <GameDesc ns="char_Hugo_gen" key18="ability.desc.0" />
+            <AbilityBodyText characterKey={key}>
+              <GameDescSlice
+                ns="char_Hugo_gen"
+                key18="ability.desc.1"
+                from="Chain Attack: Trick of Fate"
+                to="against normal enemies"
+              />
+            </AbilityBodyText>
+          </>
+        ),
+        metadata: cond.normal_enemy,
+        fields: [
+          {
+            title: (
+              <ColorText color={getVariant(buff.ability_chain_dmg_.tag)}>
+                {ch('ability_chain_dmg_')}
+              </ColorText>
+            ),
+            fieldRef: buff.ability_chain_dmg_.tag,
+          },
+        ],
+      },
     },
     {
       type: 'fields',
-      paragraph: 1,
       header: { icon: null, text: ch('ability_header') },
+      description: (
+        <>
+          <GameDesc ns="char_Hugo_gen" key18="ability.desc.0" />
+          <AbilityBodyText characterKey={key}>
+            <GameDescSlice
+              ns="char_Hugo_gen"
+              key18="ability.desc.1"
+              from="When <ct color=#FFFFFF>Totalize</ct> is triggered"
+              to="increases by 40%"
+            />
+          </AbilityBodyText>
+        </>
+      ),
       fields: [
         {
           title: (
@@ -209,7 +260,16 @@ const sheet = createBaseSheet(key, {
   m6: [
     {
       type: 'fields',
-      header: { icon: null, text: ch('m6_header') },
+      header: { icon: null, text: ch('m6_totalize_header') },
+      description: (
+        <GameDescSlice
+          ns="char_Hugo_gen"
+          key18="mindscapes.6.desc"
+          from="whenever any skill triggers"
+          to="increased by 60%"
+          capitalize
+        />
+      ),
       fields: [
         {
           title: (
@@ -227,6 +287,20 @@ const sheet = createBaseSheet(key, {
           ),
           fieldRef: buff.m6_ult_dmg_.tag,
         },
+      ],
+    },
+    {
+      type: 'fields',
+      header: { icon: null, text: ch('m6_unstunned_header') },
+      description: (
+        <GameDescSlice
+          ns="char_Hugo_gen"
+          key18="mindscapes.6.desc"
+          from="The Finishing Move of"
+          to="by a fixed 1,000 %"
+        />
+      ),
+      fields: [
         {
           title: (
             <ColorText color={getVariant(buff.m6_exSpecial_mv_mult_.tag)}>

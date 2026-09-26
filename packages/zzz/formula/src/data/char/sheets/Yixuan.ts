@@ -29,7 +29,6 @@ const baseTag = getBaseTag(data_gen)
 const { char } = own
 
 const { meditation, m6_meditation } = allBoolConditionals(key, undefined, {
-  meditation: 6,
   m6_meditation: 6,
 })
 const { tranquility } = allNumConditionals(
@@ -148,6 +147,41 @@ const sheet = register(
     { ...baseTag, damageType1: 'exSpecial' },
     cmpGE(char.mindscape, 2, prod(own.final.sheerForce, percent(dm.m2.dmg)))
   ),
+  // Display-only pairs for the sheer-damage instances above: the sheet
+  // display filter drops fields whose name is missing from the buffs
+  // listing, so each instance needs a matching registerBuff (Seed §1.6
+  // pattern). The 'elemental' type matches no hit and
+  // includeOriginalEntry: false keeps them from ever applying.
+  registerBuff(
+    'ability_dmg',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'elemental',
+      ability_check(percent(dm.ability.dmg))
+    ),
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff(
+    'm1_dmg',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'elemental',
+      cmpGE(char.mindscape, 1, percent(dm.m1.dmg))
+    ),
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff(
+    'm2_dmg',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'elemental',
+      cmpGE(char.mindscape, 2, percent(dm.m2.dmg))
+    ),
+    undefined,
+    undefined,
+    false
+  ),
 
   // Buffs
   registerBuff(
@@ -184,10 +218,34 @@ const sheet = register(
       subscript(char.core, dm.core.dmg_)
     )
   ),
-  registerBuff('core_auricArray_dmg_', core_auricArray_dmg_),
-  registerBuff('core_qingmingEruption_dmg_', core_qingmingEruption_dmg_),
-  registerBuff('ability_cloudShaper_dmg_', ability_cloudShaper_dmg_),
-  registerBuff('ability_ashenInk_dmg_', ability_ashenInk_dmg_),
+  registerBuff(
+    'core_auricArray_dmg_',
+    core_auricArray_dmg_,
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff(
+    'core_qingmingEruption_dmg_',
+    core_qingmingEruption_dmg_,
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff(
+    'ability_cloudShaper_dmg_',
+    ability_cloudShaper_dmg_,
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff(
+    'ability_ashenInk_dmg_',
+    ability_ashenInk_dmg_,
+    undefined,
+    undefined,
+    false
+  ),
   registerBuff(
     'ability_crit_dmg_',
     ownBuff.combat.crit_dmg_.add(
@@ -212,8 +270,20 @@ const sheet = register(
       cmpGE(char.mindscape, 2, dm.m2.ether_resIgn_)
     )
   ),
-  registerBuff('m4_cloudShaper_dmg_', m4_cloudShaper_dmg_),
-  registerBuff('m4_ashenInk_dmg_', m4_ashenInk_dmg_),
+  registerBuff(
+    'm4_cloudShaper_dmg_',
+    m4_cloudShaper_dmg_,
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff(
+    'm4_ashenInk_dmg_',
+    m4_ashenInk_dmg_,
+    undefined,
+    undefined,
+    false
+  ),
   registerBuff(
     'm6_sheer_dmg_',
     ownBuff.combat.sheer_dmg_.add(
