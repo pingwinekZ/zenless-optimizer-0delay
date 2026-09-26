@@ -433,8 +433,15 @@ export function GoonCorner() {
 
   // Gallery fetch: runs when the modal opens (or Retry is hit), scoped to the
   // tweet it opened for. A stale response from a previous tweet is dropped.
+  // Sensitive tweets never fetch: the modal shows a link-only placeholder.
   useEffect(() => {
     if (!galleryOpen || !currentId) return
+    if (card?.sensitive) {
+      setGalleryStatus('empty')
+      setGalleryItems([])
+      setGalleryIndex(0)
+      return
+    }
     const wanted = currentId
     let cancelled = false
     setGalleryStatus('loading')
@@ -454,7 +461,7 @@ export function GoonCorner() {
     return () => {
       cancelled = true
     }
-  }, [galleryOpen, currentId, galleryToken])
+  }, [galleryOpen, currentId, galleryToken, card?.sensitive])
 
   // Refit once the media is on screen (and on resize / image load) so the
   // viewer fills the modal down to the footer row.
@@ -531,7 +538,7 @@ export function GoonCorner() {
             color="gray"
             aria-label="view tweet media fullscreen"
             title="View media fullscreen"
-            disabled={!open || !currentId || !introSeen}
+            disabled={!open || !currentId || !introSeen || card?.sensitive}
             onClick={() => setGalleryOpen(true)}
           >
             <IconPhoto size={16} />
@@ -632,7 +639,15 @@ export function GoonCorner() {
                       {renderGoonText(card.text)}
                     </Text>
                   ) : null}
-                  {card.media.length === 1 ? (
+                  {card.sensitive ? (
+                    <Text
+                      size="sm"
+                      c="dimmed"
+                      style={{ fontSize: 'clamp(12px, 3.6cqw, 14px)' }}
+                    >
+                      Sensitive media hidden. Open the post on X to view it.
+                    </Text>
+                  ) : card.media.length === 1 ? (
                     <Box
                       component="button"
                       type="button"
@@ -881,7 +896,37 @@ export function GoonCorner() {
               <IconX size={20} />
             </ActionIcon>
           </Box>
-          {galleryStatus === 'loading' || galleryStatus === 'idle' ? (
+          {card?.sensitive ? (
+            <Box
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                padding: 24,
+                minHeight: '50vh',
+                textAlign: 'center',
+              }}
+            >
+              <Text size="sm" c="dimmed">
+                Sensitive media hidden. Open the post on X to view it.
+              </Text>
+              {tweetUrl ? (
+                <Button
+                  size="xs"
+                  variant="light"
+                  component="a"
+                  href={tweetUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  leftSection={<IconExternalLink size={14} />}
+                >
+                  Open post on X
+                </Button>
+              ) : null}
+            </Box>
+          ) : galleryStatus === 'loading' || galleryStatus === 'idle' ? (
             <Box
               style={{
                 display: 'flex',
