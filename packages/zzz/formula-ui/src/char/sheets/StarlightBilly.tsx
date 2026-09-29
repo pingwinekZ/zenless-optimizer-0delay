@@ -1,16 +1,35 @@
-import { ColorText, ImgIcon } from '@zenless-optimizer/common/ui'
-import { commonDefIcon, mindscapeDefIcon } from '@zenless-optimizer/zzz/assets'
+import { ColorText } from '@zenless-optimizer/common/ui'
 import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
+import { useCharacter } from '@zenless-optimizer/zzz/db-ui'
 import { StarlightBilly } from '@zenless-optimizer/zzz/formula'
-import { GameDesc } from '@zenless-optimizer/zzz/i18n'
+import { GameDesc, GameDescSlice } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
-import { CoreGameDesc, createBaseSheet, fieldForBuff } from '../sheetUtil'
+import {
+  AbilityBodyText,
+  CoreGameDesc,
+  createBaseSheet,
+  fieldForBuff,
+} from '../sheetUtil'
 import { getVariant } from '../util'
 
 const key: CharacterKey = 'StarlightBilly'
 const [, ch] = trans('char', key)
 const cond = StarlightBilly.conditionals
 const buff = StarlightBilly.buffs
+const formula = StarlightBilly.formulas
+
+function CoreDescription() {
+  const char = useCharacter(key)
+  const coreLevel = char?.core ?? 0
+  return (
+    <GameDescSlice
+      ns="char_StarlightBilly_gen"
+      key18={`core.desc.${coreLevel}.2`}
+      from="When his HP is greater than 25%"
+      to="refresh the duration."
+    />
+  )
+}
 
 const sheet = createBaseSheet(key, {
   core: [
@@ -18,17 +37,15 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('coreCond'),
-        description: <CoreGameDesc characterKey={key} paragraph={2} />,
+        description: <CoreDescription />,
         metadata: cond.cpCritDmg,
         fields: [fieldForBuff(buff.core_critDmg)],
       },
     },
     {
       type: 'fields',
-      header: {
-        icon: <ImgIcon src={commonDefIcon('coreFlat')} size={1.5} />,
-        text: ch('core_header'),
-      },
+      header: { icon: null, text: ch('core_header') },
+      description: <CoreGameDesc characterKey={key} paragraph={0} />,
       fields: [fieldForBuff(buff.core_hpSheerForce)],
     },
   ],
@@ -41,7 +58,20 @@ const sheet = createBaseSheet(key, {
           <>
             <GameDesc ns="char_StarlightBilly_gen" key18="ability.desc.0" />
             <div style={{ marginBottom: 8 }} />
-            <GameDesc ns="char_StarlightBilly_gen" key18="ability.desc.1" />
+            <AbilityBodyText characterKey={key}>
+              <GameDescSlice
+                ns="char_StarlightBilly_gen"
+                key18="ability.desc.1"
+                from="Hitting an enemy with"
+                to="per use of a skill."
+              />
+              <GameDescSlice
+                ns="char_StarlightBilly_gen"
+                key18="ability.desc.1"
+                from="Each stack increases the DMG"
+                to="Full-Throttle Starlight"
+              />
+            </AbilityBodyText>
           </>
         ),
         metadata: cond.starlightStacks,
@@ -74,7 +104,12 @@ const sheet = createBaseSheet(key, {
       conditional: {
         label: ch('m1Cond'),
         description: (
-          <GameDesc ns="char_StarlightBilly_gen" key18="mindscapes.1.desc" />
+          <GameDescSlice
+            ns="char_StarlightBilly_gen"
+            key18="mindscapes.1.desc"
+            from="Hitting an enemy with"
+            to="refresh the duration."
+          />
         ),
         metadata: cond.m1PhysResIgn,
         fields: [fieldForBuff(buff.m1_physResIgn)],
@@ -84,10 +119,15 @@ const sheet = createBaseSheet(key, {
   m2: [
     {
       type: 'fields',
-      header: {
-        icon: <ImgIcon src={mindscapeDefIcon(2)} size={1.5} />,
-        text: ch('m2_header'),
-      },
+      header: { icon: null, text: ch('m2_header') },
+      description: (
+        <GameDescSlice
+          ns="char_StarlightBilly_gen"
+          key18="mindscapes.2.desc"
+          from="Increases the DMG dealt by"
+          to="by 50%."
+        />
+      ),
       fields: [
         {
           title: (
@@ -115,6 +155,31 @@ const sheet = createBaseSheet(key, {
         },
       ],
     },
+    {
+      type: 'conditional',
+      conditional: {
+        label: ch('turboCond'),
+        description: (
+          <GameDescSlice
+            ns="char_StarlightBilly_gen"
+            key18="mindscapes.2.desc"
+            from="Activating"
+            to="can be held."
+          />
+        ),
+        metadata: cond.turbo,
+        fields: [
+          {
+            title: (
+              <ColorText color={getVariant(buff.m2_turbo_crit_dmg_.tag)}>
+                {ch('m2_turbo_crit_dmg_')}
+              </ColorText>
+            ),
+            fieldRef: buff.m2_turbo_crit_dmg_.tag,
+          },
+        ],
+      },
+    },
   ],
   m4: [
     {
@@ -122,7 +187,12 @@ const sheet = createBaseSheet(key, {
       conditional: {
         label: ch('m4Cond'),
         description: (
-          <GameDesc ns="char_StarlightBilly_gen" key18="mindscapes.4.desc" />
+          <GameDescSlice
+            ns="char_StarlightBilly_gen"
+            key18="mindscapes.4.desc"
+            from="While in combat"
+            to="reset the duration."
+          />
         ),
         metadata: cond.m4CritDmgStacks,
         fields: [fieldForBuff(buff.m4_critDmg)],
@@ -132,10 +202,15 @@ const sheet = createBaseSheet(key, {
   m6: [
     {
       type: 'fields',
-      header: {
-        icon: <ImgIcon src={mindscapeDefIcon(6)} size={1.5} />,
-        text: ch('m6_header'),
-      },
+      header: { icon: null, text: ch('m6_header') },
+      description: (
+        <GameDescSlice
+          ns="char_StarlightBilly_gen"
+          key18="mindscapes.6.desc"
+          from="Ultimate:"
+          to="increases by 18%."
+        />
+      ),
       fields: [
         {
           title: (
@@ -154,6 +229,31 @@ const sheet = createBaseSheet(key, {
           fieldRef: buff.m6_basic_sheer_.tag,
         },
       ],
+    },
+    {
+      type: 'conditional',
+      conditional: {
+        label: ch('brilliantStacksCond'),
+        description: (
+          <GameDescSlice
+            ns="char_StarlightBilly_gen"
+            key18="mindscapes.6.desc"
+            from="Landing the 4th hit"
+            to="Physical DMG"
+          />
+        ),
+        metadata: cond.brilliant_stacks,
+        fields: [
+          {
+            title: (
+              <ColorText color={getVariant(formula.m6_brilliant_dmg.tag)}>
+                {ch('m6_brilliant_dmg')}
+              </ColorText>
+            ),
+            fieldRef: formula.m6_brilliant_dmg.tag,
+          },
+        ],
+      },
     },
   ],
 })

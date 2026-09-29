@@ -22,6 +22,7 @@ import {
 } from '@zenless-optimizer/zzz/db'
 import type { Tag } from '@zenless-optimizer/zzz/formula'
 import {
+  allMemberStatBridges,
   charTagMapNodeEntries,
   conditionalEntries,
   convert,
@@ -33,7 +34,6 @@ import {
   Read,
   type TagMapNodeEntries,
   teamData,
-  teammateStatBridges,
   wengineTagMapNodeEntries,
   withMember,
   withPreset,
@@ -539,7 +539,7 @@ export function buildCalculatorEntries(
         .add(1)
     ),
     ...teammateEntries,
-    ...teammateStatBridges(character.key, teamMembers),
+    ...allMemberStatBridges(character.key, teamMembers),
     enemy.common.lvl.add(team.enemyLvl),
     enemy.common.def.add(team.enemyDef),
     enemy.common.stun_.add(team.enemyStunMultiplier / 100),

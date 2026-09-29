@@ -36,8 +36,13 @@ const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
-const { etherVeilWellspring, inEtherVeil, offField, recoversHp } =
-  allBoolConditionals(key, undefined, { offField: 1, recoversHp: 2 })
+const {
+  etherVeilWellspring_hp,
+  etherVeilWellspring_atk,
+  inEtherVeil,
+  offField,
+  recoversHp,
+} = allBoolConditionals(key, undefined, { offField: 1, recoversHp: 2 })
 const { chargeTime } = allNumConditionals(key, true, 0, 5)
 
 const abilityCheck = (a: NumNode | number, b?: NumNode | number) =>
@@ -218,14 +223,14 @@ const sheet = register(
   ),
   registerBuff(
     'core_hp_',
-    teamBuff.combat.hp_.add(etherVeilWellspring.ifOn(percent(dm.core.hp_))),
+    teamBuff.combat.hp_.add(etherVeilWellspring_hp.ifOn(percent(dm.core.hp_))),
     undefined,
     true
   ),
   registerBuff(
     'core_atk',
     teamBuff.combat.atk.add(
-      etherVeilWellspring.ifOn(subscript(char.core, dm.core.atk))
+      etherVeilWellspring_atk.ifOn(subscript(char.core, dm.core.atk))
     ),
     undefined,
     true

@@ -1,5 +1,18 @@
 // WARNING: Generated file, do not modify
 export const buffs = {
+  ability_dmg: {
+    sheet: 'Dialyn',
+    name: 'ability_dmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'flat_dmg',
+      sheet: 'Dialyn',
+      damageType1: 'elemental',
+      name: 'ability_dmg',
+    },
+    team: false,
+  },
   m6_dmg: {
     sheet: 'Dialyn',
     name: 'm6_dmg',
@@ -9,6 +22,7 @@ export const buffs = {
       q: 'dmg_',
       sheet: 'Dialyn',
       attribute: 'physical',
+      damageType1: 'exSpecial',
       name: 'm6_dmg',
     },
     team: false,
@@ -24,6 +38,18 @@ export const buffs = {
       name: 'core_impact',
     },
     team: false,
+  },
+  core_stun_: {
+    sheet: 'Dialyn',
+    name: 'core_stun_',
+    tag: {
+      et: 'display',
+      qt: 'common',
+      q: 'stun_',
+      sheet: 'Dialyn',
+      name: 'core_stun_',
+    },
+    team: true,
   },
   ability_exSpecial_crit_dmg_: {
     sheet: 'Dialyn',
@@ -49,19 +75,6 @@ export const buffs = {
       name: 'ability_common_dmg_',
     },
     team: true,
-  },
-  ability_flat_dmg: {
-    sheet: 'Dialyn',
-    name: 'ability_flat_dmg',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'flat_dmg',
-      sheet: 'Dialyn',
-      damageType1: 'exSpecial',
-      name: 'ability_flat_dmg',
-    },
-    team: false,
   },
   m1_resIgn_: {
     sheet: 'Dialyn',

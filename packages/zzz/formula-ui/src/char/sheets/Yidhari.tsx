@@ -1,9 +1,10 @@
 import { ColorText } from '@zenless-optimizer/common/ui'
 import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { Yidhari } from '@zenless-optimizer/zzz/formula'
-import { GameDesc } from '@zenless-optimizer/zzz/i18n'
+import { GameDesc, GameDescSlice } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
 import {
+  AbilityBodyText,
   CoreGameDesc,
   createBaseSheet,
   fieldForBuff,
@@ -30,6 +31,7 @@ const sheet = createBaseSheet(key, {
                 characterKey={key}
                 ns="char_Yidhari_gen"
                 key18="chain.EtherVeilWellspring.desc"
+                paragraph={0}
               />
             ),
             metadata: cond.etherVeil,
@@ -70,8 +72,9 @@ const sheet = createBaseSheet(key, {
         description: (
           <>
             <GameDesc ns="char_Yidhari_gen" key18="ability.desc.0" />
-            <div style={{ marginBottom: 8 }} />
-            <GameDesc ns="char_Yidhari_gen" key18="ability.desc.1" />
+            <AbilityBodyText characterKey={key}>
+              <GameDesc ns="char_Yidhari_gen" key18="ability.desc.1" />
+            </AbilityBodyText>
           </>
         ),
         metadata: cond.abilityMissingHp,
@@ -83,6 +86,14 @@ const sheet = createBaseSheet(key, {
     {
       type: 'fields',
       header: { icon: null, text: ch('m1_header') },
+      description: (
+        <GameDescSlice
+          ns="char_Yidhari_gen"
+          key18="mindscapes.1.desc"
+          from="Yidhari's <ct color=#FFFFFF>Basic Attacks</ct> and <ct color=#FFFFFF>EX Special Attacks</ct> ignore"
+          to="Ice RES"
+        />
+      ),
       fields: [
         {
           title: (
@@ -107,6 +118,14 @@ const sheet = createBaseSheet(key, {
     {
       type: 'fields',
       header: { icon: null, text: ch('m2_header') },
+      description: (
+        <GameDescSlice
+          ns="char_Yidhari_gen"
+          key18="mindscapes.2.desc"
+          from="Yidhari's CRIT DMG increases by"
+          to="40%"
+        />
+      ),
       fields: [fieldForBuff(buff.m2_crit_dmg_)],
     },
   ],
@@ -116,7 +135,12 @@ const sheet = createBaseSheet(key, {
       conditional: {
         label: ch('m4EtherVeilCond'),
         description: (
-          <GameDesc ns="char_Yidhari_gen" key18="mindscapes.4.desc" />
+          <GameDescSlice
+            ns="char_Yidhari_gen"
+            key18="mindscapes.4.desc"
+            from="While in <ct color=#FFFFFF>Ether Veil: Wellspring</ct>"
+            to="Max HP is further increased by 5%"
+          />
         ),
         metadata: cond.m4EtherVeil,
         linked: 'etherVeil',
@@ -130,7 +154,12 @@ const sheet = createBaseSheet(key, {
       conditional: {
         label: ch('eruditionCond'),
         description: (
-          <GameDesc ns="char_Yidhari_gen" key18="mindscapes.6.desc" />
+          <GameDescSlice
+            ns="char_Yidhari_gen"
+            key18="mindscapes.6.desc"
+            from="After Yidhari spends Decibels to activate or extend"
+            to="her Sheer DMG increases by 25%"
+          />
         ),
         metadata: cond.erudition,
         fields: [fieldForBuff(buff.m6_sheer_dmg_)],
@@ -138,7 +167,6 @@ const sheet = createBaseSheet(key, {
     },
     {
       type: 'fields',
-      header: { icon: null, text: ch('m6_heal') },
       fields: [
         {
           title: (

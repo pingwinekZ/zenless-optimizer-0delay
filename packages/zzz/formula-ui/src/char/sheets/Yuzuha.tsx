@@ -2,10 +2,16 @@ import { ColorText, ImgIcon } from '@zenless-optimizer/common/ui'
 import { mindscapeDefIcon } from '@zenless-optimizer/zzz/assets'
 import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { Yuzuha } from '@zenless-optimizer/zzz/formula'
-import { GameDesc } from '@zenless-optimizer/zzz/i18n'
-import { mappedStats } from '@zenless-optimizer/zzz/stats'
+import { GameDesc, GameDescSlice } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
-import { CoreGameDesc, createBaseSheet, fieldForBuff } from '../sheetUtil'
+import {
+  AbilityBodyText,
+  CoreGameDesc,
+  createBaseSheet,
+  fieldForBuff,
+  PrefixedLine,
+  useEffectiveMindscape,
+} from '../sheetUtil'
 import { getVariant } from '../util'
 
 const key: CharacterKey = 'Yuzuha'
@@ -13,7 +19,30 @@ const [, ch] = trans('char', key)
 const cond = Yuzuha.conditionals
 const buff = Yuzuha.buffs
 const formula = Yuzuha.formulas
-const dm = mappedStats.char[key]
+
+/**
+ * Additional Ability trigger, the Tanuki Wish Anomaly/Disorder buff (dimmed
+ * while the ability is inactive), and the M1 increase to that buff.
+ */
+function AbilityDescription() {
+  const mindscape = useEffectiveMindscape(key)
+  return (
+    <>
+      <GameDesc ns="char_Yuzuha_gen" key18="ability.desc.0" />
+      <AbilityBodyText characterKey={key}>
+        <GameDesc ns="char_Yuzuha_gen" key18="ability.desc.1" />
+      </AbilityBodyText>
+      <PrefixedLine prefix="M1" dimmed={mindscape < 1}>
+        <GameDescSlice
+          ns="char_Yuzuha_gen"
+          key18="mindscapes.1.desc"
+          from="The Attribute Anomaly DMG"
+          to="original value"
+        />
+      </PrefixedLine>
+    </>
+  )
+}
 
 const sheet = createBaseSheet(key, {
   core: [
@@ -44,13 +73,7 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('abilityCond'),
-        description: (
-          <>
-            <GameDesc ns="char_Yuzuha_gen" key18="ability.desc.0" />
-            <div style={{ marginBottom: 8 }} />
-            <GameDesc ns="char_Yuzuha_gen" key18="ability.desc.1" />
-          </>
-        ),
+        description: <AbilityDescription />,
         metadata: cond.tanuki_wish_ability,
         fields: [
           {
@@ -71,6 +94,7 @@ const sheet = createBaseSheet(key, {
             fieldRef: buff.ability_disorder_buff_.tag,
             team: buff.ability_disorder_buff_.team,
           },
+          fieldForBuff(buff.ability_anomBuildup_),
         ],
         linked: ['tanuki_wish'],
       },
@@ -82,25 +106,16 @@ const sheet = createBaseSheet(key, {
       conditional: {
         label: ch('m1Cond'),
         description: (
-          <GameDesc ns="char_Yuzuha_gen" key18="mindscapes.1.desc" />
+          <GameDescSlice
+            ns="char_Yuzuha_gen"
+            key18="mindscapes.1.desc"
+            from="Enemies in the"
+            to="reduced by 10%"
+          />
         ),
         metadata: cond.sweet_scare,
         fields: [fieldForBuff(buff.m1_resRed_)],
       },
-    },
-    {
-      type: 'fields',
-      header: {
-        icon: <ImgIcon src={mindscapeDefIcon(1)} size={1.5} />,
-        text: ch('m1_header'),
-      },
-      fields: [
-        {
-          title: ch('m1_buffInc_'),
-          fieldValue: dm.m1.buffInc_ * 100,
-          unit: '%',
-        },
-      ],
     },
   ],
   m2: [
@@ -109,10 +124,18 @@ const sheet = createBaseSheet(key, {
       conditional: {
         label: ch('m2Cond'),
         description: (
-          <GameDesc ns="char_Yuzuha_gen" key18="mindscapes.2.desc" />
+          <GameDescSlice
+            ns="char_Yuzuha_gen"
+            key18="mindscapes.2.desc"
+            from="When Yuzuha's"
+            to="DMG increases by 15%"
+          />
         ),
         metadata: cond.exSpecial_ult_hit,
-        fields: [fieldForBuff(buff.m2_common_dmg_)],
+        fields: [
+          fieldForBuff(buff.m2_common_dmg_),
+          fieldForBuff(buff.m2_anomBuildup_),
+        ],
       },
     },
   ],
@@ -123,6 +146,14 @@ const sheet = createBaseSheet(key, {
         icon: <ImgIcon src={mindscapeDefIcon(4)} size={1.5} />,
         text: ch('m4_header'),
       },
+      description: (
+        <GameDescSlice
+          ns="char_Yuzuha_gen"
+          key18="mindscapes.4.desc"
+          from="The DMG of Yuzuha's"
+          to="increases by 30%"
+        />
+      ),
       fields: [
         {
           title: (
@@ -131,6 +162,10 @@ const sheet = createBaseSheet(key, {
             </ColorText>
           ),
           fieldRef: buff.m4_weHaveCookies_dmg_.tag,
+        },
+        {
+          title: ch('m4_weHaveCookies_anomBuildup_'),
+          fieldRef: buff.m4_weHaveCookies_anomBuildup_.tag,
         },
         {
           title: (
@@ -142,6 +177,10 @@ const sheet = createBaseSheet(key, {
           ),
           fieldRef: buff.m4_stuffedHardCandyShot_dmg_.tag,
         },
+        {
+          title: ch('m4_stuffedHardCandyShot_anomBuildup_'),
+          fieldRef: buff.m4_stuffedHardCandyShot_anomBuildup_.tag,
+        },
       ],
     },
   ],
@@ -149,6 +188,14 @@ const sheet = createBaseSheet(key, {
     {
       type: 'fields',
       header: { icon: null, text: ch('m6AdditionalDmg') },
+      description: (
+        <GameDescSlice
+          ns="char_Yuzuha_gen"
+          key18="mindscapes.6.desc"
+          from="For every 0.4s charged"
+          to="Physical DMG"
+        />
+      ),
       fields: [
         {
           title: (
@@ -165,7 +212,12 @@ const sheet = createBaseSheet(key, {
       conditional: {
         label: ch('m6Cond'),
         description: (
-          <GameDesc ns="char_Yuzuha_gen" key18="mindscapes.6.desc" />
+          <GameDescSlice
+            ns="char_Yuzuha_gen"
+            key18="mindscapes.6.desc"
+            from="If any powerful shell"
+            to="stacking up to 3 times"
+          />
         ),
         metadata: cond.powerful_shell_hits,
         fields: [fieldForBuff(buff.m6_addl_disorder_)],

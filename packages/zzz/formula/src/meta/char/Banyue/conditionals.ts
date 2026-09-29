@@ -15,24 +15,15 @@ export const conditionals = {
     type: 'bool',
     mindscapeRequirement: 0,
   },
-  m2ExSpecialFollowUpUsed: {
+  tremorDmg: {
     sheet: 'Banyue',
-    name: 'm2ExSpecialFollowUpUsed',
+    name: 'tremorDmg',
     type: 'bool',
-    mindscapeRequirement: 2,
+    mindscapeRequirement: 1,
   },
-  m6Vidyaraja: {
+  tremorResRed: {
     sheet: 'Banyue',
-    name: 'm6Vidyaraja',
-    type: 'num',
-    int_only: true,
-    min: 0,
-    max: 3,
-    mindscapeRequirement: 6,
-  },
-  tremor: {
-    sheet: 'Banyue',
-    name: 'tremor',
+    name: 'tremorResRed',
     type: 'bool',
     mindscapeRequirement: 1,
   },

@@ -139,12 +139,12 @@ const sheet = register(
 
   ...customDmg(
     'm6_dmg',
-    { damageType1: 'elemental' },
+    { attribute: 'electric', damageType1: 'elemental' },
     cmpGE(char.mindscape, 6, prod(own.final.atk, percent(dm.m6.dmg)))
   ),
   registerBuff(
     'm6_dmg',
-    ownBuff.combat.dmg_.addWithDmgType(
+    ownBuff.combat.dmg_.electric.addWithDmgType(
       'elemental',
       cmpGE(char.mindscape, 6, percent(dm.m6.dmg))
     ),

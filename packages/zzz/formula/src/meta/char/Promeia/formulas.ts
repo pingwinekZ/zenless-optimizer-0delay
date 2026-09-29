@@ -1000,9 +1000,9 @@ export const formulas = {
       name: 'AssistFollowUpInterceptingStrike_0_anomBuildup',
     },
   },
-  trialByColdAbloomDmgInst: {
+  trialByColdAbloomDmg: {
     sheet: 'Promeia',
-    name: 'trialByColdAbloomDmgInst',
+    name: 'trialByColdAbloomDmg',
     tag: {
       et: 'own',
       qt: 'formula',
@@ -1011,7 +1011,49 @@ export const formulas = {
       attribute: 'ice',
       damageType1: 'anomaly',
       damageType2: 'abloom',
-      name: 'trialByColdAbloomDmgInst',
+      name: 'trialByColdAbloomDmg',
+    },
+  },
+  m6SpecialAbloomDmg: {
+    sheet: 'Promeia',
+    name: 'm6SpecialAbloomDmg',
+    tag: {
+      et: 'own',
+      qt: 'formula',
+      q: 'anomalyDmg',
+      sheet: 'Promeia',
+      attribute: 'ice',
+      damageType1: 'anomaly',
+      damageType2: 'abloom',
+      name: 'm6SpecialAbloomDmg',
+    },
+  },
+  chainAbloomDmg: {
+    sheet: 'Promeia',
+    name: 'chainAbloomDmg',
+    tag: {
+      et: 'own',
+      qt: 'formula',
+      q: 'anomalyDmg',
+      sheet: 'Promeia',
+      attribute: 'ice',
+      damageType1: 'anomaly',
+      damageType2: 'abloom',
+      name: 'chainAbloomDmg',
+    },
+  },
+  ultAbloomDmg: {
+    sheet: 'Promeia',
+    name: 'ultAbloomDmg',
+    tag: {
+      et: 'own',
+      qt: 'formula',
+      q: 'anomalyDmg',
+      sheet: 'Promeia',
+      attribute: 'ice',
+      damageType1: 'anomaly',
+      damageType2: 'abloom',
+      name: 'ultAbloomDmg',
     },
   },
 } as const

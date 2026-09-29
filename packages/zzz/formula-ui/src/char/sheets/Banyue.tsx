@@ -1,9 +1,16 @@
 import { ColorText } from '@zenless-optimizer/common/ui'
 import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { Banyue } from '@zenless-optimizer/zzz/formula'
-import { GameDesc } from '@zenless-optimizer/zzz/i18n'
+import { GameDesc, GameDescSlice } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
-import { CoreGameDesc, createBaseSheet, fieldForBuff } from '../sheetUtil'
+import {
+  AbilityBodyText,
+  CoreGameDesc,
+  createBaseSheet,
+  fieldForBuff,
+  PrefixedLine,
+  useEffectiveMindscape,
+} from '../sheetUtil'
 import { getVariant } from '../util'
 
 const key: CharacterKey = 'Banyue'
@@ -11,6 +18,49 @@ const [, ch] = trans('char', key)
 const cond = Banyue.conditionals
 const buff = Banyue.buffs
 const formula = Banyue.formulas
+
+function CoreFollowUpDescription() {
+  const mindscape = useEffectiveMindscape(key)
+  return (
+    <>
+      <CoreGameDesc characterKey={key} paragraph={11} />
+      <PrefixedLine prefix="M2" dimmed={mindscape < 2}>
+        <GameDescSlice
+          ns="char_Banyue_gen"
+          key18="mindscapes.2.desc"
+          from="The CRIT DMG bonus"
+          to="bonus is increased by an additional 15%"
+        />
+      </PrefixedLine>
+    </>
+  )
+}
+
+function VidyarajaDescription() {
+  const mindscape = useEffectiveMindscape(key)
+  return (
+    <>
+      <GameDesc ns="char_Banyue_gen" key18="ability.desc.0" />
+      <AbilityBodyText characterKey={key}>
+        <GameDesc ns="char_Banyue_gen" key18="ability.desc.1" />
+      </AbilityBodyText>
+      <PrefixedLine prefix="M6" dimmed={mindscape < 6}>
+        <GameDescSlice
+          ns="char_Banyue_gen"
+          key18="mindscapes.6.desc"
+          from="At any time"
+          to="extended to 30s"
+        />{' '}
+        <GameDescSlice
+          ns="char_Banyue_gen"
+          key18="mindscapes.6.desc"
+          from="<ct color=#FFFFFF>Dodge: Battle Cry"
+          to="also grants"
+        />
+      </PrefixedLine>
+    </>
+  )
+}
 
 const sheet = createBaseSheet(key, {
   core: [
@@ -23,14 +73,13 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('coreExSpecialFollowUpUsedCond'),
-        description: <CoreGameDesc characterKey={key} paragraph={11} />,
+        description: <CoreFollowUpDescription />,
         metadata: cond.coreExSpecialFollowUpUsed,
         fields: [
           fieldForBuff(buff.core_sheerForce),
           fieldForBuff(buff.core_fire_dmg_),
           fieldForBuff(buff.core_crit_dmg_),
         ],
-        linked: 'm2ExSpecialFollowUpUsed',
       },
     },
   ],
@@ -39,16 +88,9 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('abilityVidyarajaCond'),
-        description: (
-          <>
-            <GameDesc ns="char_Banyue_gen" key18="ability.desc.0" />
-            <div style={{ marginBottom: 8 }} />
-            <GameDesc ns="char_Banyue_gen" key18="ability.desc.1" />
-          </>
-        ),
+        description: <VidyarajaDescription />,
         metadata: cond.abilityVidyaraja,
         fields: [fieldForBuff(buff.ability_fire_dmg_)],
-        linked: 'm6Vidyaraja',
       },
     },
   ],
@@ -56,13 +98,35 @@ const sheet = createBaseSheet(key, {
     {
       type: 'conditional',
       conditional: {
-        label: ch('tremorCond'),
+        label: ch('tremorResRedCond'),
         description: (
-          <GameDesc ns="char_Banyue_gen" key18="mindscapes.1.desc" />
+          <GameDescSlice
+            ns="char_Banyue_gen"
+            key18="mindscapes.1.desc"
+            from="he inflicts the"
+            to="lasting 30s"
+            capitalize
+          />
         ),
-        metadata: cond.tremor,
+        metadata: cond.tremorResRed,
+        fields: [fieldForBuff(buff.m1_fire_resRed_)],
+        linked: ['tremorDmg'],
+      },
+    },
+    {
+      type: 'conditional',
+      conditional: {
+        label: ch('tremorDmgCond'),
+        description: (
+          <GameDescSlice
+            ns="char_Banyue_gen"
+            key18="mindscapes.1.desc"
+            from="<ct color=#FFFFFF>EX Special Attack: Lion's Roar</ct>"
+            to="increased by 10%"
+          />
+        ),
+        metadata: cond.tremorDmg,
         fields: [
-          fieldForBuff(buff.m1_fire_resRed_),
           {
             title: (
               <ColorText
@@ -122,23 +186,7 @@ const sheet = createBaseSheet(key, {
             fieldRef: buff.m1_mountainTremorWrath_sheer_dmg_.tag,
           },
         ],
-      },
-    },
-  ],
-  m2: [
-    {
-      type: 'conditional',
-      conditional: {
-        label: ch('m2ExSpecialFollowUpUsedCond'),
-        description: (
-          <GameDesc ns="char_Banyue_gen" key18="mindscapes.2.desc" />
-        ),
-        metadata: cond.m2ExSpecialFollowUpUsed,
-        fields: [
-          fieldForBuff(buff.m2_fire_dmg_),
-          fieldForBuff(buff.m2_crit_dmg_),
-        ],
-        linked: 'coreExSpecialFollowUpUsed',
+        linked: ['tremorResRed'],
       },
     },
   ],
@@ -184,20 +232,16 @@ const sheet = createBaseSheet(key, {
   ],
   m6: [
     {
-      type: 'conditional',
-      conditional: {
-        label: ch('m6VidyarajaCond'),
-        description: (
-          <GameDesc ns="char_Banyue_gen" key18="mindscapes.6.desc" />
-        ),
-        metadata: cond.m6Vidyaraja,
-        fields: [fieldForBuff(buff.m6_fire_dmg_)],
-        linked: 'abilityVidyaraja',
-      },
-    },
-    {
       type: 'fields',
       header: { icon: null, text: ch('m6_header') },
+      description: (
+        <GameDescSlice
+          ns="char_Banyue_gen"
+          key18="mindscapes.6.desc"
+          from="When activating"
+          to="nearby enemies"
+        />
+      ),
       fields: [
         {
           title: (

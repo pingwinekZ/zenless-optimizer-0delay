@@ -16,12 +16,14 @@ import {
 import {
   dmgDazeAndAnomOverride,
   entriesForChar,
+  getBaseTag,
   registerAllDmgDazeAndAnom,
 } from '../util'
 
 const key: CharacterKey = 'Alice'
 const data_gen = allStats.char[key]
 const dm = mappedStats.char[key]
+const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
@@ -34,6 +36,11 @@ const { assault_triggered, physical_anomaly_enemy } = allBoolConditionals(
   }
 )
 
+const m4_basic_physical_anomBuildup_ =
+  ownBuff.combat.anomBuildup_.physical.addWithDmgType(
+    'basic',
+    cmpGE(char.mindscape, 4, percent(dm.m4.physical_anomBuildup_))
+  )
 const m6_crit_ = ownBuff.combat.crit_.add(cmpGE(char.mindscape, 6, percent(1)))
 
 const sheet = register(
@@ -45,54 +52,16 @@ const sheet = register(
   ...registerAllDmgDazeAndAnom(
     key,
     dm,
-    // Per-hit buffs
-    dmgDazeAndAnomOverride(
-      dm,
-      'basic',
-      'BasicAttackCelestialOverture',
-      0,
-      { damageType1: 'basic' },
-      'atk'
-    ),
-    dmgDazeAndAnomOverride(
-      dm,
-      'basic',
-      'BasicAttackCelestialOverture',
-      1,
-      { damageType1: 'basic' },
-      'atk'
-    ),
-    dmgDazeAndAnomOverride(
-      dm,
-      'basic',
-      'BasicAttackCelestialOverture',
-      2,
-      { damageType1: 'basic' },
-      'atk'
-    ),
-    dmgDazeAndAnomOverride(
-      dm,
-      'basic',
-      'BasicAttackCelestialOverture',
-      3,
-      { damageType1: 'basic' },
-      'atk'
-    ),
-    dmgDazeAndAnomOverride(
-      dm,
-      'basic',
-      'BasicAttackCelestialOverture',
-      4,
-      { damageType1: 'basic' },
-      'atk'
-    ),
+    // Only the enhanced 5th hit needs an override (M4 buildup wired in below)
     dmgDazeAndAnomOverride(
       dm,
       'basic',
       'BasicAttackCelestialOverture',
       5,
-      { damageType1: 'basic' },
-      'atk'
+      { ...baseTag, damageType1: 'basic' },
+      'atk',
+      undefined,
+      ...m4_basic_physical_anomBuildup_
     )
   ),
 
@@ -133,7 +102,7 @@ const sheet = register(
     'm2_assault_dmg_',
     teamBuff.combat.dmg_.physical.addWithDmgType(
       'anomaly',
-      cmpGE(char.mindscape, 2, percent(0.15))
+      cmpGE(char.mindscape, 2, percent(dm.m2.physical_buff_))
     ),
     undefined,
     true
@@ -142,20 +111,34 @@ const sheet = register(
     'm2_disorder_dmg_',
     teamBuff.combat.dmg_.addWithDmgType(
       'disorder',
-      cmpGE(char.mindscape, 2, physical_anomaly_enemy.ifOn(percent(0.15)))
+      cmpGE(
+        char.mindscape,
+        2,
+        physical_anomaly_enemy.ifOn(percent(dm.m2.disorder_buff_))
+      )
     ),
     undefined,
     true
   ),
   registerBuff(
     'm4_phys_resIgn_',
-    ownBuff.combat.resIgn_.physical.add(cmpGE(char.mindscape, 4, percent(0.1)))
+    ownBuff.combat.resIgn_.physical.add(
+      cmpGE(char.mindscape, 4, percent(dm.m4.physical_resIgn_))
+    )
+  ),
+  registerBuff(
+    'm4_basic_physical_anomBuildup_',
+    m4_basic_physical_anomBuildup_,
+    undefined,
+    undefined,
+    false
   ),
   registerBuff('m6_crit_', m6_crit_, undefined, undefined, false),
   registerBuff(
     'm6_dmg',
-    ownBuff.combat.dmg_.physical.add(
-      cmpGE(char.mindscape, 6, prod(own.final.anomProf, percent(dm.m6.dmg)))
+    ownBuff.combat.dmg_.addWithDmgType(
+      'elemental',
+      cmpGE(char.mindscape, 6, percent(dm.m6.dmg))
     ),
     undefined,
     undefined,

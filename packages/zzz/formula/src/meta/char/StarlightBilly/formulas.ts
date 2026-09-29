@@ -917,4 +917,17 @@ export const formulas = {
       name: 'AssistFollowUpVillainsExit_0_anomBuildup',
     },
   },
+  m6_brilliant_dmg: {
+    sheet: 'StarlightBilly',
+    name: 'm6_brilliant_dmg',
+    tag: {
+      et: 'own',
+      qt: 'formula',
+      q: 'sheerDmg',
+      sheet: 'StarlightBilly',
+      attribute: 'physical',
+      damageType1: 'elemental',
+      name: 'm6_brilliant_dmg',
+    },
+  },
 } as const

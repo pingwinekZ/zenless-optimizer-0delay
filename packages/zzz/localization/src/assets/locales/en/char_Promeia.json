@@ -1,10 +1,17 @@
 {
   "core_header": "AM to AP & DMG",
-  "abilityCond": "Presumption of Guilt · DEF Ignore",
-  "m1_header": "Presumption of Guilt · DEF Ignore",
-  "m2_header": "AP & DMG",
-  "m2_trialAbloomMult": "Trial by Cold Abloom DMG Multiplier",
+  "exSpecialIceBuildupCond": "EX Special · Ice Buildup",
+  "presumptionOfGuiltCond": "Presumption of Guilt · DEF Ignore",
+  "chainAbloom_header": "Chain Attack · Abloom",
+  "chainAbloomDmg": "Chain Attack Abloom DMG",
+  "ultAbloom_header": "Ultimate · Abloom",
+  "ultAbloomDmg": "Ultimate Abloom DMG",
+  "m2_ap_header": "Anomaly Proficiency",
+  "m2_trialAbloom_header": "Trial by Cold · Abloom",
+  "m2_trialAbloomDmg": "Trial by Cold Abloom DMG",
   "m6_header": "RES Ignore",
   "m6_resIgn_anomaly": "Anomaly RES Ignore",
-  "m6_resIgn_disorder": "Disorder RES Ignore"
+  "m6_resIgn_disorder": "Disorder RES Ignore",
+  "m6_specialAbloom_header": "Special Abloom",
+  "m6_specialAbloomDmg": "Special Abloom DMG"
 }

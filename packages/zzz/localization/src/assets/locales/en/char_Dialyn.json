@@ -3,6 +3,7 @@
   "overwhelminglyPositiveResIgnCond": "Overwhelmingly Positive · RES Ignore",
   "overwhelminglyPositiveAtkCond": "Overwhelmingly Positive · ATK",
   "maliciousComplaintCond": "Malicious Complaint · DMG",
+  "maliciousComplaintStunCond": "Malicious Complaint · Stun DMG",
   "teammateSlotCond": "Previous Teammate Slot · DMG",
   "teammateSelect_": {
     "0": "Attack",
@@ -16,5 +17,6 @@
   "core_header": "CR to Impact",
   "ability_header": "CD",
   "m6_dmg": "Additional DMG",
-  "m6AdditionalDmg": "Aftertone DMG"
+  "m6AdditionalDmg": "Aftertone DMG",
+  "ability_dmg": "Additional DMG"
 }

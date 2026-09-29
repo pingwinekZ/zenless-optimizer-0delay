@@ -1000,6 +1000,19 @@ export const formulas = {
       name: 'AssistFollowUpBacktoBackCalls_0_anomBuildup',
     },
   },
+  ability_dmg: {
+    sheet: 'Dialyn',
+    name: 'ability_dmg',
+    tag: {
+      et: 'own',
+      qt: 'formula',
+      q: 'standardDmg',
+      sheet: 'Dialyn',
+      attribute: 'physical',
+      damageType1: 'elemental',
+      name: 'ability_dmg',
+    },
+  },
   m6_dmg: {
     sheet: 'Dialyn',
     name: 'm6_dmg',

@@ -38,18 +38,6 @@ export const buffs = {
     },
     team: false,
   },
-  m1_common_dmg_: {
-    sheet: 'YeShunguang',
-    name: 'm1_common_dmg_',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'common_dmg_',
-      sheet: 'YeShunguang',
-      name: 'm1_common_dmg_',
-    },
-    team: false,
-  },
   m1_defIgn_: {
     sheet: 'YeShunguang',
     name: 'm1_defIgn_',

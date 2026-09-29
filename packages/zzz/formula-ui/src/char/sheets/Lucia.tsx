@@ -1,9 +1,10 @@
 import { ColorText } from '@zenless-optimizer/common/ui'
 import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { Lucia } from '@zenless-optimizer/zzz/formula'
-import { GameDesc } from '@zenless-optimizer/zzz/i18n'
+import { GameDesc, GameDescSlice } from '@zenless-optimizer/zzz/i18n'
 import { st, trans } from '../../util'
 import {
+  AbilityBodyText,
   CoreGameDesc,
   createBaseSheet,
   fieldForBuff,
@@ -30,6 +31,7 @@ const sheet = createBaseSheet(key, {
                 characterKey={key}
                 ns="char_Lucia_gen"
                 key18="special.EXSpecialAttackSymphonyOfTheReaperDaybreak.desc"
+                paragraph={2}
               />
             ),
             metadata: cond.exSpecialState,
@@ -93,7 +95,14 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('darkbreakerCond'),
-        description: <GameDesc ns="char_Lucia_gen" key18="ability.desc" />,
+        description: (
+          <>
+            <GameDesc ns="char_Lucia_gen" key18="ability.desc.0" />
+            <AbilityBodyText characterKey={key}>
+              <GameDesc ns="char_Lucia_gen" key18="ability.desc.1" />
+            </AbilityBodyText>
+          </>
+        ),
         metadata: cond.darkbreaker,
         fields: [fieldForBuff(buff.ability_crit_dmg_)],
         linked: 'exSpecialState',
@@ -105,7 +114,14 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('m1DreamersNurseryRhymeCond'),
-        description: <GameDesc ns="char_Lucia_gen" key18="mindscapes.1.desc" />,
+        description: (
+          <GameDescSlice
+            ns="char_Lucia_gen"
+            key18="mindscapes.1.desc"
+            from="When <ct color=#FFFFFF>Dreamer's Nursery Rhyme</ct> deals additional DMG"
+            to="Decibel Generation Rate"
+          />
+        ),
         metadata: cond.m1DreamersNurseryRhyme,
         fields: [fieldForBuff(buff.m1_resIgn_)],
         linked: 'dreamersNurseryRhyme',
@@ -117,9 +133,25 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('m2EtherVeilCond'),
-        description: <GameDesc ns="char_Lucia_gen" key18="mindscapes.2.desc" />,
+        description: (
+          <GameDescSlice
+            ns="char_Lucia_gen"
+            key18="mindscapes.2.desc"
+            from="While Lucia is inside"
+            to="deals 15% more DMG"
+          />
+        ),
         metadata: cond.m2EtherVeil,
-        fields: [fieldForBuff(buff.m2_harmony_dmg_)],
+        fields: [
+          {
+            title: (
+              <ColorText color={getVariant(buff.m2_harmony_dmg_.tag)}>
+                {ch('m2_harmony_dmg_')}
+              </ColorText>
+            ),
+            fieldRef: buff.m2_harmony_dmg_.tag,
+          },
+        ],
         linked: 'etherVeil',
       },
     },
@@ -127,7 +159,14 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('m2DarkbreakerCond'),
-        description: <GameDesc ns="char_Lucia_gen" key18="mindscapes.2.desc" />,
+        description: (
+          <GameDescSlice
+            ns="char_Lucia_gen"
+            key18="mindscapes.2.desc"
+            from="Agents in the"
+            to="Sheer DMG increase"
+          />
+        ),
         metadata: cond.m2Darkbreaker,
         fields: [fieldForBuff(buff.m2_sheer_dmg_)],
       },

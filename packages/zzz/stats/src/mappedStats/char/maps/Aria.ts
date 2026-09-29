@@ -49,8 +49,8 @@ const dm = {
     abloomPhysical: data_gen.coreParams[4],
     abloomIce: data_gen.coreParams[5],
     abloomWind: data_gen.coreParams[6],
-    perAnomMastery: data_gen.coreParams[7],
-    stunnedDmgBonus: data_gen.coreParams[8],
+    perAnomMastery: data_gen.coreParams[7][0],
+    stunnedDmgBonus: data_gen.coreParams[8][0],
   },
   ability: {
     fandomPower: data_gen.abilityParams[0],

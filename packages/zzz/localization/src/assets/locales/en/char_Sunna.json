@@ -1,9 +1,20 @@
 {
-  "coreCond": "Angelic Chord-ination · ATK",
+  "abilityStunCond": "Additional Ability · Stun",
+  "angelicChordinationCond": "Angelic Chord-ination · ATK",
   "etherVeilRepriseCond": "Ether Veil: Delusion Reprise · ATK",
+  "teammateSlotCond": "Cat's Gaze Trigger · DMG",
+  "teammateSlot_": {
+    "1": "Slot 1",
+    "2": "Slot 2"
+  },
+  "catsgaze_dmg": "Cat's Gaze Trigger DMG",
   "m1Cond": "Cat's Gaze · DEF Red",
-  "m1_defRed_": "DEF",
+  "m1_defRed_": "DEF Red",
   "m2Cond": "In Ether Veil · ATK",
   "m4Cond": "Ultimate Used · DMG",
-  "m6Cond": "Focused Creation · CR & CD"
+  "m6Cond": "Focused Creation · CR & CD",
+  "m6DmgCond": "Focused Creation · Trigger DMG",
+  "m6_catsgaze_dmg_": "Cat's Gaze DMG",
+  "m6_self_trigger": "Cat's Gaze (Self Trigger)",
+  "m6_catsgaze_dmg": "Cat's Gaze (Self Trigger) DMG"
 }

@@ -207,7 +207,7 @@ const sheet = register(
   ),
   registerBuff(
     'm6_dmg',
-    ownBuff.combat.dmg_.addWithDmgType(
+    ownBuff.combat.dmg_.fire.addWithDmgType(
       'aftershock',
       cmpGE(char.mindscape, 6, percent(dm.m6.dmg))
     ),

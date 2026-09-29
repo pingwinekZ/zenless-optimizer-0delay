@@ -82,6 +82,14 @@ export function getTagLabel(
         return includeDamageType ? 'Sharp DMG' : 'Damage'
       if (name === 'gashBuildupInst' && damageType1 === 'gash')
         return includeDamageType ? 'Gash Buildup' : 'Buildup'
+      // Match Mindscape-prefixed instance names like 'm6_abloomDmgInst_ether'.
+      // The damage-type qualifiers already render ("Ether Anomaly Abloom"),
+      // so only the mindscape suffix is returned ("Ether Anomaly Abloom M6").
+      const mAbloomPrefix = name?.match(/^m(\d+)_abloomDmgInst_/)
+      if (mAbloomPrefix)
+        return includeDamageType
+          ? `M${mAbloomPrefix[1]} Abloom DMG`
+          : `M${mAbloomPrefix[1]}`
       // Match formula names like 'vortexDmgInst_fire' → 'Vortex DMG',
       // 'disorderDmgInst_fire' → 'Disorder DMG'
       for (const [prefix, label] of Object.entries(formulaLabelMap)) {

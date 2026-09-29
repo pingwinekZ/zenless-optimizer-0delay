@@ -8,9 +8,14 @@ export const conditionals = {
     min: 0,
     max: 5,
   },
-  etherVeilWellspring: {
+  etherVeilWellspring_atk: {
     sheet: 'Zhao',
-    name: 'etherVeilWellspring',
+    name: 'etherVeilWellspring_atk',
+    type: 'bool',
+  },
+  etherVeilWellspring_hp: {
+    sheet: 'Zhao',
+    name: 'etherVeilWellspring_hp',
     type: 'bool',
   },
   inEtherVeil: { sheet: 'Zhao', name: 'inEtherVeil', type: 'bool' },

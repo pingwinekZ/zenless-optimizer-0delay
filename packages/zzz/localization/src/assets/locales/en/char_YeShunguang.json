@@ -1,6 +1,7 @@
 {
   "core_header": "CR & DMG",
-  "m1_header": "DMG & DEF Ignore",
+  "m1_header": "DEF Ignore",
+  "m1_defIgn_desc": "In the <ct color=#FFFFFF>Unity</ct> effect, ignore 20% of the target's DEF.",
   "m2_header": "DEF Ignore",
   "m2_exSpecial_defIgn_": "Enlightened Mind - Soaring Light DEF Ignore",
   "m2_ult_defIgn_": "Cleaving Heavens DEF Ignore",

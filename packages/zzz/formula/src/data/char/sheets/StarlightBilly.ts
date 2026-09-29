@@ -10,6 +10,7 @@ import { allStats, mappedStats } from '@zenless-optimizer/zzz/stats'
 import {
   allBoolConditionals,
   allNumConditionals,
+  customSheerDmg,
   own,
   ownBuff,
   percent,
@@ -31,8 +32,9 @@ const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
-const { cpCritDmg, m1PhysResIgn } = allBoolConditionals(key, undefined, {
+const { cpCritDmg, m1PhysResIgn, turbo } = allBoolConditionals(key, undefined, {
   m1PhysResIgn: 1,
+  turbo: 2,
 })
 const { starlightStacks } = allNumConditionals(
   key,
@@ -48,6 +50,14 @@ const { m4CritDmgStacks } = allNumConditionals(
   undefined,
   { m4CritDmgStacks: 4 }
 )
+const { brilliant_stacks } = allNumConditionals(
+  key,
+  true,
+  0,
+  dm.m6.maxStacksConsumed,
+  undefined,
+  { brilliant_stacks: 6 }
+)
 
 const ability_dmg = cmpGE(
   sum(
@@ -59,34 +69,40 @@ const ability_dmg = cmpGE(
   percent(prod(starlightStacks, constant(dm.ability.starlightDmgPerStack)))
 )
 
-const ability_basic_dmg = ownBuff.combat.common_dmg_.addWithDmgType(
+const ability_basic_dmg_ = ownBuff.combat.common_dmg_.addWithDmgType(
   'basic',
   ability_dmg
 )
-const ability_chain_dmg = ownBuff.combat.common_dmg_.addWithDmgType(
+const ability_chain_dmg_ = ownBuff.combat.common_dmg_.addWithDmgType(
   'chain',
   ability_dmg
 )
-const ability_ult_dmg = ownBuff.combat.common_dmg_.addWithDmgType(
+const ability_ult_dmg_ = ownBuff.combat.common_dmg_.addWithDmgType(
   'ult',
   ability_dmg
 )
-const ability_exSpecial_dmg = ownBuff.combat.common_dmg_.addWithDmgType(
+const ability_exSpecial_dmg_ = ownBuff.combat.common_dmg_.addWithDmgType(
   'exSpecial',
   ability_dmg
 )
 
-const m2_basic_dmg = ownBuff.combat.common_dmg_.addWithDmgType(
+const m2_basic_dmg_ = ownBuff.combat.common_dmg_.addWithDmgType(
   'basic',
   cmpGE(char.mindscape, 2, dm.m2.dmg_)
 )
-const m2_ult_dmg = ownBuff.combat.common_dmg_.addWithDmgType(
+const m2_ult_dmg_ = ownBuff.combat.common_dmg_.addWithDmgType(
   'ult',
   cmpGE(char.mindscape, 2, dm.m2.dmg_)
 )
-const m2_exSpecial_dmg = ownBuff.combat.common_dmg_.addWithDmgType(
+const m2_exSpecial_dmg_ = ownBuff.combat.common_dmg_.addWithDmgType(
   'exSpecial',
   cmpGE(char.mindscape, 2, dm.m2.dmg_)
+)
+// Turbocharged: the follow-up Cool Wheelie's CRIT DMG. Skill-scoped to Cool
+// Wheelie only (see the override below).
+const m2_turbo_crit_dmg_ = ownBuff.combat.crit_dmg_.addWithDmgType(
+  'exSpecial',
+  cmpGE(char.mindscape, 2, turbo.ifOn(percent(dm.m2.turboCritDmg)))
 )
 
 const core_critDmg = cpCritDmg.ifOn(subscript(char.core, dm.core.critDmgPerUse))
@@ -95,25 +111,13 @@ const core_hpSheerForce = prod(
   constant(dm.core.sheerForcePerHp[0])
 )
 
-// M2 + Ability + M6 (as sheer_dmg_) combined for Full-Throttle Starlight and Ultimate
-const m2_ability_m6 = ownBuff.combat.common_dmg_.add(
-  sum(ability_dmg, cmpGE(char.mindscape, 2, dm.m2.dmg_))
-)
-const m6_sheer = ownBuff.combat.sheer_dmg_.add(
-  cmpGE(char.mindscape, 6, dm.m6.sheerDmg_)
-)
-const m6_basic_sheer = ownBuff.combat.sheer_dmg_.addWithDmgType(
+const m6_basic_sheer_ = ownBuff.combat.sheer_dmg_.addWithDmgType(
   'basic',
   cmpGE(char.mindscape, 6, dm.m6.sheerDmg_)
 )
-const m6_ult_sheer = ownBuff.combat.sheer_dmg_.addWithDmgType(
+const m6_ult_sheer_ = ownBuff.combat.sheer_dmg_.addWithDmgType(
   'ult',
   cmpGE(char.mindscape, 6, dm.m6.sheerDmg_)
-)
-
-// M2 + Ability for EX Special Cool Wheelie
-const m2_plus_ability = ownBuff.combat.common_dmg_.add(
-  sum(ability_dmg, cmpGE(char.mindscape, 2, dm.m2.dmg_))
 )
 
 const sheet = register(
@@ -122,7 +126,7 @@ const sheet = register(
   ...registerAllDmgDazeAndAnom(
     key,
     dm,
-    // M2 + Ability + M6 (sheer): Full-Throttle Starlight, Ultimate
+    // Ability + M2 + M6 (sheer): Full-Throttle Starlight, Ultimate
     dmgDazeAndAnomOverride(
       dm,
       'basic',
@@ -131,8 +135,9 @@ const sheet = register(
       { ...baseTag, damageType1: 'basic' },
       'sheerForce',
       undefined,
-      m2_ability_m6,
-      m6_sheer
+      ...ability_basic_dmg_,
+      ...m2_basic_dmg_,
+      ...m6_basic_sheer_
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -142,10 +147,11 @@ const sheet = register(
       { ...baseTag, damageType1: 'ult' },
       'sheerForce',
       undefined,
-      m2_ability_m6,
-      m6_sheer
+      ...ability_ult_dmg_,
+      ...m2_ult_dmg_,
+      ...m6_ult_sheer_
     ),
-    // M2 + Ability (no M6): EX Special Cool Wheelie
+    // Ability + M2 (+Turbocharged CRIT DMG): EX Special Cool Wheelie
     dmgDazeAndAnomOverride(
       dm,
       'special',
@@ -154,7 +160,9 @@ const sheet = register(
       { ...baseTag, damageType1: 'exSpecial' },
       'sheerForce',
       undefined,
-      m2_plus_ability
+      ...ability_exSpecial_dmg_,
+      ...m2_exSpecial_dmg_,
+      ...m2_turbo_crit_dmg_
     ),
     // Ability-only (no M2/M6): other EX Specials and Chain Attack
     dmgDazeAndAnomOverride(
@@ -165,7 +173,7 @@ const sheet = register(
       { ...baseTag, damageType1: 'exSpecial' },
       'sheerForce',
       undefined,
-      ownBuff.combat.common_dmg_.add(ability_dmg)
+      ...ability_exSpecial_dmg_
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -175,7 +183,7 @@ const sheet = register(
       { ...baseTag, damageType1: 'exSpecial' },
       'sheerForce',
       undefined,
-      ownBuff.combat.common_dmg_.add(ability_dmg)
+      ...ability_exSpecial_dmg_
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -185,34 +193,53 @@ const sheet = register(
       { ...baseTag, damageType1: 'chain' },
       'sheerForce',
       undefined,
-      ownBuff.combat.common_dmg_.add(ability_dmg)
+      ...ability_chain_dmg_
+    )
+  ),
+
+  // M6 Brilliant Starlight: each consumed stack deals 100% Sheer Force as
+  // additional Physical DMG on the Ult / Full-Throttle Starlight hit (both
+  // are single-hit, so the bonus lands on hit 0). The 'elemental' type
+  // matches no hit (Yixuan/Banyue precedent), so skill-scoped DMG% buffs
+  // do not apply to this instance.
+  ...customSheerDmg(
+    'm6_brilliant_dmg',
+    { ...baseTag, damageType1: 'elemental' },
+    cmpGE(
+      char.mindscape,
+      6,
+      prod(
+        own.final.sheerForce,
+        brilliant_stacks,
+        constant(dm.m6.sheerPerStack)
+      )
     )
   ),
 
   registerBuff(
     'ability_basic_dmg_',
-    ability_basic_dmg,
+    ability_basic_dmg_,
     undefined,
     undefined,
     false
   ),
   registerBuff(
     'ability_chain_dmg_',
-    ability_chain_dmg,
+    ability_chain_dmg_,
     undefined,
     undefined,
     false
   ),
   registerBuff(
     'ability_ult_dmg_',
-    ability_ult_dmg,
+    ability_ult_dmg_,
     undefined,
     undefined,
     false
   ),
   registerBuff(
     'ability_exSpecial_dmg_',
-    ability_exSpecial_dmg,
+    ability_exSpecial_dmg_,
     undefined,
     undefined,
     false
@@ -238,16 +265,42 @@ const sheet = register(
       )
     )
   ),
-  registerBuff('m2_basic_dmg_', m2_basic_dmg, undefined, undefined, false),
-  registerBuff('m2_ult_dmg_', m2_ult_dmg, undefined, undefined, false),
+  registerBuff('m2_basic_dmg_', m2_basic_dmg_, undefined, undefined, false),
+  registerBuff('m2_ult_dmg_', m2_ult_dmg_, undefined, undefined, false),
   registerBuff(
     'm2_exSpecial_dmg_',
-    m2_exSpecial_dmg,
+    m2_exSpecial_dmg_,
     undefined,
     undefined,
     false
   ),
-  registerBuff('m6_basic_sheer_', m6_basic_sheer, undefined, undefined, false),
-  registerBuff('m6_ult_sheer_', m6_ult_sheer, undefined, undefined, false)
+  registerBuff(
+    'm2_turbo_crit_dmg_',
+    m2_turbo_crit_dmg_,
+    undefined,
+    undefined,
+    false
+  ),
+  registerBuff('m6_basic_sheer_', m6_basic_sheer_, undefined, undefined, false),
+  registerBuff('m6_ult_sheer_', m6_ult_sheer_, undefined, undefined, false),
+  // Display-only pair for the sheer-damage instance above: the sheet display
+  // filter drops fields whose name is missing from the buffs listing, so the
+  // instance needs a matching registerBuff (Seed §1.6 pattern, Banyue
+  // precedent). The 'elemental' type matches no hit and
+  // includeOriginalEntry: false keeps it from ever applying.
+  registerBuff(
+    'm6_brilliant_dmg',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'elemental',
+      cmpGE(
+        char.mindscape,
+        6,
+        prod(brilliant_stacks, constant(dm.m6.sheerPerStack))
+      )
+    ),
+    undefined,
+    undefined,
+    false
+  )
 )
 export default sheet

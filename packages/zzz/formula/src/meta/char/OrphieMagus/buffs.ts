@@ -8,6 +8,7 @@ export const buffs = {
       qt: 'combat',
       q: 'dmg_',
       sheet: 'OrphieMagus',
+      attribute: 'fire',
       damageType1: 'aftershock',
       name: 'm6_dmg',
     },

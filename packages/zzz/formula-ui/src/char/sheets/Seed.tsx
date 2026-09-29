@@ -1,9 +1,14 @@
 import { ColorText } from '@zenless-optimizer/common/ui'
 import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { Seed } from '@zenless-optimizer/zzz/formula'
-import { GameDesc } from '@zenless-optimizer/zzz/i18n'
+import { GameDesc, GameDescSlice } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
-import { CoreGameDesc, createBaseSheet, fieldForBuff } from '../sheetUtil'
+import {
+  AbilityBodyText,
+  CoreGameDesc,
+  createBaseSheet,
+  fieldForBuff,
+} from '../sheetUtil'
 import { getVariant } from '../util'
 
 const key: CharacterKey = 'Seed'
@@ -55,6 +60,14 @@ const sheet = createBaseSheet(key, {
       type: 'fields',
       paragraph: 2,
       header: { icon: null, text: ch('ability_dmg_header') },
+      description: (
+        <>
+          <GameDesc ns="char_Seed_gen" key18="ability.desc.0" />
+          <AbilityBodyText characterKey={key}>
+            <GameDesc ns="char_Seed_gen" key18="ability.desc.2" />
+          </AbilityBodyText>
+        </>
+      ),
       fields: [
         {
           title: (
@@ -117,6 +130,14 @@ const sheet = createBaseSheet(key, {
     {
       type: 'fields',
       header: { icon: null, text: ch('m1_header') },
+      description: (
+        <GameDescSlice
+          ns="char_Seed_gen"
+          key18="mindscapes.1.desc"
+          from="Increases"
+          to="CRIT DMG by 30%"
+        />
+      ),
       fields: [
         {
           title: (
@@ -134,7 +155,14 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('besiegeDefIgnCond'),
-        description: <GameDesc ns="char_Seed_gen" key18="mindscapes.2.desc" />,
+        description: (
+          <GameDescSlice
+            ns="char_Seed_gen"
+            key18="mindscapes.2.desc"
+            from="When"
+            to="ignores 20% of DEF"
+          />
+        ),
         metadata: cond.besiege_defIgn,
         fields: [
           {
@@ -161,7 +189,14 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('m2EnergyConsumedCond'),
-        description: <GameDesc ns="char_Seed_gen" key18="mindscapes.2.desc" />,
+        description: (
+          <GameDescSlice
+            ns="char_Seed_gen"
+            key18="mindscapes.2.desc"
+            from="For every 5 Energy"
+            to="increases by 5%"
+          />
+        ),
         metadata: cond.energy_consumed,
         fields: [
           {
@@ -181,7 +216,14 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('besiegeUltDmgCond'),
-        description: <GameDesc ns="char_Seed_gen" key18="mindscapes.4.desc" />,
+        description: (
+          <GameDescSlice
+            ns="char_Seed_gen"
+            key18="mindscapes.4.desc"
+            from="When Seed's"
+            to="Ultimate DMG increases by 20%"
+          />
+        ),
         metadata: cond.besiege_ult_dmg,
         fields: [
           {
@@ -204,11 +246,13 @@ const sheet = createBaseSheet(key, {
         icon: null,
         text: ch('m6_header'),
       },
+      description: <GameDesc ns="char_Seed_gen" key18="mindscapes.6.desc.0" />,
       fields: [fieldForBuff(buff.m6_crit_dmg_)],
     },
     {
       type: 'fields',
       header: { icon: null, text: ch('m6_additional_dmg') },
+      description: <GameDesc ns="char_Seed_gen" key18="mindscapes.6.desc.1" />,
       fields: [
         {
           title: (

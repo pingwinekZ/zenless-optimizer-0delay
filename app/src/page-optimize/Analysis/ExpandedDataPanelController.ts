@@ -586,6 +586,7 @@ function buildTargetInput(
 /** Damage-target `q`s a formula tag can carry, per `isDmg` in formula-ui. */
 const DAMAGE_QS = new Set([
   'standardDmg',
+  'teammateDmg',
   'anomalyDmg',
   'sheerDmg',
   'sharpDmg',

@@ -4,6 +4,7 @@ import {
   cmpLT,
   constant,
   max,
+  min,
   prod,
   subscript,
   sum,
@@ -39,20 +40,17 @@ const { char } = own
 const { venomDefIgn, venomCritDmg, etherVeil } = allBoolConditionals(key)
 const { corrodeBone_crit_stacks } = allNumConditionals(key, true, 0, 3)
 
-const venomActive = (node: any) =>
-  cmpGE(sum(venomDefIgn.ifOn(1), venomCritDmg.ifOn(1)), 1, node)
-
 const energyAboveThreshold = max(
   0,
   sum(own.initial.enerRegen, -dm.core.enerThresh)
 )
 const additionalDefIgnore = percent(
-  prod(energyAboveThreshold, dm.core.defIgnorePerStep)
+  prod(energyAboveThreshold, subscript(char.core, dm.core.defIgnorePerStep))
 )
 
-const coreDefIgnore = sum(
-  subscript(char.core, dm.core.defIgnore),
-  additionalDefIgnore
+const coreDefIgnore = min(
+  sum(subscript(char.core, dm.core.defIgnore), additionalDefIgnore),
+  subscript(char.core, dm.core.maxDefIgnore)
 )
 
 const corrodeBoneDmg = percent(subscript(char.core, dm.core.corrodeBoneDmg))
@@ -73,6 +71,9 @@ const corrodeBoneDaze = sum(
 
 const m1_defIgnoreMult = cmpGE(char.mindscape, 1, dm.m1.defIgnoreMult, 1)
 
+// M4 (Decidedness) and M6 (Bone-Deep Corrosion) trigger special no-Daze
+// Corrode Bone instances gated by procs — intentionally unmodeled.
+
 const m2_serpentsKiss_dmg_ = ownBuff.combat.dmg_.electric.add(
   cmpGE(char.mindscape, 2, percent(dm.m2.basicSerpentsKissDmg_))
 )
@@ -89,7 +90,7 @@ const sheet = register(
       'basic',
       'CorrodeBone',
       0,
-      { ...baseTag, damageType1: 'special' },
+      { ...baseTag, damageType1: 'basic' },
       'atk',
       undefined,
       ownBuff.combat.dazeInc_.add(corrodeBoneDaze),
@@ -103,7 +104,7 @@ const sheet = register(
       'basic',
       'BasicAttackSerpentsKiss',
       0,
-      { ...baseTag, attribute: 'electric' },
+      { ...baseTag, attribute: 'electric', damageType1: 'basic' },
       'atk',
       undefined,
       m2_serpentsKiss_dmg_
@@ -119,7 +120,7 @@ const sheet = register(
   registerBuff(
     'ability_squad_crit_dmg_',
     teamBuff.combat.crit_dmg_.add(
-      venomActive(
+      venomCritDmg.ifOn(
         cmpGE(
           sum(
             team.common.count.withSpecialty('stun'),
@@ -135,8 +136,8 @@ const sheet = register(
   ),
   registerBuff(
     'ability_self_crit_dmg_',
-    teamBuff.combat.crit_dmg_.add(
-      venomActive(
+    ownBuff.combat.crit_dmg_.add(
+      venomCritDmg.ifOn(
         cmpGE(
           sum(
             team.common.count.withSpecialty('stun'),
@@ -146,13 +147,15 @@ const sheet = register(
           percent(dm.ability.selfCritDmg_)
         )
       )
-    )
+    ),
+    undefined,
+    false
   ),
 
   registerBuff(
     'core_defIgn_',
     ownBuff.combat.defIgn_.electric.add(
-      venomActive(prod(coreDefIgnore, m1_defIgnoreMult))
+      venomDefIgn.ifOn(prod(coreDefIgnore, m1_defIgnoreMult))
     ),
     undefined,
     true

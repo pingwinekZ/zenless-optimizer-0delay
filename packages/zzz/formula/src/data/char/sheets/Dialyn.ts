@@ -15,6 +15,7 @@ import {
   allBoolConditionals,
   allListConditionals,
   customDmg,
+  enemyDebuff,
   own,
   ownBuff,
   percent,
@@ -38,13 +39,14 @@ const { char } = own
 
 const {
   malicious_complaint,
+  m2_malicious_complaint,
   overwhelmingly_positive_common,
   overwhelmingly_positive_resIgn,
   overwhelmingly_positive_atk,
 } = allBoolConditionals(key, undefined, {
   overwhelmingly_positive_resIgn: 1,
   overwhelmingly_positive_atk: 4,
-  malicious_complaint: 2,
+  m2_malicious_complaint: 2,
 })
 
 const { teammateSlot } = allListConditionals(key, ['None', 'Slot 1', 'Slot 2'])
@@ -124,11 +126,11 @@ const s2_contrib = prod(
   )
 )
 
-// Combined flat damage buff for EX Special attacks
-const ability_flat_dmg = ownBuff.combat.flat_dmg.addWithDmgType(
-  'exSpecial',
-  ability_check(sum(s1_contrib, s2_contrib))
-)
+// Previous-teammate additional DMG instance (ability desc.3-5): absolute
+// damage derived from the selected teammate's ATK/Sheer Force. Standalone
+// instance like m6_dmg — the general elemental tag matches no hit, and the
+// display-only pair below keeps it out of all hits (Yixuan/Anton pattern).
+const ability_dmg_base = ability_check(sum(s1_contrib, s2_contrib))
 
 const sheet = register(
   key,
@@ -145,9 +147,7 @@ const sheet = register(
       'EXSpecialAttackRock',
       0,
       { damageType1: 'exSpecial' },
-      'atk',
-      undefined,
-      ...ability_flat_dmg
+      'atk'
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -155,9 +155,7 @@ const sheet = register(
       'EXSpecialAttackScissors',
       0,
       { damageType1: 'exSpecial' },
-      'atk',
-      undefined,
-      ...ability_flat_dmg
+      'atk'
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -165,10 +163,21 @@ const sheet = register(
       'EXSpecialAttackPaper',
       0,
       { damageType1: 'exSpecial' },
-      'atk',
-      undefined,
-      ...ability_flat_dmg
+      'atk'
     )
+  ),
+
+  ...customDmg(
+    'ability_dmg',
+    { attribute: 'physical', damageType1: 'elemental' },
+    ability_dmg_base
+  ),
+  registerBuff(
+    'ability_dmg',
+    ownBuff.combat.flat_dmg.addWithDmgType('elemental', ability_dmg_base),
+    undefined,
+    undefined,
+    false
   ),
 
   ...customDmg(
@@ -178,7 +187,8 @@ const sheet = register(
   ),
   registerBuff(
     'm6_dmg',
-    ownBuff.combat.dmg_.physical.add(
+    ownBuff.combat.dmg_.physical.addWithDmgType(
+      'exSpecial',
       cmpGE(char.mindscape, 6, percent(dm.m6.dmg))
     ),
     undefined,
@@ -204,6 +214,22 @@ const sheet = register(
     )
   ),
   registerBuff(
+    'core_stun_',
+    enemyDebuff.common.stun_.add(
+      malicious_complaint.ifOn(
+        sum(
+          percent(subscript(char.core, dm.core.stun_)),
+          // M2: additional Stun DMG Multiplier — folded into the parent buff
+          // (§3.10), so the field shows the base value at M0-1 and grows
+          // once M2 is enabled.
+          cmpGE(char.mindscape, 2, percent(dm.m2.stun_))
+        )
+      )
+    ),
+    undefined,
+    true
+  ),
+  registerBuff(
     'ability_exSpecial_crit_dmg_',
     ownBuff.combat.crit_dmg_.addWithDmgType(
       'exSpecial',
@@ -219,13 +245,6 @@ const sheet = register(
     ),
     undefined,
     true
-  ),
-  registerBuff(
-    'ability_flat_dmg',
-    ability_flat_dmg,
-    undefined,
-    undefined,
-    false
   ),
   registerBuff(
     'm1_resIgn_',
@@ -245,7 +264,7 @@ const sheet = register(
       cmpGE(
         char.mindscape,
         2,
-        malicious_complaint.ifOn(percent(dm.m2.common_dmg_))
+        m2_malicious_complaint.ifOn(percent(dm.m2.common_dmg_))
       )
     ),
     undefined,

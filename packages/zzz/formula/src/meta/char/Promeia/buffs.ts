@@ -1,5 +1,57 @@
 // WARNING: Generated file, do not modify
 export const buffs = {
+  trialByColdAbloomDmg: {
+    sheet: 'Promeia',
+    name: 'trialByColdAbloomDmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Promeia',
+      damageType1: 'abloom',
+      name: 'trialByColdAbloomDmg',
+    },
+    team: false,
+  },
+  m6SpecialAbloomDmg: {
+    sheet: 'Promeia',
+    name: 'm6SpecialAbloomDmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Promeia',
+      damageType1: 'abloom',
+      name: 'm6SpecialAbloomDmg',
+    },
+    team: false,
+  },
+  chainAbloomDmg: {
+    sheet: 'Promeia',
+    name: 'chainAbloomDmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Promeia',
+      damageType1: 'abloom',
+      name: 'chainAbloomDmg',
+    },
+    team: false,
+  },
+  ultAbloomDmg: {
+    sheet: 'Promeia',
+    name: 'ultAbloomDmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Promeia',
+      damageType1: 'abloom',
+      name: 'ultAbloomDmg',
+    },
+    team: false,
+  },
   core_anomProf: {
     sheet: 'Promeia',
     name: 'core_anomProf',
@@ -25,6 +77,19 @@ export const buffs = {
     },
     team: true,
   },
+  ability_iceAnomBuildup_: {
+    sheet: 'Promeia',
+    name: 'ability_iceAnomBuildup_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anomBuildup_',
+      sheet: 'Promeia',
+      attribute: 'ice',
+      name: 'ability_iceAnomBuildup_',
+    },
+    team: false,
+  },
   ability_presumptionDefIgn: {
     sheet: 'Promeia',
     name: 'ability_presumptionDefIgn',
@@ -35,19 +100,6 @@ export const buffs = {
       sheet: 'Promeia',
       damageType1: 'abloom',
       name: 'ability_presumptionDefIgn',
-    },
-    team: true,
-  },
-  m1_defIgn_: {
-    sheet: 'Promeia',
-    name: 'm1_defIgn_',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'defIgn_',
-      sheet: 'Promeia',
-      damageType1: 'abloom',
-      name: 'm1_defIgn_',
     },
     team: true,
   },

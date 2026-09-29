@@ -1,4 +1,4 @@
-import { cmpGE, prod, subscript } from '@zenless-optimizer/pando/engine'
+import { cmpGE, prod, subscript, sum } from '@zenless-optimizer/pando/engine'
 import { type CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { allStats, mappedStats } from '@zenless-optimizer/zzz/stats'
 import {
@@ -225,13 +225,10 @@ const sheet = register(
   registerBuff(
     'core_common_dmg_',
     ownBuff.combat.common_dmg_.add(
-      percent(subscript(char.core, dm.core.common_dmg_))
-    )
-  ),
-  registerBuff(
-    'm1_common_dmg_',
-    ownBuff.combat.common_dmg_.add(
-      cmpGE(char.mindscape, 1, percent(dm.m1.common_dmg_))
+      sum(
+        percent(subscript(char.core, dm.core.common_dmg_)),
+        cmpGE(char.mindscape, 1, percent(dm.m1.common_dmg_))
+      )
     )
   ),
   registerBuff(

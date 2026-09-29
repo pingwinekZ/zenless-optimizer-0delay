@@ -1,5 +1,5 @@
 {
-  "abilityCond": "Cool Wheelie / Knight's Technique / Chain / Ultimate Hit · DMG",
+  "abilityCond": "Starlight · DMG",
   "coreCond": "Drive Suppression · CD",
   "core_header": "HP to SF",
   "ability_exSpecial_dmg_": "EX Special DMG",
@@ -9,8 +9,12 @@
   "m2_basic_dmg_": "Full-Throttle Starlight DMG",
   "m2_exSpecial_dmg_": "Cool Wheelie DMG",
   "m2_ult_dmg_": "Ultimate DMG",
+  "turboCond": "Turbocharged · CD",
+  "m2_turbo_crit_dmg_": "Cool Wheelie CRIT DMG",
   "m4Cond": "Drive Suppression Used · CD",
   "m6_header": "DMG",
   "m6_ult_sheer_": "Ultimate Sheer DMG",
-  "m6_basic_sheer_": "Full-Throttle Starlight Sheer DMG"
+  "m6_basic_sheer_": "Full-Throttle Starlight Sheer DMG",
+  "brilliantStacksCond": "Brilliant Starlight · DMG",
+  "m6_brilliant_dmg": "Brilliant Starlight DMG"
 }

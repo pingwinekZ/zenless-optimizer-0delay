@@ -1,10 +1,15 @@
 // WARNING: Generated file, do not modify
 export const conditionals = {
+  m2_malicious_complaint: {
+    sheet: 'Dialyn',
+    name: 'm2_malicious_complaint',
+    type: 'bool',
+    mindscapeRequirement: 2,
+  },
   malicious_complaint: {
     sheet: 'Dialyn',
     name: 'malicious_complaint',
     type: 'bool',
-    mindscapeRequirement: 2,
   },
   overwhelmingly_positive_atk: {
     sheet: 'Dialyn',

@@ -83,8 +83,10 @@ const excessAnomMas = max(
   sum(promeiaFinalAnomMas, -dm.core.anomMasThresh[0])
 )
 
-const { presumptionOfGuilt } = allBoolConditionals(key)
+const { presumptionOfGuilt, exSpecialIceBuildup } = allBoolConditionals(key)
 
+// Additional Ability unlock check: at least one Anomaly or Support teammate
+// besides Promeia herself (she counts as Anomaly, so >= 2 total).
 const ability_check_no_self = (node: NumNode | number) =>
   cmpGE(
     sum(
@@ -95,25 +97,155 @@ const ability_check_no_self = (node: NumNode | number) =>
     node
   )
 
+// Ability: Ice Anomaly Buildup Rate +30% for 30s after using an EX Special
+// Attack. Toggled via the `exSpecialIceBuildup` conditional.
+// Independent of the Presumption toggle.
+const ability_iceAnomBuildup_ = ownBuff.combat.anomBuildup_.ice.add(
+  exSpecialIceBuildup.ifOn(
+    ability_check_no_self(percent(dm.ability.selfIceAnomBuildup_))
+  )
+)
+
+// Ability + M1 (merged): Abloom triggered on enemies with Presumption of
+// Guilt ignores 40% DEF; M1 adds another 20%.
+// Applied as team buff since any squad member's Abloom benefits
+const ability_presumptionDefIgn = teamBuff.combat.defIgn_.addWithDmgType(
+  'abloom',
+  ability_check_no_self(
+    presumptionOfGuilt.ifOn(
+      sum(
+        percent(dm.ability.presumptionDefIgn),
+        cmpGE(char.mindscape, 1, percent(dm.m1.additionalDefIgnore))
+      )
+    )
+  )
+)
+
+// Trial by Cold: Abloom DMG triggered by EX Special - Merciless Judgment.
+// MV scales with core level (330%–635%); M2 adds +120% to the multiplier.
+const trialByColdMV = sum(
+  percent(subscript(own.char.core, dm.core.trialConsumeToTrigger)),
+  cmpGE(char.mindscape, 2, percent(dm.m2.trialAbloomMult))
+)
+
+// M2: Anomaly Prof
+const m2_anomProf = ownBuff.combat.anomProf.add(
+  cmpGE(char.mindscape, 2, dm.m2.anomProf)
+)
+
+// M6: Abloom on a Presumption target triggers an additional special Abloom
+// at a fixed 200% multiplier. (Chill restoration and Decibel gain are
+// rotational and unmodeled.)
+const m6SpecialAbloomBase = prod(
+  percent(dm.m6.specialAbloomMult),
+  own.final.atk,
+  sum(percent(1), own.final.anom_mv_mult_)
+)
+
+// Chain Attack: heavy attack on an anomaly-afflicted enemy triggers Abloom
+// once at a fixed 100% multiplier. Ultimate: same trigger at 250%.
+// Neither consumes Trial by Cold, so M2's bonus does not apply.
+const chainAbloomBase = prod(
+  percent(1),
+  own.final.atk,
+  sum(percent(1), own.final.anom_mv_mult_)
+)
+const ultAbloomBase = prod(
+  percent(2.5),
+  own.final.atk,
+  sum(percent(1), own.final.anom_mv_mult_)
+)
+
+// M6: All-Attribute RES ignore for Anomaly and Disorder DMG
+const m6_resIgn_anomaly = ownBuff.combat.resIgn_.addWithDmgType(
+  'anomaly',
+  cmpGE(char.mindscape, 6, percent(dm.m6.resIgnore_))
+)
+const m6_resIgn_disorder = ownBuff.combat.resIgn_.addWithDmgType(
+  'disorder',
+  cmpGE(char.mindscape, 6, percent(dm.m6.resIgnore_))
+)
+
 const sheet = register(
   key,
   entriesForChar(data_gen),
 
   ...registerAllDmgDazeAndAnom(key, dm),
 
-  // Trial by Cold: Abloom DMG triggered by EX Special - Merciless Judgment
   ...customAnomalyDmg(
-    'trialByColdAbloomDmgInst',
+    'trialByColdAbloomDmg',
     {
       attribute: data_gen.attribute,
       damageType1: 'anomaly',
       damageType2: 'abloom',
     },
-    prod(
-      percent(subscript(own.char.core, dm.core.trialConsumeToTrigger)),
-      own.final.atk,
-      sum(percent(1), own.final.anom_mv_mult_, cmpGE(char.mindscape, 2, 1.2))
-    )
+    prod(trialByColdMV, own.final.atk, sum(percent(1), own.final.anom_mv_mult_))
+  ),
+  // Display-only pair for the Trial-by-Cold Abloom instance (the formula
+  // above computes the real damage; this entry never applies to stats).
+  registerBuff(
+    'trialByColdAbloomDmg',
+    ownBuff.combat.dmg_.addWithDmgType('abloom', trialByColdMV),
+    undefined,
+    undefined,
+    false
+  ),
+
+  ...customAnomalyDmg(
+    'm6SpecialAbloomDmg',
+    {
+      attribute: data_gen.attribute,
+      damageType1: 'anomaly',
+      damageType2: 'abloom',
+    },
+    cmpGE(char.mindscape, 6, m6SpecialAbloomBase)
+  ),
+  // Display-only pair for the M6 special Abloom instance.
+  registerBuff(
+    'm6SpecialAbloomDmg',
+    ownBuff.combat.dmg_.addWithDmgType(
+      'abloom',
+      cmpGE(char.mindscape, 6, percent(dm.m6.specialAbloomMult))
+    ),
+    undefined,
+    undefined,
+    false
+  ),
+
+  ...customAnomalyDmg(
+    'chainAbloomDmg',
+    {
+      attribute: data_gen.attribute,
+      damageType1: 'anomaly',
+      damageType2: 'abloom',
+    },
+    chainAbloomBase
+  ),
+  // Display-only pair for the Chain Attack Abloom instance.
+  registerBuff(
+    'chainAbloomDmg',
+    ownBuff.combat.dmg_.addWithDmgType('abloom', percent(1)),
+    undefined,
+    undefined,
+    false
+  ),
+
+  ...customAnomalyDmg(
+    'ultAbloomDmg',
+    {
+      attribute: data_gen.attribute,
+      damageType1: 'anomaly',
+      damageType2: 'abloom',
+    },
+    ultAbloomBase
+  ),
+  // Display-only pair for the Ultimate Abloom instance.
+  registerBuff(
+    'ultAbloomDmg',
+    ownBuff.combat.dmg_.addWithDmgType('abloom', percent(2.5)),
+    undefined,
+    undefined,
+    false
   ),
 
   // Core Passive: Anomaly Prof from excess Anomaly Mastery
@@ -135,57 +267,25 @@ const sheet = register(
     true
   ),
 
-  // Ability: Presumption of Guilt - 40% DEF ignore for Abloom
+  // Ability: Ice Anomaly Buildup after EX Special (no Presumption requirement)
+  registerBuff('ability_iceAnomBuildup_', ability_iceAnomBuildup_),
+
+  // Ability + M1: Presumption of Guilt - DEF ignore for Abloom
   // Applied as team buff since any squad member's Abloom benefits
   registerBuff(
     'ability_presumptionDefIgn',
-    teamBuff.combat.defIgn_.addWithDmgType(
-      'abloom',
-      ability_check_no_self(presumptionOfGuilt.ifOn(0.4))
-    ),
-    undefined,
-    true
-  ),
-
-  // M1: Additional 20% DEF Ignore for Abloom
-  registerBuff(
-    'm1_defIgn_',
-    teamBuff.combat.defIgn_.addWithDmgType(
-      'abloom',
-      cmpGE(
-        char.mindscape,
-        1,
-        ability_check_no_self(
-          presumptionOfGuilt.ifOn(percent(dm.m1.additionalDefIgnore))
-        )
-      )
-    ),
+    ability_presumptionDefIgn,
     undefined,
     true
   ),
 
   // M2: Anomaly Prof
-  registerBuff(
-    'm2_anomProf',
-    ownBuff.combat.anomProf.add(cmpGE(char.mindscape, 2, dm.m2.anomProf))
-  ),
+  registerBuff('m2_anomProf', m2_anomProf),
 
   // M4: Corrosive Chill restore (handled in formula via conditional)
 
   // M6: All-Attribute RES ignore for Anomaly and Disorder DMG
-  registerBuff(
-    'm6_resIgn_anomaly',
-    ownBuff.combat.resIgn_.addWithDmgType(
-      'anomaly',
-      cmpGE(char.mindscape, 6, percent(dm.m6.resIgnore_))
-    )
-  ),
-  registerBuff(
-    'm6_resIgn_disorder',
-    ownBuff.combat.resIgn_.addWithDmgType(
-      'disorder',
-      cmpGE(char.mindscape, 6, percent(dm.m6.resIgnore_))
-    )
-  )
+  registerBuff('m6_resIgn_anomaly', m6_resIgn_anomaly),
+  registerBuff('m6_resIgn_disorder', m6_resIgn_disorder)
 )
 export default sheet

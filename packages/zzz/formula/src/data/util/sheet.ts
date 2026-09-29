@@ -111,6 +111,7 @@ function registerFormula(
   team: boolean | undefined,
   q:
     | 'standardDmg'
+    | 'teammateDmg'
     | 'sheerDmg'
     | 'sharpDmg'
     | 'maimDmg'
@@ -160,6 +161,31 @@ export function customDmg(
     name,
     team,
     'standardDmg',
+    tag(cond, dmgTag),
+    ownBuff.formula.base.add(base),
+    ...extra
+  )
+}
+
+/**
+ * Creates an array of TagMapNodeEntries representing a teammate-triggered
+ * damage instance (the hit belongs to another squad member, e.g. Sunna's
+ * Cat's Gaze), and registers their formulas.
+ * Unlike `customDmg`, the `teammateDmg` pipeline applies only enemy-side
+ * multipliers — the triggerer's ATK, crit, and attribute RES must already be
+ * baked into `base`, since the owner's stats must not apply.
+ */
+export function customTeammateDmg(
+  name: string,
+  dmgTag: DmgTag,
+  base: NumNode,
+  { team, cond = 'infer' }: FormulaArg = {},
+  ...extra: TagMapNodeEntries
+): TagMapNodeEntries {
+  return registerFormula(
+    name,
+    team,
+    'teammateDmg',
     tag(cond, dmgTag),
     ownBuff.formula.base.add(base),
     ...extra

@@ -1,8 +1,20 @@
 {
-  "dazeSquadBuffCond": "Adorable Explosive Impact / The Unbearable Weight of Love Hit · Daze & DMG",
+  "dazeSquadBuffCond": "Adorable Explosive Impact / The Unbearable Weight of Love Hit · Anomaly Buildup, Daze & Squad DMG",
   "etherVeilCond": "Ether Veil: Delusion Reprise · ATK",
+  "stunnedBuildupCond": "Vs Stunned · Squad & Chain Anomaly Buildup",
+  "misstepHitCond": "Misstep · Stun DMG",
+  "vibratoStacksCond": "Vs Stunned Enemy · Vibrato Abloom",
   "m1ResIgnCond": "Adorable Explosive Impact / The Unbearable Weight of Love Hit · RES Red",
+  "polarityDisorderCond": "Chain Attack Heavy Hit · Polarity Disorder",
+  "m2_polarity_disorder_dmg": "Polarity Disorder DMG",
+  "coreStats": "Stats",
   "core_anomProf": "AP",
+  "core_impact_header": "Impact",
   "core_impact": "AM to Impact",
-  "m4_anomProf": "AP"
+  "m4_ap_header": "Anomaly Proficiency",
+  "m4_anomProf": "AP",
+  "m4_buildup_header": "Adorable Explosive Impact",
+  "m4_basic_anomBuildup_": "Anomaly Buildup",
+  "m6_header": "Daze",
+  "modifiedStacksCond": "Vs Unstunned Enemy · Vibrato: Modified Abloom"
 }

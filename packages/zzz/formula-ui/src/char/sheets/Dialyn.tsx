@@ -1,9 +1,16 @@
 import { ColorText } from '@zenless-optimizer/common/ui'
 import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { Dialyn } from '@zenless-optimizer/zzz/formula'
-import { GameDesc } from '@zenless-optimizer/zzz/i18n'
+import { GameDesc, GameDescSlice } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
-import { createBaseSheet, fieldForBuff } from '../sheetUtil'
+import {
+  AbilityBodyText,
+  CoreGameDesc,
+  createBaseSheet,
+  fieldForBuff,
+  PrefixedLine,
+  useEffectiveMindscape,
+} from '../sheetUtil'
 import { getVariant } from '../util'
 
 const key: CharacterKey = 'Dialyn'
@@ -12,6 +19,24 @@ const cond = Dialyn.conditionals
 const buff = Dialyn.buffs
 const formula = Dialyn.formulas
 
+function MaliciousComplaintDescription() {
+  const mindscape = useEffectiveMindscape(key)
+  return (
+    <>
+      <CoreGameDesc characterKey={key} paragraph={3} />
+      <PrefixedLine prefix="M2" dimmed={mindscape < 2}>
+        <GameDescSlice
+          ns="char_Dialyn_gen"
+          key18="mindscapes.2.desc"
+          from="Enemies affected by"
+          to="Stun DMG Multiplier when Stunned"
+          toExact
+        />
+      </PrefixedLine>
+    </>
+  )
+}
+
 const sheet = createBaseSheet(key, {
   core: [
     {
@@ -19,11 +44,29 @@ const sheet = createBaseSheet(key, {
       header: { icon: null, text: ch('core_header') },
       fields: [fieldForBuff(buff.core_impact)],
     },
+    {
+      type: 'conditional',
+      conditional: {
+        label: ch('maliciousComplaintStunCond'),
+        description: <MaliciousComplaintDescription />,
+        metadata: cond.malicious_complaint,
+        fields: [fieldForBuff(buff.core_stun_)],
+        linked: ['m2_malicious_complaint'],
+      },
+    },
   ],
   ability: [
     {
       type: 'fields',
       header: { icon: null, text: ch('ability_header') },
+      description: (
+        <>
+          <GameDesc ns="char_Dialyn_gen" key18="ability.desc.0" />
+          <AbilityBodyText characterKey={key}>
+            <GameDesc ns="char_Dialyn_gen" key18="ability.desc.1" />
+          </AbilityBodyText>
+        </>
+      ),
       fields: [fieldForBuff(buff.ability_exSpecial_crit_dmg_)],
     },
     {
@@ -33,8 +76,14 @@ const sheet = createBaseSheet(key, {
         description: (
           <>
             <GameDesc ns="char_Dialyn_gen" key18="ability.desc.0" />
-            <div style={{ marginBottom: 8 }} />
-            <GameDesc ns="char_Dialyn_gen" key18="ability.desc.2" />
+            <AbilityBodyText characterKey={key}>
+              <GameDescSlice
+                ns="char_Dialyn_gen"
+                key18="ability.desc.2"
+                from="When an <ct color=#FFFFFF>EX Special Attack</ct> or <ct color=#FFFFFF>Ultimate</ct> is activated"
+                to="DMG dealt is increased by 40%"
+              />
+            </AbilityBodyText>
           </>
         ),
         metadata: cond.overwhelmingly_positive_common,
@@ -52,18 +101,28 @@ const sheet = createBaseSheet(key, {
         description: (
           <>
             <GameDesc ns="char_Dialyn_gen" key18="ability.desc.0" />
-            <div style={{ marginBottom: 8 }} />
-            <GameDesc ns="char_Dialyn_gen" key18="ability.desc.3" />
-            <div style={{ marginBottom: 8 }} />
-            <GameDesc ns="char_Dialyn_gen" key18="ability.desc.4" />
-            <div style={{ marginBottom: 8 }} />
-            <GameDesc ns="char_Dialyn_gen" key18="ability.desc.5" />
+            <AbilityBodyText characterKey={key}>
+              <GameDesc ns="char_Dialyn_gen" key18="ability.desc.3" />
+              <div style={{ marginBottom: 8 }} />
+              <GameDesc ns="char_Dialyn_gen" key18="ability.desc.4" />
+              <div style={{ marginBottom: 8 }} />
+              <GameDesc ns="char_Dialyn_gen" key18="ability.desc.5" />
+            </AbilityBodyText>
           </>
         ),
         metadata: cond.teammateSlot,
         badge: (_, value) =>
           value > 0 ? ch(`teammateSlot_.${value}`) : undefined,
-        fields: [fieldForBuff(buff.ability_flat_dmg)],
+        fields: [
+          {
+            title: (
+              <ColorText color={getVariant(formula.ability_dmg.tag)}>
+                {ch('ability_dmg')}
+              </ColorText>
+            ),
+            fieldRef: formula.ability_dmg.tag,
+          },
+        ],
       },
     },
   ],
@@ -73,7 +132,12 @@ const sheet = createBaseSheet(key, {
       conditional: {
         label: ch('overwhelminglyPositiveResIgnCond'),
         description: (
-          <GameDesc ns="char_Dialyn_gen" key18="mindscapes.1.desc" />
+          <GameDescSlice
+            ns="char_Dialyn_gen"
+            key18="mindscapes.1.desc"
+            from="While the <ct color=#FFFFFF>Overwhelmingly Positive</ct> effect is active"
+            to="All-Attribute RES"
+          />
         ),
         metadata: cond.overwhelmingly_positive_resIgn,
         fields: [fieldForBuff(buff.m1_resIgn_)],
@@ -90,10 +154,17 @@ const sheet = createBaseSheet(key, {
       conditional: {
         label: ch('maliciousComplaintCond'),
         description: (
-          <GameDesc ns="char_Dialyn_gen" key18="mindscapes.2.desc" />
+          <GameDescSlice
+            ns="char_Dialyn_gen"
+            key18="mindscapes.2.desc"
+            from="all units deal 15% increased DMG"
+            to="to targets affected by"
+            capitalize
+          />
         ),
-        metadata: cond.malicious_complaint,
+        metadata: cond.m2_malicious_complaint,
         fields: [fieldForBuff(buff.m2_common_dmg_)],
+        linked: ['malicious_complaint'],
       },
     },
   ],
@@ -103,7 +174,12 @@ const sheet = createBaseSheet(key, {
       conditional: {
         label: ch('overwhelminglyPositiveAtkCond'),
         description: (
-          <GameDesc ns="char_Dialyn_gen" key18="mindscapes.4.desc" />
+          <GameDescSlice
+            ns="char_Dialyn_gen"
+            key18="mindscapes.4.desc"
+            from="While the <ct color=#FFFFFF>Overwhelmingly Positive</ct> effect is active, Dialyn's ATK"
+            to="increases by 500"
+          />
         ),
         metadata: cond.overwhelmingly_positive_atk,
         fields: [fieldForBuff(buff.m4_atk)],
@@ -118,6 +194,7 @@ const sheet = createBaseSheet(key, {
     {
       type: 'fields',
       header: { icon: null, text: ch('m6_dmg') },
+      description: <GameDesc ns="char_Dialyn_gen" key18="mindscapes.6.desc" />,
       fields: [
         {
           title: (

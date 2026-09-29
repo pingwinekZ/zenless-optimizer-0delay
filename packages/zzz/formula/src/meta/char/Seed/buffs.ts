@@ -8,6 +8,7 @@ export const buffs = {
       qt: 'combat',
       q: 'dmg_',
       sheet: 'Seed',
+      attribute: 'electric',
       damageType1: 'elemental',
       name: 'm6_dmg',
     },

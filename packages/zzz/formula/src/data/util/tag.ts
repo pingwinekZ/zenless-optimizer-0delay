@@ -196,6 +196,7 @@ export const ownTag = {
     sharpDmg: prepProd,
     gashBuildup: prep,
     maimDmg: prepProd,
+    teammateDmg: prepProd,
     anomalyDmg: prepProd,
     shield: prep,
     anomMas_mult_: prep,

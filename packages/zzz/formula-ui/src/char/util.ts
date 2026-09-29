@@ -11,6 +11,7 @@ export function isDmg(tag: Tag) {
   const { q } = tag
   return [
     'standardDmg',
+    'teammateDmg',
     'anomalyDmg',
     'sheerDmg',
     'sharpDmg',

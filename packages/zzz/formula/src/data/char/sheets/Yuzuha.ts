@@ -46,6 +46,11 @@ const { powerful_shell_hits } = allNumConditionals(
 )
 
 const m4_dmg = cmpGE(char.mindscape, 4, percent(dm.m4.assistFollowUp_dmg_))
+const m4_anomBuildup_ = cmpGE(
+  char.mindscape,
+  4,
+  percent(dm.m4.assistFollowUp_anomBuildup_)
+)
 const m4_weHaveCookies_dmg_ = ownBuff.combat.dmg_.addWithDmgType(
   'assistFollowUp',
   m4_dmg
@@ -54,6 +59,10 @@ const m4_stuffedHardCandyShot_dmg_ = ownBuff.combat.dmg_.addWithDmgType(
   'assistFollowUp',
   m4_dmg
 )
+const m4_weHaveCookies_anomBuildup_ =
+  ownBuff.combat.anomBuildup_.addWithDmgType('assistFollowUp', m4_anomBuildup_)
+const m4_stuffedHardCandyShot_anomBuildup_ =
+  ownBuff.combat.anomBuildup_.addWithDmgType('assistFollowUp', m4_anomBuildup_)
 
 const ability_check = (node: NumNode) =>
   cmpGE(
@@ -111,7 +120,8 @@ const sheet = register(
       { damageType1: 'assistFollowUp' },
       'atk',
       undefined,
-      ...m4_weHaveCookies_dmg_
+      ...m4_weHaveCookies_dmg_,
+      ...m4_weHaveCookies_anomBuildup_
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -121,7 +131,8 @@ const sheet = register(
       { damageType1: 'assistFollowUp' },
       'atk',
       undefined,
-      ...m4_stuffedHardCandyShot_dmg_
+      ...m4_stuffedHardCandyShot_dmg_,
+      ...m4_stuffedHardCandyShot_anomBuildup_
     )
   ),
 
@@ -132,7 +143,8 @@ const sheet = register(
   ),
   registerBuff(
     'm6_dmg',
-    ownBuff.combat.dmg_.physical.add(
+    ownBuff.combat.dmg_.addWithDmgType(
+      'elemental',
       cmpGE(char.mindscape, 6, percent(dm.m6.dmg))
     ),
     undefined,
@@ -207,6 +219,28 @@ const sheet = register(
     true
   ),
   registerBuff(
+    'ability_anomBuildup_',
+    teamBuff.combat.anomBuildup_.add(
+      ability_check(
+        tanuki_wish_ability.ifOn(
+          min(
+            prod(
+              max(0, sum(own.final.anomMas, -dm.ability.anomMas_threshold)),
+              percent(dm.ability.anomBuildup_),
+              cmpGE(char.mindscape, 1, percent(dm.m1.buffInc_), percent(1))
+            ),
+            prod(
+              percent(dm.ability.max_anomBuildup_),
+              cmpGE(char.mindscape, 1, percent(dm.m1.buffInc_), percent(1))
+            )
+          )
+        )
+      )
+    ),
+    undefined,
+    true
+  ),
+  registerBuff(
     'm1_resRed_',
     enemyDebuff.common.resRed_.add(
       cmpGE(char.mindscape, 1, sweet_scare.ifOn(percent(dm.m1.resRed_)))
@@ -227,6 +261,18 @@ const sheet = register(
     true
   ),
   registerBuff(
+    'm2_anomBuildup_',
+    teamBuff.combat.anomBuildup_.add(
+      cmpGE(
+        char.mindscape,
+        2,
+        exSpecial_ult_hit.ifOn(percent(dm.m2.anomBuildup_))
+      )
+    ),
+    undefined,
+    true
+  ),
+  registerBuff(
     'm4_weHaveCookies_dmg_',
     m4_weHaveCookies_dmg_,
     undefined,
@@ -236,6 +282,20 @@ const sheet = register(
   registerBuff(
     'm4_stuffedHardCandyShot_dmg_',
     m4_stuffedHardCandyShot_dmg_,
+    undefined,
+    false,
+    false
+  ),
+  registerBuff(
+    'm4_weHaveCookies_anomBuildup_',
+    m4_weHaveCookies_anomBuildup_,
+    undefined,
+    false,
+    false
+  ),
+  registerBuff(
+    'm4_stuffedHardCandyShot_anomBuildup_',
+    m4_stuffedHardCandyShot_anomBuildup_,
     undefined,
     false,
     false

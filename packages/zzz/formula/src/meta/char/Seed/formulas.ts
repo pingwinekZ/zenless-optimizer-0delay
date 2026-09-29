@@ -882,6 +882,7 @@ export const formulas = {
       qt: 'formula',
       q: 'standardDmg',
       sheet: 'Seed',
+      attribute: 'electric',
       damageType1: 'elemental',
       name: 'm6_dmg',
     },

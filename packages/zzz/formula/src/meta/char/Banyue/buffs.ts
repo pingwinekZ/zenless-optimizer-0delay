@@ -62,19 +62,6 @@ export const buffs = {
     },
     team: false,
   },
-  m6_fire_dmg_: {
-    sheet: 'Banyue',
-    name: 'm6_fire_dmg_',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'dmg_',
-      sheet: 'Banyue',
-      attribute: 'fire',
-      name: 'm6_fire_dmg_',
-    },
-    team: false,
-  },
   m1_fire_resRed_: {
     sheet: 'Banyue',
     name: 'm1_fire_resRed_',
@@ -166,31 +153,6 @@ export const buffs = {
     },
     team: false,
   },
-  m2_crit_dmg_: {
-    sheet: 'Banyue',
-    name: 'm2_crit_dmg_',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'crit_dmg_',
-      sheet: 'Banyue',
-      name: 'm2_crit_dmg_',
-    },
-    team: false,
-  },
-  m2_fire_dmg_: {
-    sheet: 'Banyue',
-    name: 'm2_fire_dmg_',
-    tag: {
-      et: 'display',
-      qt: 'combat',
-      q: 'dmg_',
-      sheet: 'Banyue',
-      attribute: 'fire',
-      name: 'm2_fire_dmg_',
-    },
-    team: false,
-  },
   m4_topplingMountain_dmg_: {
     sheet: 'Banyue',
     name: 'm4_topplingMountain_dmg_',
@@ -249,8 +211,9 @@ export const buffs = {
     tag: {
       et: 'display',
       qt: 'combat',
-      q: 'sheer_dmg_',
+      q: 'dmg_',
       sheet: 'Banyue',
+      damageType1: 'elemental',
       name: 'm6_dmg',
     },
     team: false,

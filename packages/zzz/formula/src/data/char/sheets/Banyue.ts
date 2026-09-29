@@ -27,25 +27,25 @@ const baseTag = getBaseTag(data_gen)
 
 const { char } = own
 
-const { tremor, coreExSpecialFollowUpUsed, m2ExSpecialFollowUpUsed } =
+const { tremorResRed, tremorDmg, coreExSpecialFollowUpUsed } =
   allBoolConditionals(key, undefined, {
-    tremor: 1,
+    tremorResRed: 1,
+    tremorDmg: 1,
     coreExSpecialFollowUpUsed: 0,
-    m2ExSpecialFollowUpUsed: 2,
   })
-const { abilityVidyaraja, m6Vidyaraja } = allNumConditionals(
+const { abilityVidyaraja } = allNumConditionals(
   key,
   true,
   0,
   dm.ability.maxStacks,
   undefined,
-  { abilityVidyaraja: 0, m6Vidyaraja: 6 }
+  { abilityVidyaraja: 0 }
 )
 
 const m1_sheerDmg = cmpGE(
   char.mindscape,
   1,
-  tremor.ifOn(percent(dm.m1.sheer_dmg_))
+  tremorDmg.ifOn(percent(dm.m1.sheer_dmg_))
 )
 
 const m1_exSpecial_sheer_dmg_ = ownBuff.combat.sheer_dmg_.addWithDmgType(
@@ -190,7 +190,12 @@ const sheet = register(
     'core_fire_dmg_',
     ownBuff.combat.dmg_.fire.add(
       coreExSpecialFollowUpUsed.ifOn(
-        percent(subscript(char.core, dm.core.fire_dmg_))
+        sum(
+          percent(subscript(char.core, dm.core.fire_dmg_)),
+          // M2: additional Fire DMG — folded into the parent buff (§3.10),
+          // so the field shows the base value at M0-1 and grows at M2+.
+          cmpGE(char.mindscape, 2, percent(dm.m2.fire_dmg_))
+        )
       )
     )
   ),
@@ -198,7 +203,11 @@ const sheet = register(
     'core_crit_dmg_',
     ownBuff.combat.crit_dmg_.add(
       coreExSpecialFollowUpUsed.ifOn(
-        percent(subscript(char.core, dm.core.crit_dmg_))
+        sum(
+          percent(subscript(char.core, dm.core.crit_dmg_)),
+          // M2: additional CRIT DMG — folded into the parent buff (§3.10).
+          cmpGE(char.mindscape, 2, percent(dm.m2.crit_dmg_))
+        )
       )
     )
   ),
@@ -212,23 +221,23 @@ const sheet = register(
           cmpGE(char.mindscape, 6, 1)
         ),
         1,
-        prod(abilityVidyaraja, percent(dm.ability.fire_dmg_))
+        prod(
+          abilityVidyaraja,
+          sum(
+            percent(dm.ability.fire_dmg_),
+            // M6: additional Fire DMG per Vidyaraja stack — folded into the
+            // parent buff (§3.10). (M6's duration/trigger changes have no
+            // optimizer effect.)
+            cmpGE(char.mindscape, 6, percent(dm.m6.fire_dmg_))
+          )
+        )
       )
     )
   ),
   registerBuff(
-    'm6_fire_dmg_',
-    ownBuff.combat.dmg_.fire.add(
-      cmpGE(char.mindscape, 6, prod(m6Vidyaraja, percent(dm.m6.fire_dmg_)))
-    ),
-    undefined,
-    undefined,
-    false
-  ),
-  registerBuff(
     'm1_fire_resRed_',
     enemyDebuff.common.resRed_.fire.add(
-      cmpGE(char.mindscape, 1, tremor.ifOn(percent(dm.m1.fire_resRed_)))
+      cmpGE(char.mindscape, 1, tremorResRed.ifOn(percent(dm.m1.fire_resRed_)))
     ),
     undefined,
     true
@@ -276,26 +285,6 @@ const sheet = register(
     false
   ),
   registerBuff(
-    'm2_crit_dmg_',
-    ownBuff.combat.crit_dmg_.add(
-      cmpGE(
-        char.mindscape,
-        2,
-        m2ExSpecialFollowUpUsed.ifOn(percent(dm.m2.crit_dmg_))
-      )
-    )
-  ),
-  registerBuff(
-    'm2_fire_dmg_',
-    ownBuff.combat.dmg_.fire.add(
-      cmpGE(
-        char.mindscape,
-        2,
-        m2ExSpecialFollowUpUsed.ifOn(percent(dm.m2.fire_dmg_))
-      )
-    )
-  ),
-  registerBuff(
     'm4_topplingMountain_dmg_',
     m4_topplingMountain_dmg_,
     undefined,
@@ -323,10 +312,16 @@ const sheet = register(
     false,
     false
   ),
+  // Display-only pair for the sheer-damage instance above: the sheet display
+  // filter drops fields whose name is missing from the buffs listing, so the
+  // instance needs a matching registerBuff (Seed §1.6 pattern, Yixuan
+  // precedent). The 'elemental' type matches no hit and
+  // includeOriginalEntry: false keeps it from ever applying.
   registerBuff(
     'm6_dmg',
-    ownBuff.combat.sheer_dmg_.add(
-      cmpGE(char.mindscape, 6, prod(own.final.sheerForce, percent(dm.m6.dmg)))
+    ownBuff.combat.dmg_.addWithDmgType(
+      'elemental',
+      cmpGE(char.mindscape, 6, percent(dm.m6.dmg))
     ),
     undefined,
     undefined,

@@ -73,6 +73,7 @@ const dm = {
   },
   ability: {
     selfIceAnomBuildup_: data_gen.abilityParams[0],
+    presumptionDefIgn: data_gen.abilityParams[3],
   },
   m1: {
     trialGain: data_gen.mindscapeParams[0][0],

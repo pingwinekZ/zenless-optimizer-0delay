@@ -11,6 +11,16 @@ const data: TagMapNodeEntries = [
   ownBuff.formula.standardDmg.add(own.dmg.def_mult_),
   ownBuff.formula.standardDmg.add(own.dmg.direct_mult_),
 
+  // Teammate-triggered damage (e.g. Sunna's Cat's Gaze). The base already
+  // accounts for the triggering agent's ATK and crit, so only enemy-side
+  // multipliers apply here — never the owner's crit/dmg%/flat bonuses.
+  // (Enemy RES is attribute-specific and varies per trigger, so callers fold
+  // it into the base instead of reading the shared RES multiplier.)
+  ownBuff.formula.teammateDmg.add(own.formula.base),
+  ownBuff.formula.teammateDmg.add(own.dmg.def_mult_),
+  ownBuff.formula.teammateDmg.add(own.dmg.dmg_taken_mult_),
+  ownBuff.formula.teammateDmg.add(own.dmg.stunned_mult_),
+
   ownBuff.formula.sheerDmg.add(own.formula.base),
   ownBuff.formula.sheerDmg.add(own.dmg.crit_mult_),
   // Reread to flatten the formula

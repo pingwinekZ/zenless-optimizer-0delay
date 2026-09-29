@@ -1,13 +1,15 @@
 import { ColorText } from '@zenless-optimizer/common/ui'
 import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { Cissia } from '@zenless-optimizer/zzz/formula'
-import { GameDesc } from '@zenless-optimizer/zzz/i18n'
+import { GameDesc, GameDescSlice } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
 import {
+  AbilityBodyText,
   CoreGameDesc,
   createBaseSheet,
   fieldForBuff,
-  SkillGameDesc,
+  PrefixedLine,
+  useEffectiveMindscape,
 } from '../sheetUtil'
 import { getVariant } from '../util'
 
@@ -16,6 +18,24 @@ const [, ch] = trans('char', key)
 const cond = Cissia.conditionals
 const buff = Cissia.buffs
 const formula = Cissia.formulas
+
+function CoreDescription() {
+  const mindscape = useEffectiveMindscape(key)
+  return (
+    <>
+      <CoreGameDesc characterKey={key} paragraph={2} />
+      <PrefixedLine prefix="M1" dimmed={mindscape < 1}>
+        <GameDescSlice
+          ns="char_Cissia_gen"
+          key18="mindscapes.1.desc"
+          from="The DEF ignore from the"
+          to="140% of its original value"
+          toExact
+        />
+      </PrefixedLine>
+    </>
+  )
+}
 
 const sheet = createBaseSheet(key, {
   perSkillAbility: {
@@ -26,10 +46,11 @@ const sheet = createBaseSheet(key, {
           conditional: {
             label: ch('etherVeilCond'),
             description: (
-              <SkillGameDesc
-                characterKey={key}
+              <GameDescSlice
                 ns="char_Cissia_gen"
-                key18="chain.UltimateOphidiophobia.desc"
+                key18="chain.UltimateOphidiophobia.desc.3"
+                from="After using this skill, activate"
+                to="increases by 5% for the duration."
               />
             ),
             metadata: cond.etherVeil,
@@ -45,10 +66,11 @@ const sheet = createBaseSheet(key, {
           conditional: {
             label: ch('corrodeBoneCritStacksCond'),
             description: (
-              <SkillGameDesc
-                characterKey={key}
+              <GameDescSlice
                 ns="char_Cissia_gen"
-                key18="basic.CorrodeBone.desc"
+                key18="basic.CorrodeBone.desc.1"
+                from="Each trigger increases CRIT Rate"
+                to="refresh the duration."
               />
             ),
             metadata: cond.corrodeBone_crit_stacks,
@@ -63,7 +85,7 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('venomDefIgnCond'),
-        description: <CoreGameDesc characterKey={key} paragraph={2} />,
+        description: <CoreDescription />,
         metadata: cond.venomDefIgn,
         fields: [
           {
@@ -75,12 +97,13 @@ const sheet = createBaseSheet(key, {
             fieldRef: buff.core_defIgn_.tag,
           },
         ],
-        linked: 'venomCritDmg',
+        linked: ['venomCritDmg'],
       },
     },
     {
       type: 'fields',
       paragraph: 3,
+      description: <CoreGameDesc characterKey={key} paragraph={3} />,
       header: { icon: null, text: ch('core_dmg_header') },
       fields: [
         {
@@ -96,6 +119,7 @@ const sheet = createBaseSheet(key, {
     {
       type: 'fields',
       paragraph: 4,
+      description: <CoreGameDesc characterKey={key} paragraph={4} />,
       header: { icon: null, text: ch('core_daze_header') },
       fields: [
         {
@@ -117,8 +141,9 @@ const sheet = createBaseSheet(key, {
         description: (
           <>
             <GameDesc ns="char_Cissia_gen" key18="ability.desc.0" />
-            <div style={{ marginBottom: 8 }} />
-            <GameDesc ns="char_Cissia_gen" key18="ability.desc.1" />
+            <AbilityBodyText characterKey={key}>
+              <GameDesc ns="char_Cissia_gen" key18="ability.desc.1" />
+            </AbilityBodyText>
           </>
         ),
         metadata: cond.venomCritDmg,
@@ -126,14 +151,23 @@ const sheet = createBaseSheet(key, {
           fieldForBuff(buff.ability_squad_crit_dmg_),
           fieldForBuff(buff.ability_self_crit_dmg_),
         ],
-        linked: 'venomDefIgn',
+        linked: ['venomDefIgn'],
       },
     },
   ],
   m1: [
     {
       type: 'fields',
-      header: { icon: null, text: ch('m1_electric_resIgn_') },
+      description: (
+        <GameDescSlice
+          ns="char_Cissia_gen"
+          key18="mindscapes.1.desc"
+          from="all squad members ignore 5%"
+          to="Electric RES"
+          capitalize
+        />
+      ),
+      header: { icon: null, text: ch('m1_squad_header') },
       fields: [
         {
           title: (
@@ -143,6 +177,20 @@ const sheet = createBaseSheet(key, {
           ),
           fieldRef: buff.m1_electric_resIgn_.tag,
         },
+      ],
+    },
+    {
+      type: 'fields',
+      description: (
+        <GameDescSlice
+          ns="char_Cissia_gen"
+          key18="mindscapes.1.desc"
+          from="<ct color=#FFFFFF>Corrode Bone</ct> DMG ignores 10%"
+          to="Electric RES"
+        />
+      ),
+      header: { icon: null, text: ch('m1_corrodeBone_header') },
+      fields: [
         {
           title: (
             <ColorText color={getVariant(buff.m1_corrodeBone_resIgn_.tag)}>
@@ -157,6 +205,14 @@ const sheet = createBaseSheet(key, {
   m2: [
     {
       type: 'fields',
+      description: (
+        <GameDescSlice
+          ns="char_Cissia_gen"
+          key18="mindscapes.2.desc"
+          from="<ct color=#FFFFFF>Basic Attack: Serpent's Kiss</ct>"
+          to="35% increased DMG."
+        />
+      ),
       header: { icon: null, text: ch('m2_header') },
       fields: [
         {

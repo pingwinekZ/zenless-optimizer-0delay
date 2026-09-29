@@ -236,9 +236,11 @@ export function teamData(members: readonly Member[]): TagMapNodeEntries {
  * formula sheets to read actual teammate stats (e.g., Dialyn's EX Special
  * additional damage that scales off a teammate's ATK or Sheer Force).
  *
- * Each slot (1, 2) registers four bridges:
+ * Each slot (1, 2) registers six bridges:
  * - `teammate{N}_atk`        → teammate's `final.atk`
  * - `teammate{N}_sheerForce` → teammate's `final.sheerForce`
+ * - `teammate{N}_crit_`      → teammate's `final.crit_`
+ * - `teammate{N}_crit_dmg_`  → teammate's `final.crit_dmg_`
  * - `teammate{N}_specialty`  → teammate's `char.specialty`
  * - `teammate{N}_attribute`  → teammate's `char.attribute`
  */
@@ -293,6 +295,42 @@ export function teammateStatBridges(
           sheet: 'agg',
         }),
       },
+      // Bridge Crit Rate
+      {
+        tag: {
+          et: 'own',
+          src: characterKey,
+          dst: null,
+          qt: 'common',
+          q: `teammate${slotIdx}_crit_`,
+        } as any,
+        value: reread({
+          et: 'own',
+          src: key,
+          dst: null,
+          qt: 'final',
+          q: 'crit_',
+          sheet: 'agg',
+        }),
+      },
+      // Bridge Crit DMG
+      {
+        tag: {
+          et: 'own',
+          src: characterKey,
+          dst: null,
+          qt: 'common',
+          q: `teammate${slotIdx}_crit_dmg_`,
+        } as any,
+        value: reread({
+          et: 'own',
+          src: key,
+          dst: null,
+          qt: 'final',
+          q: 'crit_dmg_',
+          sheet: 'agg',
+        }),
+      },
       // Bridge Specialty
       {
         tag: {
@@ -332,4 +370,24 @@ export function teammateStatBridges(
     )
   }
   return result
+}
+
+/**
+ * Bridge teammate stats for every present team member's `src` namespace, not
+ * just the main character's. Hover calculators evaluate under teammate `src`
+ * (teammate-card / combo hover calcs override only `src`), and the bridged
+ * `teammateN_*` reads use the unique accumulator — without a matching entry
+ * for that `src` the calculator throws on the empty gather. One bridge set
+ * per member keeps those reads well-formed in every view; main-`src` results
+ * are unchanged since each set only matches its own `src`.
+ */
+export function allMemberStatBridges(
+  characterKey: CharacterKey,
+  teammateKeys: readonly (CharacterKey | undefined)[]
+): TagMapNodeEntries {
+  const members = [characterKey]
+  for (const key of teammateKeys) {
+    if (key && key !== characterKey && !members.includes(key)) members.push(key)
+  }
+  return members.flatMap((key) => teammateStatBridges(key, teammateKeys))
 }

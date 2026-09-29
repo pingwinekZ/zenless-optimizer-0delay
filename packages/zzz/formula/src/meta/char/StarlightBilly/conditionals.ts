@@ -1,5 +1,14 @@
 // WARNING: Generated file, do not modify
 export const conditionals = {
+  brilliant_stacks: {
+    sheet: 'StarlightBilly',
+    name: 'brilliant_stacks',
+    type: 'num',
+    int_only: true,
+    min: 0,
+    max: 2,
+    mindscapeRequirement: 6,
+  },
   cpCritDmg: { sheet: 'StarlightBilly', name: 'cpCritDmg', type: 'bool' },
   m1PhysResIgn: {
     sheet: 'StarlightBilly',
@@ -23,5 +32,11 @@ export const conditionals = {
     int_only: true,
     min: 0,
     max: 2,
+  },
+  turbo: {
+    sheet: 'StarlightBilly',
+    name: 'turbo',
+    type: 'bool',
+    mindscapeRequirement: 2,
   },
 } as const

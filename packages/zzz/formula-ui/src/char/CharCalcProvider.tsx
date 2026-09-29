@@ -37,6 +37,7 @@ import { getComboFrames, teamCharacterKeys } from '@zenless-optimizer/zzz/db'
 import { useCharacter, useDiscs } from '@zenless-optimizer/zzz/db-ui'
 import type { TagMapNodeEntries } from '@zenless-optimizer/zzz/formula'
 import {
+  allMemberStatBridges,
   charTagMapNodeEntries,
   conditionalEntries,
   DEFAULT_TEAMMATE_CHAR,
@@ -108,7 +109,7 @@ export function CharCalcProvider({
       ...member0,
       ...teammate1Entries,
       ...teammate2Entries,
-      ...teammateStatBridges(character.key, teamCharacterKeys(team)),
+      ...allMemberStatBridges(character.key, teamCharacterKeys(team)),
       enemy.common.lvl.add(team.enemyLvl),
       enemy.common.def.add(team.enemyDef),
       enemy.common.stun_.add(team.enemyStunMultiplier / 100),

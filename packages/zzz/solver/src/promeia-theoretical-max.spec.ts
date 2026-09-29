@@ -79,7 +79,7 @@ describe('Promeia theoretical max', () => {
     const aggReader = convert(ownTag, { et: 'own', sheet: 'agg', src: charKey })
     const baseFormulaRead = aggReader.formula.base.with(
       'name',
-      'trialByColdAbloomDmgInst'
+      'trialByColdAbloomDmg'
     )
 
     // Test a sample (first 300) to keep test fast
