@@ -204,10 +204,7 @@ const sheet = register(
     'core_anomProf',
     ownBuff.combat.anomProf.add(subscript(char.core, dm.core.anomProf))
   ),
-  registerBuff(
-    'm1_ether_anomBuildupResRed_',
-    m1_ether_anomBuildupResRed_
-  ),
+  registerBuff('m1_ether_anomBuildupResRed_', m1_ether_anomBuildupResRed_),
   registerBuff(
     'm1_abloom',
     ownBuff.combat.anom_crit_.add(

@@ -5,9 +5,9 @@ import { GameDescSlice } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
 import {
   CoreGameDesc,
-  SkillGameDesc,
   createBaseSheet,
   fieldForBuff,
+  SkillGameDesc,
 } from '../sheetUtil'
 import { getVariant } from '../util'
 
