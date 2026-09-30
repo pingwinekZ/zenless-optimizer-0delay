@@ -1,7 +1,7 @@
 {
-  "coreExSpecialFollowUpUsedCond": "EX Special / Assist Follow-Up Used · SF, DMG & CD",
+  "coreExSpecialFollowUpUsedCond": "EX Special / Assist Follow-Up Used · SF & DMG & CD",
   "abilityVidyarajaCond": "Vidyaraja Stacks · DMG",
-  "tremorResRedCond": "Tremor · RES Red",
+  "tremorResRedCond": "Tremor · RES Reduction",
   "tremorDmgCond": "Tremor · DMG",
   "core_header": "HP to SF",
   "ability_header": "DMG",

@@ -101,10 +101,11 @@ export const buffs = {
     name: 'm1_ether_anomBuildupResRed_',
     tag: {
       et: 'display',
-      qt: 'common',
-      q: 'anomBuildupRes_',
+      qt: 'combat',
+      q: 'anomBuildupResRed_',
       sheet: 'Aria',
       attribute: 'ether',
+      damageType1: 'exSpecial',
       name: 'm1_ether_anomBuildupResRed_',
     },
     team: false,

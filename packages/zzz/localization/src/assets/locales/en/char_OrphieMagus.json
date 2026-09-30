@@ -1,6 +1,6 @@
 {
-  "coreCond": "Zeroed In · ATK",
-  "abilityCond": "Zeroed In · DEF Ign",
+  "coreCond": "Zeroed In · ER to ATK",
+  "abilityCond": "Zeroed In · DEF Ignore",
   "m1Cond": "Zeroed In · DMG",
   "core_header": "CR & DMG",
   "m1_header": "RES Ignore",

@@ -9,9 +9,16 @@ const data: TagMapNodeEntries = [
   ownBuff.formula.anomBuildup_mult_.add(
     sum(percent(1), own.final.anomBuildup_)
   ),
-  // Enemy Anomaly Buildup RES Multiplier
+  // Enemy Anomaly Buildup RES Multiplier. `anomBuildupResRed_` is the
+  // attacker-side pp reduction (e.g. Aria M1): unlike enemy-namespace
+  // debuffs, own-side entries are sheet-scoped, so they can never leak to
+  // teammates' hits.
   ownBuff.formula.enemyAnomBuildupRes_mult_.add(
-    sum(percent(1), prod(-1, enemy.common.anomBuildupRes_))
+    sum(
+      percent(1),
+      prod(-1, enemy.common.anomBuildupRes_),
+      own.final.anomBuildupResRed_
+    )
   ),
 
   // Anomaly Buildup Formula

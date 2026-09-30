@@ -221,7 +221,7 @@ const sheet = createBaseSheet(key, {
             ns="char_Seed_gen"
             key18="mindscapes.4.desc"
             from="When Seed's"
-            to="Ultimate DMG increases by 20%"
+            to="increases by 20%"
           />
         ),
         metadata: cond.besiege_ult_dmg,

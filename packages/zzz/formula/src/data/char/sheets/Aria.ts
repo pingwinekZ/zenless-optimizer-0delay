@@ -17,7 +17,6 @@ import { isStunned } from '../../common/enemy'
 import {
   allBoolConditionals,
   customAnomalyDmg,
-  enemyDebuff,
   own,
   ownBuff,
   percent,
@@ -76,6 +75,21 @@ const abloomRatioByAttr: Record<AttributeAnomalyKey, NumNode> = {
   ice: abloomRatio(dm.core.abloomIce),
   wind: abloomRatio(dm.core.abloomWind),
 }
+
+// M1: Aria's own Basic / Special / EX Special hits ignore 10% of the
+// target's Ether Anomaly Buildup RES. This is own-side (attacker-scoped) and
+// damageType-scoped on purpose: an enemy-namespace debuff entry is shared
+// across the whole team and would also match same-attribute teammates' hits
+// (e.g. NangongYu). The reduction feeds `enemyAnomBuildupRes_mult_` in
+// `data/common/anomalyBuildup.ts`.
+const m1_ether_anomBuildupResRed_ = (
+  ['basic', 'special', 'exSpecial'] as const
+).flatMap((dmgType) =>
+  ownBuff.combat.anomBuildupResRed_.ether.addWithDmgType(
+    dmgType,
+    cmpGE(char.mindscape, 1, percent(dm.m1.etherAnomBuildupResIgn))
+  )
+)
 
 const sheet = register(
   key,
@@ -192,9 +206,7 @@ const sheet = register(
   ),
   registerBuff(
     'm1_ether_anomBuildupResRed_',
-    enemyDebuff.common.anomBuildupRes_.ether.add(
-      cmpGE(char.mindscape, 1, percent(-dm.m1.etherAnomBuildupResIgn))
-    )
+    m1_ether_anomBuildupResRed_
   ),
   registerBuff(
     'm1_abloom',

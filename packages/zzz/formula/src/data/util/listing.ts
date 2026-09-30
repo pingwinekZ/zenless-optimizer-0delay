@@ -36,6 +36,7 @@ export const stats = [
   'buff_',
   'defIgn_',
   'resIgn_',
+  'anomBuildupResRed_',
   'shield_',
   'directDmg_',
   'dazeInc_',

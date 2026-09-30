@@ -103,7 +103,7 @@ const sheet = createBaseSheet(key, {
           <GameDescSlice
             ns="char_Banyue_gen"
             key18="mindscapes.1.desc"
-            from="he inflicts the"
+            from="When Banyue hits an"
             to="lasting 30s"
             capitalize
           />
@@ -121,7 +121,7 @@ const sheet = createBaseSheet(key, {
           <GameDescSlice
             ns="char_Banyue_gen"
             key18="mindscapes.1.desc"
-            from="<ct color=#FFFFFF>EX Special Attack: Lion's Roar</ct>"
+            from="When <ct color=#FFFFFF>EX Special Attack: Lion's Roar</ct>"
             to="increased by 10%"
           />
         ),

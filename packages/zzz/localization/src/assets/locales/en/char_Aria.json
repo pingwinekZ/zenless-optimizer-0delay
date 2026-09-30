@@ -1,8 +1,8 @@
 {
-  "core_header": "Anomaly Proficiency",
-  "coreAbloom": "Abloom DMG Ratio",
-  "m1_res_header": "Ether Anomaly Buildup RES Ignore",
-  "m1_crit_header": "Abloom CRIT",
+  "core_header": "AP",
+  "coreAbloom": "DMG",
+  "m1_res_header": "AB RES Ignore",
+  "m1_crit_header": "AM to CR | CD",
   "m2_header": "DEF Ignore",
   "etherVeilCond": "Ether Veil: Delusion Reprise · ATK",
   "m1_abloom": "Abloom CRIT Rate",

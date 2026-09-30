@@ -110,6 +110,7 @@ const stats: Record<Stat, Desc> = {
   buff_: agg,
   resIgn_: agg,
   defIgn_: agg,
+  anomBuildupResRed_: agg,
   shield_: agg,
   directDmg_: agg,
   dazeInc_: agg,

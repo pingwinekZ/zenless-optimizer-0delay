@@ -1,14 +1,14 @@
 {
   "darkbreakerCond": "Darkbreaker · CD",
-  "exSpecialStateCond": "Darkbreaker · SF",
+  "exSpecialStateCond": "Darkbreaker · HP to SF",
   "dreamersNurseryRhymeCond": "Dreamer's Nursery Rhyme · DMG",
   "etherVeilCond": "Ether Veil: Wellspring · HP%",
   "exSpecial_harmony_dmg_": "Additional DMG",
   "m1DreamersNurseryRhymeCond": "Dreamer's Nursery Rhyme · RES Ignore",
-  "m2DarkbreakerCond": "Darkbreaker & Ether Veil: Wellspring · Sheer DMG",
+  "m2DarkbreakerCond": "Darkbreaker & Ether Veil: Wellspring · DMG",
   "m2EtherVeilCond": "Ether Veil: Wellspring · DMG",
   "m2_harmony_dmg_": "Harmony DMG",
-  "m6EtherVeilCond": "Ether Veil: Wellspring · ATK & CR & CD",
+  "m6EtherVeilCond": "Ether Veil: Wellspring · HP to ATK | CR & CD",
   "m6_harmony_crit_": "Harmony CRIT Rate",
   "m6_harmony_crit_dmg_": "Harmony CRIT DMG"
 }

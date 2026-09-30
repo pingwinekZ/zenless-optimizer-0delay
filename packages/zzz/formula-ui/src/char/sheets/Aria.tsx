@@ -81,9 +81,10 @@ const sheet = createBaseSheet(key, {
         <GameDescSlice
           ns="char_Aria_gen"
           key18="mindscapes.1.desc"
-          from="Additionally, when Aria triggers"
+          from="when Aria triggers"
           to="by 0.5%"
           toExact
+          capitalize
         />
       ),
       fields: [

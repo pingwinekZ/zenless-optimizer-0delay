@@ -192,7 +192,7 @@ const sheet = createBaseSheet(key, {
         <GameDescSlice
           ns="char_Yuzuha_gen"
           key18="mindscapes.6.desc"
-          from="For every 0.4s charged"
+          from="When using"
           to="Physical DMG"
         />
       ),
