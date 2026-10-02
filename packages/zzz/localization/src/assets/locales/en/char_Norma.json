@@ -1,10 +1,14 @@
 {
-  "abilityCond": "En-Nah Barrage · ATK & DMG",
-  "m1Cond": "Warhead Hit · RES Red",
+  "enNahBarrageAtkCond": "En-Nah Barrage · ATK",
+  "enNahBarrageDmgCond": "En-Nah Barrage · DMG",
+  "techDivideCond": "Tech Divide · Stun DMG",
+  "m1Cond": "Warhead Hit · RES Reduction",
   "core_critDmg_": "CR to CD",
   "core_header": "CR to Daze",
   "core_atk": "SF to ATK",
   "m6_header": "Daze & DMG",
   "m6_daze_": "Armor-Piercing Warhead Daze",
-  "m6_dmg_": "High-Explosive Warhead DMG"
+  "m6_dmg_": "High-Explosive Warhead DMG",
+  "m6_missile_header": "Additional DMG",
+  "m6_missile_dmg": "Missile Barrage DMG"
 }

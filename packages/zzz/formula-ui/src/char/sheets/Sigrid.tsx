@@ -1,12 +1,14 @@
 import { ColorText } from '@zenless-optimizer/common/ui'
 import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
-import { useCharacter } from '@zenless-optimizer/zzz/db-ui'
 import { Sigrid } from '@zenless-optimizer/zzz/formula'
-import { GameDesc, GameDescSlice, GameText } from '@zenless-optimizer/zzz/i18n'
-import { useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
+import { GameDesc, GameDescSlice } from '@zenless-optimizer/zzz/i18n'
 import { trans } from '../../util'
-import { AbilityBodyText, createBaseSheet, fieldForBuff } from '../sheetUtil'
+import {
+  AbilityBodyText,
+  CoreGameDesc,
+  createBaseSheet,
+  fieldForBuff,
+} from '../sheetUtil'
 import { getVariant } from '../util'
 
 const key: CharacterKey = 'Sigrid'
@@ -18,37 +20,12 @@ const formula = Sigrid.formulas
 const ns = 'char_Sigrid_gen'
 
 function TemperedDescription() {
-  const { t } = useTranslation(ns)
-  const paragraphs = useMemo(() => {
-    const obj = t(`${ns}:chain.ChainAttackEncroachingIce.desc`, {
-      returnObjects: true,
-    })
-    if (typeof obj !== 'object' || obj === null) return []
-    return Object.values(obj as Record<string, string>).filter(
-      (v): v is string => typeof v === 'string'
-    )
-  }, [t])
-  if (paragraphs.length < 3) return null
   return (
     <>
-      <GameText text={paragraphs[0]} />
-      <div style={{ marginTop: 8 }}>
-        <GameText text={paragraphs[2]} />
-      </div>
+      <GameDesc ns={ns} key18="chain.ChainAttackEncroachingIce.desc.0" />
+      <div style={{ marginBottom: 8 }} />
+      <GameDesc ns={ns} key18="chain.ChainAttackEncroachingIce.desc.2" />
     </>
-  )
-}
-
-function CoreCritDescription() {
-  const char = useCharacter(key)
-  const coreLevel = char?.core ?? 0
-  return (
-    <GameDescSlice
-      ns={ns}
-      key18={`core.desc.${coreLevel}.5`}
-      from="Activating or refreshing Aerial Patrol Spear increases Sigrid's CRIT Rate by"
-      to="Repeated triggers extend the duration by"
-    />
   )
 }
 
@@ -128,10 +105,19 @@ const sheet = createBaseSheet(key, {
       type: 'conditional',
       conditional: {
         label: ch('patrolActiveCond'),
-        description: <CoreCritDescription />,
+        description: <CoreGameDesc characterKey={key} paragraph={5} />,
         metadata: cond.patrolActive,
         fields: [fieldForBuff(buff.core_patrol_crit_)],
         linked: 'patrolActiveM4',
+      },
+    },
+    {
+      type: 'conditional',
+      conditional: {
+        label: ch('stunnedEnemyHitCond'),
+        description: <CoreGameDesc characterKey={key} paragraph={6} />,
+        metadata: cond.stunnedEnemyHit,
+        fields: [fieldForBuff(buff.core_stun_)],
       },
     },
   ],

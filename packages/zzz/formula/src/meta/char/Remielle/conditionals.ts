@@ -14,4 +14,9 @@ export const conditionals = {
     type: 'bool',
     mindscapeRequirement: 2,
   },
+  prismatic_buildup: {
+    sheet: 'Remielle',
+    name: 'prismatic_buildup',
+    type: 'bool',
+  },
 } as const

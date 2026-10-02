@@ -8,7 +8,10 @@ import {
 } from '@zenless-optimizer/zzz/db-ui'
 import { conditionals } from '@zenless-optimizer/zzz/formula'
 import { charSheets } from '@zenless-optimizer/zzz/formula-ui'
-import { EffectiveMindscapeContext } from '@zenless-optimizer/zzz/formula-ui/char/sheetUtil'
+import {
+  AbilityGateContext,
+  EffectiveMindscapeContext,
+} from '@zenless-optimizer/zzz/formula-ui/char/sheetUtil'
 import { getCharStat } from '@zenless-optimizer/zzz/stats'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -30,17 +33,16 @@ import {
   type SectionConditional,
   type SectionGroup,
 } from './characterConditionalsUtils'
+import { useAbilityGateActive } from './frame0HoverCalc'
 
 export function CharacterConditionalsDisplay({
   characterKey,
   mindscapeOverride,
-  showZeroFields = false,
   showPassives = false,
   teammateKey,
 }: {
   characterKey: CharacterKey
   mindscapeOverride?: number
-  showZeroFields?: boolean
   showPassives?: boolean
   teammateKey?: CharacterKey
 }) {
@@ -50,6 +52,13 @@ export function CharacterConditionalsDisplay({
   const team = useTeam(mainChar.key)
   const effectiveMindscape = mindscapeOverride ?? mainChar.mindscape
   const src = teammateKey ?? characterKey
+  // Additional-ability descriptions dim only on the squad/mindscape gate
+  // (own toggles forced ON), not on the current toggle/slider state.
+  const abilityGateActive = useAbilityGateActive({
+    characterKey,
+    src,
+    mainCharKey: mainChar.key,
+  })
 
   // Lumiflux characters (e.g. Remielle) proxy the Voidflare-inherited element
   // with the first non-lumiflux teammate's attribute: First Teammate slot takes
@@ -257,52 +266,53 @@ export function CharacterConditionalsDisplay({
 
   return (
     <EffectiveMindscapeContext.Provider value={effectiveMindscape}>
-      <Flex direction="column" gap={5}>
-        <HeaderText>{t(characterKey)} Conditionals</HeaderText>
-        {fluxedElementRow}
-        {sectionGroups.map((group) => (
-          <Box key={group.sectionKey}>
-            <Text size="xs" fw={600} c="dimmed" mb={2}>
-              {SECTION_DISPLAY_NAMES[group.sectionKey] ?? group.sectionKey}
-            </Text>
-            <Flex direction="column" gap={2}>
-              {group.passives.map((entry, i) => (
-                <PassiveFieldRow
-                  key={`p-${i}`}
-                  characterKey={characterKey}
-                  fields={entry.fields}
-                  sectionKey={entry.sectionKey}
-                  paragraph={entry.paragraph}
-                  descKey={entry.descKey}
-                  groupTitle={entry.groupTitle}
-                  description={entry.description}
-                  disabled={effectiveMindscape < entry.mindscape}
-                />
-              ))}
-              {group.conditionals.map((c) => (
-                <CharacterConditionalRow
-                  key={c.condName}
-                  characterKey={characterKey}
-                  condName={c.condName}
-                  condData={c.condData}
-                  team={team}
-                  database={database}
-                  mainCharKey={mainChar.key}
-                  src={src}
-                  mindscape={effectiveMindscape}
-                  fields={c.fields}
-                  description={c.description}
-                  label={c.label}
-                  showZeroFields={showZeroFields}
-                  linked={c.linked}
-                  maxByMindscape={c.maxByMindscape}
-                  noDimWhenZero={c.noDimWhenZero}
-                />
-              ))}
-            </Flex>
-          </Box>
-        ))}
-      </Flex>
+      <AbilityGateContext.Provider value={abilityGateActive}>
+        <Flex direction="column" gap={5}>
+          <HeaderText>{t(characterKey)} Conditionals</HeaderText>
+          {fluxedElementRow}
+          {sectionGroups.map((group) => (
+            <Box key={group.sectionKey}>
+              <Text size="xs" fw={600} c="dimmed" mb={2}>
+                {SECTION_DISPLAY_NAMES[group.sectionKey] ?? group.sectionKey}
+              </Text>
+              <Flex direction="column" gap={2}>
+                {group.passives.map((entry, i) => (
+                  <PassiveFieldRow
+                    key={`p-${i}`}
+                    characterKey={characterKey}
+                    fields={entry.fields}
+                    sectionKey={entry.sectionKey}
+                    paragraph={entry.paragraph}
+                    descKey={entry.descKey}
+                    groupTitle={entry.groupTitle}
+                    description={entry.description}
+                    disabled={effectiveMindscape < entry.mindscape}
+                  />
+                ))}
+                {group.conditionals.map((c) => (
+                  <CharacterConditionalRow
+                    key={c.condName}
+                    characterKey={characterKey}
+                    condName={c.condName}
+                    condData={c.condData}
+                    team={team}
+                    database={database}
+                    mainCharKey={mainChar.key}
+                    src={src}
+                    mindscape={effectiveMindscape}
+                    fields={c.fields}
+                    description={c.description}
+                    label={c.label}
+                    linked={c.linked}
+                    maxByMindscape={c.maxByMindscape}
+                    noDimWhenZero={c.noDimWhenZero}
+                  />
+                ))}
+              </Flex>
+            </Box>
+          ))}
+        </Flex>
+      </AbilityGateContext.Provider>
     </EffectiveMindscapeContext.Provider>
   )
 }

@@ -1,5 +1,19 @@
 // WARNING: Generated file, do not modify
 export const buffs = {
+  m6_missile_dmg: {
+    sheet: 'Norma',
+    name: 'm6_missile_dmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Norma',
+      attribute: 'fire',
+      damageType1: 'ult',
+      name: 'm6_missile_dmg',
+    },
+    team: false,
+  },
   core_critDmg_: {
     sheet: 'Norma',
     name: 'core_critDmg_',
@@ -63,6 +77,18 @@ export const buffs = {
     },
     team: false,
   },
+  ability_stun_: {
+    sheet: 'Norma',
+    name: 'ability_stun_',
+    tag: {
+      et: 'display',
+      qt: 'common',
+      q: 'stun_',
+      sheet: 'Norma',
+      name: 'ability_stun_',
+    },
+    team: true,
+  },
   ability_atk: {
     sheet: 'Norma',
     name: 'ability_atk',
@@ -107,6 +133,7 @@ export const buffs = {
       qt: 'combat',
       q: 'dazeInc_',
       sheet: 'Norma',
+      damageType1: 'exSpecial',
       name: 'm6_daze_',
     },
     team: false,
@@ -117,8 +144,9 @@ export const buffs = {
     tag: {
       et: 'display',
       qt: 'combat',
-      q: 'common_dmg_',
+      q: 'dmg_',
       sheet: 'Norma',
+      damageType1: 'exSpecial',
       name: 'm6_dmg_',
     },
     team: false,

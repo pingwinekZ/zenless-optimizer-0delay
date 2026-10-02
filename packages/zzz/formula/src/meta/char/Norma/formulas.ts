@@ -1084,4 +1084,17 @@ export const formulas = {
       name: 'AssistFollowUpTechnologicalSuppression_0_anomBuildup',
     },
   },
+  m6_missile_dmg: {
+    sheet: 'Norma',
+    name: 'm6_missile_dmg',
+    tag: {
+      et: 'own',
+      qt: 'formula',
+      q: 'standardDmg',
+      sheet: 'Norma',
+      attribute: 'fire',
+      damageType1: 'ult',
+      name: 'm6_missile_dmg',
+    },
+  },
 } as const

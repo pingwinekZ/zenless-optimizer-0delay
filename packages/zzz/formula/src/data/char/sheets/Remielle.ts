@@ -33,8 +33,16 @@ const dm = mappedStats.char[key]
 const { char } = own
 
 // Conditionals
-const { phaseFlow, phaseFlow_daze, phaseFlow_m1, prismatic } =
-  allBoolConditionals(key, undefined, { prismatic: 2, phaseFlow_m1: 1 })
+const {
+  phaseFlow,
+  phaseFlow_daze,
+  phaseFlow_m1,
+  prismatic,
+  prismatic_buildup,
+} = allBoolConditionals(key, undefined, {
+  prismatic: 2,
+  phaseFlow_m1: 1,
+})
 
 // Ability check: another Anomaly character OR same faction (CovenantOfDayat)
 const abilityCheck = (node: NumNode | number) =>
@@ -103,6 +111,15 @@ const abilityAtkBuff = abilityCheck(
 // Additional Ability: Daze increase while in Phase Flow
 const abilityDazeInc_ = ownBuff.combat.dazeInc_.add(
   phaseFlow_daze.ifOn(abilityCheck(dazeTier))
+)
+
+// Additional Ability: Prismatic — enemies applied with Lumiflux Buildup also
+// receive Prismatic: all squad members' attacks against them gain 15%
+// Anomaly Buildup Rate (`dm.ability.anomBuildup_`). Team-wide like
+// NangongYu's `ability_squad_anomBuildup_` (`teamBuff` + `team: true`).
+// Linked with the M2 `prismatic` conditional in the UI (same enemy state).
+const abilityPrismaticAnomBuildup_ = teamBuff.combat.anomBuildup_.add(
+  prismatic_buildup.ifOn(abilityCheck(percent(dm.ability.anomBuildup_)))
 )
 
 // Core Passive: Refringe Coefficient = 0.02% of AP + (10% if 3 Anomaly chars)
@@ -375,6 +392,12 @@ const sheet = register(
     true
   ),
   registerBuff('ability_dazeInc_', abilityDazeInc_),
+  registerBuff(
+    'ability_prismatic_anomBuildup_',
+    abilityPrismaticAnomBuildup_,
+    undefined,
+    true
+  ),
   registerBuff('core_refringeCoeff_', coreRefringeCoeff_),
   registerBuff('core_luminize_anom_mv_mult_', coreLuminizeAnomMvMult_),
 

@@ -241,7 +241,6 @@ export function TeammateCard({
                   characterKey={characterKey}
                   mindscapeOverride={effectiveMindscape}
                   teammateKey={characterKey}
-                  showZeroFields={true}
                   showPassives={showCharPassives}
                 />
               </Box>

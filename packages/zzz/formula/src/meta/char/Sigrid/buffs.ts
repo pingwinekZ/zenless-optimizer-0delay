@@ -12,6 +12,18 @@ export const buffs = {
     },
     team: false,
   },
+  core_stun_: {
+    sheet: 'Sigrid',
+    name: 'core_stun_',
+    tag: {
+      et: 'display',
+      qt: 'common',
+      q: 'stun_',
+      sheet: 'Sigrid',
+      name: 'core_stun_',
+    },
+    team: true,
+  },
   ability_atk: {
     sheet: 'Sigrid',
     name: 'ability_atk',

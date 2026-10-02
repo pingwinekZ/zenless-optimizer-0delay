@@ -3,6 +3,7 @@
   "patrolActiveM4Cond": "Aerial Patrol Spear · DMG",
   "temperedCond": "Tempered · DMG",
   "contaminationCond": "Enemy in Contamination · DMG",
+  "stunnedEnemyHitCond": "Stunned Enemy in Aerial Patrol · Stun DMG",
   "m2_header": "PEN",
   "m6_header": "Additional DMG",
   "core_patrol_crit_": "Aerial Patrol CRIT Rate",

@@ -1,11 +1,20 @@
 {
   "core_dmg_": "ER to DMG & AM",
-  "ability_wind_dmg_": "DMG",
-  "m2_wind_dmg_": "DMG",
-  "ability_header": "Daze",
-  "ability_sweepingCyclone_dazeInc_": "Daze",
+  "coreWindbiteCond": "Windbite · DMG",
+  "coreSweepingResCond": "Sweeping Cyclone Hit · AB RES Reduction",
+  "core_abloom_header": "DMG",
+  "core_condensed_abloom_dmg": "Condensed Cyclone Abloom DMG",
+  "core_sweeping_abloom_dmg": "Sweeping Cyclone Abloom DMG",
+  "ability_dmg_header": "DMG",
+  "ability_daze_header": "Daze",
+  "ability_daze_desc": "Sweeping Cyclone Daze increases by 30%.",
+  "ability_buildup_header": "AB",
+  "ability_buildup_desc": "Sweeping Cyclone Attribute Anomaly Buildup increases by 15%.",
+  "ability_abloom_header": "DMG",
+  "ability_ult_abloom_dmg": "Ultimate Abloom DMG",
   "m1VortexCond": "Vortex Hit · RES Ignore",
   "m1WindsweptCond": "Windswept · RES Ignore",
-  "m1_sweepingCyclone_dazeInc_": "Daze",
-  "m4Cond": "EX Special Used · ATK"
+  "m4Cond": "EX Special Used · ATK",
+  "m6BuildupCond": "Windswept Enemy · AB",
+  "m6RefreshCond": "Windswept Remaining Duration · DMG"
 }

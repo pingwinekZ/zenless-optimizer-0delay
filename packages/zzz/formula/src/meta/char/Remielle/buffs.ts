@@ -36,6 +36,18 @@ export const buffs = {
     },
     team: false,
   },
+  ability_prismatic_anomBuildup_: {
+    sheet: 'Remielle',
+    name: 'ability_prismatic_anomBuildup_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anomBuildup_',
+      sheet: 'Remielle',
+      name: 'ability_prismatic_anomBuildup_',
+    },
+    team: true,
+  },
   core_refringeCoeff_: {
     sheet: 'Remielle',
     name: 'core_refringeCoeff_',

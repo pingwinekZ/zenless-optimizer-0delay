@@ -12,5 +12,6 @@ export const conditionals = {
     type: 'bool',
     mindscapeRequirement: 4,
   },
+  stunnedEnemyHit: { sheet: 'Sigrid', name: 'stunnedEnemyHit', type: 'bool' },
   tempered: { sheet: 'Sigrid', name: 'tempered', type: 'bool' },
 } as const

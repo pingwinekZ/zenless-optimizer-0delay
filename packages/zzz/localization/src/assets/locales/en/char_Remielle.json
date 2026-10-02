@@ -2,6 +2,7 @@
   "ability_atkBuff": "ATK",
   "ability_dazeInc_": "Phase Flow · Daze",
   "core_luminize_anom_mv_mult_": "DMG",
+  "core_luminize_dmg_": "Luminize DMG",
   "core_luminize_formulas": "Luminize",
   "core_refringeCoeff": "Refringe Coefficient",
   "luminizeFleetingGraceDmgInst": "Fleeting Grace Luminize",
@@ -11,14 +12,11 @@
   "m1_allResIgn_": "All-Attribute RES Ignore",
   "m1_header": "RES Ign",
   "m1_teamAnomDmg_": "Phase Flow · DMG",
-  "m2_header": "Refringe Coefficient",
-  "m2_refringeCoeff": "Refringe Coefficient",
   "m4_header": "DMG",
   "m4_luminizeDmg_": "Luminize DMG Multiplier",
-  "m6_header": "DMG",
-  "m6_luminizeTriggerCount": "Rainbow's End / Fleeting Grace Luminize DMG",
   "phaseFlowCond": "Phase Flow · DMG",
   "phaseFlowDazeCond": "Phase Flow · Daze",
+  "prismaticBuildupCond": "Prismatic · Buildup",
   "prismaticCond": "Prismatic · DEF Ign",
   "m1PhaseFlowCond": "Phase Flow · DMG"
 }

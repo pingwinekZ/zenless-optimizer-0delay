@@ -3,6 +3,7 @@ import { correctConditionalValue } from '@zenless-optimizer/game-opt/engine'
 import { CalcContext, TagContext } from '@zenless-optimizer/game-opt/formula-ui'
 import type { Field } from '@zenless-optimizer/game-opt/sheet-ui'
 import { TagFieldDisplay } from '@zenless-optimizer/game-opt/sheet-ui'
+import { read } from '@zenless-optimizer/pando/engine'
 import type { CharacterKey, DiscSlotKey } from '@zenless-optimizer/zzz/consts'
 import type {
   ICachedDisc,
@@ -10,7 +11,10 @@ import type {
   TeamConditional,
 } from '@zenless-optimizer/zzz/db'
 import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import type { Tag } from '@zenless-optimizer/zzz/formula'
 import {
+  buffs,
+  conditionals as conditionalsMeta,
   getConditional,
   zzzCalculatorWithEntries,
 } from '@zenless-optimizer/zzz/formula'
@@ -116,6 +120,134 @@ export function useFrame0HoverCalc({
     dst,
     currentValue,
     enabled,
+    team,
+    teamCondJson,
+    teamBlobJson,
+  ])
+}
+
+/**
+ * Squad/mindscape gate for a character's Additional Ability, ignoring the
+ * character's own toggle/slider state.
+ *
+ * `useAbilityActive` (used by `AbilityBodyText` in sheet descriptions) checks
+ * whether any `ability_*` buff is non-zero under the ambient calc — which
+ * conflates the squad gate (e.g. Norma needing an Attack/Rupture/same-faction
+ * teammate) with the row's own toggle (a stacks slider at 0 zeroes the buff
+ * even when the squad gate passes). This builds a calc with this sheet's own
+ * bool conditionals forced to 1 and num conditionals forced to max, so a
+ * non-zero `ability_*` buff means the gate itself passes. List conditionals
+ * select variants rather than on/off, so they keep their current values.
+ *
+ * Computed once per displayed character and shared by all its rows'
+ * descriptions via `AbilityGateContext`, mirroring `useFrame0HoverCalc`'s
+ * frame0 snapshot (per-hit `comboStateJson` overrides stripped).
+ */
+export function useAbilityGateActive({
+  characterKey,
+  src,
+  mainCharKey,
+}: {
+  characterKey: CharacterKey
+  src: string
+  mainCharKey: CharacterKey
+}): boolean {
+  const { database } = useDatabaseContext()
+  const outerTag = useContext(TagContext)
+  const team = database.teams.get(mainCharKey)
+  const teamCondJson = JSON.stringify(team?.frames[0]?.conditionals ?? null)
+  const teamBlobJson = team?.frames[0]?.tag?.comboStateJson ?? null
+
+  return useMemo(() => {
+    const charBuffs = (buffs as any)[characterKey] as
+      | Record<string, { tag?: Tag }>
+      | undefined
+    const abilityTags = charBuffs
+      ? Object.entries(charBuffs)
+          .filter(([name]) => name.startsWith('ability_'))
+          .map(([, b]) => b?.tag)
+          .filter((t): t is Tag => !!t)
+      : []
+    if (abilityTags.length === 0) return true
+    if (!team) return true
+    const frame0 = team.frames[0]
+    if (!frame0) return true
+    const character = database.chars.get(mainCharKey)
+    if (!character) return true
+
+    const onValues = new Map<string, number>()
+    const sheetConds = (conditionalsMeta as any)[characterKey] as
+      | Record<string, { type?: string; max?: unknown }>
+      | undefined
+    if (sheetConds) {
+      for (const [condKey, meta] of Object.entries(sheetConds)) {
+        if (meta?.type === 'bool') onValues.set(condKey, 1)
+        else if (meta?.type === 'num')
+          onValues.set(
+            condKey,
+            typeof meta.max === 'number' && meta.max > 0 ? meta.max : 1
+          )
+      }
+    }
+
+    const overridden: TeamConditional[] = frame0.conditionals.map((c) =>
+      c.sheet === characterKey && c.src === src && onValues.has(c.condKey)
+        ? { ...c, condValue: onValues.get(c.condKey) as number }
+        : c
+    )
+    for (const [condKey, condValue] of onValues) {
+      if (
+        !overridden.some(
+          (c) =>
+            c.sheet === characterKey && c.condKey === condKey && c.src === src
+        )
+      )
+        overridden.push({
+          sheet: characterKey,
+          src,
+          dst: null,
+          condKey,
+          condValue,
+        } as TeamConditional)
+    }
+
+    // Drop per-hit overrides so preset0 reads frame0.
+    const tag = frame0.tag?.comboStateJson
+      ? { ...frame0.tag, comboStateJson: undefined }
+      : frame0.tag
+    const gated: Team = {
+      ...team,
+      frames: team.frames.map((f, i) =>
+        i === 0 ? { ...f, conditionals: overridden, tag } : f
+      ),
+    }
+    const discs = {} as Record<DiscSlotKey, ICachedDisc | undefined>
+    for (const [slot, id] of Object.entries(character.equippedDiscs ?? {})) {
+      discs[slot as DiscSlotKey] = id
+        ? (database.discs.get(id) ?? undefined)
+        : undefined
+    }
+    const entries = buildCalculatorEntries(
+      character,
+      discs,
+      gated,
+      (key) => database.chars.get(key) ?? undefined,
+      (id) => database.discs.get(id) ?? undefined
+    )
+    const calc = zzzCalculatorWithEntries(entries)
+    const contextTag = { ...outerTag, src: characterKey } as Tag
+    return abilityTags.some(
+      (t) => calc.withTag(contextTag).compute(read(t)).val > 0
+    )
+    // teamCondJson/teamBlobJson re-snapshot committed states; `team` itself
+    // is only read for stable references (character/teammates/enemy).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    database,
+    mainCharKey,
+    characterKey,
+    src,
+    outerTag,
     team,
     teamCondJson,
     teamBlobJson,

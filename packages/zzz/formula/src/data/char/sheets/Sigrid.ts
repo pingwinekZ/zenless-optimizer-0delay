@@ -11,6 +11,7 @@ import { allStats, mappedStats } from '@zenless-optimizer/zzz/stats'
 import {
   allBoolConditionals,
   customDmg,
+  enemyDebuff,
   own,
   ownBuff,
   percent,
@@ -33,10 +34,15 @@ const baseTag = getBaseTag(data_gen)
 const { char } = own
 
 // Conditionals
-const { patrolActive, tempered, contaminationActive, patrolActiveM4 } =
-  allBoolConditionals(key, undefined, {
-    patrolActiveM4: 4,
-  })
+const {
+  patrolActive,
+  tempered,
+  contaminationActive,
+  patrolActiveM4,
+  stunnedEnemyHit,
+} = allBoolConditionals(key, undefined, {
+  patrolActiveM4: 4,
+})
 
 // Additional Ability: Support or Stun character in squad
 const abilityOn = (node: number | NumNode) =>
@@ -52,6 +58,13 @@ const abilityOn = (node: number | NumNode) =>
 // Core Passive: Aerial Patrol Spear → CRIT Rate (33% → 66% by core level)
 const core_patrol_crit_ = ownBuff.combat.crit_.add(
   patrolActive.ifOn(percent(subscript(char.core, dm.core.patrolCrit_)))
+)
+
+// Core Passive: +20% Stun DMG Multiplier when hitting a Stunned enemy while in
+// Aerial Patrol Spear (core desc para 6). Separate toggle from patrolActive:
+// patrol uptime and hitting a stunned target are independent states.
+const core_stun_ = patrolActive.ifOn(
+  stunnedEnemyHit.ifOn(percent(dm.core.stunnedDmg_))
 )
 
 // Additional Ability: flat ATK (120 base, +12/level, capped at 840)
@@ -94,7 +107,9 @@ const m2_chain_pen_ = ownBuff.combat.pen_.add(m2_pen)
 const m2_ult_pen_ = ownBuff.combat.pen_.add(m2_pen)
 const m2_assistFollowUp_pen_ = ownBuff.combat.pen_.add(m2_pen)
 
-// Chain Attack: Tempered → +20% Converging Spear DMG
+// Chain Attack: Tempered → +20% Converging Spear DMG.
+// 20% lives only in the chain desc text (no skill/core/mindscape param), so it
+// is hardcoded to match char_Sigrid_gen chain.ChainAttackEncroachingIce.desc.2.
 const tempered_convergeSpear_dmg_ = ownBuff.combat.common_dmg_.add(
   tempered.ifOn(percent(0.2))
 )
@@ -272,6 +287,14 @@ const sheet = register(
 
   // Buffs
   registerBuff('core_patrol_crit_', core_patrol_crit_),
+  // Enemy debuff that benefits the whole squad, so registered as a team buff
+  // for the teammate view (Trigger core_stun_ pattern)
+  registerBuff(
+    'core_stun_',
+    enemyDebuff.common.stun_.add(core_stun_),
+    undefined,
+    true
+  ),
   registerBuff('ability_atk', ability_atk),
   registerBuff('ability_contamination_dmg_', ability_contamination_dmg_),
   registerBuff('m1_atk_', m1_atk_),

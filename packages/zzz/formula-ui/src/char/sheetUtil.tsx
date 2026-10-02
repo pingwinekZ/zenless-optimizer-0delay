@@ -96,13 +96,28 @@ function AbilityDescBody({
 }
 
 /**
+ * Squad/mindscape gate override for `useAbilityActive`. Views that can
+ * evaluate the gate with the character's own toggles forced ON (e.g. the
+ * optimize page) provide the result here so `AbilityBodyText` dims only when
+ * the gate itself fails. `undefined` (default) keeps the legacy calc check.
+ */
+export const AbilityGateContext = createContext<boolean | undefined>(undefined)
+
+/**
  * Whether the character's Additional Ability trigger condition is currently
  * met, determined by checking if any `ability_*` buff is non-zero.
+ *
+ * When `AbilityGateContext` provides a value (set by views that evaluate the
+ * squad/mindscape gate with the character's own toggles forced ON), that value
+ * wins: description dimming then reflects only the gate (e.g. teammate faction
+ * / specialty requirements), not the current toggle/slider state.
  */
 export function useAbilityActive(characterKey: CharacterKey): boolean {
+  const gateActive = useContext(AbilityGateContext)
   const calc = useContext(CalcContext)
   const contextTag = useContext(TagContext)
   return useMemo(() => {
+    if (gateActive !== undefined) return gateActive
     if (!calc) return true
     const charBuffs = (buffs as any)[characterKey] as
       | Record<string, { tag?: Tag }>
@@ -116,7 +131,7 @@ export function useAbilityActive(characterKey: CharacterKey): boolean {
         if (!t) return false
         return calc.withTag(tag).compute(read(t)).val > 0
       })
-  }, [calc, contextTag, characterKey])
+  }, [gateActive, calc, contextTag, characterKey])
 }
 
 /** Renders Additional Ability body text, dimmed while the ability is inactive. */

@@ -10,6 +10,7 @@ import { specificDmgTypeKeys } from '@zenless-optimizer/zzz/db'
 import type { Attribute, Tag } from '@zenless-optimizer/zzz/formula'
 import { own } from '@zenless-optimizer/zzz/formula'
 import { StatDisplay } from '@zenless-optimizer/zzz/ui'
+import { trans } from '../util'
 import { damageTypeKeysMap } from './util'
 export const charBaseUiSheet: TagField[] = (
   [
@@ -185,6 +186,54 @@ charBaseUiSheet.push(
       ),
     })
   ),
+  {
+    fieldRef: {
+      et: 'own',
+      qt: 'formula',
+      q: 'anomalyDmg',
+      attribute: 'lumiflux',
+      damageType1: 'anomaly',
+      damageType2: 'luminize',
+      name: 'luminizeRainbowsEndDmgInst',
+    },
+    title: trans('char', 'Remielle')[1]('luminizeRainbowsEndDmgInst'),
+  },
+  {
+    fieldRef: {
+      et: 'own',
+      qt: 'formula',
+      q: 'anomalyDmg',
+      attribute: 'lumiflux',
+      damageType1: 'anomaly',
+      damageType2: 'luminize',
+      name: 'luminizeFleetingGraceDmgInst',
+    },
+    title: trans('char', 'Remielle')[1]('luminizeFleetingGraceDmgInst'),
+  },
+  {
+    fieldRef: {
+      et: 'own',
+      qt: 'formula',
+      q: 'anomalyDmg',
+      attribute: 'lumiflux',
+      damageType1: 'anomaly',
+      damageType2: 'luminize',
+      name: 'luminizeUltimateDmgInst',
+    },
+    title: trans('char', 'Remielle')[1]('luminizeUltimateDmgInst'),
+  },
+  {
+    fieldRef: {
+      et: 'own',
+      qt: 'formula',
+      q: 'anomalyDmg',
+      attribute: 'lumiflux',
+      damageType1: 'anomaly',
+      damageType2: 'luminize',
+      name: 'luminizeFlowerFeatherDmgInst',
+    },
+    title: trans('char', 'Remielle')[1]('luminizeFlowerFeatherDmgInst'),
+  },
   {
     fieldRef: {
       et: 'own',

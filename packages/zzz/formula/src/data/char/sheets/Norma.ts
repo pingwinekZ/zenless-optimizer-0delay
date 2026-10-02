@@ -11,6 +11,8 @@ import { type CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { allStats, mappedStats } from '@zenless-optimizer/zzz/stats'
 import {
   allBoolConditionals,
+  allNumConditionals,
+  customDmg,
   enemyDebuff,
   own,
   ownBuff,
@@ -24,6 +26,7 @@ import {
   dmgDazeAndAnomOverride,
   entriesForChar,
   getBaseTag,
+  hitBuff,
   registerAllDmgDazeAndAnom,
 } from '../util'
 
@@ -35,9 +38,19 @@ const baseTag = getBaseTag(data_gen)
 const { char } = own
 
 // Conditionals
-const { enNahBarrage, warheadHit } = allBoolConditionals(key, undefined, {
-  warheadHit: 1,
-})
+const { enNahBarrage_atk, enNahBarrage_dmg, warheadHit } = allBoolConditionals(
+  key,
+  undefined,
+  {
+    warheadHit: 1,
+  }
+)
+const { tech_divide_stacks } = allNumConditionals(
+  key,
+  true, // int only
+  0,
+  dm.ability.maxTechDivideStacks
+)
 
 // Ability check: >= 1 teammate is Attack, Rupture, or same Faction
 // team.common.count includes self — she contributes 1 (faction),
@@ -83,13 +96,31 @@ const coreAtk = ownBuff.combat.atk.add(
   )
 )
 
+// Additional Ability: Tech Divide — Stun DMG Multiplier per stack.
+// M2 raises the per-stack value (folded into the parent buff, so the field
+// shows the base value at M0-1 and grows once M2 is enabled). The +2s Stun
+// duration has no optimizer effect.
+const ability_stun = abilityOn(
+  prod(
+    tech_divide_stacks,
+    cmpGE(
+      char.mindscape,
+      2,
+      percent(dm.m2.stunDmgMultPerStack_),
+      percent(dm.ability.stunDmgMultPerStack_)
+    )
+  )
+)
+
 // M6: Per-warhead buff entries (passed as extras to specific hits)
 // Armor-Piercing Warhead → +30% Daze
 // High-Explosive Warhead → +30% DMG
-const m6_apDaze = ownBuff.combat.dazeInc_.add(
+const m6_apDaze_ = ownBuff.combat.dazeInc_.addWithDmgType(
+  'exSpecial',
   cmpGE(char.mindscape, 6, percent(dm.m6.daze_))
 )
-const m6_heDmg = ownBuff.combat.common_dmg_.add(
+const m6_heDmg_ = ownBuff.combat.dmg_.addWithDmgType(
+  'exSpecial',
   cmpGE(char.mindscape, 6, percent(dm.m6.dmg_))
 )
 
@@ -111,7 +142,7 @@ const sheet = register(
       { ...baseTag, damageType1: 'exSpecial', skillType1: 'specialSkill' },
       'atk',
       undefined,
-      m6_apDaze
+      ...m6_apDaze_
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -121,7 +152,7 @@ const sheet = register(
       { ...baseTag, damageType1: 'exSpecial', skillType1: 'specialSkill' },
       'atk',
       undefined,
-      m6_apDaze
+      ...m6_apDaze_
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -131,7 +162,7 @@ const sheet = register(
       { ...baseTag, damageType1: 'exSpecial', skillType1: 'specialSkill' },
       'atk',
       undefined,
-      m6_apDaze
+      ...m6_apDaze_
     ),
     // High-Explosive Warhead hits: +30% DMG
     dmgDazeAndAnomOverride(
@@ -142,7 +173,7 @@ const sheet = register(
       { ...baseTag, damageType1: 'exSpecial', skillType1: 'specialSkill' },
       'atk',
       undefined,
-      m6_heDmg
+      ...m6_heDmg_
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -152,7 +183,7 @@ const sheet = register(
       { ...baseTag, damageType1: 'exSpecial', skillType1: 'specialSkill' },
       'atk',
       undefined,
-      m6_heDmg
+      ...m6_heDmg_
     ),
     dmgDazeAndAnomOverride(
       dm,
@@ -162,12 +193,29 @@ const sheet = register(
       { ...baseTag, damageType1: 'exSpecial', skillType1: 'specialSkill' },
       'atk',
       undefined,
-      m6_heDmg
+      ...m6_heDmg_
     )
   ),
 
+  // M6 missile barrage (considered Ultimate DMG)
+  ...customDmg(
+    'm6_missile_dmg',
+    { ...baseTag, damageType1: 'ult' },
+    cmpGE(char.mindscape, 6, prod(own.final.atk, percent(dm.m6.missileDmg)))
+  ),
+  registerBuff(
+    'm6_missile_dmg',
+    ownBuff.combat.dmg_.fire.addWithDmgType(
+      'ult',
+      cmpGE(char.mindscape, 6, percent(dm.m6.missileDmg))
+    ),
+    undefined,
+    undefined,
+    false
+  ),
+
   // Core Buffs
-  registerBuff('core_critDmg_', coreCritDmg_, undefined, undefined, false),
+  registerBuff('core_critDmg_', coreCritDmg_),
   registerBuff(
     'core_exSpecial_dazeInc_',
     ownBuff.combat.dazeInc_.addWithDmgType('exSpecial', coreDazeInc)
@@ -180,14 +228,20 @@ const sheet = register(
     'core_ult_dazeInc_',
     ownBuff.combat.dazeInc_.addWithDmgType('ult', coreDazeInc)
   ),
-  registerBuff('core_atk', coreAtk, undefined, undefined, false),
+  registerBuff('core_atk', coreAtk),
 
   // Additional Ability Buffs
+  registerBuff(
+    'ability_stun_',
+    enemyDebuff.common.stun_.add(ability_stun),
+    undefined,
+    true
+  ),
   registerBuff(
     'ability_atk',
     ownBuff.combat.atk.add(
       abilityOn(
-        enNahBarrage.ifOn(
+        enNahBarrage_atk.ifOn(
           min(
             dm.ability.maxAtk,
             sum(dm.ability.atkBase, prod(char.lvl, dm.ability.atkPerLevel))
@@ -199,7 +253,7 @@ const sheet = register(
   registerBuff(
     'ability_squadDmg_',
     teamBuff.combat.common_dmg_.add(
-      abilityOn(enNahBarrage.ifOn(dm.ability.squadDmg_))
+      abilityOn(enNahBarrage_dmg.ifOn(dm.ability.squadDmg_))
     ),
     undefined,
     true
@@ -216,7 +270,7 @@ const sheet = register(
   ),
 
   // M6 (listed for UI, applied via per-hit overrides above)
-  registerBuff('m6_daze_', m6_apDaze, undefined, undefined, false),
-  registerBuff('m6_dmg_', m6_heDmg, undefined, undefined, false)
+  hitBuff('m6_daze_', m6_apDaze_),
+  hitBuff('m6_dmg_', m6_heDmg_)
 )
 export default sheet

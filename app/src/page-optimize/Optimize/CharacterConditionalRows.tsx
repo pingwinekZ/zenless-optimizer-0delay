@@ -16,6 +16,7 @@ import type { useDatabaseContext, useTeam } from '@zenless-optimizer/zzz/db-ui'
 import { useCharacter } from '@zenless-optimizer/zzz/db-ui'
 import { TagDisplay } from '@zenless-optimizer/zzz/formula-ui'
 import {
+  AbilityGateContext,
   SkillGameDesc,
   usePotentialDescKey,
 } from '@zenless-optimizer/zzz/formula-ui/char/sheetUtil'
@@ -58,7 +59,6 @@ export const CharacterConditionalRow = memo(function CharacterConditionalRow({
   fields,
   description,
   label: labelProp,
-  showZeroFields = false,
   linked,
   maxByMindscape,
   noDimWhenZero,
@@ -74,7 +74,6 @@ export const CharacterConditionalRow = memo(function CharacterConditionalRow({
   fields?: Field[]
   description?: ReactNode
   label?: ReactNode
-  showZeroFields?: boolean
   linked?: string | string[]
   maxByMindscape?: Record<number, number>
   noDimWhenZero?: boolean
@@ -90,6 +89,19 @@ export const CharacterConditionalRow = memo(function CharacterConditionalRow({
     mindscapeRequirement !== null && mindscape < mindscapeRequirement
 
   const displayValue = currentValue
+
+  // Additional-ability buff tags dim on the squad/mindscape gate (provided by
+  // `CharacterConditionalsDisplay`), not on the row's own toggle/slider state.
+  // Outside that provider the gate is undefined and state dimming applies.
+  const abilityGateActive = useContext(AbilityGateContext)
+  const hasAbilityFields = fields?.some(
+    (f) => 'fieldRef' in f && f.fieldRef?.name?.startsWith('ability_')
+  )
+  const buffsDimmed =
+    isMindscapeDisabled ||
+    (hasAbilityFields && abilityGateActive !== undefined
+      ? !abilityGateActive
+      : displayValue === 0 && !noDimWhenZero)
 
   const effectiveMax = useMemo(() => {
     if (condData.type !== 'num') return 10
@@ -235,14 +247,9 @@ export const CharacterConditionalRow = memo(function CharacterConditionalRow({
           </Text>
         )}
         {fields && fields.length > 0 && (
-          <Box
-            opacity={
-              isMindscapeDisabled || (displayValue === 0 && !noDimWhenZero)
-                ? 0.5
-                : undefined
-            }
-          >
-            {(isMindscapeDisabled || displayValue > 0) && <hr />}
+          <Box opacity={buffsDimmed ? 0.5 : undefined}>
+            {/* Buff rows are docs: always shown (even at 0) with a separator */}
+            <hr />
             <Frame0HoverFields
               sheet={characterKey}
               condKey={condName}
@@ -255,13 +262,7 @@ export const CharacterConditionalRow = memo(function CharacterConditionalRow({
               }
               mainCharKey={mainCharKey}
               fields={fields}
-              showZero={
-                isMindscapeDisabled
-                  ? true
-                  : displayValue === 0
-                    ? true
-                    : showZeroFields
-              }
+              showZero
             />
           </Box>
         )}
@@ -320,6 +321,15 @@ export const PassiveFieldRow = memo(function PassiveFieldRow({
     'ability.desc.0'
   )
   const displayTitle = groupTitle ?? fields[0]?.title
+  // Passive additional-ability buff tags dim on the squad/mindscape gate,
+  // matching `AbilityBodyText`. Title/description dimming is left to
+  // `disabled` (mindscape) to avoid double-dimming custom descriptions.
+  const abilityGateActive = useContext(AbilityGateContext)
+  const hasAbilityFields = fields.some(
+    (f) => 'fieldRef' in f && f.fieldRef?.name?.startsWith('ability_')
+  )
+  const fieldsDimmed =
+    disabled || (hasAbilityFields && abilityGateActive === false)
   return (
     <HoverCard
       width={400}
@@ -388,7 +398,7 @@ export const PassiveFieldRow = memo(function PassiveFieldRow({
           )
         )}
         {fields.length > 0 && (
-          <Box opacity={disabled ? 0.5 : undefined}>
+          <Box opacity={fieldsDimmed ? 0.5 : undefined}>
             <hr />
             <Box mt={4}>
               <TagContext.Provider value={tagForFields as any}>
