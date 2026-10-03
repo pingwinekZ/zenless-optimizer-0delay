@@ -21,8 +21,8 @@ import {
   ConditionalText,
   conditionalAlign,
   conditionalJustify,
-  condLabel,
   NumConditionalRow,
+  useCondLabel,
 } from './conditionalUtils'
 import { Frame0HoverFields } from './frame0HoverCalc'
 
@@ -333,7 +333,8 @@ const DiscSetConditionalRow = memo(function DiscSetConditionalRow({
     )
   }
 
-  const label = labelProp ?? condLabel(condName, `disc_${setKey}`)
+  const fallbackLabel = useCondLabel(condName, `disc_${setKey}`)
+  const label = labelProp ?? fallbackLabel
 
   const rowContent = (
     <>

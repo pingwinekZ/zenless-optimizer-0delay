@@ -14,7 +14,6 @@ import type {
   ColDef,
   ValueFormatterParams,
 } from 'ag-grid-community'
-import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import { AgGridReact } from 'ag-grid-react'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -22,8 +21,8 @@ import type { StatDisplay } from '../Sidebar/StatsViewSelect'
 import { useOptimizerDisplayStore } from '../stores/useOptimizerDisplayStore'
 import { DiscSetCellRenderer } from './gridCellRenderers'
 
-// AG Grid v35+ requires explicit module registration
-ModuleRegistry.registerModules([AllCommunityModule])
+// AG Grid modules are registered once in `src/main.tsx` (selective list,
+// mirroring hsr-optimizer) — do not register AllCommunityModule here.
 
 // ── Constants ──
 const GRID_HEIGHT = 600
@@ -36,7 +35,9 @@ const GRID_CONTAINER_STYLE = {
   width: '100%',
   minHeight: MIN_HEIGHT,
   height: GRID_HEIGHT,
-  resize: 'vertical' as const,
+  // `resize` lives in ag-grid-overrides.css (`#optimizerGridContainer`), not
+  // here: it must stay overridable so the handle can hide while a
+  // drawer/modal overlay is open (inline styles would beat that override).
   overflow: 'hidden' as const,
   boxShadow: 'var(--shadow-card-flat)',
   // Dark theme CSS variables are set in ag-grid-overrides.css

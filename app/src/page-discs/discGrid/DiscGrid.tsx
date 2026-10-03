@@ -1,12 +1,10 @@
 import { useDataManagerValues } from '@zenless-optimizer/common/database-ui'
 import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
-import {
-  AllCommunityModule,
-  type GetRowIdParams,
-  type GridOptions,
-  type IRowNode,
-  type IsExternalFilterPresentParams,
-  ModuleRegistry,
+import type {
+  GetRowIdParams,
+  GridOptions,
+  IRowNode,
+  IsExternalFilterPresentParams,
 } from 'ag-grid-community'
 import { AgGridReact, type AgGridReactProps } from 'ag-grid-react'
 import { useCallback, useMemo, useRef } from 'react'
@@ -22,7 +20,8 @@ import {
 } from './columnDefs'
 import { useDiscTabStore } from './useDiscTabStore'
 
-ModuleRegistry.registerModules([AllCommunityModule])
+// AG Grid modules are registered once in `src/main.tsx` (selective list,
+// mirroring hsr-optimizer) — do not register AllCommunityModule here.
 
 const gridOptions: GridOptions<ScoredDisc> = {
   rowHeight: 33,
@@ -100,7 +99,8 @@ export function DiscGrid() {
         minHeight: 300,
         height: 600,
         overflow: 'hidden',
-        resize: 'vertical',
+        // `resize` lives in ag-grid-overrides.css (`#discGrid`), not here:
+        // see the note on GRID_CONTAINER_STYLE in OptimizerGrid.tsx.
         boxShadow: 'var(--shadow-card-flat)',
         borderRadius: 'var(--radius-md)',
         backgroundColor: 'var(--layer-2)',
@@ -116,7 +116,7 @@ export function DiscGrid() {
         isExternalFilterPresent={isExternalFilterPresent}
         doesExternalFilterPass={doesExternalFilterPass}
         headerHeight={48}
-        animateRows
+        animateRows={false}
         rowSelection={{
           mode: 'multiRow',
           checkboxes: false,

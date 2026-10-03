@@ -1,6 +1,7 @@
 import { Flex, NumberInput, Slider } from '@mantine/core'
 import { i18n } from '@zenless-optimizer/zzz/i18n'
 import { memo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export function ConditionalText({
   style,
@@ -12,10 +13,28 @@ export function ConditionalText({
   return <div style={{ whiteSpace: 'pre-line', ...style }}>{children}</div>
 }
 
+function prettyFallback(key: string): string {
+  return key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
 export function condLabel(key: string, ns: string): string {
   const translated = i18n.t(key, { ns })
   if (typeof translated === 'string' && translated !== key) return translated
-  return key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+  return prettyFallback(key)
+}
+
+/**
+ * Reactive conditional label: subscribes to `ns` via `useTranslation` so the
+ * row re-renders with the localized string once the on-demand namespace
+ * (`char_X`, `wengine_X`, `disc_X`) arrives. While loading, returns the
+ * pretty fallback — never the raw locale key.
+ */
+export function useCondLabel(key: string, ns: string): string {
+  const { t, ready } = useTranslation(ns)
+  if (!ready) return prettyFallback(key)
+  const translated = t(key)
+  if (typeof translated === 'string' && translated !== key) return translated
+  return prettyFallback(key)
 }
 
 export function precisionRound(number: number): number {

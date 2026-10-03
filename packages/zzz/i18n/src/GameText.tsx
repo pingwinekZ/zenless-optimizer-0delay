@@ -4,6 +4,13 @@ import { useMemo } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import { sliceBetween } from './sliceBetween'
 
+/** Placeholder shown while an on-demand `*_gen` namespace loads. Plain div
+ * (not Mantine Skeleton) so the i18n package stays UI-light and never
+ * suspends — the hover box keeps its size instead of flashing empty. */
+function DescLoading() {
+  return <div style={{ opacity: 0.55, fontSize: 13 }}>Loading description…</div>
+}
+
 const COND_GREEN = '#2BAD00'
 
 const textComponents = {
@@ -56,10 +63,11 @@ export function GameText({ text }: { text: string }) {
 export function GameDesc({ ns, key18 }: { ns: string; key18: string }) {
   const { t, ready } = useTranslation(ns)
   // `ns` is per-entity game text (`char_X_gen`, …), which is fetched on demand
-  // rather than preloaded. Until it lands, `t` would return the raw
-  // `ns:key18` string — hold the row back for that fraction instead, then
-  // render the text once react-i18next re-renders with the loaded namespace.
-  if (!ready) return null
+  // rather than preloaded. Previously this returned null while loading, which
+  // left conditional hover cards visibly empty for a split second. Render a
+  // placeholder instead so the hover box always has content, then fill in the
+  // text once react-i18next re-renders with the loaded namespace.
+  if (!ready) return <DescLoading />
   const textKey = `${ns}:${key18}`
   const obj = t(textKey, { returnObjects: true })
 
@@ -131,8 +139,8 @@ export function GameDescSlice({
     return sliced.charAt(0).toUpperCase() + sliced.slice(1)
   }, [text, from, to, capitalize, toExact])
 
-  // Same on-demand namespace as `GameDesc`; see the note there.
-  if (!ready) return null
+  // Same on-demand namespace as `GameDesc` — placeholder, not empty (see above).
+  if (!ready) return <DescLoading />
   if (slice === undefined) {
     console.warn(
       `GameDescSlice: could not slice "${ns}:${key18}" between "${from}" and "${to}"`

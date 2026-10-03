@@ -34,6 +34,7 @@ import {
   type Tag,
 } from '@zenless-optimizer/zzz/formula'
 import { CharCalcProvider } from '@zenless-optimizer/zzz/formula-ui'
+import { i18n } from '@zenless-optimizer/zzz/i18n'
 import { CharacterName } from '@zenless-optimizer/zzz/ui'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -56,7 +57,7 @@ export default function PageOptimize({
     (optCharKey && databaseCharKeys.includes(optCharKey)
       ? optCharKey
       : undefined) ?? databaseCharKeys[0]
-  const { t } = useTranslation(['charNames_gen', 'page_character'])
+  const { t } = useTranslation(['charNames_gen', 'page_optimize'])
   const character = useCharacter(characterKey)
   const team = useTeam(characterKey)
 
@@ -67,6 +68,37 @@ export default function PageOptimize({
   useEffect(() => {
     if (characterKey && !team) database.teams.getOrCreate(characterKey)
   }, [characterKey, team, database.teams])
+
+  // Preload locale namespaces for the current team so conditional labels
+  // (`char_X`, `wengine_X`, `disc_X`) and hover docs (`*_gen`) are already
+  // cached before the user hovers. Without this the first hover fetches the
+  // namespace on demand, leaving the hover box empty for a split second.
+  useEffect(() => {
+    if (!characterKey) return
+    const ns = new Set<string>()
+    const teammateKeys = team?.teammates.map((t) => t.characterKey) ?? []
+    const allCharKeys = [characterKey, ...teammateKeys]
+    for (const ck of allCharKeys) {
+      if (!ck) continue
+      ns.add(`char_${ck}`)
+      ns.add(`char_${ck}_gen`)
+      const char = database.chars.get(ck as CharacterKey)
+      const wkey = char?.wengineKey
+      if (wkey) {
+        ns.add(`wengine_${wkey}`)
+        ns.add(`wengine_${wkey}_gen`)
+      }
+      for (const discId of Object.values(char?.equippedDiscs ?? {})) {
+        if (!discId) continue
+        const setKey = database.discs.get(discId)?.setKey
+        if (setKey) {
+          ns.add(`disc_${setKey}`)
+          ns.add(`disc_${setKey}_gen`)
+        }
+      }
+    }
+    if (ns.size > 0) void i18n.loadNamespaces([...ns])
+  }, [characterKey, team, database])
   useTitle(
     useMemo(() => {
       const charName = characterKey && t(`charNames_gen:${characterKey}`)

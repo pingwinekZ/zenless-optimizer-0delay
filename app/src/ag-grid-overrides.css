@@ -307,15 +307,36 @@
   position: unset !important;
 }
 
-/* Pagination nav arrows — force white icon color on both enabled and disabled states */
-.ag-paging-button .ag-icon,
-.ag-paging-button.ag-disabled .ag-icon {
+/* Pagination nav arrows — bright icon color when enabled. Disabled buttons
+   must keep AG Grid's dimmed `--ag-disabled-foreground-color` (hsr-optimizer
+   has no override here); forcing white on `.ag-disabled` made all four
+   arrows look active on single-page results. */
+.ag-paging-button:not(.ag-disabled) .ag-icon {
   color: var(--text-primary);
 }
 
 /* Page number text */
 .ag-paging-description {
   color: var(--text-primary);
+}
+
+/* Page-number field — blend into the dark footer.
+   The native number input paints a light box here (hsr-optimizer's footer
+   shows no such box), so pin it to theme tokens: transparent at rest with
+   the border only appearing on hover/focus. */
+.ag-paging-panel .ag-paging-number .ag-input-field-input {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+}
+.ag-paging-panel .ag-paging-number .ag-input-field-input:hover {
+  border-color: var(--border-default);
+}
+.ag-paging-panel .ag-paging-number .ag-input-field-input:focus {
+  outline: none;
+  border-color: var(--primary-hover);
+  background-color: transparent;
 }
 
 /* Page size picker — force light text and arrow */
@@ -426,6 +447,25 @@
 
 #discGrid .ag-paging-row-summary-panel {
   padding-right: 10px !important;
+}
+
+/* Vertical resize grips live here (not as inline styles) so they stay
+   overridable below. While a drawer/modal overlay is open it blocks all
+   pointer interaction with the grids anyway, and the native grip can paint
+   above the overlay — so drop the handle until the overlay closes. Closed
+   keepMounted drawers keep a `display: none` overlay in the DOM, hence the
+   `:not()` guard. */
+#optimizerGridContainer,
+#discGrid {
+  resize: vertical;
+}
+
+body:has(
+    .mantine-Drawer-overlay:not([style*="display: none"]),
+    .mantine-Modal-overlay:not([style*="display: none"])
+  )
+  :is(#optimizerGridContainer, #discGrid) {
+  resize: none;
 }
 
 /* ═══════════════════════════════════════════

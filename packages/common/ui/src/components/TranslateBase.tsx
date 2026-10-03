@@ -20,7 +20,11 @@ export function TranslateBase({
   children?: ReactNode
   components?: Record<string, React.ReactElement> | undefined
 }) {
-  const { t } = useTranslation(ns)
+  const { t, ready } = useTranslation(ns)
+  // With `useSuspense: false`, `t` returns the raw `ns:key` while the
+  // namespace is still fetching — never paint that key. Hold a skeleton
+  // instead so page-optimize never flashes locale keys.
+  if (!ready) return <Skeleton>{children ?? key18}</Skeleton>
   const textKey = `${ns}:${key18}`
   const textObj = values
     ? t(textKey, { returnObjects: true, ...values })

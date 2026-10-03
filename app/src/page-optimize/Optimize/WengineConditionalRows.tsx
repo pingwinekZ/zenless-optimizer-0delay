@@ -21,8 +21,8 @@ import {
   ConditionalText,
   conditionalAlign,
   conditionalJustify,
-  condLabel,
   NumConditionalRow,
+  useCondLabel,
 } from './conditionalUtils'
 import { Frame0HoverFields } from './frame0HoverCalc'
 
@@ -208,7 +208,8 @@ export const WengineConditionalRow = memo(function WengineConditionalRow({
     )
   }
 
-  const label = labelProp ?? condLabel(condName, `wengine_${wengineKey}`)
+  const fallbackLabel = useCondLabel(condName, `wengine_${wengineKey}`)
+  const label = labelProp ?? fallbackLabel
 
   // Determine current wengine phase for description
   // Use the prop from parent (which may resolve from teammate data)

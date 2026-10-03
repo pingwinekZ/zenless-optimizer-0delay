@@ -17,12 +17,56 @@ import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-balham.css'
 import './ag-grid-overrides.css'
 import 'overlayscrollbars/overlayscrollbars.css'
+import {
+  CellStyleModule,
+  ClientSideRowModelApiModule,
+  ClientSideRowModelModule,
+  ColumnApiModule,
+  ExternalFilterModule,
+  InfiniteRowModelModule,
+  LocaleModule,
+  ModuleRegistry,
+  PaginationModule,
+  PinnedRowModule,
+  provideGlobalGridOptions,
+  RenderApiModule,
+  RowApiModule,
+  RowSelectionModule,
+  ScrollApiModule,
+} from 'ag-grid-community'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import ReactGA from 'react-ga4'
 import App from './app/App'
 
-ReactGA.initialize(process.env.NX_GA_TRACKINGID as any)
+// Selective AG Grid modules (mirrors hsr-optimizer) instead of
+// AllCommunityModule: pagination, pinned top rows, external filter,
+// row selection, sorting, locale text. Cuts ~large chunk from the bundle.
+ModuleRegistry.registerModules([
+  CellStyleModule,
+  ClientSideRowModelApiModule,
+  ClientSideRowModelModule,
+  ColumnApiModule,
+  ExternalFilterModule,
+  InfiniteRowModelModule,
+  LocaleModule,
+  PaginationModule,
+  PinnedRowModule,
+  RenderApiModule,
+  RowApiModule,
+  RowSelectionModule,
+  ScrollApiModule,
+])
+provideGlobalGridOptions({ theme: 'legacy' })
+
+// Defer analytics past first paint so GA init never blocks initial render.
+const gaId = process.env.NX_GA_TRACKINGID as string | undefined
+if (gaId) {
+  const initGA = () => ReactGA.initialize(gaId)
+  if (typeof requestIdleCallback !== 'undefined')
+    requestIdleCallback(initGA, { timeout: 3000 })
+  else setTimeout(initGA, 1500)
+}
 const root = createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>

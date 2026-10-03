@@ -35,8 +35,8 @@ import {
   ConditionalText,
   conditionalAlign,
   conditionalJustify,
-  condLabel,
   NumConditionalRow,
+  useCondLabel,
 } from './conditionalUtils'
 import { Frame0HoverFields } from './frame0HoverCalc'
 
@@ -146,7 +146,8 @@ export const CharacterConditionalRow = memo(function CharacterConditionalRow({
     }
   }
 
-  const label = labelProp ?? condLabel(condName, `char_${characterKey}`)
+  const fallbackLabel = useCondLabel(condName, `char_${characterKey}`)
+  const label = labelProp ?? fallbackLabel
 
   const rowContent = (
     <>

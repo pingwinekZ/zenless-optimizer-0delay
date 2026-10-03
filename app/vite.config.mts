@@ -169,6 +169,13 @@ export default defineConfig(() => {
     worker: {
       // https://vitejs.dev/guide/migration#worker-plugins-is-now-a-function
       plugins: () => [],
+      format: 'iife',
+      rolldownOptions: {
+        output: {
+          format: 'iife',
+          codeSplitting: false,
+        },
+      },
     },
 
     build: {
@@ -177,8 +184,15 @@ export default defineConfig(() => {
       target: 'esnext',
       modulePreload: { polyfill: false },
       cssCodeSplit: true,
+      sourcemap: false,
+      chunkSizeWarningLimit: 1000,
+      minify: 'esbuild',
       commonjsOptions: {
         transformMixedEsModules: true,
+      },
+      // Strip console/debugger in production (mirrors hsr-optimizer).
+      esbuild: {
+        drop: ['console', 'debugger'],
       },
       rollupOptions: {
         output: {

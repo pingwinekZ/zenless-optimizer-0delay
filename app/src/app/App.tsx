@@ -11,12 +11,18 @@ import {
   useThemeStore,
 } from '@zenless-optimizer/zzz/theme'
 import { LiveImportProvider } from '@zenless-optimizer/zzz/websocket/LiveImportProvider'
-import { useEffect, useMemo } from 'react'
+import { lazy, Suspense, useEffect, useMemo } from 'react'
 import { HashRouter } from 'react-router'
-import { GoonCorner } from '../goonCorner/GoonCorner'
 import { LayoutSider } from './LayoutSider'
 import { NavigateContextProvider } from './NavigateContext'
 import { Tabs } from './Tabs'
+
+// GoonCorner is a fixed-position widget with its own fetches/intervals —
+// lazy-load it so it never blocks the critical path (hsr-optimizer has no
+// equivalent always-mounted widget).
+const GoonCorner = lazy(() =>
+  import('../goonCorner/GoonCorner').then((m) => ({ default: m.GoonCorner }))
+)
 
 // Initial gradient setup before first render. The Discs grid colors score
 // columns from a theme-derived scale, so it needs a value before the first
@@ -56,7 +62,9 @@ export default function App() {
               <NavigateContextProvider>
                 <Content />
                 <ScrollTop />
-                <GoonCorner />
+                <Suspense fallback={null}>
+                  <GoonCorner />
+                </Suspense>
               </NavigateContextProvider>
             </HashRouter>
           </ModalsProvider>
