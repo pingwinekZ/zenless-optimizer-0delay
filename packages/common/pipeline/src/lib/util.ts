@@ -1,35 +1,90 @@
 import { workspaceRoot } from '@nx/devkit'
 import { spawn } from 'child_process'
-import { mkdirSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, writeFileSync } from 'fs'
 import { dirname, join } from 'path'
 
+const BIOME_CONFIG_PATH = join(workspaceRoot, 'biome.json')
+
 /**
- * Formats text, returns formatted text. This function does not write directly to the provided file path.
- * File path is only used for determining type of parser
- * @param path Full path to file to get formatted, used for formatter to determine parser type
- * @param text Contents to be formatted
+ * Maximum number of biome processes running at the same time. Pipelines can
+ * queue thousands of files, spawning one process per file without a cap makes
+ * Windows (and Bun) fail with `spawn UNKNOWN`.
  */
-export async function formatText(path: string, text: string): Promise<string> {
-  const biomePath = join(
-    workspaceRoot,
-    'node_modules',
-    '@biomejs',
-    'biome',
-    'bin',
-    'biome'
-  )
-  const biomeConfigPath = join(workspaceRoot, 'biome.json')
+const MAX_CONCURRENT_FORMATTERS = 8
+/** How many times a failed process spawn is retried before giving up */
+const MAX_SPAWN_ATTEMPTS = 5
 
-  // Use extension-based path to avoid triggering biome.json exclude patterns
-  const ext = path.match(/\.(\w+)$/)?.[1] || 'json'
+/** Thrown when biome could not be started at all (as opposed to failing) */
+class FormatterSpawnError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'FormatterSpawnError'
+  }
+}
 
+/**
+ * Resolve how to invoke biome. The platform specific native binary is preferred,
+ * because going through the Node.js shim spawns an extra interpreter process for
+ * every formatted file. `node` is not guaranteed to be on PATH either (only bun
+ * might be available), so the shim is only a fallback.
+ */
+function resolveBiomeCommand(): { command: string; args: string[] } {
+  const binName = process.platform === 'win32' ? 'biome.exe' : 'biome'
+  const nativeCandidates = [
+    join(
+      workspaceRoot,
+      'node_modules',
+      '@biomejs',
+      `cli-${process.platform}-${process.arch}`,
+      binName
+    ),
+    join(
+      workspaceRoot,
+      'node_modules',
+      '@biomejs',
+      `cli-${process.platform}-${process.arch}-musl`,
+      binName
+    ),
+  ]
+  const nativeBin = nativeCandidates.find((candidate) => existsSync(candidate))
+  if (nativeBin) return { command: nativeBin, args: [] }
+
+  return {
+    command: process.execPath,
+    args: [
+      join(workspaceRoot, 'node_modules', '@biomejs', 'biome', 'bin', 'biome'),
+    ],
+  }
+}
+
+let activeFormatters = 0
+const waitingFormatters: (() => void)[] = []
+
+function acquireFormatterSlot(): Promise<void> {
+  if (activeFormatters < MAX_CONCURRENT_FORMATTERS) {
+    activeFormatters++
+    return Promise.resolve()
+  }
+  return new Promise<void>((resolve) => waitingFormatters.push(resolve))
+}
+
+function releaseFormatterSlot() {
+  const next = waitingFormatters.shift()
+  if (next) next()
+  else activeFormatters--
+}
+
+function delay(ms: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, ms))
+}
+
+function runFormatter(
+  command: string,
+  args: string[],
+  input: string
+): Promise<string> {
   return new Promise((resolve, reject) => {
-    const spawnedProcess = spawn('node', [
-      biomePath,
-      'format',
-      `--stdin-file-path=/tmp/opencode/tmp.${ext}`,
-      `--config-path=${biomeConfigPath}`,
-    ])
+    const spawnedProcess = spawn(command, args, { windowsHide: true })
 
     let data = ''
     let error = ''
@@ -42,17 +97,62 @@ export async function formatText(path: string, text: string): Promise<string> {
       error += err.toString()
     })
 
-    spawnedProcess.on('close', (code: number | null) => {
-      if (code === 0) {
-        resolve(data)
-      } else {
-        reject(new Error(`Process exited with code ${code}: ${error}`))
-      }
+    // Without this listener a failed spawn is emitted as an uncaught 'error'
+    // event, which kills the whole pipeline instead of being retried.
+    spawnedProcess.on('error', (err: NodeJS.ErrnoException) => {
+      reject(
+        new FormatterSpawnError(
+          `Failed to spawn formatter (${err.code ?? 'unknown'}): ${err.message}`
+        )
+      )
     })
 
-    spawnedProcess.stdin.write(text)
+    spawnedProcess.on('close', (code: number | null) => {
+      if (code === 0) resolve(data)
+      else reject(new Error(`Process exited with code ${code}: ${error}`))
+    })
+
+    // The child can exit before reading stdin, which would emit an unhandled
+    // EPIPE error on the stdin stream.
+    spawnedProcess.stdin.on('error', () => {})
+    spawnedProcess.stdin.write(input)
     spawnedProcess.stdin.end()
   })
+}
+
+/**
+ * Formats text, returns formatted text. This function does not write directly to the provided file path.
+ * File path is only used for determining type of parser
+ * @param path Full path to file to get formatted, used for formatter to determine parser type
+ * @param text Contents to be formatted
+ */
+export async function formatText(path: string, text: string): Promise<string> {
+  // Use extension-based path to avoid triggering biome.json exclude patterns
+  const ext = path.match(/\.(\w+)$/)?.[1] || 'json'
+  const { command, args } = resolveBiomeCommand()
+  const cliArgs = [
+    ...args,
+    'format',
+    `--stdin-file-path=/tmp/opencode/tmp.${ext}`,
+    `--config-path=${BIOME_CONFIG_PATH}`,
+  ]
+
+  for (let attempt = 1; ; attempt++) {
+    await acquireFormatterSlot()
+    try {
+      return await runFormatter(command, cliArgs, text)
+    } catch (err) {
+      // Only transient spawn failures are retried, formatting errors are real
+      if (
+        !(err instanceof FormatterSpawnError) ||
+        attempt >= MAX_SPAWN_ATTEMPTS
+      )
+        throw err
+      await delay(50 * 2 ** (attempt - 1))
+    } finally {
+      releaseFormatterSlot()
+    }
+  }
 }
 
 export function dumpFile(filename: string, obj: unknown, print = false) {
