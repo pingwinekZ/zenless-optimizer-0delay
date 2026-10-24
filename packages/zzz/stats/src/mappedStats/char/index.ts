@@ -33,6 +33,7 @@ import Nicole from './maps/Nicole'
 import Norma from './maps/Norma'
 import OrphieMagus from './maps/OrphieMagus'
 import PanYinhu from './maps/PanYinhu'
+import Phoenix from './maps/Phoenix'
 import Piper from './maps/Piper'
 import Promeia from './maps/Promeia'
 import Pulchra from './maps/Pulchra'
@@ -43,6 +44,7 @@ import Rina from './maps/Rina'
 import Roxy from './maps/Roxy'
 import Seed from './maps/Seed'
 import Seth from './maps/Seth'
+import Severian from './maps/Severian'
 import Sigrid from './maps/Sigrid'
 import Soldier0Anby from './maps/Soldier0Anby'
 import Soldier11 from './maps/Soldier11'
@@ -95,21 +97,23 @@ const maps = {
   Norma,
   OrphieMagus,
   PanYinhu,
+  Phoenix,
   Piper,
-  Pulchra,
   Promeia,
+  Pulchra,
   Pyrois,
   Qingyi,
   Remielle,
-  StarlightBilly,
   Rina,
   Roxy,
   Seed,
   Seth,
+  Severian,
   Sigrid,
   Soldier0Anby,
   Soldier11,
   Soukaku,
+  StarlightBilly,
   Sunna,
   Trigger,
   Velina,

@@ -8,6 +8,7 @@ import BloodmarrowCoffer from './maps/BloodmarrowCoffer'
 import BoisterousEchoes from './maps/BoisterousEchoes'
 import BoxCutter from './maps/BoxCutter'
 import BunnyBand from './maps/BunnyBand'
+import CandlelitScheme from './maps/CandlelitScheme'
 import CannonRotor from './maps/CannonRotor'
 import CattyLuck from './maps/CattyLuck'
 import CauldronOfClarity from './maps/CauldronOfClarity'
@@ -37,6 +38,7 @@ import Housekeeper from './maps/Housekeeper'
 import IceJadeTeapot from './maps/IceJadeTeapot'
 import IdentityBase from './maps/IdentityBase'
 import IdentityInflection from './maps/IdentityInflection'
+import IncarceratingGrip from './maps/IncarceratingGrip'
 import JoyauDore from './maps/JoyauDore'
 import KaboomTheCannon from './maps/KaboomTheCannon'
 import KnightsExtolment from './maps/KnightsExtolment'
@@ -55,6 +57,7 @@ import NeonFantasies from './maps/NeonFantasies'
 import OdeOfResurrectedWings from './maps/OdeOfResurrectedWings'
 import OriginalTransmorpher from './maps/OriginalTransmorpher'
 import PeacekeeperSpecialized from './maps/PeacekeeperSpecialized'
+import PlumeOfRebirth from './maps/PlumeOfRebirth'
 import PracticedPerfection from './maps/PracticedPerfection'
 import PreciousFossilizedCore from './maps/PreciousFossilizedCore'
 import PuzzleSphere from './maps/PuzzleSphere'
@@ -102,8 +105,6 @@ import ZanshinHerbCase from './maps/ZanshinHerbCase'
 
 const maps = {
   AngelInTheShell,
-  NeonFantasies,
-  SerpentineSeeker,
   BashfulDemon,
   BellicoseBlaze,
   BigCylinder,
@@ -112,10 +113,10 @@ const maps = {
   BoisterousEchoes,
   BoxCutter,
   BunnyBand,
+  CandlelitScheme,
   CannonRotor,
   CattyLuck,
   CauldronOfClarity,
-  TheSimmeringPot,
   ChiefSidekick,
   CinderCobalt,
   CloudcleaveRadiance,
@@ -130,6 +131,7 @@ const maps = {
   ElegantVanity,
   FlamemakerShaker,
   FlightOfFancy,
+  FrostfallSickle,
   FusionCompiler,
   GildedBlossom,
   GrillOWisp,
@@ -141,6 +143,7 @@ const maps = {
   IceJadeTeapot,
   IdentityBase,
   IdentityInflection,
+  IncarceratingGrip,
   JoyauDore,
   KaboomTheCannon,
   KnightsExtolment,
@@ -155,9 +158,11 @@ const maps = {
   MarcatoDesire,
   Metanukimorphosis,
   MyriadEclipse,
+  NeonFantasies,
   OdeOfResurrectedWings,
   OriginalTransmorpher,
   PeacekeeperSpecialized,
+  PlumeOfRebirth,
   PracticedPerfection,
   PreciousFossilizedCore,
   PuzzleSphere,
@@ -171,6 +176,7 @@ const maps = {
   RiotSuppressorMarkVI,
   RoaringFurnace,
   RoaringRide,
+  SerpentineSeeker,
   SeveredInnocence,
   SharpenedStinger,
   SixShooter,
@@ -180,11 +186,13 @@ const maps = {
   SpringEmbrace,
   StarlightEngine,
   StarlightEngineReplica,
+  StarlightRiderFaceplate,
   SteamOven,
   SteelCushion,
   StreetSuperstar,
   TheBrimstone,
   TheRestrained,
+  TheSimmeringPot,
   TheVault,
   Thoughtbop,
   Timeweaver,
@@ -199,7 +207,5 @@ const maps = {
   WrathfulVajra,
   YesterdayCalls,
   ZanshinHerbCase,
-  FrostfallSickle,
-  StarlightRiderFaceplate,
 }
 export default maps

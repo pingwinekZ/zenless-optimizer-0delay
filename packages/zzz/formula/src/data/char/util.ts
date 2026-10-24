@@ -350,6 +350,14 @@ function inferDamageType(key: CharacterKey, abilityName: string): DamageType {
     if (key === 'Roxy' && abilityName === 'EyeOfTheStorm') return 'special'
     if (key === 'Roxy' && abilityName === 'AssistMoreOvertime')
       return 'quickAssist'
+    if (key === 'Phoenix' && abilityName === 'DodgeDriftingSway')
+      return 'dodgeCounter'
+    if (key === 'Phoenix' && abilityName === 'SoulSearchingBlaze')
+      return 'basic'
+    if (key === 'Severian' && abilityName === 'DodgeWindshift')
+      return 'dodgeCounter'
+    if (key === 'Severian' && abilityName === 'DodgeSpontaneity')
+      return 'dodgeCounter'
     throw new Error(
       `Failed to infer damage type for key:${key} abilityName:${abilityName}. Please add an overide in zzz/formula/src/data/char/util.ts::inferDamageType`
     )

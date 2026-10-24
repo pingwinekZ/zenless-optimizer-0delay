@@ -46,6 +46,7 @@ bun biome check --write --formatter-enabled=true --linter-enabled=false --assist
 
 # Codegen & data
 bun run gen-file                   # Regenerate generated files (needs submodule data)
+bun nx run zzz-assets:gen-file-remote  # Fetch remote assets from the Nanoka CDN into packages/zzz/assets/src/gen
 bun nx run zzz-dm:get-nanoka       # Fetch Nanoka datamine JSON into packages/zzz/dm/src/NanokaData
 bun run reload-dm                  # git submodule update --init
 bun run update-dm                  # git submodule update --remote

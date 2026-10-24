@@ -5210,7 +5210,7 @@
           {
             "id": "69013304",
             "title": "",
-            "desc": "·Each time you successfully neutralize the boss's attacks and trigger the boss's special stagger, it grants <color=#FFAF2C>1,000 Performance Points</color>. During the <Term:2000003>Control Skill</Term>, each successful counter against the Boss's attacks grants <color=#FFAF2C>500 Performance Points</color>. Performing a <color=#FFAF2C>Shutdown</color> on the Boss's <color=#FFAF2C>Control Skill</color> grants <color=#FFAF2C>2,000 Performance Points</color>. During the <Term:2000003></Term>, when triggering <color=#FFAF2C>Shutdown</color> via <color=#FFAF2C>Counter Assists</color>, obtain the remaining Performance Points available from the current <color=#FFAF2C>Control Skill</color>. Maximum obtainable Performance Points: 5,000."
+            "desc": "·Each time you successfully neutralize the boss's attacks and trigger the boss's special stagger, it grants <color=#FFAF2C>1,000 Performance Points</color>. During the <Term:2000003>Control Skill</Term>, each successful counter against the Boss's attacks grants <color=#FFAF2C>500 Performance Points</color>. Performing a <color=#FFAF2C>Shutdown</color> on the Boss's <color=#FFAF2C>Control Skill</color> grants <color=#FFAF2C>2,000 Performance Points</color>. During the <Term:2000003></Term>, when triggering <color=#FFAF2C>Shutdown</color> via <color=#FFAF2C><Term:2000006></Term></color>, obtain the remaining Performance Points available from the current <color=#FFAF2C>Control Skill</color>. Maximum obtainable Performance Points: 5,000."
           }
         ],
         "hard": false
@@ -5504,7 +5504,7 @@
           {
             "id": "69013304",
             "title": "",
-            "desc": "·Each time you successfully neutralize the boss's attacks and trigger the boss's special stagger, it grants <color=#FFAF2C>1,000 Performance Points</color>. During the <Term:2000003>Control Skill</Term>, each successful counter against the Boss's attacks grants <color=#FFAF2C>500 Performance Points</color>. Performing a <color=#FFAF2C>Shutdown</color> on the Boss's <color=#FFAF2C>Control Skill</color> grants <color=#FFAF2C>2,000 Performance Points</color>. During the <Term:2000003></Term>, when triggering <color=#FFAF2C>Shutdown</color> via <color=#FFAF2C>Counter Assists</color>, obtain the remaining Performance Points available from the current <color=#FFAF2C>Control Skill</color>. Maximum obtainable Performance Points: 5,000."
+            "desc": "·Each time you successfully neutralize the boss's attacks and trigger the boss's special stagger, it grants <color=#FFAF2C>1,000 Performance Points</color>. During the <Term:2000003>Control Skill</Term>, each successful counter against the Boss's attacks grants <color=#FFAF2C>500 Performance Points</color>. Performing a <color=#FFAF2C>Shutdown</color> on the Boss's <color=#FFAF2C>Control Skill</color> grants <color=#FFAF2C>2,000 Performance Points</color>. During the <Term:2000003></Term>, when triggering <color=#FFAF2C>Shutdown</color> via <color=#FFAF2C><Term:2000006></Term></color>, obtain the remaining Performance Points available from the current <color=#FFAF2C>Control Skill</color>. Maximum obtainable Performance Points: 5,000."
           }
         ],
         "hard": false
@@ -6973,7 +6973,7 @@
           {
             "id": "69014203",
             "title": "",
-            "desc": "· When an Agent's attack hits a Boss, the Boss gains 1 point of Dissonance. The same Agent can apply at most 1 point of Dissonance every 1s.\n· When a Boss accumulates 10 points of Dissonance, all Dissonance points are immediately removed and the Boss enters the Dissonant state. While in the Dissonant state, enemies take <color=#2BAD00>40% bonus Attribute Anomaly DMG</color> for 10s. Re-entering the Dissonant state resets the duration.\n· When an Agent successfully inflicts an Attribute Anomaly on a Boss, all Agents on the squad gain the Transmutation effect: <color=#2BAD00>DMG dealt increases by 15%</color> and Anomaly Proficiency <color=#2BAD00>increases by 20 points</color>. The Transmutation effect lasts 10s, and repeated triggers reset the duration."
+            "desc": "· When an Agent's attack hits a Boss, the Boss gains 1 point of Dissonance. The same Agent can apply at most 1 point of Dissonance every 1s.\n· When a Boss accumulates 10 points of Dissonance, all Dissonance points are immediately removed and the Boss enters the Dissonant state. While in the Dissonant state, enemies take <color=#2BAD00>40% bonus Attribute Anomaly DMG</color> for 10s. Re-entering the Dissonant state resets the duration.\n· When an Agent successfully inflicts an Attribute Anomaly on a Boss, all Agents on the squad's <color=#2BAD00>DMG dealt increases by 15%</color> and Anomaly Proficiency <color=#2BAD00>increases by 20 points</color>. This effect lasts 10s, and repeated triggers reset the duration."
           },
           {
             "id": "69014204",
@@ -7141,7 +7141,7 @@
           {
             "id": "69013304",
             "title": "",
-            "desc": "·Each time you successfully neutralize the boss's attacks and trigger the boss's special stagger, it grants <color=#FFAF2C>1,000 Performance Points</color>. During the <Term:2000003>Control Skill</Term>, each successful counter against the Boss's attacks grants <color=#FFAF2C>500 Performance Points</color>. Performing a <color=#FFAF2C>Shutdown</color> on the Boss's <color=#FFAF2C>Control Skill</color> grants <color=#FFAF2C>2,000 Performance Points</color>. During the <Term:2000003></Term>, when triggering <color=#FFAF2C>Shutdown</color> via <color=#FFAF2C>Counter Assists</color>, obtain the remaining Performance Points available from the current <color=#FFAF2C>Control Skill</color>. Maximum obtainable Performance Points: 5,000."
+            "desc": "·Each time you successfully neutralize the boss's attacks and trigger the boss's special stagger, it grants <color=#FFAF2C>1,000 Performance Points</color>. During the <Term:2000003>Control Skill</Term>, each successful counter against the Boss's attacks grants <color=#FFAF2C>500 Performance Points</color>. Performing a <color=#FFAF2C>Shutdown</color> on the Boss's <color=#FFAF2C>Control Skill</color> grants <color=#FFAF2C>2,000 Performance Points</color>. During the <Term:2000003></Term>, when triggering <color=#FFAF2C>Shutdown</color> via <color=#FFAF2C><Term:2000006></Term></color>, obtain the remaining Performance Points available from the current <color=#FFAF2C>Control Skill</color>. Maximum obtainable Performance Points: 5,000."
           },
           {
             "id": "69014407",
@@ -7325,7 +7325,7 @@
           {
             "id": "69013304",
             "title": "",
-            "desc": "·Each time you successfully neutralize the boss's attacks and trigger the boss's special stagger, it grants <color=#FFAF2C>1,000 Performance Points</color>. During the <Term:2000003>Control Skill</Term>, each successful counter against the Boss's attacks grants <color=#FFAF2C>500 Performance Points</color>. Performing a <color=#FFAF2C>Shutdown</color> on the Boss's <color=#FFAF2C>Control Skill</color> grants <color=#FFAF2C>2,000 Performance Points</color>. During the <Term:2000003></Term>, when triggering <color=#FFAF2C>Shutdown</color> via <color=#FFAF2C>Counter Assists</color>, obtain the remaining Performance Points available from the current <color=#FFAF2C>Control Skill</color>. Maximum obtainable Performance Points: 5,000."
+            "desc": "·Each time you successfully neutralize the boss's attacks and trigger the boss's special stagger, it grants <color=#FFAF2C>1,000 Performance Points</color>. During the <Term:2000003>Control Skill</Term>, each successful counter against the Boss's attacks grants <color=#FFAF2C>500 Performance Points</color>. Performing a <color=#FFAF2C>Shutdown</color> on the Boss's <color=#FFAF2C>Control Skill</color> grants <color=#FFAF2C>2,000 Performance Points</color>. During the <Term:2000003></Term>, when triggering <color=#FFAF2C>Shutdown</color> via <color=#FFAF2C><Term:2000006></Term></color>, obtain the remaining Performance Points available from the current <color=#FFAF2C>Control Skill</color>. Maximum obtainable Performance Points: 5,000."
           },
           {
             "id": "69014407",
@@ -7553,7 +7553,7 @@
           {
             "id": "69014506",
             "title": "",
-            "desc": "· Attribute Anomaly DMG taken by Kusarikku is <color=#FFAF2C>reduced by 40%</color>.\n· When an Agent successfully uses a Defensive Assist against Kusarikku's <Term:2000005></Term>, applies 1 stack of Exposed to Kusarikku. When Kusarikku becomes Stunned, applies 2 stacks of Exposed. Each stack of Exposed increases the <color=#FFAF2C>Laceration DMG Kusarikku receives by 10%</color>. Exposed can stack up to 4 times and lasts <color=#FFAF2C>30</color>s. Repeated triggers reset the duration."
+            "desc": "· Attribute Anomaly DMG taken by Kusarikku is <color=#FFAF2C>reduced by 40%</color>.\n· When an Agent successfully uses a Defensive Assist against Kusarikku's <Term:2000005></Term>, applies 1 stack of Exposed to Kusarikku. When Kusarikku becomes Stunned, applies 2 stacks of Exposed. Each stack of Exposed increases the <color=#FFAF2C>Laceration DMG Kusarikku receives by 20%</color>. Exposed can stack up to 4 times and lasts <color=#FFAF2C>30</color>s. Repeated triggers reset the duration."
           },
           {
             "id": "69014507",
@@ -7738,7 +7738,7 @@
           {
             "id": "69014506",
             "title": "",
-            "desc": "· Attribute Anomaly DMG taken by Kusarikku is <color=#FFAF2C>reduced by 40%</color>.\n· When an Agent successfully uses a Defensive Assist against Kusarikku's <Term:2000005></Term>, applies 1 stack of Exposed to Kusarikku. When Kusarikku becomes Stunned, applies 2 stacks of Exposed. Each stack of Exposed increases the <color=#FFAF2C>Laceration DMG Kusarikku receives by 10%</color>. Exposed can stack up to 4 times and lasts <color=#FFAF2C>30</color>s. Repeated triggers reset the duration."
+            "desc": "· Attribute Anomaly DMG taken by Kusarikku is <color=#FFAF2C>reduced by 40%</color>.\n· When an Agent successfully uses a Defensive Assist against Kusarikku's <Term:2000005></Term>, applies 1 stack of Exposed to Kusarikku. When Kusarikku becomes Stunned, applies 2 stacks of Exposed. Each stack of Exposed increases the <color=#FFAF2C>Laceration DMG Kusarikku receives by 20%</color>. Exposed can stack up to 4 times and lasts <color=#FFAF2C>30</color>s. Repeated triggers reset the duration."
           },
           {
             "id": "69014507",
@@ -7886,7 +7886,7 @@
           {
             "id": "69014711",
             "title": "",
-            "desc": "· When an Agent's attack hits a Boss, the Boss gains 1 point of Dissonance. The same Agent can apply at most 1 point of Dissonance every 1s.\n· When a Boss accumulates 10 points of Dissonance, all Dissonance points are immediately removed and the Boss enters the Dissonant state. While in the Dissonant state, enemies take <color=#2BAD00>40% bonus Attribute Anomaly DMG</color> and <color=#2BAD00>75% bonus Sharp DMG</color> for 10s. Re-entering the Dissonant state resets the duration.\n· When an Agent successfully inflicts an Attribute Anomaly on a Boss, all Agents on the squad gain the Transmutation effect: <color=#2BAD00>DMG dealt increases by 15%</color> and Anomaly Proficiency <color=#2BAD00>increases by 20 points</color>. The Transmutation effect lasts 10s, and repeated triggers reset the duration."
+            "desc": "· When an Agent's attack hits a Boss, the Boss gains 1 point of Dissonance. The same Agent can apply at most 1 point of Dissonance every 1s.\n· When a Boss accumulates 10 points of Dissonance, all Dissonance points are immediately removed and the Boss enters the Dissonant state. While in the Dissonant state, enemies take <color=#2BAD00>40% bonus Attribute Anomaly DMG</color> and <color=#2BAD00>75% bonus Sharp DMG</color> for 10s. Re-entering the Dissonant state resets the duration.\n· When an Agent successfully inflicts an Attribute Anomaly on a Boss, all Agents on the squad's <color=#2BAD00>DMG dealt increases by 15%</color> and Anomaly Proficiency <color=#2BAD00>increases by 20 points</color>. This effect lasts 10s, and repeated triggers reset the duration."
           }
         ],
         "hard": true
@@ -8023,12 +8023,566 @@
           {
             "id": "69014506",
             "title": "",
-            "desc": "· Attribute Anomaly DMG taken by Kusarikku is <color=#FFAF2C>reduced by 40%</color>.\n· When an Agent successfully uses a Defensive Assist against Kusarikku's <Term:2000005></Term>, applies 1 stack of Exposed to Kusarikku. When Kusarikku becomes Stunned, applies 2 stacks of Exposed. Each stack of Exposed increases the <color=#FFAF2C>Laceration DMG Kusarikku receives by 10%</color>. Exposed can stack up to 4 times and lasts <color=#FFAF2C>30</color>s. Repeated triggers reset the duration."
+            "desc": "· Attribute Anomaly DMG taken by Kusarikku is <color=#FFAF2C>reduced by 40%</color>.\n· When an Agent successfully uses a Defensive Assist against Kusarikku's <Term:2000005></Term>, applies 1 stack of Exposed to Kusarikku. When Kusarikku becomes Stunned, applies 2 stacks of Exposed. Each stack of Exposed increases the <color=#FFAF2C>Laceration DMG Kusarikku receives by 20%</color>. Exposed can stack up to 4 times and lasts <color=#FFAF2C>30</color>s. Repeated triggers reset the duration."
           },
           {
             "id": "69014507",
             "title": "",
             "desc": "· After Kusarikku activates Corruptive Barrier, use <color=#FFFFFF>Defensive Assist</color> to counter Kusarikku's <Term:2000005></Term> and leave it Impaired to gain <color=#FFAF2C>1000 Performance Points</color>; successfully countering a <Term:2000005></Term> with <color=#FFFFFF>Defensive Assist</color> grants <color=#FFAF2C>700 Performance Points</color>; executing a <color=#FFAF2C>Shutdown</color> on Kusarikku's <Term:2000003></Term> grants <color=#FFAF2C>2000 Performance Points</color>. A maximum of 5000 Performance Points can be obtained."
+          }
+        ],
+        "hard": false
+      }
+    ]
+  },
+  {
+    "id": 690481,
+    "beginTime": "2026-10-23 04:00:00",
+    "endTime": "2026-11-06 03:59:59",
+    "zones": [
+      {
+        "name": "Integrated - Girtablullu - Stagnant Aberrant",
+        "monsterLevel": 70,
+        "monsterName": "Integrated - Stagnant Aberrant",
+        "monsterDef": 952.8000000000001,
+        "monsterImage": "HoloGirReborn",
+        "buffs": [
+          {
+            "id": "69014801",
+            "title": "Blazing Descent",
+            "desc": "· If there are 2/3 <color=#FFFFFF>Anomaly</color> specialty Agents in your squad, the whole squad's Anomaly Proficiency <color=#2BAD00>increases by 20/50</color> respectively.\n· When an <color=#FFFFFF>Anomaly</color> specialty Agent deals <color=#FFFFFF>Attribute Anomaly</color> DMG and triggers a critical hit, Attribute Anomaly DMG dealt by the whole squad <color=#2BAD00>increases by 20%</color>, and <color=#FF5521>Fire</color> Attribute Anomaly DMG <color=#2BAD00>increases by 10%</color> for 15s; repeated triggers reset the duration."
+          },
+          {
+            "id": "69014802",
+            "title": "Radiant Sky",
+            "desc": "· <color=#FFFFFF>Stun</color> specialty Agents' Daze <color=#2BAD00>increases by 20%</color>, and Energy generation efficiency <color=#2BAD00>increases by 20%</color>.\n· After the Agent uses an <color=#FFFFFF>EX Special Attack</color> or <color=#FFFFFF>Special Attack</color>, Sharp DMG <color=#2BAD00>increases by 30%</color>, and attacks that hit enemies ignore <color=#2BAD00>20%</color> of their <color=#2EB6FF>Electric RES</color> and <color=#FE437E>Ether RES</color> for 15s; repeated triggers reset the duration."
+          },
+          {
+            "id": "69014803",
+            "title": "Perfect Rhythm",
+            "desc": "· <color=#FFFFFF>Stun</color> specialty Agents' Daze <color=#2BAD00>increases by 15%</color>. Upon hitting a Stunned enemy, their Stun recovery Speed <color=#2BAD00>reduces by 10%</color> for 15s; repeated triggers reset the duration.\n· Attribute Anomaly DMG dealt by Agents <color=#2BAD00>increases by 15%</color>. Against Stunned enemies, Attribute Anomaly DMG dealt additionally <color=#2BAD00>increases by 25%</color>."
+          }
+        ],
+        "zoneBuffs": [
+          {
+            "id": "69014406",
+            "title": "",
+            "desc": "· Successfully <color=#FFAF2C>inflicting Impaired</color> grants <color=#FFAF2C>1000 Performance Points</color>; successfully <color=#FFAF2C>countering <Term:2000003></Term></color> grants <color=#FFAF2C>500 Performance Points</color> each time; <color=#FFAF2C>preventing an enemy's Corruptive Barrier from completing its charge</color> and rendering them Impaired grants <color=#FFAF2C>1,500 Performance Points</color>.  During the <Term:2000003></Term>, when triggering <color=#FFAF2C>Shutdown</color> via <color=#FFAF2C><Term:2000006></Term></color>, obtain the remaining Performance Points available from the current <color=#FFAF2C>Control Skill</color>. Maximum obtainable Performance Points: 5,000."
+          },
+          {
+            "id": "69014804",
+            "title": "TBD",
+            "desc": "· When an Agent inflicts an Attribute Anomaly on an enemy, the target enemy gains 1 stack of Blight Mark of the corresponding attribute. When an enemy's Gash is removed upon Maim DMG settlement, they gain 2 stacks of non-Attribute Blight Marks, lasting 10s. Blight Marks can stack up to 3 times, and reapplying a Blight Mark of the same Attribute resets its duration.\n· For each Blight Mark an enemy has, <color=#FFAF2C>Anomaly DMG they take is increased by 15%</color>, <color=#FFAF2C>DMG from <Term:2000001></Term> is increased by 15%</color>, and <color=#FFAF2C>Sharp DMG is increased by 35%</color>.\n· When Impaired or Shutdown is inflicted on an enemy, <color=#FFAF2C>the whole squad's Anomaly Proficiency increases by 50</color> for 15s. Repeated triggers reset the duration."
+          }
+        ],
+        "hard": true
+      },
+      {
+        "name": "Etheric Other - Truvia",
+        "monsterLevel": 70,
+        "monsterName": "Etheric Other - Truvia",
+        "monsterDef": 952.8000000000001,
+        "monsterImage": "HollowVenger",
+        "enemyResists": {
+          "ice": 40
+        },
+        "enemyWeak": {
+          "fire": 20
+        },
+        "buffs": [
+          {
+            "id": "69014801",
+            "title": "Blazing Descent",
+            "desc": "· If there are 2/3 <color=#FFFFFF>Anomaly</color> specialty Agents in your squad, the whole squad's Anomaly Proficiency <color=#2BAD00>increases by 20/50</color> respectively.\n· When an <color=#FFFFFF>Anomaly</color> specialty Agent deals <color=#FFFFFF>Attribute Anomaly</color> DMG and triggers a critical hit, Attribute Anomaly DMG dealt by the whole squad <color=#2BAD00>increases by 20%</color>, and <color=#FF5521>Fire</color> Attribute Anomaly DMG <color=#2BAD00>increases by 10%</color> for 15s; repeated triggers reset the duration."
+          },
+          {
+            "id": "69014802",
+            "title": "Radiant Sky",
+            "desc": "· <color=#FFFFFF>Stun</color> specialty Agents' Daze <color=#2BAD00>increases by 20%</color>, and Energy generation efficiency <color=#2BAD00>increases by 20%</color>.\n· After the Agent uses an <color=#FFFFFF>EX Special Attack</color> or <color=#FFFFFF>Special Attack</color>, Sharp DMG <color=#2BAD00>increases by 30%</color>, and attacks that hit enemies ignore <color=#2BAD00>20%</color> of their <color=#2EB6FF>Electric RES</color> and <color=#FE437E>Ether RES</color> for 15s; repeated triggers reset the duration."
+          },
+          {
+            "id": "69014803",
+            "title": "Perfect Rhythm",
+            "desc": "· <color=#FFFFFF>Stun</color> specialty Agents' Daze <color=#2BAD00>increases by 15%</color>. Upon hitting a Stunned enemy, their Stun recovery Speed <color=#2BAD00>reduces by 10%</color> for 15s; repeated triggers reset the duration.\n· Attribute Anomaly DMG dealt by Agents <color=#2BAD00>increases by 15%</color>. Against Stunned enemies, Attribute Anomaly DMG dealt additionally <color=#2BAD00>increases by 25%</color>."
+          }
+        ],
+        "zoneBuffs": [
+          {
+            "id": "69013003",
+            "title": "",
+            "desc": "· Suitable for Agents with <IconMap:Icon_AvatarClass_Anomaly><color=#FFAF2C>Anomaly</color> specialty."
+          },
+          {
+            "id": "69014805",
+            "title": "",
+            "desc": "· When a Boss enemy is attacked, the attack's Anomaly Buildup Rate <color=#2BAD00>increases by 10%</color>.\n· Each time a Boss enemy enters an <color=#FFFFFF>Attribute Anomaly</color> state, it gains 1 stack of <color=#FFFFFF>Afterglow Mark</color>. When it reaches <color=#2BAD00>3 stacks</color>, all Afterglow Marks are consumed, and the Boss enters the <color=#FFFFFF>Wax Wings</color> state for <color=#2BAD00>30 seconds</color>.\n· While in the <color=#FFFFFF>Wax Wings</color> state, the Boss takes <color=#2BAD00>30% increased Attribute Anomaly DMG</color> and accumulates an additional <color=#2BAD00>5% Daze</color> when entering an <color=#FFFFFF>Attribute Anomaly</color> state, but no longer gains <color=#FFFFFF>Afterglow Marks</color>.\n· When the Boss is Stunned, it immediately enters the <color=#FFFFFF>Wax Wings</color> state. If it is already in the Wax Wings state, the duration is reset."
+          },
+          {
+            "id": "69014806",
+            "title": "",
+            "desc": "· Each successful <Term:2000004>Chain Parry</Term> against an enemy attack grants an additional <color=#FFAF2C>1,000 Performance Points</color>;\n· After an enemy deploys a Spatial Barrier, each successful stomp on a golden area that triggers a Defensive Assist grants an additional <color=#FFAF2C>1,500 Performance Points</color>; up to 5,000 Performance Points can be earned this way."
+          }
+        ],
+        "hard": false
+      },
+      {
+        "name": "Unknown Corruption Complex",
+        "monsterLevel": 70,
+        "monsterName": "Unknown Corruption Complex",
+        "monsterDef": 952.8000000000001,
+        "monsterImage": "ComplexCorrupted",
+        "enemyWeak": {
+          "electric": 20,
+          "ether": 20
+        },
+        "buffs": [
+          {
+            "id": "69014801",
+            "title": "Blazing Descent",
+            "desc": "· If there are 2/3 <color=#FFFFFF>Anomaly</color> specialty Agents in your squad, the whole squad's Anomaly Proficiency <color=#2BAD00>increases by 20/50</color> respectively.\n· When an <color=#FFFFFF>Anomaly</color> specialty Agent deals <color=#FFFFFF>Attribute Anomaly</color> DMG and triggers a critical hit, Attribute Anomaly DMG dealt by the whole squad <color=#2BAD00>increases by 20%</color>, and <color=#FF5521>Fire</color> Attribute Anomaly DMG <color=#2BAD00>increases by 10%</color> for 15s; repeated triggers reset the duration."
+          },
+          {
+            "id": "69014802",
+            "title": "Radiant Sky",
+            "desc": "· <color=#FFFFFF>Stun</color> specialty Agents' Daze <color=#2BAD00>increases by 20%</color>, and Energy generation efficiency <color=#2BAD00>increases by 20%</color>.\n· After the Agent uses an <color=#FFFFFF>EX Special Attack</color> or <color=#FFFFFF>Special Attack</color>, Sharp DMG <color=#2BAD00>increases by 30%</color>, and attacks that hit enemies ignore <color=#2BAD00>20%</color> of their <color=#2EB6FF>Electric RES</color> and <color=#FE437E>Ether RES</color> for 15s; repeated triggers reset the duration."
+          },
+          {
+            "id": "69014803",
+            "title": "Perfect Rhythm",
+            "desc": "· <color=#FFFFFF>Stun</color> specialty Agents' Daze <color=#2BAD00>increases by 15%</color>. Upon hitting a Stunned enemy, their Stun recovery Speed <color=#2BAD00>reduces by 10%</color> for 15s; repeated triggers reset the duration.\n· Attribute Anomaly DMG dealt by Agents <color=#2BAD00>increases by 15%</color>. Against Stunned enemies, Attribute Anomaly DMG dealt additionally <color=#2BAD00>increases by 25%</color>."
+          }
+        ],
+        "zoneBuffs": [
+          {
+            "id": "69010305",
+            "title": "",
+            "desc": "· When dealing sufficient DMG to the boss enemy's legs, Impaired will be triggered. <color=#FFAF2C>Upon successfully breaking the boss enemy's legs</color>, the Agent restores <color=#FFAF2C>1,000 Decibels</color>, and the boss gains 1 stack of <color=#FFFFFF>Disintegration</color> for 20 seconds, up to a maximum of 4 stacks. When the Agent's attacks hit an enemy, for each stack of <color=#FFFFFF>Disintegration</color> the target has, CRIT DMG is <color=#FFAF2C>increased by 25%</color>."
+          },
+          {
+            "id": "69010307",
+            "title": "",
+            "desc": "· Successfully <color=#FFAF2C>impairing an enemy</color> grants <color=#FFAF2C>800 Performance Points</color>. A maximum of 5,000 Performance Points can be obtained."
+          }
+        ],
+        "hard": false
+      },
+      {
+        "name": "Discordant Solo - Vesper",
+        "monsterLevel": 70,
+        "monsterName": "Discordant Solo - Vesper",
+        "monsterDef": 476.40000000000003,
+        "monsterImage": "Vesper",
+        "enemyResists": {
+          "ice": 40,
+          "fire": 40
+        },
+        "enemyWeak": {
+          "ether": 20,
+          "wind": 20
+        },
+        "buffs": [
+          {
+            "id": "69014801",
+            "title": "Blazing Descent",
+            "desc": "· If there are 2/3 <color=#FFFFFF>Anomaly</color> specialty Agents in your squad, the whole squad's Anomaly Proficiency <color=#2BAD00>increases by 20/50</color> respectively.\n· When an <color=#FFFFFF>Anomaly</color> specialty Agent deals <color=#FFFFFF>Attribute Anomaly</color> DMG and triggers a critical hit, Attribute Anomaly DMG dealt by the whole squad <color=#2BAD00>increases by 20%</color>, and <color=#FF5521>Fire</color> Attribute Anomaly DMG <color=#2BAD00>increases by 10%</color> for 15s; repeated triggers reset the duration."
+          },
+          {
+            "id": "69014802",
+            "title": "Radiant Sky",
+            "desc": "· <color=#FFFFFF>Stun</color> specialty Agents' Daze <color=#2BAD00>increases by 20%</color>, and Energy generation efficiency <color=#2BAD00>increases by 20%</color>.\n· After the Agent uses an <color=#FFFFFF>EX Special Attack</color> or <color=#FFFFFF>Special Attack</color>, Sharp DMG <color=#2BAD00>increases by 30%</color>, and attacks that hit enemies ignore <color=#2BAD00>20%</color> of their <color=#2EB6FF>Electric RES</color> and <color=#FE437E>Ether RES</color> for 15s; repeated triggers reset the duration."
+          },
+          {
+            "id": "69014803",
+            "title": "Perfect Rhythm",
+            "desc": "· <color=#FFFFFF>Stun</color> specialty Agents' Daze <color=#2BAD00>increases by 15%</color>. Upon hitting a Stunned enemy, their Stun recovery Speed <color=#2BAD00>reduces by 10%</color> for 15s; repeated triggers reset the duration.\n· Attribute Anomaly DMG dealt by Agents <color=#2BAD00>increases by 15%</color>. Against Stunned enemies, Attribute Anomaly DMG dealt additionally <color=#2BAD00>increases by 25%</color>."
+          }
+        ],
+        "zoneBuffs": [
+          {
+            "id": "69013003",
+            "title": "",
+            "desc": "· Suitable for Agents with <IconMap:Icon_AvatarClass_Anomaly><color=#FFAF2C>Anomaly</color> specialty."
+          },
+          {
+            "id": "69013103",
+            "title": "",
+            "desc": "· Agent Anomaly Buildup Rate <color=#FFAF2C>increases by 15%</color>, Anomaly DMG dealt to Discordant Solo <color=#FFAF2C>increases by 30%</color>, when Agents are in Ether Veil during combat, Discordant Solo's Stun DMG Multiplier <color=#FFAF2C>increases by 30%</color>."
+          },
+          {
+            "id": "69013104",
+            "title": "",
+            "desc": "During a <color=#FFAF2C>Control Skill</color>, every successful counter of a Boss attack grants <color=#FFAF2C>350 Performance Points</color>. A <color=#FFAF2C>Shutdown</color> of the Boss's <color=#FFAF2C>Control Skill</color> or counter of the final strike of certain skills inflicts on the Boss the <color=#FFAF2C>Impaired</color> effect and grants <color=#FFAF2C>750 Performance Points</color>. During the <Term:2000003></Term>, when triggering <color=#FFAF2C>Shutdown</color> via <color=#FFAF2C>Counter Assists</color>, obtain the remaining Performance Points available from the current <color=#FFAF2C>Control Skill</color>. Maximum obtainable Performance Points: 5,000."
+          }
+        ],
+        "hard": false
+      }
+    ]
+  },
+  {
+    "id": 690491,
+    "beginTime": "2026-11-06 04:00:00",
+    "endTime": "2026-11-20 03:59:59",
+    "zones": [
+      {
+        "name": "Rewritten - Sanguine Sweeper",
+        "monsterLevel": 70,
+        "monsterName": "Rewritten - Sanguine Sweeper",
+        "monsterDef": 476.40000000000003,
+        "monsterImage": "ClonedBlackWolf",
+        "buffs": [
+          {
+            "id": "69014901",
+            "title": "Blazing Radiance",
+            "desc": "· <color=#FFFFFF>Anomaly</color> specialty Agents' ATK <color=#2BAD00>increases by 10%</color>, and <color=#FF5521>Fire Anomaly Buildup Rate</color> <color=#2BAD00>increases by 10%</color>.\n· When an Agent deals <color=#FFFFFF>Attribute Anomaly</color> DMG and triggers a critical hit, the whole squad's Anomaly Proficiency <color=#2BAD00>increases by 30</color> and Attribute Anomaly DMG <color=#2BAD00>increases by 10%</color> for 15s; repeated triggers reset the duration."
+          },
+          {
+            "id": "69014902",
+            "title": "Storm Tribulation",
+            "desc": "· Agents' <color=#A6C5FD>Wind DMG</color> <color=#2BAD00>increases by 40%</color>, and <color=#A6C5FD>Wind</color> CRIT DMG <color=#2BAD00>increases by 40%</color>.\n· <color=#FFFFFF>Attack</color> specialty Agents' ATK <color=#2BAD00>increases by 25%</color>, and <color=#FFFFFF>Basic Attack</color> DMG <color=#2BAD00>increases by 40%</color>."
+          },
+          {
+            "id": "69014903",
+            "title": "Corroding Edge",
+            "desc": "· Agents' <color=#2EB6FF>Electric DMG</color> <color=#2BAD00>increases by 30%</color>, Sharp DMG <color=#2BAD00>increases by 10%</color>.\n· <color=#FFFFFF>Attack</color> or <color=#FFFFFF>Armorer</color> specialty Agents' PEN Ratio <color=#2BAD00>increases by 20%</color>, and DMG dealt by <color=#FFFFFF>Special Attack</color> and <color=#FFFFFF>EX Special Attack</color> <color=#2BAD00>increases by 30%</color>."
+          }
+        ],
+        "zoneBuffs": [
+          {
+            "id": "69013304",
+            "title": "",
+            "desc": "·Each time you successfully neutralize the boss's attacks and trigger the boss's special stagger, it grants <color=#FFAF2C>1,000 Performance Points</color>. During the <Term:2000003>Control Skill</Term>, each successful counter against the Boss's attacks grants <color=#FFAF2C>500 Performance Points</color>. Performing a <color=#FFAF2C>Shutdown</color> on the Boss's <color=#FFAF2C>Control Skill</color> grants <color=#FFAF2C>2,000 Performance Points</color>. During the <Term:2000003></Term>, when triggering <color=#FFAF2C>Shutdown</color> via <color=#FFAF2C><Term:2000006></Term></color>, obtain the remaining Performance Points available from the current <color=#FFAF2C>Control Skill</color>. Maximum obtainable Performance Points: 5,000."
+          },
+          {
+            "id": "69014904",
+            "title": "TBD",
+            "desc": "· After Shutdown against a Boss enemy's Control Skill, <color=#FFAF2C>Daze</color> dealt by the whole squad's Agents increases by 15%, <color=#FFAF2C>DEF</color> increases by 30%, and when their attacks hit enemies, <color=#FFAF2C>CRIT DMG</color> increases by 75%, and <color=#FFFFFF>Attribute Anomaly DMG</color> increases by 15%.\n· While the Boss is Stunned, <color=#FFAF2C>Sharp DMG</color> dealt by the whole squad's Agents increases by 60%, <color=#A6C5FD>Wind</color> and <color=#98EFF0>Ice</color> CRIT DMG dealt increases by 80% and ignores 40% of the Boss's DEF."
+          }
+        ],
+        "hard": true
+      },
+      {
+        "name": "Etheric Other - Truvia",
+        "monsterLevel": 70,
+        "monsterName": "Etheric Other - Truvia",
+        "monsterDef": 952.8000000000001,
+        "monsterImage": "HollowVenger",
+        "enemyResists": {
+          "ice": 40
+        },
+        "enemyWeak": {
+          "fire": 20
+        },
+        "buffs": [
+          {
+            "id": "69014901",
+            "title": "Blazing Radiance",
+            "desc": "· <color=#FFFFFF>Anomaly</color> specialty Agents' ATK <color=#2BAD00>increases by 10%</color>, and <color=#FF5521>Fire Anomaly Buildup Rate</color> <color=#2BAD00>increases by 10%</color>.\n· When an Agent deals <color=#FFFFFF>Attribute Anomaly</color> DMG and triggers a critical hit, the whole squad's Anomaly Proficiency <color=#2BAD00>increases by 30</color> and Attribute Anomaly DMG <color=#2BAD00>increases by 10%</color> for 15s; repeated triggers reset the duration."
+          },
+          {
+            "id": "69014902",
+            "title": "Storm Tribulation",
+            "desc": "· Agents' <color=#A6C5FD>Wind DMG</color> <color=#2BAD00>increases by 40%</color>, and <color=#A6C5FD>Wind</color> CRIT DMG <color=#2BAD00>increases by 40%</color>.\n· <color=#FFFFFF>Attack</color> specialty Agents' ATK <color=#2BAD00>increases by 25%</color>, and <color=#FFFFFF>Basic Attack</color> DMG <color=#2BAD00>increases by 40%</color>."
+          },
+          {
+            "id": "69014903",
+            "title": "Corroding Edge",
+            "desc": "· Agents' <color=#2EB6FF>Electric DMG</color> <color=#2BAD00>increases by 30%</color>, Sharp DMG <color=#2BAD00>increases by 10%</color>.\n· <color=#FFFFFF>Attack</color> or <color=#FFFFFF>Armorer</color> specialty Agents' PEN Ratio <color=#2BAD00>increases by 20%</color>, and DMG dealt by <color=#FFFFFF>Special Attack</color> and <color=#FFFFFF>EX Special Attack</color> <color=#2BAD00>increases by 30%</color>."
+          }
+        ],
+        "zoneBuffs": [
+          {
+            "id": "69013003",
+            "title": "",
+            "desc": "· Suitable for Agents with <IconMap:Icon_AvatarClass_Anomaly><color=#FFAF2C>Anomaly</color> specialty."
+          },
+          {
+            "id": "69014805",
+            "title": "",
+            "desc": "· When a Boss enemy is attacked, the attack's Anomaly Buildup Rate <color=#2BAD00>increases by 10%</color>.\n· Each time a Boss enemy enters an <color=#FFFFFF>Attribute Anomaly</color> state, it gains 1 stack of <color=#FFFFFF>Afterglow Mark</color>. When it reaches <color=#2BAD00>3 stacks</color>, all Afterglow Marks are consumed, and the Boss enters the <color=#FFFFFF>Wax Wings</color> state for <color=#2BAD00>30 seconds</color>.\n· While in the <color=#FFFFFF>Wax Wings</color> state, the Boss takes <color=#2BAD00>30% increased Attribute Anomaly DMG</color> and accumulates an additional <color=#2BAD00>5% Daze</color> when entering an <color=#FFFFFF>Attribute Anomaly</color> state, but no longer gains <color=#FFFFFF>Afterglow Marks</color>.\n· When the Boss is Stunned, it immediately enters the <color=#FFFFFF>Wax Wings</color> state. If it is already in the Wax Wings state, the duration is reset."
+          },
+          {
+            "id": "69014806",
+            "title": "",
+            "desc": "· Each successful <Term:2000004>Chain Parry</Term> against an enemy attack grants an additional <color=#FFAF2C>1,000 Performance Points</color>;\n· After an enemy deploys a Spatial Barrier, each successful stomp on a golden area that triggers a Defensive Assist grants an additional <color=#FFAF2C>1,500 Performance Points</color>; up to 5,000 Performance Points can be earned this way."
+          }
+        ],
+        "hard": false
+      },
+      {
+        "name": "Infernal Revenant",
+        "monsterLevel": 70,
+        "monsterName": "Infernal Revenant",
+        "monsterDef": 952.8000000000001,
+        "monsterImage": "SymbioticEtherealSinner",
+        "enemyResists": {
+          "physical": 40
+        },
+        "enemyWeak": {
+          "ice": 20,
+          "wind": 20
+        },
+        "buffs": [
+          {
+            "id": "69014901",
+            "title": "Blazing Radiance",
+            "desc": "· <color=#FFFFFF>Anomaly</color> specialty Agents' ATK <color=#2BAD00>increases by 10%</color>, and <color=#FF5521>Fire Anomaly Buildup Rate</color> <color=#2BAD00>increases by 10%</color>.\n· When an Agent deals <color=#FFFFFF>Attribute Anomaly</color> DMG and triggers a critical hit, the whole squad's Anomaly Proficiency <color=#2BAD00>increases by 30</color> and Attribute Anomaly DMG <color=#2BAD00>increases by 10%</color> for 15s; repeated triggers reset the duration."
+          },
+          {
+            "id": "69014902",
+            "title": "Storm Tribulation",
+            "desc": "· Agents' <color=#A6C5FD>Wind DMG</color> <color=#2BAD00>increases by 40%</color>, and <color=#A6C5FD>Wind</color> CRIT DMG <color=#2BAD00>increases by 40%</color>.\n· <color=#FFFFFF>Attack</color> specialty Agents' ATK <color=#2BAD00>increases by 25%</color>, and <color=#FFFFFF>Basic Attack</color> DMG <color=#2BAD00>increases by 40%</color>."
+          },
+          {
+            "id": "69014903",
+            "title": "Corroding Edge",
+            "desc": "· Agents' <color=#2EB6FF>Electric DMG</color> <color=#2BAD00>increases by 30%</color>, Sharp DMG <color=#2BAD00>increases by 10%</color>.\n· <color=#FFFFFF>Attack</color> or <color=#FFFFFF>Armorer</color> specialty Agents' PEN Ratio <color=#2BAD00>increases by 20%</color>, and DMG dealt by <color=#FFFFFF>Special Attack</color> and <color=#FFFFFF>EX Special Attack</color> <color=#2BAD00>increases by 30%</color>."
+          }
+        ],
+        "zoneBuffs": [
+          {
+            "id": "69014411",
+            "title": "",
+            "desc": "· Successfully triggering <color=#FFAF2C>Shutdown</color> grants <color=#FFAF2C>2000 Performance Points</color>; <color=#FFAF2C>each flint shattered</color> grants <color=#FFAF2C>1000 Performance Points, up to a maximum of 5000 Performance Points</color>."
+          },
+          {
+            "id": "69014412",
+            "title": "",
+            "desc": "· After Infernal Revenant enters the Infernal state, the Attribute Anomaly DMG it takes is reduced by 30%. Every <color=#2BAD00>flintstone</color> shattered gives <color=#FFFFFF>20</color> Energy to the whole team. Every time <Term:2000004></Term> is triggered, the Boss gains 1 stack of <color=#FFFFFF>Overheat</color>; triggering <color=#FFAF2C>Defensive Assist</color> or <color=#FFAF2C>Perfect Dodge</color> 2 times in total applies 1 stack of <color=#FFFFFF>Overheat</color> on the Boss, and each stack of <color=#FFFFFF>Overheat</color> increases CRIT DMG of the whole squad by <color=#FFAF2C>25%</color>, stacking up to 3 times and lasting 20s. Triggering <color=#FFAF2C>Defensive Assist</color> or retriggering <color=#FFFFFF>Overheat</color> resets the duration."
+          }
+        ],
+        "hard": false
+      },
+      {
+        "name": "Autonomous Assault Unit - Typhon Destroyer",
+        "monsterLevel": 70,
+        "monsterName": "Autonomous Assault Unit - Typhon Destroyer",
+        "monsterDef": 952.8000000000001,
+        "monsterImage": "TyphonDestroyer",
+        "enemyResists": {
+          "fire": 40
+        },
+        "enemyWeak": {
+          "electric": 20,
+          "wind": 20
+        },
+        "buffs": [
+          {
+            "id": "69014901",
+            "title": "Blazing Radiance",
+            "desc": "· <color=#FFFFFF>Anomaly</color> specialty Agents' ATK <color=#2BAD00>increases by 10%</color>, and <color=#FF5521>Fire Anomaly Buildup Rate</color> <color=#2BAD00>increases by 10%</color>.\n· When an Agent deals <color=#FFFFFF>Attribute Anomaly</color> DMG and triggers a critical hit, the whole squad's Anomaly Proficiency <color=#2BAD00>increases by 30</color> and Attribute Anomaly DMG <color=#2BAD00>increases by 10%</color> for 15s; repeated triggers reset the duration."
+          },
+          {
+            "id": "69014902",
+            "title": "Storm Tribulation",
+            "desc": "· Agents' <color=#A6C5FD>Wind DMG</color> <color=#2BAD00>increases by 40%</color>, and <color=#A6C5FD>Wind</color> CRIT DMG <color=#2BAD00>increases by 40%</color>.\n· <color=#FFFFFF>Attack</color> specialty Agents' ATK <color=#2BAD00>increases by 25%</color>, and <color=#FFFFFF>Basic Attack</color> DMG <color=#2BAD00>increases by 40%</color>."
+          },
+          {
+            "id": "69014903",
+            "title": "Corroding Edge",
+            "desc": "· Agents' <color=#2EB6FF>Electric DMG</color> <color=#2BAD00>increases by 30%</color>, Sharp DMG <color=#2BAD00>increases by 10%</color>.\n· <color=#FFFFFF>Attack</color> or <color=#FFFFFF>Armorer</color> specialty Agents' PEN Ratio <color=#2BAD00>increases by 20%</color>, and DMG dealt by <color=#FFFFFF>Special Attack</color> and <color=#FFFFFF>EX Special Attack</color> <color=#2BAD00>increases by 30%</color>."
+          }
+        ],
+        "zoneBuffs": [
+          {
+            "id": "69010205",
+            "title": "",
+            "desc": "· Agents inflict <color=#FFFFFF>Overwhelmed</color> when <color=#FFAF2C>landing a Defensive Assist hit</color> against a Boss enemy, and 3 stacks of <color=#FFFFFF>Overwhelmed</color> when accumulating 3 <color=#FFFFFF>Defensive Assist</color> hits and triggering Impaired. Each stack of <color=#FFFFFF>Overwhelmed</color> increases Daze by <color=#FFAF2C>15%</color>, and <color=#FFFFFF>Chain Attack</color> and <color=#FFFFFF>Ultimate</color> DMG taken while Stunned by <color=#FFAF2C>10%</color>. The enemy will fix the impaired parts and reset the impairment level while charging, and will reset its <color=#FFFFFF>Overwhelmed</color> stacks after recovering from Stun."
+          },
+          {
+            "id": "69010308",
+            "title": "",
+            "desc": "· <color=#FFFFFF>Assist Points</color> are not consumed for this battle."
+          },
+          {
+            "id": "69014906",
+            "title": "",
+            "desc": "· Successfully <color=#FFAF2C>triggering a Perfect Assist</color> grants <color=#FFAF2C>300 Performance Points</color>.\n· Successfully <color=#FFAF2C>causing Impaired</color> grants <color=#FFAF2C>900 Performance Points</color>. A maximum of 5,000 Performance Points can be obtained."
+          }
+        ],
+        "hard": false
+      }
+    ]
+  },
+  {
+    "id": 690501,
+    "beginTime": "2026-11-20 04:00:00",
+    "endTime": "2026-12-02 03:59:59",
+    "zones": [
+      {
+        "name": "Integrated - Girtablullu",
+        "monsterLevel": 70,
+        "monsterName": "Integrated - Girtablullu",
+        "monsterDef": 952.8000000000001,
+        "monsterImage": "Girtablu_HC",
+        "buffs": [
+          {
+            "id": "69015001",
+            "title": "Sweeping Frost",
+            "desc": "· Agents' <color=#A6C5FD>Wind DMG</color> <color=#2BAD00>increases by 30%</color>. When attacks hit enemies, ignore <color=#2BAD00>30%</color> of their <color=#A6C5FD>Wind RES</color>.\n· <color=#FFFFFF>Attack</color> specialty Agents' CRIT DMG <color=#2BAD00>increases by 40%</color> and <color=#FFFFFF>Basic Attack</color> DMG <color=#2BAD00>increases by 50%</color>."
+          },
+          {
+            "id": "69015002",
+            "title": "Surging Thunder",
+            "desc": "· Agents' DEF <color=#2BAD00>increases by 10%</color>, and their Sharp DMG <color=#2BAD00>increases by 15%</color>.\n· After an Agent uses an <color=#FFFFFF>EX Special Attack</color>, <color=#FFFFFF>Special Attack</color>, or <color=#FFFFFF>Ultimate</color>, <color=#2EB6FF>Electric DMG</color> and <color=#A6C5FD>Wind DMG</color> <color=#2BAD00>increases by 20%</color> for 15s; repeated triggers reset the duration."
+          },
+          {
+            "id": "69015003",
+            "title": "Spirit Zenith",
+            "desc": "· <color=#FFFFFF>Anomaly</color> specialty Agents' ATK <color=#2BAD00>increases by 10%</color>, and <color=#FF5521>Fire</color> and <color=#A6C5FD>Wind</color> Anomaly Buildup Rate <color=#2BAD00>increases by 10%</color>.\n· When an Agent deals <color=#FFFFFF>Attribute Anomaly</color> DMG and triggers a critical hit, the whole squad <color=#2BAD00>gains 20</color> Energy, and Attribute Anomaly DMG <color=#2BAD00>increases by 20%</color> for 20s. This effect can trigger once every 20s."
+          }
+        ],
+        "zoneBuffs": [
+          {
+            "id": "69014204",
+            "title": "",
+            "desc": "· Each time you successfully parry an attack from Girtablullu's summoned minions and trigger <color=#FFAF2C>Active Conversion</color>, you gain <color=#FFAF2C>500 Performance Points</color>; successfully triggering <Term:2000004></Term> against Girtablullu's attacks grants <color=#FFAF2C>1000 Performance Points</color>, up to 3 times; if you successfully <color=#FFAF2C>break the Corruptive Barrier within 25s</color> of Girtablullu <color=#FFAF2C>first activating</color> <Term:2000001></Term>, you gain <color=#FFAF2C>1500 Performance Points</color>. A maximum of 5,000 Performance Points can be obtained."
+          },
+          {
+            "id": "69015006",
+            "title": "",
+            "desc": "· When an Agent's attack hits a Boss, the Boss gains 1 point of Dissonance. The same Agent can apply 1 point of Dissonance at most once every 1s.\n· When a Boss accumulates 10 points of Dissonance, all Dissonance points are immediately removed and the Boss enters the Dissonant state. While in the Dissonant state, <color=#2BAD00>Attribute Anomaly DMG dealt to the Boss increases by 20%</color>, <color=#2BAD00>CRIT DMG increases by 120%</color>, <color=#2BAD00>Sharp DMG dealt to the Boss increases by 65%</color>, and <color=#2BAD00>Laceration DMG increases by 25%</color> for 10s. Re-entering the Dissonant state resets the duration.\n· When an Agent successfully inflicts an Attribute Anomaly on a Boss, the whole squad's Anomaly Proficiency <color=#2BAD00>increases by 20 points</color> for 10s, and repeated triggers reset the duration."
+          }
+        ],
+        "hard": true
+      },
+      {
+        "name": "Infernal Revenant",
+        "monsterLevel": 70,
+        "monsterName": "Infernal Revenant",
+        "monsterDef": 952.8000000000001,
+        "monsterImage": "SymbioticEtherealSinner",
+        "enemyResists": {
+          "physical": 40
+        },
+        "enemyWeak": {
+          "ice": 20,
+          "wind": 20
+        },
+        "buffs": [
+          {
+            "id": "69015001",
+            "title": "Sweeping Frost",
+            "desc": "· Agents' <color=#A6C5FD>Wind DMG</color> <color=#2BAD00>increases by 30%</color>. When attacks hit enemies, ignore <color=#2BAD00>30%</color> of their <color=#A6C5FD>Wind RES</color>.\n· <color=#FFFFFF>Attack</color> specialty Agents' CRIT DMG <color=#2BAD00>increases by 40%</color> and <color=#FFFFFF>Basic Attack</color> DMG <color=#2BAD00>increases by 50%</color>."
+          },
+          {
+            "id": "69015002",
+            "title": "Surging Thunder",
+            "desc": "· Agents' DEF <color=#2BAD00>increases by 10%</color>, and their Sharp DMG <color=#2BAD00>increases by 15%</color>.\n· After an Agent uses an <color=#FFFFFF>EX Special Attack</color>, <color=#FFFFFF>Special Attack</color>, or <color=#FFFFFF>Ultimate</color>, <color=#2EB6FF>Electric DMG</color> and <color=#A6C5FD>Wind DMG</color> <color=#2BAD00>increases by 20%</color> for 15s; repeated triggers reset the duration."
+          },
+          {
+            "id": "69015003",
+            "title": "Spirit Zenith",
+            "desc": "· <color=#FFFFFF>Anomaly</color> specialty Agents' ATK <color=#2BAD00>increases by 10%</color>, and <color=#FF5521>Fire</color> and <color=#A6C5FD>Wind</color> Anomaly Buildup Rate <color=#2BAD00>increases by 10%</color>.\n· When an Agent deals <color=#FFFFFF>Attribute Anomaly</color> DMG and triggers a critical hit, the whole squad <color=#2BAD00>gains 20</color> Energy, and Attribute Anomaly DMG <color=#2BAD00>increases by 20%</color> for 20s. This effect can trigger once every 20s."
+          }
+        ],
+        "zoneBuffs": [
+          {
+            "id": "69014411",
+            "title": "",
+            "desc": "· Successfully triggering <color=#FFAF2C>Shutdown</color> grants <color=#FFAF2C>2000 Performance Points</color>; <color=#FFAF2C>each flint shattered</color> grants <color=#FFAF2C>1000 Performance Points, up to a maximum of 5000 Performance Points</color>."
+          },
+          {
+            "id": "69014412",
+            "title": "",
+            "desc": "· After Infernal Revenant enters the Infernal state, the Attribute Anomaly DMG it takes is reduced by 30%. Every <color=#2BAD00>flintstone</color> shattered gives <color=#FFFFFF>20</color> Energy to the whole team. Every time <Term:2000004></Term> is triggered, the Boss gains 1 stack of <color=#FFFFFF>Overheat</color>; triggering <color=#FFAF2C>Defensive Assist</color> or <color=#FFAF2C>Perfect Dodge</color> 2 times in total applies 1 stack of <color=#FFFFFF>Overheat</color> on the Boss, and each stack of <color=#FFFFFF>Overheat</color> increases CRIT DMG of the whole squad by <color=#FFAF2C>25%</color>, stacking up to 3 times and lasting 20s. Triggering <color=#FFAF2C>Defensive Assist</color> or retriggering <color=#FFFFFF>Overheat</color> resets the duration."
+          }
+        ],
+        "hard": false
+      },
+      {
+        "name": "Kusarikku",
+        "monsterLevel": 70,
+        "monsterName": "Kusarikku",
+        "monsterDef": 952.8000000000001,
+        "monsterImage": "Larval",
+        "enemyResists": {
+          "ice": 40
+        },
+        "enemyWeak": {
+          "fire": 20,
+          "electric": 20
+        },
+        "buffs": [
+          {
+            "id": "69015001",
+            "title": "Sweeping Frost",
+            "desc": "· Agents' <color=#A6C5FD>Wind DMG</color> <color=#2BAD00>increases by 30%</color>. When attacks hit enemies, ignore <color=#2BAD00>30%</color> of their <color=#A6C5FD>Wind RES</color>.\n· <color=#FFFFFF>Attack</color> specialty Agents' CRIT DMG <color=#2BAD00>increases by 40%</color> and <color=#FFFFFF>Basic Attack</color> DMG <color=#2BAD00>increases by 50%</color>."
+          },
+          {
+            "id": "69015002",
+            "title": "Surging Thunder",
+            "desc": "· Agents' DEF <color=#2BAD00>increases by 10%</color>, and their Sharp DMG <color=#2BAD00>increases by 15%</color>.\n· After an Agent uses an <color=#FFFFFF>EX Special Attack</color>, <color=#FFFFFF>Special Attack</color>, or <color=#FFFFFF>Ultimate</color>, <color=#2EB6FF>Electric DMG</color> and <color=#A6C5FD>Wind DMG</color> <color=#2BAD00>increases by 20%</color> for 15s; repeated triggers reset the duration."
+          },
+          {
+            "id": "69015003",
+            "title": "Spirit Zenith",
+            "desc": "· <color=#FFFFFF>Anomaly</color> specialty Agents' ATK <color=#2BAD00>increases by 10%</color>, and <color=#FF5521>Fire</color> and <color=#A6C5FD>Wind</color> Anomaly Buildup Rate <color=#2BAD00>increases by 10%</color>.\n· When an Agent deals <color=#FFFFFF>Attribute Anomaly</color> DMG and triggers a critical hit, the whole squad <color=#2BAD00>gains 20</color> Energy, and Attribute Anomaly DMG <color=#2BAD00>increases by 20%</color> for 20s. This effect can trigger once every 20s."
+          }
+        ],
+        "zoneBuffs": [
+          {
+            "id": "69013005",
+            "title": "",
+            "desc": "· Suitable for Agents with <IconMap:Icon_AvatarClass_Armorer><color=#FFAF2C>Armorer</color> specialty."
+          },
+          {
+            "id": "69014506",
+            "title": "",
+            "desc": "· Attribute Anomaly DMG taken by Kusarikku is <color=#FFAF2C>reduced by 40%</color>.\n· When an Agent successfully uses a Defensive Assist against Kusarikku's <Term:2000005></Term>, applies 1 stack of Exposed to Kusarikku. When Kusarikku becomes Stunned, applies 2 stacks of Exposed. Each stack of Exposed increases the <color=#FFAF2C>Laceration DMG Kusarikku receives by 20%</color>. Exposed can stack up to 4 times and lasts <color=#FFAF2C>30</color>s. Repeated triggers reset the duration."
+          },
+          {
+            "id": "69014507",
+            "title": "",
+            "desc": "· After Kusarikku activates Corruptive Barrier, use <color=#FFFFFF>Defensive Assist</color> to counter Kusarikku's <Term:2000005></Term> and leave it Impaired to gain <color=#FFAF2C>1000 Performance Points</color>; successfully countering a <Term:2000005></Term> with <color=#FFFFFF>Defensive Assist</color> grants <color=#FFAF2C>700 Performance Points</color>; executing a <color=#FFAF2C>Shutdown</color> on Kusarikku's <Term:2000003></Term> grants <color=#FFAF2C>2000 Performance Points</color>. A maximum of 5000 Performance Points can be obtained."
+          }
+        ],
+        "hard": false
+      },
+      {
+        "name": "Phaethon of the Scorched Horizon",
+        "monsterLevel": 70,
+        "monsterName": "Phaethon of the Scorched Horizon",
+        "monsterDef": 952.8000000000001,
+        "monsterImage": "Mutant",
+        "enemyResists": {
+          "physical": 40
+        },
+        "enemyWeak": {
+          "ice": 20,
+          "wind": 20
+        },
+        "buffs": [
+          {
+            "id": "69015001",
+            "title": "Sweeping Frost",
+            "desc": "· Agents' <color=#A6C5FD>Wind DMG</color> <color=#2BAD00>increases by 30%</color>. When attacks hit enemies, ignore <color=#2BAD00>30%</color> of their <color=#A6C5FD>Wind RES</color>.\n· <color=#FFFFFF>Attack</color> specialty Agents' CRIT DMG <color=#2BAD00>increases by 40%</color> and <color=#FFFFFF>Basic Attack</color> DMG <color=#2BAD00>increases by 50%</color>."
+          },
+          {
+            "id": "69015002",
+            "title": "Surging Thunder",
+            "desc": "· Agents' DEF <color=#2BAD00>increases by 10%</color>, and their Sharp DMG <color=#2BAD00>increases by 15%</color>.\n· After an Agent uses an <color=#FFFFFF>EX Special Attack</color>, <color=#FFFFFF>Special Attack</color>, or <color=#FFFFFF>Ultimate</color>, <color=#2EB6FF>Electric DMG</color> and <color=#A6C5FD>Wind DMG</color> <color=#2BAD00>increases by 20%</color> for 15s; repeated triggers reset the duration."
+          },
+          {
+            "id": "69015003",
+            "title": "Spirit Zenith",
+            "desc": "· <color=#FFFFFF>Anomaly</color> specialty Agents' ATK <color=#2BAD00>increases by 10%</color>, and <color=#FF5521>Fire</color> and <color=#A6C5FD>Wind</color> Anomaly Buildup Rate <color=#2BAD00>increases by 10%</color>.\n· When an Agent deals <color=#FFFFFF>Attribute Anomaly</color> DMG and triggers a critical hit, the whole squad <color=#2BAD00>gains 20</color> Energy, and Attribute Anomaly DMG <color=#2BAD00>increases by 20%</color> for 20s. This effect can trigger once every 20s."
+          }
+        ],
+        "zoneBuffs": [
+          {
+            "id": "69013003",
+            "title": "",
+            "desc": "· Suitable for Agents with <IconMap:Icon_AvatarClass_Anomaly><color=#FFAF2C>Anomaly</color> specialty."
+          },
+          {
+            "id": "69013601",
+            "title": "",
+            "desc": "· After Scorched Horizon activates Gale Scorcher, they gain 5 stacks of <color=#FFFFFF>Into Flames</color>. Each stack of <color=#FFFFFF>Into Flames</color> <color=#FFAF2C>increases DMG dealt by 10%</color> and <color=#FFAF2C>reduces CRIT DMG taken by 25%</color>. With <color=#FFFFFF>Into Flames</color> stacks, every time Scorched Horizon is inflicted with an <color=#FFAF2C>Anomaly</color>, one stack of <color=#FFFFFF>Into Flames</color> is lost, and subsequent Abloom DMG taken <color=#FFAF2C>increases by 10%</color> for 15s (max 3 stacks). Repeated triggers reset the duration."
+          },
+          {
+            "id": "69013602",
+            "title": "",
+            "desc": "· When Scorched Horizon is in <color=#FFFFFF>Gale Scorcher</color> state, Impairing them grants <color=#FFAF2C>1,250 Performance Points</color>. <color=#FFAF2C>Striking down Scorched Horizon when they're attacking in mid-air</color> grants <color=#FFAF2C>1,500 Performance Points</color>. Performing a <color=#FFAF2C>Shutdown</color> against Scorched Horizon's <Term:2000003>Control Skill</Term> grants <color=#FFAF2C>2,000 Performance Points</color>. Max 5,000 Performance Points."
           }
         ],
         "hard": false

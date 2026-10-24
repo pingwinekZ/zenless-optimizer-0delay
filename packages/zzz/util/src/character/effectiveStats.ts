@@ -861,6 +861,26 @@ const characterPlans: Record<CharacterKey, CharacterPlan> = {
     },
   },
   Sigrid: DPS,
+  Severian: {
+    effectiveStats: ['crit_', 'crit_dmg_', 'atk_', 'pen', 'atk'],
+    substatWeights: {
+      crit_: 1.5,
+      crit_dmg_: 1.5,
+      atk_: 1.2,
+      pen: 1.0,
+      atk: 1.0,
+    },
+    mainStats: {
+      4: ['crit_', 'crit_dmg_'],
+      5: ['wind_dmg_', 'atk_', 'pen_'],
+      6: ['atk_'],
+    },
+  },
+  Phoenix: {
+    effectiveStats: ['anomProf', 'atk_', 'pen', 'atk'],
+    substatWeights: { anomProf: 1.5, atk_: 1.2, pen: 1.0, atk: 1.0 },
+    mainStats: { 4: ['anomProf'], 5: ['fire_dmg_', 'pen_'], 6: ['anomMas_'] },
+  },
 }
 
 /* ─────── Public getters ─────── */

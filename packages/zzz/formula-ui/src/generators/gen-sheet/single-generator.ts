@@ -30,7 +30,11 @@ export default async function genSheetGenerator(
       console.error('Invalid sheet type')
       return
   }
-  await genSheet(tree, options, true)
+  const created = await genSheet(tree, options, true)
   await genIndex(tree, sheet_type)
-  console.log('Generated sheet and index file.')
+  console.log(
+    created
+      ? 'Generated sheet and index file.'
+      : 'Sheet already exists, regenerated index file.'
+  )
 }

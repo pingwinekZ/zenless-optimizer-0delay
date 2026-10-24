@@ -601,6 +601,20 @@
       "general": "IconRoleGeneral68.png",
       "select": "IconRoleSelect68.png",
       "interknot": "IconInterKnotRole0068.png"
+    },
+    "Severian": {
+      "full": "IconRole31.png",
+      "circle": "IconRoleCircle31.png",
+      "general": "IconRoleGeneral31.png",
+      "select": "IconRoleSelect31.png",
+      "interknot": "IconInterKnotRole0031.png"
+    },
+    "Phoenix": {
+      "full": "IconRole41.png",
+      "circle": "IconRoleCircle41.png",
+      "general": "IconRoleGeneral41.png",
+      "select": "IconRoleSelect41.png",
+      "interknot": "IconInterKnotRole0041.png"
     }
   },
   "wengines": {
@@ -714,6 +728,9 @@
     },
     "BloodmarrowCoffer": {
       "big": "Weapon_A_Common_21Big.png"
+    },
+    "CandlelitScheme": {
+      "big": "Weapon_A_Common_22Big.png"
     },
     "DemaraBatteryMarkII": {
       "big": "Weapon_A_1011Big.png"
@@ -903,6 +920,12 @@
     },
     "CrimsonMoonCasket": {
       "big": "Weapon_S_1621Big.png"
+    },
+    "IncarceratingGrip": {
+      "big": "Weapon_S_1631Big.png"
+    },
+    "PlumeOfRebirth": {
+      "big": "Weapon_S_1641Big.png"
     }
   }
 }

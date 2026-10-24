@@ -118,7 +118,7 @@ export const skillTypes = [
 ] as const
 
 // Add any entries that have conditionals or shared formulas here, otherwise move them to 'sheets'
-export const commonSheets = ['enemy', 'anomaly'] as const
+export const commonSheets = ['anomaly', 'enemy'] as const
 
 export const sheets = [
   'agg',

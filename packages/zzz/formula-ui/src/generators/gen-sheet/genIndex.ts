@@ -5,24 +5,23 @@ import {
   allDiscSetKeys,
   allWengineKeys,
 } from '@zenless-optimizer/zzz/consts'
-import { writeFileSync } from 'fs'
 
-export default async function genIndex(_tree: Tree, sheet_type: string) {
+export default async function genIndex(tree: Tree, sheet_type: string) {
   const file_location = `packages/zzz/formula-ui/src/${sheet_type}/sheets/index.ts`
   switch (sheet_type) {
     case 'char':
-      await writeCharIndex(file_location)
+      await writeCharIndex(tree, file_location)
       break
     case 'disc':
-      await writeDiscIndex(file_location)
+      await writeDiscIndex(tree, file_location)
       break
     case 'wengine':
-      await writeWengineIndex(file_location)
+      await writeWengineIndex(tree, file_location)
       break
   }
 }
 
-async function writeCharIndex(path: string) {
+async function writeCharIndex(tree: Tree, path: string) {
   const index = `
 // WARNING: Generated file, do not modify
 import type { CharacterKey } from '@zenless-optimizer/zzz/consts'
@@ -35,11 +34,10 @@ export const charSheets: Record<CharacterKey, CharUISheet> = {
   ${allCharacterKeys.join('\n,  ')}
 } as const
   `
-  const formatted = await formatText('index.ts', index)
-  writeFileSync(path, formatted)
+  tree.write(path, await formatText('index.ts', index))
 }
 
-async function writeDiscIndex(path: string) {
+async function writeDiscIndex(tree: Tree, path: string) {
   const index = `
 // WARNING: Generated file, do not modify
 import type { UISheet } from '@zenless-optimizer/game-opt/sheet-ui'
@@ -52,11 +50,10 @@ export const discUiSheets: Record<DiscSetKey, UISheet<'2' | '4'>> = {
   ${allDiscSetKeys.join('\n,  ')}
 }
   `
-  const formatted = await formatText('index.ts', index)
-  writeFileSync(path, formatted)
+  tree.write(path, await formatText('index.ts', index))
 }
 
-async function writeWengineIndex(path: string) {
+async function writeWengineIndex(tree: Tree, path: string) {
   const index = `
 // WARNING: Generated file, do not modify
 import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
@@ -69,6 +66,5 @@ export const wengineUiSheets: Record<WengineKey, UISheetElement> =
     ${allWengineKeys.join(',\n  ')}
   }
   `
-  const formatted = await formatText('index.ts', index)
-  writeFileSync(path, formatted)
+  tree.write(path, await formatText('index.ts', index))
 }

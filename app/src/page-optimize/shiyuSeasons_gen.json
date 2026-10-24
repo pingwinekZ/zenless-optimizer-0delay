@@ -2851,5 +2851,280 @@
         }
       }
     ]
+  },
+  {
+    "id": 62060,
+    "name": "Critical Node",
+    "beginTime": "2026-10-30 04:00:00",
+    "endTime": "2026-11-13 03:59:59",
+    "rooms": [
+      {
+        "id": "62060051",
+        "name": "Room 1",
+        "monsterLevel": 70,
+        "enemyResists": {
+          "ice": 40
+        },
+        "enemyWeak": {
+          "fire": 20,
+          "ether": 20
+        },
+        "bigMonster": {
+          "id": "930169",
+          "name": "Miasma Ravager - Avarus",
+          "image": "Avarus",
+          "stats": {
+            "Hp": 60912339.20999999,
+            "Attack": 3179.0909090909095,
+            "Defence": 952.8000000000001,
+            "Stun": 15486.5
+          }
+        },
+        "buff": {
+          "id": "62001601",
+          "title": "Blazing Rhythm",
+          "desc": "· <color=#FFFFFF>Anomaly</color> specialty Agents' <color=#FF5521>Fire DMG</color> is increased by 20%.\n· When an Agent deals <color=#FFFFFF>Attribute Anomaly</color> DMG and triggers a critical hit, the squad recovers 20 Energy, and Attribute Anomaly DMG increases by 30% for 20s. This effect can trigger once every 20s."
+        }
+      },
+      {
+        "id": "62060052",
+        "name": "Room 2",
+        "monsterLevel": 70,
+        "enemyResists": {
+          "ether": 40
+        },
+        "enemyWeak": {
+          "electric": 20,
+          "physical": 20
+        },
+        "bigMonster": {
+          "id": "30003",
+          "name": "Lockspring",
+          "image": "BlackMazingerGoldenBomb",
+          "stats": {
+            "Hp": 46593524.25,
+            "Attack": 3521.454545454546,
+            "Defence": 952.8000000000001,
+            "Stun": 18236
+          }
+        },
+        "buff": {
+          "id": "62001602",
+          "title": "Rending Bladeguard",
+          "desc": "· Agents' Sharp DMG increases by 20%, and DEF increases by 20%.\n· When an Agent defeats an Elite enemy, Agents with the <color=#FFFFFF>Stun</color> specialty restore 30 Energy, and the whole squad restores 500 Decibels."
+        }
+      },
+      {
+        "id": "62060053",
+        "name": "Room 3",
+        "monsterLevel": 70,
+        "enemyResists": {
+          "physical": 40
+        },
+        "enemyWeak": {
+          "ice": 20
+        },
+        "bigMonster": {
+          "id": "300402",
+          "name": "Miasmic Komano Manato",
+          "image": "MiasmaNoranoSlime",
+          "stats": {
+            "Hp": 41984158.545,
+            "Attack": 3521.454545454546,
+            "Defence": 952.8000000000001,
+            "Stun": 16283.150000000001
+          }
+        },
+        "buff": {
+          "id": "62001603",
+          "title": "Condensed Frostburst",
+          "desc": "· <color=#FFFFFF>Attack</color> specialty Agents' <color=#FE437E>Ether DMG</color> and <color=#98EFF0>Ice DMG</color> increase by 20%, and CRIT DMG increases by 40%.\n· When an Agent Stuns an enemy, their Stun recovery rate decreases by 15% for 15s; repeated triggers reset the duration."
+        }
+      }
+    ]
+  },
+  {
+    "id": 62061,
+    "name": "Critical Node",
+    "beginTime": "2026-11-13 04:00:00",
+    "endTime": "2026-11-27 03:59:59",
+    "rooms": [
+      {
+        "id": "62061051",
+        "name": "Room 1",
+        "monsterLevel": 70,
+        "enemyResists": {
+          "ether": 40
+        },
+        "enemyWeak": {
+          "ice": 20,
+          "wind": 20
+        },
+        "bigMonster": {
+          "id": "30048",
+          "name": "Airspace Sentinel",
+          "image": "Sentinel",
+          "stats": {
+            "Hp": 50615124.48,
+            "Attack": 3179.0909090909095,
+            "Defence": 952.8000000000001,
+            "Stun": 21119.45
+          }
+        },
+        "buff": {
+          "id": "62001611",
+          "title": "Tempest Flames",
+          "desc": "· <color=#FFFFFF>Attack</color> specialty Agents' ATK increases by 35%, and <color=#A6C5FD>Wind DMG</color> increases by 20%.\n· When an Agent's <color=#FFFFFF>Ultimate</color> hits an enemy, the enemy's <color=#A6C5FD>Wind RES</color> reduces by 15% for 30s; repeated triggers reset the duration."
+        }
+      },
+      {
+        "id": "62061052",
+        "name": "Room 2",
+        "monsterLevel": 70,
+        "enemyResists": {
+          "ether": 40
+        },
+        "enemyWeak": {
+          "fire": 20,
+          "physical": 20
+        },
+        "bigMonster": {
+          "id": "300372",
+          "name": "Miasmic - Doppelganger - The Defector",
+          "image": "MiasmaIsoldeSlime",
+          "stats": {
+            "Hp": 52688085.66,
+            "Attack": 3521.454545454546,
+            "Defence": 952.8000000000001,
+            "Stun": 14327.95
+          }
+        },
+        "buff": {
+          "id": "62001612",
+          "title": "Blazing Nightfire",
+          "desc": "· Agents with the <color=#FFFFFF>Anomaly</color> specialty that deal <color=#FFFFFF>Attribute Anomaly</color> DMG and trigger a CRIT increase the whole squad's ATK by 10% and Attribute Anomaly DMG by 20% for 15s; repeated triggers reset the duration.\n· When an Agent inflicts an enemy with <color=#FF5521>Fire Anomaly</color>, the target's <color=#FF5521>Fire RES</color> is reduced by 10% for 15s; repeated triggers reset the duration."
+        }
+      },
+      {
+        "id": "62061053",
+        "name": "Room 3",
+        "monsterLevel": 70,
+        "enemyResists": {
+          "electric": 40
+        },
+        "enemyWeak": {
+          "ice": 20,
+          "fire": 20
+        },
+        "bigMonster": {
+          "id": "30039",
+          "name": "Haytor",
+          "image": "Hayyot",
+          "stats": {
+            "Hp": 47174967,
+            "Attack": 3521.454545454546,
+            "Defence": 1588,
+            "Stun": 16283.150000000001
+          }
+        },
+        "buff": {
+          "id": "62001613",
+          "title": "Glacial Realmshatter",
+          "desc": "· Agents' Sheer DMG increases by 35%.\n· After a <color=#FFFFFF>Rupture</color> specialty Agent uses their <color=#FFFFFF>Ultimate</color>, their <color=#FF5521>Fire DMG</color> and <color=#98EFF0>Ice DMG</color> increases by 50% for 15s; repeated triggers reset the duration."
+        }
+      }
+    ]
+  },
+  {
+    "id": 62062,
+    "name": "Critical Node",
+    "beginTime": "2026-11-27 04:00:00",
+    "endTime": "2026-12-11 03:59:59",
+    "rooms": [
+      {
+        "id": "62062051",
+        "name": "Room 1",
+        "monsterLevel": 70,
+        "enemyResists": {
+          "physical": 40
+        },
+        "enemyWeak": {
+          "electric": 20,
+          "wind": 20
+        },
+        "bigMonster": {
+          "id": "30055",
+          "name": "Conqueror",
+          "image": "HACMecha",
+          "stats": {
+            "Hp": 47050644.87,
+            "Attack": 2469.909090909091,
+            "Defence": 952.8000000000001,
+            "Stun": 17585.05
+          }
+        },
+        "buff": {
+          "id": "62001621",
+          "title": "Rending Gale",
+          "desc": "· <color=#FFFFFF>Attack</color> specialty Agents' <color=#A6C5FD>Wind DMG</color> increases by 30% and CRIT DMG increases by 40%.\n· After an Agent uses <color=#FFFFFF>EX Special Attack</color>, attacks ignore 20% of the enemy's <color=#A6C5FD>Wind RES</color> on hit for 15s; repeated triggers reset the duration."
+        }
+      },
+      {
+        "id": "62062052",
+        "name": "Room 2",
+        "monsterLevel": 70,
+        "enemyResists": {
+          "physical": 40
+        },
+        "enemyWeak": {
+          "fire": 20,
+          "electric": 20
+        },
+        "bigMonster": {
+          "id": "30051",
+          "name": "Doppelganger - Starlight - Billy",
+          "image": "MiasmaTerrorBird",
+          "stats": {
+            "Hp": 59088468.599999994,
+            "Attack": 3521.454545454546,
+            "Defence": 952.8000000000001,
+            "Stun": 19540.25
+          }
+        },
+        "buff": {
+          "id": "62001622",
+          "title": "Thunderfire Starburn",
+          "desc": "· <color=#FFFFFF>Armorer</color> specialty Agents' DEF increases by 15%, and Sharp DMG increases by 15%.\n· When an Agent's attack hits an enemy, it ignores 10% of the enemy's <color=#FF5521>Fire RES</color> and <color=#2EB6FF>Electric RES</color>."
+        }
+      },
+      {
+        "id": "62062053",
+        "name": "Room 3",
+        "monsterLevel": 70,
+        "enemyResists": {
+          "electric": 40
+        },
+        "enemyWeak": {
+          "ether": 20,
+          "wind": 20
+        },
+        "bigMonster": {
+          "id": "930178",
+          "name": "Miasmic - Thracian",
+          "image": "MiasmaThracian",
+          "stats": {
+            "Hp": 50670566.099999994,
+            "Attack": 3521.454545454546,
+            "Defence": 952.8000000000001,
+            "Stun": 14327.95
+          }
+        },
+        "buff": {
+          "id": "62001623",
+          "title": "Spirit Realm Wallbreaker",
+          "desc": "· Agents' Anomaly Proficiency increases by 30. After Stunning an enemy, their Stun recovery rate decreases by 10% for 15s; repeated triggers reset the duration.\n· While in <color=#FFFFFF>Ether Veil</color>, Agent ATK increases by 15%, and attacks ignore 20% of the enemy's <color=#FE437E>Ether RES</color>."
+        }
+      }
+    ]
   }
 ]

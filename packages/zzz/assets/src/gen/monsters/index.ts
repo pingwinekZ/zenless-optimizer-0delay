@@ -16,6 +16,8 @@ import GraymaneCenturion from './GraymaneCenturion.webp'
 import HACMecha from './HACMecha.webp'
 import Hayyot from './Hayyot.webp'
 import HereticHunter from './HereticHunter.webp'
+import HollowVenger from './HollowVenger.webp'
+import HoloGirReborn from './HoloGirReborn.webp'
 import HoloMutant from './HoloMutant.webp'
 import HugoVlad_Boss from './HugoVlad_Boss.webp'
 import InnerKnight from './InnerKnight.webp'
@@ -67,6 +69,8 @@ const data = {
   HACMecha,
   Hayyot,
   HereticHunter,
+  HollowVenger,
+  HoloGirReborn,
   HoloMutant,
   HugoVlad_Boss,
   InnerKnight,

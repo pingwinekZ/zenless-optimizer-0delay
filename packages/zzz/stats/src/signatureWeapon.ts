@@ -61,4 +61,6 @@ export const characterKeyToWengineKey: Record<CharacterKey, WengineKey> = {
   Sigrid: 'KnightsExtolment',
   Claret: 'CrimsonThirst',
   Roxy: 'CrimsonMoonCasket',
+  Severian: 'IncarceratingGrip',
+  Phoenix: 'PlumeOfRebirth',
 }

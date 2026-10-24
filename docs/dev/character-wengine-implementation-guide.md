@@ -10,13 +10,13 @@ Based on patterns observed in commit `30fbf74` (Norma character + ChiefSidekick 
 
 ```bash
 # Data sheet + data index + meta stubs (validates {Name} against consts keys)
-npx nx g @zenless-optimizer/zzz/formula:gen-sheet --sheet_type=char --sheet={Name}
+bun nx g @zenless-optimizer/zzz/formula:gen-sheet --sheet_type=char --sheet={Name}
 # UI sheet + UI index (guided skeleton with core/m1/m2 examples in comments)
-npx nx g @zenless-optimizer/zzz/formula:gen-ui-sheet --sheet_type=char --sheet={Name}
+bun nx g @zenless-optimizer/zzz/formula-ui:gen-ui-sheet --sheet_type=char --sheet={Name}
 ```
 
 Then fill in conditionals/buffs in the data sheet (§1), run
-`npx nx run zzz-formula:gen-file` to materialize `meta/` (§3), and wire the
+`bun nx run zzz-formula:gen-file` to materialize `meta/` (§3), and wire the
 UI sections against the generated metadata (§2).
 
 ### Files to create/modify
@@ -501,8 +501,8 @@ export const formulas = {
 ### 0. Scaffold (same two generators, `sheet_type=wengine`)
 
 ```bash
-npx nx g @zenless-optimizer/zzz/formula:gen-sheet --sheet_type=wengine --sheet={Name}
-npx nx g @zenless-optimizer/zzz/formula:gen-ui-sheet --sheet_type=wengine --sheet={Name}
+bun nx g @zenless-optimizer/zzz/formula:gen-sheet --sheet_type=wengine --sheet={Name}
+bun nx g @zenless-optimizer/zzz/formula-ui:gen-ui-sheet --sheet_type=wengine --sheet={Name}
 ```
 
 ### Files to create/modify

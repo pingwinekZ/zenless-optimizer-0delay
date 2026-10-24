@@ -11,6 +11,7 @@ import BloodmarrowCoffer from './BloodmarrowCoffer'
 import BoisterousEchoes from './BoisterousEchoes'
 import BoxCutter from './BoxCutter'
 import BunnyBand from './BunnyBand'
+import CandlelitScheme from './CandlelitScheme'
 import CannonRotor from './CannonRotor'
 import CattyLuck from './CattyLuck'
 import CauldronOfClarity from './CauldronOfClarity'
@@ -40,6 +41,7 @@ import Housekeeper from './Housekeeper'
 import IceJadeTeapot from './IceJadeTeapot'
 import IdentityBase from './IdentityBase'
 import IdentityInflection from './IdentityInflection'
+import IncarceratingGrip from './IncarceratingGrip'
 import JoyauDore from './JoyauDore'
 import KaboomTheCannon from './KaboomTheCannon'
 import KnightsExtolment from './KnightsExtolment'
@@ -58,6 +60,7 @@ import NeonFantasies from './NeonFantasies'
 import OdeOfResurrectedWings from './OdeOfResurrectedWings'
 import OriginalTransmorpher from './OriginalTransmorpher'
 import PeacekeeperSpecialized from './PeacekeeperSpecialized'
+import PlumeOfRebirth from './PlumeOfRebirth'
 import PracticedPerfection from './PracticedPerfection'
 import PreciousFossilizedCore from './PreciousFossilizedCore'
 import PuzzleSphere from './PuzzleSphere'
@@ -105,8 +108,6 @@ import ZanshinHerbCase from './ZanshinHerbCase'
 
 export const wengineUiSheets: Record<WengineKey, UISheetElement> = {
   AngelInTheShell,
-  NeonFantasies,
-  SerpentineSeeker,
   BashfulDemon,
   BellicoseBlaze,
   BigCylinder,
@@ -115,10 +116,10 @@ export const wengineUiSheets: Record<WengineKey, UISheetElement> = {
   BoisterousEchoes,
   BoxCutter,
   BunnyBand,
+  CandlelitScheme,
   CannonRotor,
   CattyLuck,
   CauldronOfClarity,
-  TheSimmeringPot,
   ChiefSidekick,
   CinderCobalt,
   CloudcleaveRadiance,
@@ -133,6 +134,7 @@ export const wengineUiSheets: Record<WengineKey, UISheetElement> = {
   ElegantVanity,
   FlamemakerShaker,
   FlightOfFancy,
+  FrostfallSickle,
   FusionCompiler,
   GildedBlossom,
   GrillOWisp,
@@ -144,6 +146,7 @@ export const wengineUiSheets: Record<WengineKey, UISheetElement> = {
   IceJadeTeapot,
   IdentityBase,
   IdentityInflection,
+  IncarceratingGrip,
   JoyauDore,
   KaboomTheCannon,
   KnightsExtolment,
@@ -158,9 +161,11 @@ export const wengineUiSheets: Record<WengineKey, UISheetElement> = {
   MarcatoDesire,
   Metanukimorphosis,
   MyriadEclipse,
+  NeonFantasies,
   OdeOfResurrectedWings,
   OriginalTransmorpher,
   PeacekeeperSpecialized,
+  PlumeOfRebirth,
   PracticedPerfection,
   PreciousFossilizedCore,
   PuzzleSphere,
@@ -174,6 +179,7 @@ export const wengineUiSheets: Record<WengineKey, UISheetElement> = {
   RiotSuppressorMarkVI,
   RoaringFurnace,
   RoaringRide,
+  SerpentineSeeker,
   SeveredInnocence,
   SharpenedStinger,
   SixShooter,
@@ -183,11 +189,13 @@ export const wengineUiSheets: Record<WengineKey, UISheetElement> = {
   SpringEmbrace,
   StarlightEngine,
   StarlightEngineReplica,
+  StarlightRiderFaceplate,
   SteamOven,
   SteelCushion,
   StreetSuperstar,
   TheBrimstone,
   TheRestrained,
+  TheSimmeringPot,
   TheVault,
   Thoughtbop,
   Timeweaver,
@@ -202,6 +210,4 @@ export const wengineUiSheets: Record<WengineKey, UISheetElement> = {
   WrathfulVajra,
   YesterdayCalls,
   ZanshinHerbCase,
-  FrostfallSickle,
-  StarlightRiderFaceplate,
 }
