@@ -352,8 +352,7 @@ function inferDamageType(key: CharacterKey, abilityName: string): DamageType {
       return 'quickAssist'
     if (key === 'Phoenix' && abilityName === 'DodgeDriftingSway')
       return 'dodgeCounter'
-    if (key === 'Phoenix' && abilityName === 'SoulSearchingBlaze')
-      return 'basic'
+    if (key === 'Phoenix' && abilityName === 'SoulSearchingBlaze') return 'ult'
     if (key === 'Severian' && abilityName === 'DodgeWindshift')
       return 'dodgeCounter'
     if (key === 'Severian' && abilityName === 'DodgeSpontaneity')

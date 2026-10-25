@@ -42,6 +42,45 @@ const dm = {
     AssistFollowUpRegenerationTherapy:
       data_gen.skillParams['assist']['AssistFollowUpRegenerationTherapy'],
   },
+  core: {
+    anomProf: data_gen.coreParams[0],
+    sear_duration: data_gen.coreParams[1][0],
+    sear_crit_rate: data_gen.coreParams[2][0],
+    sear_crit_dmg_: data_gen.coreParams[3],
+    anomMas_threshold: data_gen.coreParams[4][0],
+    crit_rate_per_anomMas: data_gen.coreParams[5][0],
+    max_anomMas: data_gen.coreParams[6][0],
+    sear_dmg_: data_gen.coreParams[7],
+    sear_interval: data_gen.coreParams[8][0],
+    max_pyre: data_gen.coreParams[9][0],
+    rebirth_heal_: data_gen.coreParams[10][0],
+    rebirth_cooldown: data_gen.coreParams[11][0],
+    perfect_block_pyre: data_gen.coreParams[12][0],
+    perfect_block_cooldown: data_gen.coreParams[13][0],
+    wither_bloom_duration: data_gen.coreParams[14][0],
+  },
+  ability: {
+    sear_crit_dmg_: data_gen.abilityParams[0],
+  },
+  m1: {
+    ascension: data_gen.mindscapeParams[0][0],
+    cooldown: data_gen.mindscapeParams[0][1],
+    sear_crit_dmg_: data_gen.mindscapeParams[0][2],
+    pyre_efficiency_: data_gen.mindscapeParams[0][3],
+  },
+  m2: {
+    burn_duration: data_gen.mindscapeParams[1][0],
+    sear_dmg_: data_gen.mindscapeParams[1][1],
+  },
+  m4: {
+    abloom_instances: data_gen.mindscapeParams[3][0],
+    abloom_multiplier: data_gen.mindscapeParams[3][1],
+  },
+  m6: {
+    all_resIgn_: data_gen.mindscapeParams[5][0],
+    ascension: data_gen.mindscapeParams[5][1],
+    abloom_defIgn_: data_gen.mindscapeParams[5][2],
+  },
 } as const
 
 export default dm

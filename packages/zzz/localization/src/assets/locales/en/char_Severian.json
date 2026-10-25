@@ -1,0 +1,9 @@
+{
+  "core_header": "CRIT DMG & DMG",
+  "ability_atk_header": "ATK",
+  "m1_header": "Wind RES",
+  "m2_penCond": "Perfect Dodge / Shadowhunt · PEN",
+  "m4_atkCond": "Enter Combat / Switch · ATK",
+  "m6_header": "Azure Wind's Shadowhunt",
+  "m6_shadowhunt_dmg": "Shadowhunt Final Hit Bonus DMG"
+}

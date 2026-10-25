@@ -6,11 +6,12 @@ const data_gen = getWengineParams(key)
 
 let o = 0
 
-// TODO: Load scalings
+// Phase params: [Anomaly Proficiency, Fire DMG, duration] — e.g. phase 1 is
+// [90, 0.4, 20] (AP flat, Fire DMG as a fraction, seconds).
 const dm = {
-  cond_dmg_: data_gen[o++] ?? [-1, 1, 2, 3, 4, 5],
-  passive_atk: data_gen[o++] ?? [-1, 1, 2, 3, 4, 5],
-  duration: data_gen[o++]?.[1] ?? 0,
+  passive_anomProf: data_gen[o++],
+  cond_fire_dmg_: data_gen[o++],
+  duration: data_gen[o++][1],
 } as const
 
 export default dm

@@ -6,11 +6,13 @@ const data_gen = getWengineParams(key)
 
 let o = 0
 
-// TODO: Load scalings
+// Phase params: [CRIT Rate, ATK (on Basic hit), Wind RES ignore (on Basic
+// hit), duration] — e.g. phase 1 is [0.2, 0.1, 0.15, 16].
 const dm = {
-  cond_dmg_: data_gen[o++] ?? [-1, 1, 2, 3, 4, 5],
-  passive_atk: data_gen[o++] ?? [-1, 1, 2, 3, 4, 5],
-  duration: data_gen[o++]?.[1] ?? 0,
+  passive_crit_: data_gen[o++],
+  cond_atk_: data_gen[o++],
+  cond_windResIgn_: data_gen[o++],
+  duration: data_gen[o++][1],
 } as const
 
 export default dm

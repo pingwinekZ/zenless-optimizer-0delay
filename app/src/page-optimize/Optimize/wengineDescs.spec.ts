@@ -21,8 +21,8 @@ describe('desc tables', () => {
       (n, byCond) => n + Object.keys(byCond ?? {}).length,
       0
     )
-    expect(passiveEntries).toBe(48)
-    expect(condEntries).toBe(64)
+    expect(passiveEntries).toBe(50)
+    expect(condEntries).toBe(68)
     expect(Object.keys(condDescFallback)).toEqual(['RoaringRide'])
   })
 })

@@ -1,0 +1,14 @@
+{
+  "searCond": "Sear State · Anomaly CRIT",
+  "searDoTHeader": "Additional DMG",
+  "searAbilityCond": "Sear State · Ability CD",
+  "searM2Cond": "Sear State · DMG",
+  "core_anomProf": "AP",
+  "core_sear_dmg": "Sear Fire DMG",
+  "abloom_header": "Abloom",
+  "abloom_desc": "When <ct color=#FFFFFF>Abloom</ct> triggers a critical hit, its CRIT DMG is increased by an additional 40%.",
+  "m6_resIgn_header": "All-RES",
+  "m6_abloom_header": "Abloom DEF",
+  "purifyingFlameAbloomDmgInst": "Purifying Flame Abloom",
+  "soulSearchingBlazeAbloomDmgInst": "Soul-Searching Blaze Abloom"
+}

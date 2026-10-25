@@ -15,6 +15,8 @@ import { lazy, Suspense, useEffect, useMemo } from 'react'
 import { HashRouter } from 'react-router'
 import { LayoutSider } from './LayoutSider'
 import { NavigateContextProvider } from './NavigateContext'
+import { SunbringerCountdown } from './SunbringerCountdown'
+import { SunbringerEntrance } from './SunbringerEntrance'
 import { Tabs } from './Tabs'
 
 // GoonCorner is a fixed-position widget with its own fetches/intervals —
@@ -77,6 +79,8 @@ export default function App() {
 function Content() {
   return (
     <Flex direction="column" mih="100vh" pos="relative" id="back-to-top-anchor">
+      <SunbringerCountdown />
+      <SunbringerEntrance />
       <Flex gap={8} style={{ flex: 1 }}>
         <LayoutSider />
         <Box

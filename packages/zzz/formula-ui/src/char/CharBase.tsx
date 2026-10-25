@@ -169,6 +169,37 @@ charBaseUiSheet.push(
     },
     title: 'Trial by Cold',
   },
+  // Phoenix skill-scaled Abloom instances — localized per-skill names
+  // ("Purifying Flame Abloom" / "Soul-Searching Blaze Abloom") instead of
+  // the raw formula name, Remielle luminize pattern.
+  ...allAttributeAnomalyKeys.map(
+    (attr): TagField => ({
+      fieldRef: {
+        et: 'own',
+        qt: 'formula',
+        q: 'anomalyDmg',
+        attribute: attr,
+        damageType1: 'anomaly',
+        damageType2: 'abloom',
+        name: `purifyingFlameAbloomDmgInst_${attr}`,
+      },
+      title: trans('char', 'Phoenix')[1]('purifyingFlameAbloomDmgInst'),
+    })
+  ),
+  ...allAttributeAnomalyKeys.map(
+    (attr): TagField => ({
+      fieldRef: {
+        et: 'own',
+        qt: 'formula',
+        q: 'anomalyDmg',
+        attribute: attr,
+        damageType1: 'anomaly',
+        damageType2: 'abloom',
+        name: `soulSearchingBlazeAbloomDmgInst_${attr}`,
+      },
+      title: trans('char', 'Phoenix')[1]('soulSearchingBlazeAbloomDmgInst'),
+    })
+  ),
   // lumiflux doesn't accumulate Anomaly Buildup - exclude
   ...allAttributeAnomalyKeys.map(
     (attr): TagField => ({

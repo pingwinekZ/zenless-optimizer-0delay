@@ -1,2 +1,114 @@
 // WARNING: Generated file, do not modify
-export const buffs = {} as const
+export const buffs = {
+  core_anomProf: {
+    sheet: 'Phoenix',
+    name: 'core_anomProf',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anomProf',
+      sheet: 'Phoenix',
+      name: 'core_anomProf',
+    },
+    team: false,
+  },
+  core_sear_anom_crit_: {
+    sheet: 'Phoenix',
+    name: 'core_sear_anom_crit_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anom_crit_',
+      sheet: 'Phoenix',
+      name: 'core_sear_anom_crit_',
+    },
+    team: true,
+  },
+  core_sear_anom_crit_dmg_: {
+    sheet: 'Phoenix',
+    name: 'core_sear_anom_crit_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anom_crit_dmg_',
+      sheet: 'Phoenix',
+      name: 'core_sear_anom_crit_dmg_',
+    },
+    team: true,
+  },
+  core_abloom_crit_dmg_: {
+    sheet: 'Phoenix',
+    name: 'core_abloom_crit_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anom_crit_dmg_',
+      sheet: 'Phoenix',
+      damageType1: 'abloom',
+      name: 'core_abloom_crit_dmg_',
+    },
+    team: false,
+  },
+  ability_sear_crit_dmg_: {
+    sheet: 'Phoenix',
+    name: 'ability_sear_crit_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anom_crit_dmg_',
+      sheet: 'Phoenix',
+      name: 'ability_sear_crit_dmg_',
+    },
+    team: true,
+  },
+  m2_sear_dmg_: {
+    sheet: 'Phoenix',
+    name: 'm2_sear_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'common_dmg_',
+      sheet: 'Phoenix',
+      name: 'm2_sear_dmg_',
+    },
+    team: false,
+  },
+  core_sear_dmg: {
+    sheet: 'Phoenix',
+    name: 'core_sear_dmg',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'Phoenix',
+      damageType1: 'elemental',
+      name: 'core_sear_dmg',
+    },
+    team: false,
+  },
+  m6_all_resIgn_: {
+    sheet: 'Phoenix',
+    name: 'm6_all_resIgn_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'resIgn_',
+      sheet: 'Phoenix',
+      name: 'm6_all_resIgn_',
+    },
+    team: false,
+  },
+  m6_abloom_defIgn_: {
+    sheet: 'Phoenix',
+    name: 'm6_abloom_defIgn_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'defIgn_',
+      sheet: 'Phoenix',
+      damageType1: 'abloom',
+      name: 'm6_abloom_defIgn_',
+    },
+    team: false,
+  },
+} as const

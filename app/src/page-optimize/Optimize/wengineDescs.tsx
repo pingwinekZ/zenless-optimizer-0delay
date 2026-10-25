@@ -697,6 +697,35 @@ const CattyLuckPassiveDesc = firstSentenceDesc('wengine_CattyLuck_gen')
 /** Conditional portion of CattyLuck's phase description (from "When" to end). */
 const CattyLuckCondDesc = fromMarkerDesc('wengine_CattyLuck_gen', 'When ')
 
+/** AP portion of PlumeOfRebirth's phase description (first sentence). */
+const PlumeOfRebirthAPDesc = firstSentenceDesc('wengine_PlumeOfRebirth_gen')
+
+/** Conditional portion of PlumeOfRebirth's phase description (from "When" to end). */
+const PlumeOfRebirthCondDesc = fromMarkerDesc(
+  'wengine_PlumeOfRebirth_gen',
+  'When '
+)
+
+/** CRIT Rate portion of CandlelitScheme's phase description (first sentence). */
+const CandlelitSchemeExDesc = firstSentenceDesc('wengine_CandlelitScheme_gen')
+
+/** Target HP portion of CandlelitScheme's phase description (second sentence). */
+const CandlelitSchemeHpDesc = fromMarkerDesc(
+  'wengine_CandlelitScheme_gen',
+  'The equipper deals'
+)
+
+/** CRIT Rate portion of IncarceratingGrip's phase description (first sentence). */
+const IncarceratingGripPassiveDesc = firstSentenceDesc(
+  'wengine_IncarceratingGrip_gen'
+)
+
+/** Basic Attack conditional portion of IncarceratingGrip's phase description (from "When" to end). */
+const IncarceratingGripCondDesc = fromMarkerDesc(
+  'wengine_IncarceratingGrip_gen',
+  'When '
+)
+
 export type WengineDesc = ComponentType<{ phase: number }>
 
 /** Passive-group description override, keyed by wengine + first field name. */
@@ -830,6 +859,12 @@ export const passiveDescByField: Partial<
   },
   CattyLuck: {
     passive_def_: CattyLuckPassiveDesc,
+  },
+  PlumeOfRebirth: {
+    passive_anomProf: PlumeOfRebirthAPDesc,
+  },
+  IncarceratingGrip: {
+    passive_crit_: IncarceratingGripPassiveDesc,
   },
 }
 
@@ -1006,6 +1041,16 @@ export const condDescByName: Partial<
   },
   CattyLuck: {
     exSpecialUsed: CattyLuckCondDesc,
+  },
+  PlumeOfRebirth: {
+    anomDmgCrit: PlumeOfRebirthCondDesc,
+  },
+  CandlelitScheme: {
+    exSpecialUsed: CandlelitSchemeExDesc,
+    hpBelow50: CandlelitSchemeHpDesc,
+  },
+  IncarceratingGrip: {
+    basicHit: IncarceratingGripCondDesc,
   },
 }
 

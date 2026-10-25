@@ -1,2 +1,28 @@
 // WARNING: Generated file, do not modify
-export const buffs = {} as const
+export const buffs = {
+  passive_anomProf: {
+    sheet: 'PlumeOfRebirth',
+    name: 'passive_anomProf',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'anomProf',
+      sheet: 'PlumeOfRebirth',
+      name: 'passive_anomProf',
+    },
+    team: false,
+  },
+  cond_fire_dmg_: {
+    sheet: 'PlumeOfRebirth',
+    name: 'cond_fire_dmg_',
+    tag: {
+      et: 'display',
+      qt: 'combat',
+      q: 'dmg_',
+      sheet: 'PlumeOfRebirth',
+      attribute: 'fire',
+      name: 'cond_fire_dmg_',
+    },
+    team: false,
+  },
+} as const

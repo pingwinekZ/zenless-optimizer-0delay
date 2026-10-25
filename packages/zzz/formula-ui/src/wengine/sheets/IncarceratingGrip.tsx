@@ -1,15 +1,16 @@
 import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
 import { wengineAsset } from '@zenless-optimizer/zzz/assets'
 import type { WengineKey } from '@zenless-optimizer/zzz/consts'
-import { trans } from '../../util'
+import { IncarceratingGrip } from '@zenless-optimizer/zzz/formula'
+import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'IncarceratingGrip'
-const [chg, _ch] = trans('wengine', key)
+const [chg, ch] = trans('wengine', key)
 const icon = wengineAsset(key)
+const cond = IncarceratingGrip.conditionals
+const buff = IncarceratingGrip.buffs
 
-// TODO: add the "Evil Caught Within" conditional/fields once the formula
-// sheet registers its buffs.
 const sheet: UISheetElement = {
   title: chg('phase'),
   img: icon,
@@ -21,6 +22,22 @@ const sheet: UISheetElement = {
           {(phase) => chg(`phaseDescs.${phase - 1}`)}
         </PhaseWrapper>
       ),
+    },
+    {
+      type: 'fields',
+      header: { icon: null, text: ch('passive_header') },
+      fields: [tagToTagField(buff.passive_crit_.tag)],
+    },
+    {
+      type: 'conditional',
+      conditional: {
+        label: ch('basicHitCond'),
+        metadata: cond.basicHit,
+        fields: [
+          tagToTagField(buff.cond_atk_.tag),
+          tagToTagField(buff.cond_windResIgn_.tag),
+        ],
+      },
     },
   ],
 }

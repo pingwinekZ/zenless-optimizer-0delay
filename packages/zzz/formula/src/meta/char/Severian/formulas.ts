@@ -904,4 +904,18 @@ export const formulas = {
       name: 'EntrySkillClearOut_0_anomBuildup',
     },
   },
+  m6_shadowhunt_final_dmg: {
+    sheet: 'Severian',
+    name: 'm6_shadowhunt_final_dmg',
+    tag: {
+      et: 'own',
+      qt: 'formula',
+      q: 'standardDmg',
+      sheet: 'Severian',
+      attribute: 'wind',
+      damageType1: 'basic',
+      skillType1: 'basicSkill',
+      name: 'm6_shadowhunt_final_dmg',
+    },
+  },
 } as const

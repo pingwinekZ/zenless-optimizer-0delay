@@ -1,15 +1,16 @@
 import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
 import { wengineAsset } from '@zenless-optimizer/zzz/assets'
 import type { WengineKey } from '@zenless-optimizer/zzz/consts'
-import { trans } from '../../util'
+import { CandlelitScheme } from '@zenless-optimizer/zzz/formula'
+import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'CandlelitScheme'
-const [chg, _ch] = trans('wengine', key)
+const [chg, ch] = trans('wengine', key)
 const icon = wengineAsset(key)
+const cond = CandlelitScheme.conditionals
+const buff = CandlelitScheme.buffs
 
-// TODO: add the "Moment of Fright" conditional/fields once the formula sheet
-// registers its buffs.
 const sheet: UISheetElement = {
   title: chg('phase'),
   img: icon,
@@ -21,6 +22,22 @@ const sheet: UISheetElement = {
           {(phase) => chg(`phaseDescs.${phase - 1}`)}
         </PhaseWrapper>
       ),
+    },
+    {
+      type: 'conditional',
+      conditional: {
+        label: ch('exSpecialUsedCond'),
+        metadata: cond.exSpecialUsed,
+        fields: [tagToTagField(buff.exSpecial_critRate_.tag)],
+      },
+    },
+    {
+      type: 'conditional',
+      conditional: {
+        label: ch('hpBelow50Cond'),
+        metadata: cond.hpBelow50,
+        fields: [tagToTagField(buff.hpBelow50_dmg_.tag)],
+      },
     },
   ],
 }

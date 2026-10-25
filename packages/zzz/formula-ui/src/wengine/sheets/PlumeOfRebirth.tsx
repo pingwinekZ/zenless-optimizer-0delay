@@ -1,15 +1,16 @@
 import type { UISheetElement } from '@zenless-optimizer/game-opt/sheet-ui'
 import { wengineAsset } from '@zenless-optimizer/zzz/assets'
 import type { WengineKey } from '@zenless-optimizer/zzz/consts'
-import { trans } from '../../util'
+import { PlumeOfRebirth } from '@zenless-optimizer/zzz/formula'
+import { tagToTagField, trans } from '../../util'
 import { PhaseWrapper } from '../components'
 
 const key: WengineKey = 'PlumeOfRebirth'
-const [chg, _ch] = trans('wengine', key)
+const [chg, ch] = trans('wengine', key)
 const icon = wengineAsset(key)
+const cond = PlumeOfRebirth.conditionals
+const buff = PlumeOfRebirth.buffs
 
-// TODO: add the "Hatching Day" conditional/fields once the formula sheet
-// registers its buffs.
 const sheet: UISheetElement = {
   title: chg('phase'),
   img: icon,
@@ -21,6 +22,19 @@ const sheet: UISheetElement = {
           {(phase) => chg(`phaseDescs.${phase - 1}`)}
         </PhaseWrapper>
       ),
+    },
+    {
+      type: 'fields',
+      header: { icon: null, text: ch('passive_anomProf') },
+      fields: [tagToTagField(buff.passive_anomProf.tag)],
+    },
+    {
+      type: 'conditional',
+      conditional: {
+        label: ch('anomDmgCritCond'),
+        metadata: cond.anomDmgCrit,
+        fields: [tagToTagField(buff.cond_fire_dmg_.tag)],
+      },
     },
   ],
 }
