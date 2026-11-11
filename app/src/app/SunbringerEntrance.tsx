@@ -1,16 +1,35 @@
 import { UnstyledButton } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
 import {
+  allCharacterKeys,
+  type CharacterKey,
+} from '@zenless-optimizer/zzz/consts'
+import { useDatabaseContext } from '@zenless-optimizer/zzz/db-ui'
+import {
   type CSSProperties,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from 'react'
+import { useNavigate } from 'react-router'
+import { useNavigateContext } from './NavigateContext'
 import { RELEASE_TIME } from './SunbringerCountdown'
 
 /** One-time-per-browser flag; set the moment the entrance is shown. */
 const SEEN_KEY = 'sunbringer_entrance_seen'
+
+/**
+ * "Enter the site" opens the optimizer on Sunbringer. Her roster key is not in
+ * the bundled data yet, so it is kept as a plain string and only used once
+ * `allCharacterKeys` actually contains it; until then the button just opens
+ * the optimizer tab on the current character.
+ */
+const SUNBRINGER_KEY = 'Sunbringer'
+
+function isKnownCharacter(key: string): key is CharacterKey {
+  return (allCharacterKeys as readonly string[]).includes(key)
+}
 
 const AUDIO_SRC = `${import.meta.env.BASE_URL ?? '/'}sunbringer-entrance.mp3`
 const ART_URL = 'https://static.nanoka.cc/assets/zzz/IconRole1601.webp'
@@ -111,7 +130,8 @@ const styles = `
 .se-center {
   position: relative; height: 100%;
   display: flex; flex-direction: column; align-items: center;
-  justify-content: center; gap: 26px; padding: 40px 24px; text-align: center;
+  justify-content: flex-start; gap: 8px;
+  padding: 14px 16px 16px; text-align: center;
 }
 .se-ghost {
   position: absolute; left: 50%; top: 45%;
@@ -133,33 +153,38 @@ const styles = `
   content: ''; position: absolute; inset: 9%;
   border: 1px solid rgba(245, 242, 236, 0.05); border-radius: 50%;
 }
-.se-stage { position: relative; display: flex; flex-direction: column; align-items: center; }
+/* The stage owns all remaining height so the art can grow to fit the page;
+   the lockup stays pinned to the bottom of it. Grid (not flex) on purpose: a
+   minmax(0, 1fr) track gives the art area a definite height, which is what
+   lets the image resolve its 100% height and actually scale with the page. */
+.se-stage {
+  position: relative; width: 100%;
+  flex: 1 1 auto; min-height: 0;
+  display: grid; grid-template-rows: minmax(0, 1fr) auto;
+  justify-items: center;
+}
 .se-art-wrap {
-  position: relative;
+  position: relative; width: 100%; height: 100%; min-height: 0;
+  display: flex; align-items: center; justify-content: center;
   translate: calc(var(--mx) * -10px) calc(var(--my) * -6px);
   transition: translate 700ms cubic-bezier(0.16, 1, 0.3, 1);
   animation: se-rise 1s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .se-art {
-  display: block; height: min(56vh, 520px); width: auto; max-width: 86vw;
+  display: block; width: 100%; height: 100%;
+  object-fit: contain; object-position: center bottom;
   animation: se-art-in 1.15s 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
   filter: drop-shadow(0 30px 44px rgba(0, 0, 0, 0.7));
 }
 .se-ring {
-  position: absolute; left: 50%; top: 52%;
+  position: absolute; left: 50%; top: 50%;
   translate: -50% -50%;
-  width: min(44vh, 380px); aspect-ratio: 1;
+  height: 74%; aspect-ratio: 1;
   border: 1px solid rgba(255, 122, 46, 0.75); border-radius: 50%;
   animation: se-ring 1.4s 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   pointer-events: none;
 }
-.se-ground {
-  position: absolute; left: 50%; bottom: 1%; translate: -50% 0;
-  width: min(44vh, 380px); height: 1px; transform-origin: center;
-  background: linear-gradient(90deg, transparent, rgba(245, 242, 236, 0.4), transparent);
-  animation: se-draw 0.9s 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-.se-lockup { position: relative; }
+.se-lockup { position: relative; flex: 0 0 auto; margin-top: 10px; }
 .se-title {
   margin: 0; overflow: hidden; padding: 0 0.08em;
   font-size: clamp(2.4rem, 7.5vw, 5.2rem);
@@ -169,19 +194,19 @@ const styles = `
 }
 .se-title span { display: block; animation: se-title-in 0.95s 0.75s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .se-rule {
-  width: 100%; height: 2px; margin-top: 16px; background: #ff5c1f;
+  width: 100%; height: 2px; margin-top: 12px; background: #ff5c1f;
   transform-origin: center; animation: se-draw 0.8s 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .se-sub {
-  margin: 14px 0 0; font-size: 11px; font-weight: 600;
+  margin: 10px 0 0; font-size: 11px; font-weight: 600;
   color: rgba(245, 242, 236, 0.5);
   letter-spacing: 0.42em; text-indent: 0.42em; text-transform: uppercase;
   animation: se-rise 0.7s 1.25s ease-out both;
 }
-.se-lower { display: flex; flex-direction: column; align-items: center; }
+.se-lower { display: flex; flex-direction: column; align-items: center; flex: 0 0 auto; }
 .se-enter {
   appearance: none; background: none; border: 0; cursor: pointer;
-  padding: 10px 6px; color: #f5f2ec;
+  padding: 6px; color: #f5f2ec;
   font: inherit; font-size: 12px; font-weight: 700;
   letter-spacing: 0.3em; text-indent: 0.3em; text-transform: uppercase;
   display: inline-flex; align-items: center; gap: 12px;
@@ -226,6 +251,9 @@ export function SunbringerEntrance() {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const rootRef = useRef<HTMLDivElement | null>(null)
   const startedRef = useRef(false)
+  const { database } = useDatabaseContext()
+  const { navigateToOptimize } = useNavigateContext()
+  const navigate = useNavigate()
 
   // One-time trigger: after release, the first visit per browser shows it.
   useEffect(() => {
@@ -319,6 +347,19 @@ export function SunbringerEntrance() {
     setShow(false)
   }, [])
 
+  // "Enter the site" drops the visitor straight into Sunbringer's optimizer.
+  const enterSite = useCallback(() => {
+    close()
+    if (!isKnownCharacter(SUNBRINGER_KEY)) {
+      navigate('/optimize')
+      return
+    }
+    // The optimize page only lists characters already in the database, so the
+    // record has to exist or it falls back to whichever character is first.
+    database.chars.getOrCreate(SUNBRINGER_KEY)
+    navigateToOptimize(SUNBRINGER_KEY)
+  }, [close, database.chars, navigate, navigateToOptimize])
+
   useEffect(() => {
     if (!show) return
     const onKey = (e: KeyboardEvent) => {
@@ -365,7 +406,6 @@ export function SunbringerEntrance() {
               <div className="se-art-wrap">
                 <img className="se-art" src={ART_URL} alt="Sunbringer" />
                 <span className="se-ring" />
-                <span className="se-ground" />
               </div>
               <div className="se-lockup">
                 <h1 className="se-title">
@@ -377,7 +417,7 @@ export function SunbringerEntrance() {
             </div>
 
             <div className="se-lower">
-              <button className="se-enter" type="button" onClick={close}>
+              <button className="se-enter" type="button" onClick={enterSite}>
                 Enter the site
                 <span />
               </button>
