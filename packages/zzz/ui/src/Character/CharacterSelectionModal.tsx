@@ -117,15 +117,15 @@ export function CharacterSingleSelectionModal({
       containerProps={{
         style: {
           minHeight: 0,
-          maxHeight: 'min(910px, 90dvh)',
-          maxWidth: 1450,
+          height: 'min(910px, 90dvh)',
+          width: '100%',
           justifyContent: 'flex-start',
         },
       }}
     >
       <Flex
         direction="column"
-        style={{ maxHeight: '100%', overflow: 'hidden' }}
+        style={{ flex: 1, minHeight: 0, width: '100%', overflow: 'hidden' }}
       >
         {/* ─── Filter bar ─── */}
         <Box p="md" pb={0}>
@@ -192,7 +192,15 @@ export function CharacterSingleSelectionModal({
         </Box>
 
         {/* ─── Character card grid ─── */}
-        <Box style={{ overflow: 'auto', padding: '12px 16px 24px' }}>
+        <Box
+          style={{
+            flex: 1,
+            minHeight: 0,
+            width: '100%',
+            overflow: 'auto',
+            padding: '12px 16px 24px',
+          }}
+        >
           <Suspense fallback={null}>
             <Box
               style={{

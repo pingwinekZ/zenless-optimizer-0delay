@@ -122,13 +122,16 @@ export function WengineSelectionModal({
       containerProps={{
         style: {
           minHeight: 0,
-          maxHeight: 'min(910px, 90dvh)',
-          maxWidth: 1200,
+          height: 'min(910px, 90dvh)',
+          width: '100%',
           justifyContent: 'flex-start',
         },
       }}
     >
-      <Flex direction="column" style={{ height: '100%', overflow: 'hidden' }}>
+      <Flex
+        direction="column"
+        style={{ flex: 1, minHeight: 0, width: '100%', overflow: 'hidden' }}
+      >
         {/* ─── Filter bar ─── */}
         <Box p="md" pb={0}>
           <Flex gap="sm" wrap="wrap" align="center">
@@ -189,12 +192,21 @@ export function WengineSelectionModal({
         </Box>
 
         {/* ─── W-Engine card grid ─── */}
-        <Box style={{ flex: 1, overflow: 'auto', padding: 16 }}>
+        <Box
+          style={{
+            flex: 1,
+            minHeight: 0,
+            width: '100%',
+            overflow: 'auto',
+            padding: 16,
+          }}
+        >
           <Suspense fallback={null}>
             <Box
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+                width: '100%',
                 gap: 0,
               }}
             >
