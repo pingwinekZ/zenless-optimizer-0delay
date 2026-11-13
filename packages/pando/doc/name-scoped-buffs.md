@@ -8,8 +8,8 @@
 > `registerFormula` stamps every extra with `{ ...tag, name }`, so these apply
 > only to that formula's reads. `[bracketed]` = the resolved const name.
 
-**Open-world caveat:** this lists only buffs *authored into a formula helper's
-extra slot*. A `final.X` read in Pando also gathers global buffs written anywhere
+**Open-world caveat:** this lists only buffs _authored into a formula helper's
+extra slot_. A `final.X` read in Pando also gathers global buffs written anywhere
 (other char/weapon/artifact sheets, common glue) by tag-subset, so the full
 contributor set of any value is NOT determined by one sheet -- the canopy
 converter must gather globally, not per-file. See `dmg-survey.md` section 4 and
@@ -24,17 +24,17 @@ touch `final`, so layer name alone does not fix scope depth).
 
 ## gi (3)
 
-| file:line | helper | name | qt.q | depth |
-| --- | --- | --- | --- | --- |
-| Nahida.ts:239 | customDmg | karma_dmg | premod.dmg_ | shallow |
-| Nahida.ts:239 | customDmg | karma_dmg | premod.critRate_ | shallow |
-| Nilou.ts:213 | dmg | skill_moon | premod.dmg_ | shallow |
+| file:line     | helper    | name       | qt.q             | depth   |
+| ------------- | --------- | ---------- | ---------------- | ------- |
+| Nahida.ts:239 | customDmg | karma_dmg  | premod.dmg_      | shallow |
+| Nahida.ts:239 | customDmg | karma_dmg  | premod.critRate_ | shallow |
+| Nilou.ts:213  | dmg       | skill_moon | premod.dmg_      | shallow |
 
 ## sr (1)
 
-| file:line | helper | name | qt.q | depth |
-| --- | --- | --- | --- | --- |
-| March7th.ts:52 | dmg | talentDmg | formula.base | shallow |
+| file:line      | helper | name      | qt.q         | depth   |
+| -------------- | ------ | --------- | ------------ | ------- |
+| March7th.ts:52 | dmg    | talentDmg | formula.base | shallow |
 
 ## zzz (280)
 

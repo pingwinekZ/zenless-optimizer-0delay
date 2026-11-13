@@ -3,13 +3,13 @@ run-name: Clean deployment ${{ github.event.number }}${{ github.event.inputs.dep
 
 on:
   pull_request_target:
-    types: [closed]
+    types: [ closed ]
   workflow_dispatch:
     inputs:
       deployment_name:
-        description: 'Name for the deployment'
+        description: "Name for the deployment"
         type: string
-        default: 'master'
+        default: "master"
 
 jobs:
   deploy:

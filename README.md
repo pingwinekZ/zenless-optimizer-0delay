@@ -1,4 +1,5 @@
-feel free to fork and update this cool site for this dumb ass shit poop game. i recomend free ai from opencode, it has good free daily limit and freebuff as last resort. 
+feel free to fork and update this cool site for this dumb ass shit poop game. i recomend free ai from opencode, it has good free daily limit and freebuff as last resort.
+
 # Zenless Optimizer
 
 A web-based build optimizer for **Zenless Zone Zero (ZZZ)**. Import your agents, discs, and w-engines, then let the optimizer find the best builds — damage, survivability, or your own custom goals.

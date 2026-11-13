@@ -5,15 +5,15 @@ on:
   workflow_call:
     inputs:
       deployment_name:
-        description: 'Name for the deployment. This will determine the URL.'
+        description: "Name for the deployment. This will determine the URL."
         type: string
-        default: 'master'
+        default: "master"
       repo_var_name:
-        description: 'Name of the variable on the repo that contains the repo to deploy to.'
+        description: "Name of the variable on the repo that contains the repo to deploy to."
         type: string
         required: true
       repo_deploy_secret_name:
-        description: 'Name of the secret on the repo that contains the deploy key for the deploy repo'
+        description: "Name of the secret on the repo that contains the deploy key for the deploy repo"
         type: string
         required: true
 
@@ -21,7 +21,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    name: 'build'
+    name: "build"
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6

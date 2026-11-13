@@ -7,7 +7,7 @@ verified.
 ## Pando engine -- the calc core (`libs/pando/engine/`)
 
 - [README](../engine/README.md) -- what Pando is (tag-indexed computation graph)
-  + index.
+  - index.
 - [doc/tags.md](../engine/doc/tags.md) -- what a tag is (`cat:val` pairs),
   notation, tag combination.
 - [doc/nodes.md](../engine/doc/nodes.md) -- every node op (arithmetic / branching
@@ -29,7 +29,7 @@ verified.
 - [gi](../../gi/formula/doc/api.md) / [sr](../../sr/formula/doc/api.md) /
   [zzz](../../zzz/formula/doc/api.md) `api.md` `(gen)` -- the authoring API
   (`data/char/*`, `data/weapon|relic|wengine|disc/*`) that produces tag entries.
-- [zzz/glue.md](../../zzz/formula/doc/glue.md) -- *verified* deep-dive of ZZZ's
+- [zzz/glue.md](../../zzz/formula/doc/glue.md) -- _verified_ deep-dive of ZZZ's
   gather: the `reread` redirections + four-layer stat waterfall + team/disc/dyn
   seams (expands zzz tags.md's "Gathering and the glue").
 

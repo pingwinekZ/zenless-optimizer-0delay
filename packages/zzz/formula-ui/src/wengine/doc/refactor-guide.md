@@ -4,11 +4,11 @@ Based on the w-engine refactor in commit `db26ed9` (worked examples: **SeveredIn
 
 This guide covers the three layers a w-engine refactor touches:
 
-| # | Layer | Path | Auto-gen? |
-|---|-------|------|-----------|
-| 1 | UI sheet | `app/src/formula-ui/wengine/sheets/<WEngine>.tsx` | No |
-| 2 | Display component | `app/src/page-optimize/Optimize/WEngineConditionalsDisplay.tsx` | No |
-| 3 | Localization | `app/src/localization/assets/locales/en/wengine_<WEngine>.json` | No |
+| #   | Layer             | Path                                                            | Auto-gen? |
+| --- | ----------------- | --------------------------------------------------------------- | --------- |
+| 1   | UI sheet          | `app/src/formula-ui/wengine/sheets/<WEngine>.tsx`               | No        |
+| 2   | Display component | `app/src/page-optimize/Optimize/WEngineConditionalsDisplay.tsx` | No        |
+| 3   | Localization      | `app/src/localization/assets/locales/en/wengine_<WEngine>.json` | No        |
 
 For the full w-engine refactor (formula data, `gen-file` meta, `addOnce`/`showSpecialtyAndEquipped`), see Part B of `app/src/formula-ui/char/doc/refactor-guide.md`. This guide focuses on the **formula-ui + display + localization** pass, which is usually the last step and often the only one needed for an already-working w-engine.
 
@@ -138,10 +138,15 @@ Instantiate them per w-engine:
 
 ```tsx
 /** CRIT DMG portion of SeveredInnocence's phase description (first sentence). */
-const SeveredInnocenceCritDesc = firstSentenceDesc('wengine_SeveredInnocence_gen')
+const SeveredInnocenceCritDesc = firstSentenceDesc(
+  'wengine_SeveredInnocence_gen'
+)
 
 /** Conditional portion of SeveredInnocence's phase description (from "When" to end). */
-const SeveredInnocenceCondDesc = fromMarkerDesc('wengine_SeveredInnocence_gen', 'When ')
+const SeveredInnocenceCondDesc = fromMarkerDesc(
+  'wengine_SeveredInnocence_gen',
+  'When '
+)
 ```
 
 **Custom slice** — if neither factory fits (e.g. you need a middle slice or a marker-based endpoint), write an inline function. SpectralGaze's DEF Reduction is the first two sentences, ending at a stable marker:

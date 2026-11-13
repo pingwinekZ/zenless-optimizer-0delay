@@ -5,12 +5,12 @@ permissions:
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize, labeled]
+    types: [ opened, reopened, synchronize, labeled ]
 
 jobs:
   call-build:
     uses: ./.github/workflows/build-frontend.yml
     with:
       deployment_name: ${{ github.event.number }}
-      repo_var_name: 'PR_REPO'
-      repo_deploy_secret_name: 'PR_REPO_SSH_KEY'
+      repo_var_name: "PR_REPO"
+      repo_deploy_secret_name: "PR_REPO_SSH_KEY"

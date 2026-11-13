@@ -20,18 +20,18 @@ fieldForBuff(buff.m1_electric_resIgn_) // renders "Electric Res Ignore"
 
 1. **Stat key lookup** — `tag.q` is matched against `statKeyTextMap`:
 
-   | Tag `q` | Renders as |
-   |---|---|
-   | `crit_` | CRIT Rate |
-   | `crit_dmg_` | CRIT DMG |
-   | `dmg_` | DMG Bonus |
-   | `atk_` | ATK |
-   | `atk` | ATK |
-   | `hp_` | HP |
-   | `def_` | DEF |
-   | `defIgn_` | DEF Ignore |
-   | `resIgn_` | Res Ignore |
-   | `dazeInc_` | Daze |
+   | Tag `q`     | Renders as |
+   | ----------- | ---------- |
+   | `crit_`     | CRIT Rate  |
+   | `crit_dmg_` | CRIT DMG   |
+   | `dmg_`      | DMG Bonus  |
+   | `atk_`      | ATK        |
+   | `atk`       | ATK        |
+   | `hp_`       | HP         |
+   | `def_`      | DEF        |
+   | `defIgn_`   | DEF Ignore |
+   | `resIgn_`   | Res Ignore |
+   | `dazeInc_`  | Daze       |
 
 2. **Element + damage type prefix** — if tag has `attribute`, `damageType1`, or `damageType2`, they prepend:
 
@@ -41,14 +41,14 @@ fieldForBuff(buff.m1_electric_resIgn_) // renders "Electric Res Ignore"
 
 3. **Label map** — common suffixes get short labels via `labelMap`:
 
-   | `q` | Label |
-   |---|---|
-   | `dmg_` | DMG |
-   | `common_dmg_` | DMG |
-   | `defIgn_` | DEF Ignore |
-   | `resIgn_` | Res Ignore |
-   | `dazeInc_` | Daze |
-   | `sheer_dmg_` | Sheer DMG |
+   | `q`           | Label      |
+   | ------------- | ---------- |
+   | `dmg_`        | DMG        |
+   | `common_dmg_` | DMG        |
+   | `defIgn_`     | DEF Ignore |
+   | `resIgn_`     | Res Ignore |
+   | `dazeInc_`    | Daze       |
+   | `sheer_dmg_`  | Sheer DMG  |
 
 4. **Extra handling stats** — `hp`, `hp_`, `atk`, `atk_`, `def`, `def_` get `qt` prefix: `"Flat ATK"`, `"Percent ATK"`.
 
@@ -67,20 +67,20 @@ fieldForBuff(buff.m1_electric_resIgn_) // renders "Electric Res Ignore"
 
 ### When to use explicit names
 
-| Situation | Example | Why |
-|---|---|---|
-| Unique character mechanic | "Corrode Bone Additional DMG" | Auto-gen would say "Electric DMG Bonus" — too generic |
-| Short abbreviation | "CD", "CR", "AP", "AM to IMP" | Auto-gen would say "CRIT DMG", "CRIT Rate", etc. |
-| Header-style group labels | "HP to CR", "SF to ATK" | These aren't stat names at all |
-| Conditional labels (toggle text) | "Ether Veil State · CRIT DMG" | Always locale-driven |
+| Situation                        | Example                       | Why                                                   |
+| -------------------------------- | ----------------------------- | ----------------------------------------------------- |
+| Unique character mechanic        | "Corrode Bone Additional DMG" | Auto-gen would say "Electric DMG Bonus" — too generic |
+| Short abbreviation               | "CD", "CR", "AP", "AM to IMP" | Auto-gen would say "CRIT DMG", "CRIT Rate", etc.      |
+| Header-style group labels        | "HP to CR", "SF to ATK"       | These aren't stat names at all                        |
+| Conditional labels (toggle text) | "Ether Veil State · CRIT DMG" | Always locale-driven                                  |
 
 ### When to use `header` vs `title`
 
-| Element | Purpose | Examples |
-|---|---|---|
-| `header` | Group label above a set of fields | `"DMG"`, `"Daze"`, `"CR"`, `"CD"`, `"AP"` |
-| `title` (in `header`) | The visible group label text | Same text, shown as section heading |
-| `title` (in `field`) | Individual buff name | "Corrode Bone Additional DMG" |
+| Element               | Purpose                           | Examples                                  |
+| --------------------- | --------------------------------- | ----------------------------------------- |
+| `header`              | Group label above a set of fields | `"DMG"`, `"Daze"`, `"CR"`, `"CD"`, `"AP"` |
+| `title` (in `header`) | The visible group label text      | Same text, shown as section heading       |
+| `title` (in `field`)  | Individual buff name              | "Corrode Bone Additional DMG"             |
 
 ### Header rules
 
@@ -97,6 +97,7 @@ Conditional labels (toggle text) follow a consistent style:
 ```
 
 Examples:
+
 - `"Special / EX Special Used · DMG"` — trigger first, effect after `·`
 - `"Ether Veil State · CRIT DMG"` — state first
 - `"Sunflare State · ER & DMG"`
@@ -107,11 +108,11 @@ Keep labels short — they're toggle switch text in a compact UI. Use `·` (midd
 
 ## Locale key categories in `char_{Key}.json`
 
-| Suffix | Purpose | Example |
-|---|---|---|
-| `Cond` | Conditional toggle label | `"etherVeilCond": "Ether Veil State · CRIT DMG"` |
-| _none_ | Field title or header | `"core_corrodeBone_dmg_": "Corrode Bone Additional DMG"` |
-| `_header` | Group header | `"core_header": "HP to SF"`, `"m6_header": "RES Ignore"` |
+| Suffix    | Purpose                  | Example                                                  |
+| --------- | ------------------------ | -------------------------------------------------------- |
+| `Cond`    | Conditional toggle label | `"etherVeilCond": "Ether Veil State · CRIT DMG"`         |
+| _none_    | Field title or header    | `"core_corrodeBone_dmg_": "Corrode Bone Additional DMG"` |
+| `_header` | Group header             | `"core_header": "HP to SF"`, `"m6_header": "RES Ignore"` |
 
 ## Decision Tree
 
@@ -193,12 +194,12 @@ W-engine sheets follow the same conventions but with some differences:
 
 Same `Cond` suffix convention: `cond` → `"<trigger>Cond"`.
 
-| Old | New | Example value |
-|---|---|---|
-| `cond` | `windExStacksCond` | `"Wind EX Stacks · Vortex & Windswept DMG, Squad AP"` |
-| `cond` | `energyConsumedCond` | `"20 Energy Consumed · Electric DEF Ignore"` |
-| `cond_stacks` | `stacksCond` | `"Ether DMG · Team DMG, Bonus AP"` |
-| `activateExtendEtherVeil` | `activateExtendEtherVeilCond` | `"Ether Veil Active · Team CRIT DMG"` |
+| Old                       | New                           | Example value                                         |
+| ------------------------- | ----------------------------- | ----------------------------------------------------- |
+| `cond`                    | `windExStacksCond`            | `"Wind EX Stacks · Vortex & Windswept DMG, Squad AP"` |
+| `cond`                    | `energyConsumedCond`          | `"20 Energy Consumed · Electric DEF Ignore"`          |
+| `cond_stacks`             | `stacksCond`                  | `"Ether DMG · Team DMG, Bonus AP"`                    |
+| `activateExtendEtherVeil` | `activateExtendEtherVeilCond` | `"Ether Veil Active · Team CRIT DMG"`                 |
 
 ### `tagToTagField` vs `fieldForBuff`
 
@@ -207,8 +208,8 @@ Use `tagToTagField` (from `../../util`) in w-engine sheets — it's the w-engine
 ```tsx
 import { tagToTagField, trans } from '../../util'
 
-tagToTagField(buff.squadDmg_.tag)     // auto-gen: "DMG"
-tagToTagField(buff.anomalyProf.tag)   // auto-gen: "Anomaly Proficiency"
+tagToTagField(buff.squadDmg_.tag) // auto-gen: "DMG"
+tagToTagField(buff.anomalyProf.tag) // auto-gen: "Anomaly Proficiency"
 ```
 
 `fieldForBuff` additionally passes `team` from the buff; `tagToTagField` does not.

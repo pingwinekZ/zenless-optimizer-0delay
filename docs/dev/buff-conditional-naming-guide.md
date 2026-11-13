@@ -8,19 +8,19 @@ This document codifies the naming conventions for buffs and conditionals as used
 
 Every conditional name should convey **what it is** in one of these categories:
 
-| Category | Example Names |
-|---|---|
-| **Named buff / state** | `Sunflare state`, `Cheer On state`, `Ether Veil state`, `Abloom buff` |
-| **Stack tracker** | `Flame Ember stacks`, `Crimson Thorn stacks`, `The Depths stacks` |
-| **Squad buff** | `Squad AP buff`, `Squad ATK buff`, `Squad DMG buff` |
-| **Self buff** | `ATK buff`, `CD buff`, `CR buff`, `SPD buff` |
-| **Field / Zone** | `Zone active`, `Field active` |
-| **Debuff / Shred** | `DEF shred`, `RES shred`, `PEN buff`, `RES ignore`, `M1 RES shred` |
-| **Damage boost** | `DMG boost`, `Ult DMG buff`, `EX Special DMG boost`, `Chain Attack DMG boost`, `Disorder DMG boost` |
-| **Conversion** | `ER to DMG% and AM`, `ATK to AP buff`, `HP to CR conversion` |
-| **Multi-buff (consolidated)** | `M2 buffs`, `M4 buffs`, `M6 buffs` |
-| **Combat CD / condition** | `Combat CD`, `Combat ATK`, `Combat ER` |
-| **Initial (start-of-fight / bangboo)** | `Initial buff`, `Initial ATK buff`, `Initial DMG buff` |
+| Category                               | Example Names                                                                                       |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Named buff / state**                 | `Sunflare state`, `Cheer On state`, `Ether Veil state`, `Abloom buff`                               |
+| **Stack tracker**                      | `Flame Ember stacks`, `Crimson Thorn stacks`, `The Depths stacks`                                   |
+| **Squad buff**                         | `Squad AP buff`, `Squad ATK buff`, `Squad DMG buff`                                                 |
+| **Self buff**                          | `ATK buff`, `CD buff`, `CR buff`, `SPD buff`                                                        |
+| **Field / Zone**                       | `Zone active`, `Field active`                                                                       |
+| **Debuff / Shred**                     | `DEF shred`, `RES shred`, `PEN buff`, `RES ignore`, `M1 RES shred`                                  |
+| **Damage boost**                       | `DMG boost`, `Ult DMG buff`, `EX Special DMG boost`, `Chain Attack DMG boost`, `Disorder DMG boost` |
+| **Conversion**                         | `ER to DMG% and AM`, `ATK to AP buff`, `HP to CR conversion`                                        |
+| **Multi-buff (consolidated)**          | `M2 buffs`, `M4 buffs`, `M6 buffs`                                                                  |
+| **Combat CD / condition**              | `Combat CD`, `Combat ATK`, `Combat ER`                                                              |
+| **Initial (start-of-fight / bangboo)** | `Initial buff`, `Initial ATK buff`, `Initial DMG buff`                                              |
 
 ---
 
@@ -29,9 +29,11 @@ Every conditional name should convey **what it is** in one of these categories:
 Component order: **[Condition / Context] [Target / Scope] [Stat / Effect] [Kind Suffix]**
 
 ### Template A: Mindscape-gated buffs
+
 ```
 M<N> [Target] [Stat] [kind]
 ```
+
 - `M1 CR buff` — M1 grants CRIT Rate
 - `M1 RES Ignore` — M1 grants RES Ignore
 - `M2 Windswept and Vortex DMG%` — M2 boosts Windswept and Vortex damage
@@ -43,9 +45,11 @@ M<N> [Target] [Stat] [kind]
 > **Rule:** `M` + number + short description. Keep the description terse — no spaces between `M` and the number.
 
 ### Template B: Ability-triggered buffs
+
 ```
 [Post|Pre] <Ability> [Target] [Stat] [kind]
 ```
+
 - `Post Ult DMG buff` — after Ultimate, gain DMG buff
 - `Post Ult ATK buff` — after Ultimate, gain ATK buff
 - `Pre EX Special DEF buff` — before using EX Special Attack, gain DEF buff
@@ -55,9 +59,11 @@ M<N> [Target] [Stat] [kind]
 > **Rule:** Use `Post` / `Pre` (not `After` / `Before`). Capitalize the ability name.
 
 ### Template C: Enemy-conditional buffs
+
 ```
 [Condition] [Stat] [kind]
 ```
+
 - `Enemy debuffed CR buff` — CR buff when enemy is debuffed
 - `Enemy HP ≤ 50% DMG boost` — DMG boost when enemy HP ≤ 50%
 - `Enemy HP > 50% DMG buff` — DMG buff when enemy HP > 50%
@@ -67,9 +73,11 @@ M<N> [Target] [Stat] [kind]
 - `Shocked enemy CR buff` — CR buff when enemy is Shocked
 
 ### Template D: Squad-scoped buffs
+
 ```
 [Squad|Team] [Stat] [kind]
 ```
+
 - `Squad AP buff` — squad-wide Anomaly Proficiency
 - `Squad ATK buff` — squad-wide ATK
 - `Squad DMG buff` — squad-wide DMG boost
@@ -79,9 +87,11 @@ M<N> [Target] [Stat] [kind]
 > **Rule:** Prefer `Squad` for consistency with in-game terminology, but `Team` is also acceptable for brevity.
 
 ### Template E: Named agent mechanics
+
 ```
 [Mechanic Name] [kind]
 ```
+
 - `Sunflare state` — Pyrois' unique Sunflare mode
 - `Cheer On state` — Lucy's Cheer On buff state
 - `Ether Veil state` — Zhao's Ether Veil mode
@@ -94,18 +104,22 @@ M<N> [Target] [Stat] [kind]
 - `Frostburn Break` — unique mechanic name
 
 ### Template F: Converted/scaling stats
+
 ```
 [Source Stat] to [Target Stat] [kind]
 ```
+
 - `ER to DMG% and AM` — Energy Regen converted to DMG% and Anomaly Mastery
 - `ATK to AP conversion` — ATK converted to Anomaly Proficiency
 - `HP to CR conversion` — HP converted to CRIT Rate
 - `ATK to DMG buff` — ATK converted to DMG boost
 
 ### Template G: Stack-based mechanics
+
 ```
 [Stack Name] stacks
 ```
+
 - `Flame Ember stacks`
 - `Crimson Thorn stacks`
 - `The Depths stacks`
@@ -118,9 +132,11 @@ M<N> [Target] [Stat] [kind]
 > **Rule:** Always use `stacks` (plural) as the suffix. Always lowercase `stacks`.
 
 ### Template H: Ability enhancements
+
 ```
 Enhanced [Ability]
 ```
+
 - `Enhanced Basic` — Basic Attack is enhanced
 - `Enhanced Special` — Special Attack is enhanced
 - `Enhanced EX Special` — EX Special Attack is enhanced
@@ -128,9 +144,11 @@ Enhanced [Ability]
 - `Enhanced state` — generic enhanced mode
 
 ### Template I: Extra hits
+
 ```
 [Ability] extra hits
 ```
+
 - `EX Special extra hits` — EX Special Attack has additional RNG hits
 - `Basic extra hits` — Basic Attack has additional hits
 - `Additional Attack extra hits` — Additional Attack has extra hits
@@ -139,6 +157,7 @@ Enhanced [Ability]
 > **Rule:** `extra hits` (plural). Also acceptable: `hits` alone for named mechanics.
 
 ### Template K: Section Header Pattern (Mindscape / Core displays)
+
 ```
 [Section prefix]: [Consolidated description]
   [Field title 1]     [value]
@@ -154,9 +173,11 @@ When a mindscape section (or any section) displays multiple buff values, use a *
 > **Rule:** For the `fieldRef` → `fieldValue` switch: use `fieldValue` (from mapped stats) instead of `fieldRef` (formula tags) when the value doesn't depend on a conditional toggle. This prevents `tagFieldMap` from leaking the header-prefixed title into hover tooltips.
 
 ### Template J: Initial / Start-of-fight buffs
+
 ```
 Initial [Stat] [kind]
 ```
+
 - `Initial ATK buff`
 - `Initial DEF buff`
 - `Initial DMG buff`
@@ -169,77 +190,77 @@ Initial [Stat] [kind]
 
 ## 3. Stat Keyword Conventions
 
-| In-Game Term | Convention | Example |
-|---|---|---|
-| ATK | `ATK` | `ATK buff`, `M4 ATK%` |
-| DEF | `DEF` | `DEF buff`, `DEF shred` |
-| HP | `HP` | `HP buff`, `HP to CR conversion` |
-| CRIT Rate | `CR` | `CR buff`, `CR boost`, `M1 CR buff` |
-| CRIT DMG | `CD` | `CD buff`, `M4 CD buff`, `AA CD buff` |
-| SPD | `SPD` | `SPD buff`, `SPD stacks` |
-| Anomaly Proficiency | `AP` | `AP buff`, `Squad AP buff`, `ATK to AP conversion` |
-| Anomaly Mastery | `AM` | `AM buff`, `ER to DMG% and AM` |
-| DMG Boost | `DMG` | `DMG boost`, `Ult DMG buff`, `DMG%` |
-| Impact | `Impact` | `Impact buff`, `Impact stacks` |
-| Daze (buildup meter) | `Daze` | `Daze buff`, `Daze dealt`, `Daze buildup` |
-| Stun (enemy state) | `Stun` | `Stun DMG bonus`, `Stunned enemy` |
-| Energy / Energy Regen | `ER` | `ER buff`, `ER to DMG%`, `Initial ER` |
-| PEN (flat) | `PEN` | `PEN buff`, `Squad PEN` |
-| PEN Ratio | `PEN Ratio` | `PEN Ratio buff`, `Squad PEN Ratio` |
-| DEF Ignore (% DEF ignore) | `DEF Ignore` | `DEF Ignore buff`, `AA Abloom DEF Ignore` |
-| RES Ignore | `RES Ignore` | `RES Ignore`, `M1 RES Ignore` |
-| Vulnerability | `Vulnerability` | `Vulnerability`, `M1 vulnerability` |
-| Stun / Daze break | `Stun` / `Daze` | `Stun DMG bonus`, `Daze dealt buff` |
-| Additional Attack | `Additional Attack` | `Additional Attack DMG`, `Additional Attack hits` |
-| Aftershock | `Aftershock` | `Aftershock DMG`, `Aftershock hits` |
-| Follow-up type effects | `Assist Follow-Up` | `Assist Follow-Up DMG` |
-| Sheer DMG | `Sheer DMG` | `Sheer DMG buff`, `Sheer DMG` |
-| Disorder | `Disorder` | `Disorder DMG boost`, `Disorder DMG` |
-| Attribute Anomaly | `Anom` / `Anomaly` | `Anomaly DMG buff`, `Anom Buildup` |
-| Decibels | `Decibels` | `Decibel gain`, `Decibel regen` |
-| Abloom | `Abloom` | `Abloom DMG`, `Abloom CRIT DMG` |
-| Afterburn | `Afterburn` | `Afterburn DMG`, `Afterburn stacks` |
+| In-Game Term              | Convention          | Example                                            |
+| ------------------------- | ------------------- | -------------------------------------------------- |
+| ATK                       | `ATK`               | `ATK buff`, `M4 ATK%`                              |
+| DEF                       | `DEF`               | `DEF buff`, `DEF shred`                            |
+| HP                        | `HP`                | `HP buff`, `HP to CR conversion`                   |
+| CRIT Rate                 | `CR`                | `CR buff`, `CR boost`, `M1 CR buff`                |
+| CRIT DMG                  | `CD`                | `CD buff`, `M4 CD buff`, `AA CD buff`              |
+| SPD                       | `SPD`               | `SPD buff`, `SPD stacks`                           |
+| Anomaly Proficiency       | `AP`                | `AP buff`, `Squad AP buff`, `ATK to AP conversion` |
+| Anomaly Mastery           | `AM`                | `AM buff`, `ER to DMG% and AM`                     |
+| DMG Boost                 | `DMG`               | `DMG boost`, `Ult DMG buff`, `DMG%`                |
+| Impact                    | `Impact`            | `Impact buff`, `Impact stacks`                     |
+| Daze (buildup meter)      | `Daze`              | `Daze buff`, `Daze dealt`, `Daze buildup`          |
+| Stun (enemy state)        | `Stun`              | `Stun DMG bonus`, `Stunned enemy`                  |
+| Energy / Energy Regen     | `ER`                | `ER buff`, `ER to DMG%`, `Initial ER`              |
+| PEN (flat)                | `PEN`               | `PEN buff`, `Squad PEN`                            |
+| PEN Ratio                 | `PEN Ratio`         | `PEN Ratio buff`, `Squad PEN Ratio`                |
+| DEF Ignore (% DEF ignore) | `DEF Ignore`        | `DEF Ignore buff`, `AA Abloom DEF Ignore`          |
+| RES Ignore                | `RES Ignore`        | `RES Ignore`, `M1 RES Ignore`                      |
+| Vulnerability             | `Vulnerability`     | `Vulnerability`, `M1 vulnerability`                |
+| Stun / Daze break         | `Stun` / `Daze`     | `Stun DMG bonus`, `Daze dealt buff`                |
+| Additional Attack         | `Additional Attack` | `Additional Attack DMG`, `Additional Attack hits`  |
+| Aftershock                | `Aftershock`        | `Aftershock DMG`, `Aftershock hits`                |
+| Follow-up type effects    | `Assist Follow-Up`  | `Assist Follow-Up DMG`                             |
+| Sheer DMG                 | `Sheer DMG`         | `Sheer DMG buff`, `Sheer DMG`                      |
+| Disorder                  | `Disorder`          | `Disorder DMG boost`, `Disorder DMG`               |
+| Attribute Anomaly         | `Anom` / `Anomaly`  | `Anomaly DMG buff`, `Anom Buildup`                 |
+| Decibels                  | `Decibels`          | `Decibel gain`, `Decibel regen`                    |
+| Abloom                    | `Abloom`            | `Abloom DMG`, `Abloom CRIT DMG`                    |
+| Afterburn                 | `Afterburn`         | `Afterburn DMG`, `Afterburn stacks`                |
 
 ---
 
 ## 4. Kind Suffix Conventions
 
-Use consistent suffixes to indicate the *type* of effect:
+Use consistent suffixes to indicate the _type_ of effect:
 
-| Suffix | Usage | Examples |
-|---|---|---|
-| `buff` | General stat increase (timed or named) | `ATK buff`, `SPD buff`, `Squad AP buff`, `CR buff` |
-| `boost` | DMG or non-visible stat increase | `DMG boost`, `CR boost`, `Disorder DMG boost` |
-| `stacks` | Accumulating count-based effect | `Flame Ember stacks`, `The Depths stacks` |
-| `state` | Agent is in a special mode | `Sunflare state`, `Ether Veil state`, `Cheer On state` |
-| `active` | A field/zone is deployed | `Zone active`, `Field active` |
-| `buffs` | Multiple buffs combined into one toggle | `M2 buffs`, `M6 buffs`, `M6 Ult buffs` |
-| `conversion` | One stat is converted to another | `ER to DMG% and AM`, `HP to CR conversion` |
-| `shred` | Enemy defensive stat reduction (debuff) | `DEF shred`, `RES shred` |
-| `Ignore` | Enemy defense/resistance penetration | `RES Ignore`, `DEF Ignore`, `M1 RES Ignore` |
-| `hits` | Extra attack hits | `EX Special extra hits`, `Ult extra hits` |
-| `debuff` | A negative status on enemies | `Enemy debuffed`, `DEF shred debuff`, `Windbite debuff` |
+| Suffix       | Usage                                   | Examples                                                |
+| ------------ | --------------------------------------- | ------------------------------------------------------- |
+| `buff`       | General stat increase (timed or named)  | `ATK buff`, `SPD buff`, `Squad AP buff`, `CR buff`      |
+| `boost`      | DMG or non-visible stat increase        | `DMG boost`, `CR boost`, `Disorder DMG boost`           |
+| `stacks`     | Accumulating count-based effect         | `Flame Ember stacks`, `The Depths stacks`               |
+| `state`      | Agent is in a special mode              | `Sunflare state`, `Ether Veil state`, `Cheer On state`  |
+| `active`     | A field/zone is deployed                | `Zone active`, `Field active`                           |
+| `buffs`      | Multiple buffs combined into one toggle | `M2 buffs`, `M6 buffs`, `M6 Ult buffs`                  |
+| `conversion` | One stat is converted to another        | `ER to DMG% and AM`, `HP to CR conversion`              |
+| `shred`      | Enemy defensive stat reduction (debuff) | `DEF shred`, `RES shred`                                |
+| `Ignore`     | Enemy defense/resistance penetration    | `RES Ignore`, `DEF Ignore`, `M1 RES Ignore`             |
+| `hits`       | Extra attack hits                       | `EX Special extra hits`, `Ult extra hits`               |
+| `debuff`     | A negative status on enemies            | `Enemy debuffed`, `DEF shred debuff`, `Windbite debuff` |
 
 ---
 
 ## 5. Capitalization & Spacing Rules
 
-| Rule | Correct | Incorrect |
-|---|---|---|
-| Slash-separated stats get spaces | `CR / CD buffs` | `CR/CD buffs` |
-| Ability names are capitalized | `Basic Attack`, `EX Special`, `Ult`, `Chain Attack`, `Assist` | `basic`, `ex special`, `ult` |
-| Stats are FULLY UPPERCASED | `ATK`, `DEF`, `HP`, `SPD`, `CR`, `CD`, `AP`, `AM`, `ER` | `Atk`, `Spd`, `Ap` |
-| Named ability field titles can spell out stat names for clarity | `Final Verdict CRIT DMG`, `AA Windswept and Vortex DMG%` | `Final Verdict CD` (too terse) |
-| PEN / DMG used as stat names | `PEN`, `DMG`, `DMG%` | `Pen`, `Dmg`, `dmg%` |
-| First word of label capitalized | `Squad AP buff` | `squad AP buff` |
-| Prepositions/articles lowercase | `Buff on ally` | `Buff On Ally` |
-| `M#` always has no space | `M1 CR buff`, `M4 ATK%` | `M 1 CR buff` |
-| `≤` / `>` for HP thresholds | `Enemy HP ≤ 50% DMG boost` | `Enemy HP less than 50% DMG boost` |
-| Core Passive prefix | `CP` (e.g. `CP CR buff`) | `Core Passive CR buff` |
-| Additional Ability prefix | `AA` (e.g. `AA CD buff`) | `Additional Ability CD buff` |
-| Damage type prefix in field titles | Trailing `%` for DMG stats | `AA Windswept and Vortex DMG%` | `AA Windswept and Vortex DMG` |
-| Section header carries M prefix | Header has `M<N>`, field titles omit it | `M6 CR and DMG buff` (header) → `CR buff` (field) | `M6 CR buff` repeated in field title |
-| CP prefix on Core Passive enhancements | `CP ATK%` when M2 enhances CP buff | `CP ATK%` | `ATK%` (unclear what's being enhanced) |
+| Rule                                                            | Correct                                                       | Incorrect                                         |
+| --------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------- |
+| Slash-separated stats get spaces                                | `CR / CD buffs`                                               | `CR/CD buffs`                                     |
+| Ability names are capitalized                                   | `Basic Attack`, `EX Special`, `Ult`, `Chain Attack`, `Assist` | `basic`, `ex special`, `ult`                      |
+| Stats are FULLY UPPERCASED                                      | `ATK`, `DEF`, `HP`, `SPD`, `CR`, `CD`, `AP`, `AM`, `ER`       | `Atk`, `Spd`, `Ap`                                |
+| Named ability field titles can spell out stat names for clarity | `Final Verdict CRIT DMG`, `AA Windswept and Vortex DMG%`      | `Final Verdict CD` (too terse)                    |
+| PEN / DMG used as stat names                                    | `PEN`, `DMG`, `DMG%`                                          | `Pen`, `Dmg`, `dmg%`                              |
+| First word of label capitalized                                 | `Squad AP buff`                                               | `squad AP buff`                                   |
+| Prepositions/articles lowercase                                 | `Buff on ally`                                                | `Buff On Ally`                                    |
+| `M#` always has no space                                        | `M1 CR buff`, `M4 ATK%`                                       | `M 1 CR buff`                                     |
+| `≤` / `>` for HP thresholds                                     | `Enemy HP ≤ 50% DMG boost`                                    | `Enemy HP less than 50% DMG boost`                |
+| Core Passive prefix                                             | `CP` (e.g. `CP CR buff`)                                      | `Core Passive CR buff`                            |
+| Additional Ability prefix                                       | `AA` (e.g. `AA CD buff`)                                      | `Additional Ability CD buff`                      |
+| Damage type prefix in field titles                              | Trailing `%` for DMG stats                                    | `AA Windswept and Vortex DMG%`                    | `AA Windswept and Vortex DMG`          |
+| Section header carries M prefix                                 | Header has `M<N>`, field titles omit it                       | `M6 CR and DMG buff` (header) → `CR buff` (field) | `M6 CR buff` repeated in field title   |
+| CP prefix on Core Passive enhancements                          | `CP ATK%` when M2 enhances CP buff                            | `CP ATK%`                                         | `ATK%` (unclear what's being enhanced) |
 
 ---
 
@@ -301,87 +322,99 @@ Team [Stat] buff                       → Team DMG buff
 ## 8. Examples from Codebase (Annotated)
 
 ### Agent: Pyrois
-| Conditional `text` | Pattern | Notes |
-|---|---|---|
-| `AA CD buff` | `AA` + stat + `buff` | Additional Ability grants CRIT DMG |
-| `M1 CR buff` | `M<N>` + stat + `buff` | M1 grants CRIT Rate |
+
+| Conditional `text` | Pattern                | Notes                              |
+| ------------------ | ---------------------- | ---------------------------------- |
+| `AA CD buff`       | `AA` + stat + `buff`   | Additional Ability grants CRIT DMG |
+| `M1 CR buff`       | `M<N>` + stat + `buff` | M1 grants CRIT Rate                |
 
 ### Agent: Velina
-| Conditional `text` | Pattern | Notes |
-|---|---|---|
-| `CP ER to DMG% and AM` | `CP` + source + to + target(s) | Core Passive converts ER to DMG% and Anomaly Mastery |
-| `AA Windswept and Vortex DMG%` | `AA` + mechanic + `DMG%` | Additional Ability boosts Windswept and Vortex DMG |
-| `M1 RES Ignore` | `M<N>` + stat + `Ignore` | M1 grants RES Ignore |
-| `M2 Windswept and Vortex DMG%` | `M<N>` + mechanic + `DMG%` | M2 boosts Windswept and Vortex DMG |
-| `M4 ATK%` | `M<N>` + stat + `%` | M4 grants ATK% |
+
+| Conditional `text`             | Pattern                        | Notes                                                |
+| ------------------------------ | ------------------------------ | ---------------------------------------------------- |
+| `CP ER to DMG% and AM`         | `CP` + source + to + target(s) | Core Passive converts ER to DMG% and Anomaly Mastery |
+| `AA Windswept and Vortex DMG%` | `AA` + mechanic + `DMG%`       | Additional Ability boosts Windswept and Vortex DMG   |
+| `M1 RES Ignore`                | `M<N>` + stat + `Ignore`       | M1 grants RES Ignore                                 |
+| `M2 Windswept and Vortex DMG%` | `M<N>` + mechanic + `DMG%`     | M2 boosts Windswept and Vortex DMG                   |
+| `M4 ATK%`                      | `M<N>` + stat + `%`            | M4 grants ATK%                                       |
 
 ### Agent: Zhao
-| Conditional `text` | Pattern | Notes |
-|---|---|---|
-| `CP CR buff` | `CP` + stat + `buff` | Core Passive CRIT Rate buff |
-| `M4 CD buff` | `M<N>` + stat + `buff` | M4 CRIT DMG buff |
-| `Final Verdict CRIT DMG` | Named mechanic + stat | Named ability stat |
-| `M6 CR and DMG buff` | `M<N>` + stats + `buffs` | Consolidated M6 effects |
+
+| Conditional `text`       | Pattern                  | Notes                       |
+| ------------------------ | ------------------------ | --------------------------- |
+| `CP CR buff`             | `CP` + stat + `buff`     | Core Passive CRIT Rate buff |
+| `M4 CD buff`             | `M<N>` + stat + `buff`   | M4 CRIT DMG buff            |
+| `Final Verdict CRIT DMG` | Named mechanic + stat    | Named ability stat          |
+| `M6 CR and DMG buff`     | `M<N>` + stats + `buffs` | Consolidated M6 effects     |
 
 ### Agent: Promeia
-| Conditional `text` | Pattern | Notes |
-|---|---|---|
-| `CP AM to AP and Abloom DMG%` | `CP` + conversion + mechanic | Core Passive converts AM to AP and Abloom DMG (section header) |
-| &nbsp;&nbsp;`Anomaly Proficiency` | Auto-generated from tag | Field title from `fieldRef` tag — auto-spelled stat name |
-| &nbsp;&nbsp;`Squad Abloom DMG` | Squad + mechanic + stat | Squad-wide Abloom DMG (from locale key) |
-| `AA Presumption of Guilt state` | `AA` + mechanic + `state` | AA toggle for the debuff inflicted by EX Special |
-| &nbsp;&nbsp;`Abloom DEF Ignore` | Mechanic + stat | Field title (no AA prefix — within conditional section) |
-| `M2 AP buff` (section header) | `M<N>` + buff type (header) | Section header — field titles below drop the `M2` prefix |
-| &nbsp;&nbsp;`Anomaly Proficiency` | Auto-generated from tag | Field title from `fieldForBuff` — value is flat +40 AP |
-| &nbsp;&nbsp;`Trial by Cold Abloom DMG%` | Named mechanic + `DMG%` | Flat 120% multiplier scoped to Trial by Cold formula |
-| `M6 RES Ignore` (section header) | `M<N>` + stat + `Ignore` | Section header for M6 |
-| &nbsp;&nbsp;`Anomaly & Disorder DMG All-Attribute RES Ignore` | Damage types + stat | Full game-effect name from locale |
+
+| Conditional `text`                                            | Pattern                      | Notes                                                          |
+| ------------------------------------------------------------- | ---------------------------- | -------------------------------------------------------------- |
+| `CP AM to AP and Abloom DMG%`                                 | `CP` + conversion + mechanic | Core Passive converts AM to AP and Abloom DMG (section header) |
+| &nbsp;&nbsp;`Anomaly Proficiency`                             | Auto-generated from tag      | Field title from `fieldRef` tag — auto-spelled stat name       |
+| &nbsp;&nbsp;`Squad Abloom DMG`                                | Squad + mechanic + stat      | Squad-wide Abloom DMG (from locale key)                        |
+| `AA Presumption of Guilt state`                               | `AA` + mechanic + `state`    | AA toggle for the debuff inflicted by EX Special               |
+| &nbsp;&nbsp;`Abloom DEF Ignore`                               | Mechanic + stat              | Field title (no AA prefix — within conditional section)        |
+| `M2 AP buff` (section header)                                 | `M<N>` + buff type (header)  | Section header — field titles below drop the `M2` prefix       |
+| &nbsp;&nbsp;`Anomaly Proficiency`                             | Auto-generated from tag      | Field title from `fieldForBuff` — value is flat +40 AP         |
+| &nbsp;&nbsp;`Trial by Cold Abloom DMG%`                       | Named mechanic + `DMG%`      | Flat 120% multiplier scoped to Trial by Cold formula           |
+| `M6 RES Ignore` (section header)                              | `M<N>` + stat + `Ignore`     | Section header for M6                                          |
+| &nbsp;&nbsp;`Anomaly & Disorder DMG All-Attribute RES Ignore` | Damage types + stat          | Full game-effect name from locale                              |
 
 ### Agent: Astra Yao
-| Conditional `text` | Pattern | Notes |
-|---|---|---|
-| `Idyllic Cadenza state` | Named mechanic + `state` | EX Special Idyllic Cadenza buff state |
-| `CP ATK buff` | `CP` + stat + `buff` | Core Passive squad ATK buff |
-| `M1 RES shred` | `M<N>` + stat + `shred` | M1 RES Reduction debuff (not RES Ignore — `shred` = enemy debuff) |
-| `M2 ATK buff` (section header) | `M<N>` + buff type (header) | Section header — field titles below drop the `M2` prefix |
-| &nbsp;&nbsp;`CP ATK%` | `CP` + `ATK%` | M2 improves CP ATK% value (field title) |
-| &nbsp;&nbsp;`CP ATK Cap` | `CP` + stat + `Cap` | M2 improves CP max ATK cap (field title) |
-| `M6 CR and DMG buff` (section header) | `M<N>` + stats + `buffs` (header) | Consolidated M6 section header — field titles drop `M6` prefix |
-| &nbsp;&nbsp;`Tremolo and Tone Clusters DMG` | Named mechanic + `DMG` | MV multiplier for Tremolo and Tone Clusters (field title) |
-| &nbsp;&nbsp;`CR buff` | Stat + `buff` | CRIT Rate buff (field title) |
-| `M6 Capriccio CR buff` | `M<N>` + mechanic + stat + `buff` | Conditional toggle for Precise Assist Capriccio CRIT Rate |
-| &nbsp;&nbsp;`Capriccio CRIT Rate` | Named mechanic + stat | Field title within conditional (no M prefix) |
+
+| Conditional `text`                          | Pattern                           | Notes                                                             |
+| ------------------------------------------- | --------------------------------- | ----------------------------------------------------------------- |
+| `Idyllic Cadenza state`                     | Named mechanic + `state`          | EX Special Idyllic Cadenza buff state                             |
+| `CP ATK buff`                               | `CP` + stat + `buff`              | Core Passive squad ATK buff                                       |
+| `M1 RES shred`                              | `M<N>` + stat + `shred`           | M1 RES Reduction debuff (not RES Ignore — `shred` = enemy debuff) |
+| `M2 ATK buff` (section header)              | `M<N>` + buff type (header)       | Section header — field titles below drop the `M2` prefix          |
+| &nbsp;&nbsp;`CP ATK%`                       | `CP` + `ATK%`                     | M2 improves CP ATK% value (field title)                           |
+| &nbsp;&nbsp;`CP ATK Cap`                    | `CP` + stat + `Cap`               | M2 improves CP max ATK cap (field title)                          |
+| `M6 CR and DMG buff` (section header)       | `M<N>` + stats + `buffs` (header) | Consolidated M6 section header — field titles drop `M6` prefix    |
+| &nbsp;&nbsp;`Tremolo and Tone Clusters DMG` | Named mechanic + `DMG`            | MV multiplier for Tremolo and Tone Clusters (field title)         |
+| &nbsp;&nbsp;`CR buff`                       | Stat + `buff`                     | CRIT Rate buff (field title)                                      |
+| `M6 Capriccio CR buff`                      | `M<N>` + mechanic + stat + `buff` | Conditional toggle for Precise Assist Capriccio CRIT Rate         |
+| &nbsp;&nbsp;`Capriccio CRIT Rate`           | Named mechanic + stat             | Field title within conditional (no M prefix)                      |
 
 ### W-Engine: Sol Exuvia
-| Conditional `text` | Pattern | Notes |
-|---|---|---|
-| `CR buff` | Stat + `buff` | Generic CRIT Rate buff |
+
+| Conditional `text` | Pattern       | Notes                  |
+| ------------------ | ------------- | ---------------------- |
+| `CR buff`          | Stat + `buff` | Generic CRIT Rate buff |
 
 ### W-Engine: Joyau Doré
-| Conditional `text` | Pattern | Notes |
-|---|---|---|
-| `AP buff` | Stat + `buff` | Anomaly Proficiency buff |
-| `Squad AP buff` | `Squad` + stat + `buff` | Team-wide AP buff |
+
+| Conditional `text`               | Pattern                                     | Notes                                                       |
+| -------------------------------- | ------------------------------------------- | ----------------------------------------------------------- |
+| `AP buff`                        | Stat + `buff`                               | Anomaly Proficiency buff                                    |
+| `Squad AP buff`                  | `Squad` + stat + `buff`                     | Team-wide AP buff                                           |
 | `Windswept and Vortex DMG buffs` | Named mechanics + `DMG buffs` (stack label) | Consolidated stack-based DMG buff label (locale `cond` key) |
 
 ### W-Engine: Frostfall Sickle
-| Conditional `text` | Pattern | Notes |
-|---|---|---|
+
+| Conditional `text`             | Pattern                                     | Notes                                                                   |
+| ------------------------------ | ------------------------------------------- | ----------------------------------------------------------------------- |
 | `Ice DMG and Abloom DMG buffs` | Attribute/Type + `DMG buffs` (consolidated) | Stack-based conditional boosting Ice and Abloom DMG (locale `cond` key) |
 
 ### W-Engine: Chief Sidekick
-| Conditional `text` | Pattern | Notes |
-|---|---|---|
-| `Team DMG buff` | `Team` + stat + `buff` (Template D) | Team-wide DMG buff per stack (locale `cond` key) |
-| `Off-field ER` | Context + stat (Template H-like) | Bool toggle for off-field Energy Regen (locale `cond_offField` key) |
+
+| Conditional `text` | Pattern                             | Notes                                                               |
+| ------------------ | ----------------------------------- | ------------------------------------------------------------------- |
+| `Team DMG buff`    | `Team` + stat + `buff` (Template D) | Team-wide DMG buff per stack (locale `cond` key)                    |
+| `Off-field ER`     | Context + stat (Template H-like)    | Bool toggle for off-field Energy Regen (locale `cond_offField` key) |
 
 ### W-Engine: Cannon Rotor
-| Conditional `text` | Pattern | Notes |
-|---|---|---|
-| `Additional DMG` | Named mechanic | Bonus damage hit |
+
+| Conditional `text` | Pattern        | Notes            |
+| ------------------ | -------------- | ---------------- |
+| `Additional DMG`   | Named mechanic | Bonus damage hit |
 
 ---
+
 ### Template L: CP-buff-enhancing field titles
+
 ```
 CP [Stat] [kind]
 ```

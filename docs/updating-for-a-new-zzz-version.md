@@ -139,7 +139,7 @@ name printed in each command above.
 > Generators registered on one project must not point their `factory` /
 > `schema` at a sibling project with the same relative layout
 > (`../formula-ui/src/generators/...`). Nx resolves such paths twice: first by
-> walking up the path *inside the owning project*, which silently matches the
+> walking up the path _inside the owning project_, which silently matches the
 > local file with the same tail (`src/generators/gen-sheet/all-generator`), so
 > the wrong generator runs. Keep each generator in the project that owns it.
 > `gen-ui-sheet` / `gen-all-ui-sheets` therefore need `bun nx g

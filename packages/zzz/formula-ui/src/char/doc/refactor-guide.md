@@ -14,12 +14,12 @@ The **description dimming/slicing** layer (§3.10–3.13) came out of the 1.6-an
 
 ## The 4 layers
 
-| # | Layer | Path | Auto-gen? |
-|---|-------|------|-----------|
-| 1 | Formula data | `app/src/formula/data/char/sheets/<Char>.ts` | No |
-| 2 | Meta (buffs/conditionals/formulas) | `app/src/formula/meta/char/<Char>/*.ts` | Yes (`gen-file`) |
-| 3 | UI sheet | `app/src/formula-ui/char/sheets/<Char>.tsx` | No |
-| 4 | Localization | `app/src/localization/assets/locales/en/char_<Char>.json` | No |
+| #   | Layer                              | Path                                                      | Auto-gen?        |
+| --- | ---------------------------------- | --------------------------------------------------------- | ---------------- |
+| 1   | Formula data                       | `app/src/formula/data/char/sheets/<Char>.ts`              | No               |
+| 2   | Meta (buffs/conditionals/formulas) | `app/src/formula/meta/char/<Char>/*.ts`                   | Yes (`gen-file`) |
+| 3   | UI sheet                           | `app/src/formula-ui/char/sheets/<Char>.tsx`               | No               |
+| 4   | Localization                       | `app/src/localization/assets/locales/en/char_<Char>.json` | No               |
 
 ---
 
@@ -57,11 +57,11 @@ const { energy_consumed } = allNumConditionals(
 
 ```ts
 registerBuff(
-  name,                        // must match the `buff.<name>` key used in the UI sheet
-  entries,                     // TagMapNodeEntry | TagMapNodeEntry[]
-  cond = 'infer',              // reader condition ('infer' is almost always fine)
-  team = false,                // true → listed team-wide (shows in teammate view)
-  includeOriginalEntry = true, // false → buff only applies where explicitly wired in (see 1.3)
+  name, // must match the `buff.<name>` key used in the UI sheet
+  entries, // TagMapNodeEntry | TagMapNodeEntry[]
+  (cond = 'infer'), // reader condition ('infer' is almost always fine)
+  (team = false), // true → listed team-wide (shows in teammate view)
+  (includeOriginalEntry = true) // false → buff only applies where explicitly wired in (see 1.3)
 )
 ```
 
@@ -118,9 +118,27 @@ dmgDazeAndAnomOverride(
 Registered with the 5th param `false`:
 
 ```ts
-registerBuff('ability_basic_dmg_', ability_basic_dmg_, undefined, undefined, false)
-registerBuff('ability_basic_electric_resIgn_', ability_basic_electric_resIgn_, undefined, undefined, false)
-registerBuff('m1_basic_crit_dmg_', m1_basic_crit_dmg_, undefined, undefined, false)
+registerBuff(
+  'ability_basic_dmg_',
+  ability_basic_dmg_,
+  undefined,
+  undefined,
+  false
+)
+registerBuff(
+  'ability_basic_electric_resIgn_',
+  ability_basic_electric_resIgn_,
+  undefined,
+  undefined,
+  false
+)
+registerBuff(
+  'm1_basic_crit_dmg_',
+  m1_basic_crit_dmg_,
+  undefined,
+  undefined,
+  false
+)
 ```
 
 Contrast with the **ultimate** buff: it applies to ALL ult damage (Seed has one ult), so it's registered normally (default `includeOriginalEntry: true`) and needs no overrides:
@@ -230,7 +248,8 @@ Potential is **always enabled at max level** — there is no `char.potential` fi
 anymore (removed from `common.ts`, `CharacterDataManager.ts`, and migrated
 away in `migrate.ts`). The UI no longer stores or gates on potential.
 
-* **Formula data** — use the max entry directly, no `cmpGE(char.potential, ...)`:
+- **Formula data** — use the max entry directly, no `cmpGE(char.potential, ...)`:
+
   ```ts
   // Burnice: uses max Anomaly Mastery / common DMG
   registerBuff(
@@ -261,14 +280,16 @@ away in `migrate.ts`). The UI no longer stores or gates on potential.
     'dash', percent(subscript(char.core, dm.core.crit_))
   )
   ```
+
   Do **not** use `cmpGE(char.potential, ...)`, `subscript(char.potential, ...)`,
   or `minPotential` gates. The locale generator (`dumpChars.ts`) now always
   emits the max text via `filterUnbuffedKits`, so keys are plain
   `ability.desc.2` / `potential.desc.6` / `core.desc.<level>.1` (no
   `descPotential`).
 
-* **UI sheet** — generic `"P"` prefix, no level number; Chain/Ultimate has no
+- **UI sheet** — generic `"P"` prefix, no level number; Chain/Ultimate has no
   prefix at all (see `doc/character-sheet-description-guide.md` §6):
+
   ```tsx
   // Core / ability-linked potential line
   <PrefixedLine prefix="P" dimmed={false}>
@@ -284,6 +305,7 @@ away in `migrate.ts`). The UI no longer stores or gates on potential.
   fieldForBuff(buff.potential_anomMas) // not { ...fieldForBuff(...), minPotential: 2 }
   fieldForBuff(buff.core_chasing_thunder_crit_) // not minPotential: 1
   ```
+
   `usePotentialDescKey` / `potentialDescKey` are deprecated identity helpers kept
   for compatibility — new code should use plain keys.
 
@@ -497,13 +519,13 @@ The same buff tag can be shown under several titles. Seed's ability buff affects
 
 ### 3.8 Descriptions — which component
 
-| Where | Component | Notes |
-|---|---|---|
-| Core effect | `<CoreGameDesc characterKey={key} paragraph={N} />` | Renders `core.desc.<level>.<N>` with the character's actual core level. `paragraph` indexes into the core-level desc (Seed: 1 = Onslaught/Direct Strike, 2 = Besiege) |
-| Mindscape | `<GameDesc ns="char_Seed_gen" key18="mindscapes.N.desc" />` | Static text from the datamine locale |
-| Part of a description | `<GameDescSlice ns key18 from to />` | Slices between stable text markers instead of paragraph indexes (3.10) |
-| Skill ability | `<SkillGameDesc characterKey={key} ns="char_<Key>_gen" key18="<skill>.<ability>.desc" />` | Evaluates `{CAL:...}` tokens with the character's real skill levels |
-| Multi-paragraph | Wrap multiple `<GameDesc>` in a fragment with `<div style={{ marginBottom: 8 }} />` between them | |
+| Where                 | Component                                                                                        | Notes                                                                                                                                                                 |
+| --------------------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Core effect           | `<CoreGameDesc characterKey={key} paragraph={N} />`                                              | Renders `core.desc.<level>.<N>` with the character's actual core level. `paragraph` indexes into the core-level desc (Seed: 1 = Onslaught/Direct Strike, 2 = Besiege) |
+| Mindscape             | `<GameDesc ns="char_Seed_gen" key18="mindscapes.N.desc" />`                                      | Static text from the datamine locale                                                                                                                                  |
+| Part of a description | `<GameDescSlice ns key18 from to />`                                                             | Slices between stable text markers instead of paragraph indexes (3.10)                                                                                                |
+| Skill ability         | `<SkillGameDesc characterKey={key} ns="char_<Key>_gen" key18="<skill>.<ability>.desc" />`        | Evaluates `{CAL:...}` tokens with the character's real skill levels                                                                                                   |
+| Multi-paragraph       | Wrap multiple `<GameDesc>` in a fragment with `<div style={{ marginBottom: 8 }} />` between them |                                                                                                                                                                       |
 
 ### 3.9 Imports
 
@@ -579,7 +601,7 @@ This keeps the conditional description self-contained (core text + the relevant 
 - `toExact` — ends the slice **at** the `to` marker instead of through the end of its sentence. Use it to isolate a mid-sentence clause:
 
 ```tsx
-<GameDescSlice
+;<GameDescSlice
   ns="char_Caesar_gen"
   key18="mindscapes.2.desc"
   from="While <ct color=#FFFFFF>Radiant Aegis</ct> from"
@@ -615,7 +637,7 @@ function AbilityDescription() {
 Or with slicing (Trigger):
 
 ```tsx
-<AbilityBodyText characterKey={key}>
+;<AbilityBodyText characterKey={key}>
   <GameDescSlice
     ns="char_Trigger_gen"
     key18="ability.desc.1"

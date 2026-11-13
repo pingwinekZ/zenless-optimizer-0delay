@@ -5,7 +5,7 @@ WebGPU-accelerated solver for the Zenless Zone Zero optimizer.
 This package ports the GPU optimization backend from the HSR optimizer: a WGSL
 compute shader enumerates every combination of candidate equips (1 wengine + 6
 discs) in a massively parallel fashion, filters builds against the optimization
-constraints, and returns the top-N results. The shader body is *generated* from
+constraints, and returns the top-N results. The shader body is _generated_ from
 the Pando node graph produced by `detach`/`prune`, mirroring the JS kernels
 emitted by `packages/game-opt/solver`.
 

@@ -21,14 +21,14 @@ UI sections against the generated metadata (§2).
 
 ### Files to create/modify
 
-| # | File | Action |
-|---|------|--------|
-| 1 | `packages/zzz/formula/src/data/char/sheets/{Name}.ts` | **Create** — Formula data sheet (core logic) |
-| 2 | `packages/zzz/formula-ui/src/char/sheets/{Name}.tsx` | **Create** — UI sheet (display fields & conditionals) |
-| 3 | `packages/zzz/formula/src/meta/char/{Name}/buffs.ts` | **Generate** — Buff metadata (auto-generated / manual) |
-| 4 | `packages/zzz/formula/src/meta/char/{Name}/conditionals.ts` | **Generate** — Conditional metadata |
-| 5 | `packages/zzz/formula/src/meta/char/{Name}/formulas.ts` | **Generate** — Formula metadata (for `customDmg` entries) |
-| 6 | `packages/zzz/localization/src/assets/locales/en/char_{Name}.json` | **Create** — English locale strings |
+| #   | File                                                               | Action                                                    |
+| --- | ------------------------------------------------------------------ | --------------------------------------------------------- |
+| 1   | `packages/zzz/formula/src/data/char/sheets/{Name}.ts`              | **Create** — Formula data sheet (core logic)              |
+| 2   | `packages/zzz/formula-ui/src/char/sheets/{Name}.tsx`               | **Create** — UI sheet (display fields & conditionals)     |
+| 3   | `packages/zzz/formula/src/meta/char/{Name}/buffs.ts`               | **Generate** — Buff metadata (auto-generated / manual)    |
+| 4   | `packages/zzz/formula/src/meta/char/{Name}/conditionals.ts`        | **Generate** — Conditional metadata                       |
+| 5   | `packages/zzz/formula/src/meta/char/{Name}/formulas.ts`            | **Generate** — Formula metadata (for `customDmg` entries) |
+| 6   | `packages/zzz/localization/src/assets/locales/en/char_{Name}.json` | **Create** — English locale strings                       |
 
 ---
 
@@ -39,7 +39,12 @@ UI sections against the generated metadata (§2).
 ```typescript
 import type { NumNode } from '@zenless-optimizer/pando/engine'
 import {
-  cmpGE, max, min, prod, subscript, sum,
+  cmpGE,
+  max,
+  min,
+  prod,
+  subscript,
+  sum,
 } from '@zenless-optimizer/pando/engine'
 import { type CharacterKey } from '@zenless-optimizer/zzz/consts'
 import { allStats, mappedStats } from '@zenless-optimizer/zzz/stats'
@@ -79,14 +84,10 @@ const { char } = own
 Third argument maps conditional name to mindscape requirement (optional).
 
 ```typescript
-const { condName1, condName2 } = allBoolConditionals(
-  key,
-  undefined,
-  {
-    condName2: 1,   // unlocked at M1
-    condName3: 6,   // unlocked at M6
-  }
-)
+const { condName1, condName2 } = allBoolConditionals(key, undefined, {
+  condName2: 1, // unlocked at M1
+  condName3: 6, // unlocked at M6
+})
 ```
 
 - No third arg → no mindscape requirement, always available.
@@ -138,11 +139,11 @@ const m6_dazeBuff = ownBuff.combat.dazeInc_.add(
 
 Some combat stats expect raw decimal values, NOT `percent()`-wrapped values:
 
-| Stat | Expected | Wrong pattern | Bug |
-|---|---|---|---|
-| `defIgn_` | `0.4` (for 40%) | `percent(40)` | Shows "4000%" — 2 extra zeros |
+| Stat            | Expected         | Wrong pattern  | Bug                            |
+| --------------- | ---------------- | -------------- | ------------------------------ |
+| `defIgn_`       | `0.4` (for 40%)  | `percent(40)`  | Shows "4000%" — 2 extra zeros  |
 | `anom_mv_mult_` | `1.2` (for 120%) | `percent(120)` | Shows "12000%" — 2 extra zeros |
-| `resIgn_` | `0.15` (for 15%) | `percent(15)` | Shows "1500%" — 2 extra zeros |
+| `resIgn_`       | `0.15` (for 15%) | `percent(15)`  | Shows "1500%" — 2 extra zeros  |
 
 > **Rule:** `percent(N)` produces the integer `N` (so `percent(40)` = 40 = 4000%). For coefficient stats like `defIgn_`, `resIgn_`, and `anom_mv_mult_`, use raw decimals (e.g. `0.4` = 40%, `1.2` = 120%). Check Vivian's implementation for reference — her M2 uses raw `dm.m2.abloom_bonus` (a decimal value) without a `percent()` wrapper.
 
@@ -176,10 +177,16 @@ prod(
 If a buff applies to multiple damage types (e.g., both `'anomaly'` and `'disorder'`), use separate `registerBuff` calls with different `addWithDmgType` targets:
 
 ```typescript
-const m6_resIgn = cmpGE(char.mindscape, 6, 0.15)  // 15% RES ignore
+const m6_resIgn = cmpGE(char.mindscape, 6, 0.15) // 15% RES ignore
 
-registerBuff('m6_resIgn_anomaly', ownBuff.combat.resIgn_.addWithDmgType('anomaly', m6_resIgn))
-registerBuff('m6_resIgn_disorder', ownBuff.combat.resIgn_.addWithDmgType('disorder', m6_resIgn))
+registerBuff(
+  'm6_resIgn_anomaly',
+  ownBuff.combat.resIgn_.addWithDmgType('anomaly', m6_resIgn)
+)
+registerBuff(
+  'm6_resIgn_disorder',
+  ownBuff.combat.resIgn_.addWithDmgType('disorder', m6_resIgn)
+)
 ```
 
 > **Note:** `'disorder'` IS a valid damage type in the system — it's used across every character's `disorderDmgInst_*` formula. Don't assume it doesn't exist.
@@ -196,7 +203,7 @@ registerBuff(
     abilityOn(presumptionOfGuilt.ifOn(0.4))
   ),
   undefined,
-  true  // team buff
+  true // team buff
 )
 ```
 
@@ -214,18 +221,25 @@ const sheet = register(
   entriesForChar(data_gen),
 
   // 2. All damage/daze/anomaly formulas (with optional per-hit overrides)
-  ...registerAllDmgDazeAndAnom(key, dm, /* optional overrides... */),
+  ...registerAllDmgDazeAndAnom(key, dm /* optional overrides... */),
 
   // 3. Custom damage formulas (e.g. M6 bonus attack)
   ...customDmg(
     'custom_name',
     { ...baseTag, damageType1: 'ult' },
-    cmpGE(char.mindscape, 6, condName.ifOn(prod(own.final.atk, percent(dm.m6.someDmg))))
+    cmpGE(
+      char.mindscape,
+      6,
+      condName.ifOn(prod(own.final.atk, percent(dm.m6.someDmg)))
+    )
   ),
 
   // 4. Core Passive buffs
-  registerBuff('core_critDmg_', coreCritDmg_, undefined, undefined, false),   // last arg false = not team buff
-  registerBuff('core_exSpecial_dazeInc_', ownBuff.combat.dazeInc_.addWithDmgType('exSpecial', coreDazeInc)),
+  registerBuff('core_critDmg_', coreCritDmg_, undefined, undefined, false), // last arg false = not team buff
+  registerBuff(
+    'core_exSpecial_dazeInc_',
+    ownBuff.combat.dazeInc_.addWithDmgType('exSpecial', coreDazeInc)
+  ),
   registerBuff('core_atk', coreAtk, undefined, undefined, false),
 
   // 5. Additional Ability buffs
@@ -234,24 +248,31 @@ const sheet = register(
     ownBuff.combat.atk.add(
       abilityOn(
         condName.ifOn(
-          min(dm.ability.maxAtk, sum(dm.ability.atkBase, prod(char.lvl, dm.ability.atkPerLevel)))
+          min(
+            dm.ability.maxAtk,
+            sum(dm.ability.atkBase, prod(char.lvl, dm.ability.atkPerLevel))
+          )
         )
       )
     )
   ),
   registerBuff(
     'ability_squadDmg_',
-    teamBuff.combat.common_dmg_.add(abilityOn(condName.ifOn(dm.ability.squadDmg_))),
+    teamBuff.combat.common_dmg_.add(
+      abilityOn(condName.ifOn(dm.ability.squadDmg_))
+    ),
     undefined,
-    true  // team buff
+    true // team buff
   ),
 
   // 6. Mindscape buffs
   registerBuff(
     'm1_allResRed_',
-    enemyDebuff.common.resRed_.add(cmpGE(char.mindscape, 1, condName.ifOn(dm.m1.allResRed_)))
+    enemyDebuff.common.resRed_.add(
+      cmpGE(char.mindscape, 1, condName.ifOn(dm.m1.allResRed_))
+    )
   ),
-  registerBuff('m6_daze_', m6_dazeBuff, undefined, undefined, false),
+  registerBuff('m6_daze_', m6_dazeBuff, undefined, undefined, false)
 )
 
 export default sheet
@@ -271,13 +292,13 @@ registerBuff(name: string, tagNode: TagMapNodeEntry, ...rest: any[])
 ```typescript
 dmgDazeAndAnomOverride(
   dm,
-  'special',                    // skill type
-  'EXSpecialAttackName',        // exact skill name from dm
-  hitIndex,                     // which hit (0-indexed)
+  'special', // skill type
+  'EXSpecialAttackName', // exact skill name from dm
+  hitIndex, // which hit (0-indexed)
   { ...baseTag, damageType1: 'exSpecial', skillType1: 'specialSkill' },
-  'atk',                        // scaling stat
-  undefined,                    // extra tag entries (or undefined)
-  extraBuffNode                 // extra buff to apply to this hit
+  'atk', // scaling stat
+  undefined, // extra tag entries (or undefined)
+  extraBuffNode // extra buff to apply to this hit
 )
 ```
 
@@ -388,27 +409,31 @@ export default sheet
 **Section keys:** `core`, `ability`, `m1`, `m2`, `m3`, `m4`, `m5`, `m6`
 
 **Group types:**
+
 - `type: 'fields'` — Static display of buff values (no toggle)
 - `type: 'conditional'` — Toggleable conditional with `metadata` linking to a conditional
 
 **Display helpers:**
-- `fieldForBuff(buffRef)` — Auto-generates a field display from a buff, including the auto-generated 
-title (e.g. "Anomaly Proficiency", "DEF Ignore") from the buff tag
+
+- `fieldForBuff(buffRef)` — Auto-generates a field display from a buff, including the auto-generated
+  title (e.g. "Anomaly Proficiency", "DEF Ignore") from the buff tag
 - `{ title, fieldRef }` — Manual field with custom title
 - `{ fieldValue: dm.m2.someStat, unit: '%' }` — Static value display (no tag dependency). Use for flat mindscape values that don't depend on a conditional toggle.
 - `fieldForBuff(buffRef).title` — Extract just the auto-generated title element from a buff (useful when you need the auto-title alongside a custom second field in the same section)
 
 **Icons:**
+
 - Core Passive: `commonDefIcon('coreFlat')` / `commonDefIcon('core')`
 - Mindscape N: `mindscapeDefIcon(N)` (N = 1-6)
 
 **Description helpers:**
+
 - `<GameDesc ns="char_{Name}_gen" key18="ability.desc.0" />` for generated locale keys
 - `<GameDesc ns="char_{Name}_gen" key18="mindscapes.1.desc" />` for mindscape descriptions
 - Combine multiple locale paragraphs in descriptions using a `<>...</>` fragment:
 
 ```tsx
-<>
+;<>
   <GameDesc ns="char_{Name}_gen" key18="ability.desc.0" />
   <div style={{ marginBottom: 8 }} />
   <GameDesc ns="char_{Name}_gen" key18="ability.desc.3" />
@@ -454,7 +479,7 @@ export const conditionals = {
     sheet: '{Name}',
     name: 'm6Cond',
     type: 'bool',
-    mindscapeRequirement: 6,    // only if mindscape-gated
+    mindscapeRequirement: 6, // only if mindscape-gated
   },
 }
 ```
@@ -507,13 +532,13 @@ bun nx g @zenless-optimizer/zzz/formula-ui:gen-ui-sheet --sheet_type=wengine --s
 
 ### Files to create/modify
 
-| # | File | Action |
-|---|------|--------|
-| 1 | `packages/zzz/formula/src/data/wengine/sheets/{Name}.ts` | **Create** — Formula data sheet |
-| 2 | `packages/zzz/formula-ui/src/wengine/sheets/{Name}.tsx` | **Create** — UI sheet |
-| 3 | `packages/zzz/formula/src/meta/wengine/{Name}/conditionals.ts` | **Generate** — Conditional metadata |
-| 4 | `packages/zzz/localization/src/assets/locales/en/wengine_{Name}.json` | **Create** — English locale strings |
-| 5 | `app/src/page-optimize/Optimize/WEngineConditionalsDisplay.tsx` | **Modify** — Custom desc components (if needed) |
+| #   | File                                                                  | Action                                          |
+| --- | --------------------------------------------------------------------- | ----------------------------------------------- |
+| 1   | `packages/zzz/formula/src/data/wengine/sheets/{Name}.ts`              | **Create** — Formula data sheet                 |
+| 2   | `packages/zzz/formula-ui/src/wengine/sheets/{Name}.tsx`               | **Create** — UI sheet                           |
+| 3   | `packages/zzz/formula/src/meta/wengine/{Name}/conditionals.ts`        | **Generate** — Conditional metadata             |
+| 4   | `packages/zzz/localization/src/assets/locales/en/wengine_{Name}.json` | **Create** — English locale strings             |
+| 5   | `app/src/page-optimize/Optimize/WEngineConditionalsDisplay.tsx`       | **Modify** — Custom desc components (if needed) |
 
 ---
 
@@ -660,7 +685,7 @@ const sheet = registerWengine(
       )
     ),
     showSpecialtyAndEquipped(key),
-    true  // team buff
+    true // team buff
   ),
 
   // 7. Bool conditional — off-field toggle
@@ -685,14 +710,15 @@ const sheet = registerWengine(
       )
     ),
     showSpecialtyAndEquipped(key),
-    true  // team buff
-  ),
+    true // team buff
+  )
 )
 
 export default sheet
 ```
 
 **Key utilities:**
+
 - `showSpecialtyAndEquipped(key)` — Standard show-condition (equipped by matching specialty)
 - `cmpSpecialtyAndEquipped(key, valueNode)` — Guard value behind specialty+equipped check
 - `allBoolConditionals(key)` — Creates on/off toggles
@@ -701,18 +727,18 @@ export default sheet
 
 **Damage-type-scoped buffs — `.map()` vs `addWithDmgType()`:**
 
-| Pattern | Use case | Example |
-|---|---|---|
-| `.map((r) => r.add(...))` on `ownBuff.combat.dmg_.{type}` | When a w-engine has dedicated sub-properties on `dmg_` (e.g. `dmg_.vortex`, `dmg_.windswept`). These are discrete damage type tags defined in the system. | Joyau Dore's Windswept/Vortex DMG buffs |
-| `addWithDmgType('{type}', ...)` on `ownBuff.combat.common_dmg_` | For damage types that aren't sub-properties on `dmg_` (e.g. `'abloom'`, `'aftershock'`). Pass the type name as a string. | Frostfall Sickle's Abloom DMG buff |
+| Pattern                                                         | Use case                                                                                                                                                  | Example                                 |
+| --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| `.map((r) => r.add(...))` on `ownBuff.combat.dmg_.{type}`       | When a w-engine has dedicated sub-properties on `dmg_` (e.g. `dmg_.vortex`, `dmg_.windswept`). These are discrete damage type tags defined in the system. | Joyau Dore's Windswept/Vortex DMG buffs |
+| `addWithDmgType('{type}', ...)` on `ownBuff.combat.common_dmg_` | For damage types that aren't sub-properties on `dmg_` (e.g. `'abloom'`, `'aftershock'`). Pass the type name as a string.                                  | Frostfall Sickle's Abloom DMG buff      |
 
 **Attribute-scoped buffs — using sub-properties on `ownBuff.combat.*`:**
 
 Some combat stats have attribute-specific sub-properties (e.g. `common_dmg_.ice`, `resIgn_.fire`). Use these when the buff only applies to a specific attribute:
 
 ```typescript
-ownBuff.combat.common_dmg_.ice.add(value)     // Ice DMG only
-ownBuff.combat.resIgn_.fire.add(value)        // Fire RES Ignore only
+ownBuff.combat.common_dmg_.ice.add(value) // Ice DMG only
+ownBuff.combat.resIgn_.fire.add(value) // Fire RES Ignore only
 ```
 
 **Caveat:** When using attribute-scoped DMG buffs, you may also need to check the character's attribute via `cmpEq(own.char.attribute, 'ice', value)` to ensure the w-engine only works on matching characters.
@@ -722,8 +748,8 @@ ownBuff.combat.resIgn_.fire.add(value)        // Fire RES Ignore only
 Use `ownBuff.base.*` instead of `ownBuff.combat.*` for raw base stat increases (not scaling with other modifiers):
 
 ```typescript
-ownBuff.base.impact.add(value)     // Base Impact (not combat Impact)
-ownBuff.base.atk.add(value)        // Base ATK
+ownBuff.base.impact.add(value) // Base Impact (not combat Impact)
+ownBuff.base.atk.add(value) // Base ATK
 ```
 
 ---
@@ -859,6 +885,7 @@ function WengineNameImpactResDesc({ phase }: { phase: number }) {
 ```
 
 Then wire them into:
+
 - The `WenginePassiveFieldRow` section for field-specific descriptions
 - The `WEngineConditionalsDisplay` filter/map section for conditional-specific descriptions
 - The filter section to hide self-only conditionals from teammate view
@@ -868,6 +895,7 @@ Then wire them into:
 ## Summary checklist
 
 ### Character
+
 - [ ] Create `packages/zzz/formula/src/data/char/sheets/{Name}.ts`
 - [ ] Create `packages/zzz/formula-ui/src/char/sheets/{Name}.tsx`
 - [ ] Create/update `packages/zzz/formula/src/meta/char/{Name}/buffs.ts`
@@ -878,6 +906,7 @@ Then wire them into:
 - [ ] Run `bun run mini-ci` to verify
 
 ### W-Engine
+
 - [ ] Create `packages/zzz/formula/src/data/wengine/sheets/{Name}.ts`
 - [ ] Create `packages/zzz/formula-ui/src/wengine/sheets/{Name}.tsx`
 - [ ] Create/update `packages/zzz/formula/src/meta/wengine/{Name}/conditionals.ts`

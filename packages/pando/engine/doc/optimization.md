@@ -1,7 +1,7 @@
 # Optimization
 
 The build solver does not evaluate every candidate against the full node graph.
-It first *reduces the problem*: shrinking the graph and discarding candidates
+It first _reduces the problem_: shrinking the graph and discarding candidates
 that cannot win. Two routines do this, in
 [`src/optimization/`](../src/optimization/):
 
@@ -24,9 +24,9 @@ over a set of candidate columns. Its signature:
 
 ```ts
 export function prune<I extends OP, ID>(
-  nodes: NumNode<I>[],       // [objective, ...constraints, ...other calcs]
+  nodes: NumNode<I>[], // [objective, ...constraints, ...other calcs]
   candidates: Candidate<ID>[][],
-  dynTagCat: string,         // tag category the compiled kernel iterates over
+  dynTagCat: string, // tag category the compiled kernel iterates over
   minimum: number[],
   topN: number
 ): PruneResult<I, ID>
@@ -36,7 +36,7 @@ A `Candidate<ID>` is `{ id: ID } & Record<string, number>` (`prune.ts:20`): one
 choice (an artifact, relic, or disc) expressed as named numeric coordinates plus
 an opaque id. `candidates` is an array of columns (one per slot); a build is one
 candidate from each column. The returned `nodes`, `candidates`, and `minimum`
-are a *new, smaller* problem with the same `topN` builds -- they are not
+are a _new, smaller_ problem with the same `topN` builds -- they are not
 interchangeable with the inputs (`prune.ts:46-54`).
 
 `PruneResult` also carries `cndRanges` and `monotonicities`, which the solver
@@ -116,7 +116,7 @@ independent graph cleanup, overloaded over `NumNode`/`StrNode`/`AnyNode`:
    (`sum` 0, `prod` 1).
 3. `deduplicate` -- collapse structurally identical subnodes to one shared
    object, using a commutativity-aware key: operand id sets for `sum`/`prod`/
-   `min`/`max`, and for `match` the sorted pair of *branch* ids (its operands
+   `min`/`max`, and for `match` the sorted pair of _branch_ ids (its operands
    stay ordered). Sharing here means the calculator's per-node work is not
    repeated.
 

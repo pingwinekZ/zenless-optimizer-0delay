@@ -2,16 +2,16 @@ name: Build ZO Release
 
 on:
   pull_request:
-    types: [closed]
+    types: [ closed ]
 
 jobs:
   call-build-frontend:
     uses: ./.github/workflows/build-frontend.yml
     if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'zo-release') }}
     with:
-      deployment_name: ''
-      repo_var_name: 'ZO_REPO'
-      repo_deploy_secret_name: 'ZO_REPO_SSH_KEY'
+      deployment_name: ""
+      repo_var_name: "ZO_REPO"
+      repo_deploy_secret_name: "ZO_REPO_SSH_KEY"
       nested_deployments: false
   create-release:
     runs-on: ubuntu-latest

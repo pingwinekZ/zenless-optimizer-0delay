@@ -5,13 +5,13 @@ The game-agnostic layer between the Pando engine and the per-game formula libs
 authoring API, extracts metadata from authored formulas, runs the build solver,
 and provides shared UI. Five sub-libraries:
 
-| Sub-lib | Project | Role |
-| --- | --- | --- |
-| `engine` | `game-opt-engine` | typed reader, `convert`, conditionals, `Calculator` subclass |
-| `formula` | `game-opt-formula` | metadata extraction, equipment registration |
-| `solver` | `game-opt-solver` | multi-worker build optimizer over Pando `prune` |
-| `sheet-ui` | `game-opt-sheet-ui` | sheet/document/field/conditional UI types and components |
-| `formula-ui` | `game-opt-formula-ui` | debug/inspection UI contexts |
+| Sub-lib      | Project               | Role                                                         |
+| ------------ | --------------------- | ------------------------------------------------------------ |
+| `engine`     | `game-opt-engine`     | typed reader, `convert`, conditionals, `Calculator` subclass |
+| `formula`    | `game-opt-formula`    | metadata extraction, equipment registration                  |
+| `solver`     | `game-opt-solver`     | multi-worker build optimizer over Pando `prune`              |
+| `sheet-ui`   | `game-opt-sheet-ui`   | sheet/document/field/conditional UI types and components     |
+| `formula-ui` | `game-opt-formula-ui` | debug/inspection UI contexts                                 |
 
 Each game formula lib depends on `engine`, `formula`, and `solver`; the apps add
 `sheet-ui`/`formula-ui`.

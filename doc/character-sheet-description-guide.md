@@ -9,11 +9,13 @@
 ## Quick Overview
 
 **Old style** (Sigrid, Jane, Lycaon, Rina, Nekomata):
+
 - Uses `GameDesc`, `SkillGameDesc`, or `CoreGameDesc` for full descriptions
 - Uses raw string summaries as descriptions
 - No conditional dimming of trigger text
 
 **New style** (Soldier0Anby, Miyabi, Trigger, Evelyn, Harumasa, Burnice):
+
 - Slices descriptions with `GameDescSlice` to show only the relevant portion
 - Wraps trigger/conditional text in `<AbilityBodyText>` for dimming
 - Uses `<PrefixedLine>` for mindscape-gated lines (and generic `P` lines for potential buffs; Chain/Ultimate · Aftershock has no prefix and is always enabled)
@@ -28,11 +30,11 @@
 Renders a portion of a locale description between `from` and `to` markers.
 
 ```tsx
-<GameDescSlice
+;<GameDescSlice
   ns="char_Trigger_gen"
   key18="mindscapes.1.desc"
-  from="The Stun DMG Multiplier"   // start marker (inclusive)
-  to="Soul-Searching Gaze"         // end marker (exclusive)
+  from="The Stun DMG Multiplier" // start marker (inclusive)
+  to="Soul-Searching Gaze" // end marker (exclusive)
 />
 ```
 
@@ -47,7 +49,7 @@ trigger condition is **not** met (opacity 0.5). The trigger is determined by
 checking whether any `ability_*` buff has a non-zero computed value.
 
 ```tsx
-<AbilityBodyText characterKey={key}>
+;<AbilityBodyText characterKey={key}>
   <GameDescSlice
     ns="char_Evelyn_gen"
     key18="ability.desc.1"
@@ -112,6 +114,7 @@ const active = useAbilityActive(key)
 ### 1. Core Description (splitting multi-paragraph cores)
 
 **Before** (Sigrid):
+
 ```tsx
 {
   type: 'conditional',
@@ -125,6 +128,7 @@ const active = useAbilityActive(key)
 ```
 
 **After** (Soldier0Anby — potential always max):
+
 ```tsx
 function CoreDescription() {
   const char = useCharacter(key)
@@ -161,6 +165,7 @@ lines except Chain/Ultimate · Aftershock which has no prefix at all.
 ### 2. Ability Description (trigger dimming)
 
 **Before** (Sigrid):
+
 ```tsx
 {
   type: 'conditional',
@@ -180,6 +185,7 @@ lines except Chain/Ultimate · Aftershock which has no prefix at all.
 ```
 
 **After** (Trigger):
+
 ```tsx
 {
   type: 'fields',
@@ -202,6 +208,7 @@ lines except Chain/Ultimate · Aftershock which has no prefix at all.
 ```
 
 The pattern is:
+
 1. `ability.desc.0` — always the trigger condition (passive prerequisite text)
 2. Wrap it in `<AbilityBodyText>` so it dims when the ability is inactive
 3. Use `GameDescSlice` to extract just the relevant stat-bonus part from
@@ -212,6 +219,7 @@ The pattern is:
 **Before**: No dimming.
 
 **After** (Soldier0Anby / Harumasa — potential always max):
+
 ```tsx
 function AbilityDescription() {
   const ns = 'char_Soldier0Anby_gen'
@@ -237,6 +245,7 @@ now contains the max-potential text directly (no `descPotential` branch).
 ### 4. Mindscape Description Slicing
 
 **Before** (Sigrid):
+
 ```tsx
 {
   type: 'conditional',
@@ -252,6 +261,7 @@ now contains the max-potential text directly (no `descPotential` branch).
 ```
 
 **After** (Soldier0Anby / Miyabi):
+
 ```tsx
 {
   type: 'conditional',
@@ -279,6 +289,7 @@ conditional trigger and its effect.
 **Before**: Full `<CoreGameDesc>` or `<GameDesc>`.
 
 **After** (Trigger):
+
 ```tsx
 function CoreDescription() {
   const mindscape = useEffectiveMindscape(key)
@@ -303,6 +314,7 @@ function CoreDescription() {
 **Before**: Single full description.
 
 **After** (Soldier0Anby):
+
 ```tsx
 function AbilityConditionalDescription() {
   const active = useAbilityActive(key)
@@ -349,7 +361,6 @@ core `minPotential: 1` gates are removed.
    to fields.
 
 3. **For each section** (core, ability, mindscape, potential):
-
    - **Split multi-paragraph descriptions** into separate `GameDescSlice`
      components.
    - **Wrap trigger-condition text** (e.g. `ability.desc.0`) in

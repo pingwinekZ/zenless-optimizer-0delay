@@ -80,15 +80,15 @@ layer table below — cycles (e.g. the former `db→zood→schema→db` loop,
 broken by moving `IDbDisc`/`BuildRecipe` ownership into `schema`/`db`)
 fail lint.
 
-| source layer    | may depend on                                          |
-| --------------- | ------------------------------------------------------ |
-| `layer:app`     | `*` (everything)                                       |
-| `layer:feature` | domain, engine-ui, engine, shared, base                |
-| `layer:domain`  | domain, engine-ui, engine, shared, base                |
-| `layer:engine-ui`| engine-ui, engine, shared, base                       |
-| `layer:engine`  | engine, shared, base                                   |
-| `layer:shared`  | shared, base                                           |
-| `layer:base`    | base                                                   |
+| source layer      | may depend on                           |
+| ----------------- | --------------------------------------- |
+| `layer:app`       | `*` (everything)                        |
+| `layer:feature`   | domain, engine-ui, engine, shared, base |
+| `layer:domain`    | domain, engine-ui, engine, shared, base |
+| `layer:engine-ui` | engine-ui, engine, shared, base         |
+| `layer:engine`    | engine, shared, base                    |
+| `layer:shared`    | shared, base                            |
+| `layer:base`      | base                                    |
 
 Tags live in each `project.json` (`scope:*` + `layer:*`). Every `app/src/*`
 directory except the page triangle (`page-characters`, `page-discs`,

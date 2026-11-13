@@ -74,7 +74,7 @@ A `read` with no accumulator falls back to `defaultAccu(tag)` and finally to
 
 The build solver maximizes one node subject to minimum constraints over a set of
 candidate inputs. Express the objective and constraints as `NumNode`s whose free
-variables are `read`s over a chosen *dynamic* tag category (conventionally `q`).
+variables are `read`s over a chosen _dynamic_ tag category (conventionally `q`).
 Each candidate supplies values for those keys; `prune` returns a smaller,
 equivalent problem with the same top-`N` answers.
 

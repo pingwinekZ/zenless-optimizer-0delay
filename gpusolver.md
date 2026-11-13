@@ -14,53 +14,53 @@ Nx lib (name game-opt-solver-webgpu), mirrors packages/game-opt/solver project.j
 
 Files (all new, ~10 files):
 
-File	Purpose
+File Purpose
 
-src/wgsl/computeShader.wgsl	Generalized skeleton (ported from hsr-optimizer/src/lib/gpu/wgsl/computeShader.wgsl) with /* INJECT */ markers
+src/wgsl/computeShader.wgsl Generalized skeleton (ported from hsr-optimizer/src/lib/gpu/wgsl/computeShader.wgsl) with /* INJECT */ markers
 
-src/wgsl/structs.wgsl	Candidate-independent structs: Params, NaiveParams (renamed PermParams), CompactEntry
+src/wgsl/structs.wgsl Candidate-independent structs: Params, NaiveParams (renamed PermParams), CompactEntry
 
-src/codegen/compileWgsl.ts	Pando → WGSL codegen (core new logic, see §2)
+src/codegen/compileWgsl.ts Pando → WGSL codegen (core new logic, see §2)
 
-src/dataTransform.ts	Candidate → flat f32 matrix, coord-name→index map, slot offsets, JS-side index↔candidate-ids decode (port of webgpuDataTransform.ts, generalized to N slots)
+src/dataTransform.ts Candidate → flat f32 matrix, coord-name→index map, slot offsets, JS-side index↔candidate-ids decode (port of webgpuDataTransform.ts, generalized to N slots)
 
-src/topK.ts	Min-heap top-N queue (port of hsr FixedSizeNumericMinQueue; check if @zenless-optimizer/common already has one)
+src/topK.ts Min-heap top-N queue (port of hsr FixedSizeNumericMinQueue; check if @zenless-optimizer/common already has one)
 
-src/webgpuDevice.ts	getWebgpuDevice(), uniformCompatible() (port of webgpuDevice.ts, minus HSR store/notification deps)
+src/webgpuDevice.ts getWebgpuDevice(), uniformCompatible() (port of webgpuDevice.ts, minus HSR store/notification deps)
 
-src/webgpuTypes.ts	GpuExecutionContext, params structs (port, generalized)
+src/webgpuTypes.ts GpuExecutionContext, params structs (port, generalized)
 
-src/webgpuInternals.ts	Pipeline init, buffer creation (candidates matrix, params, compact count/results/validCount ×2, read buffers), bind groups, dispatch, destroy (port of webgpuInternals.ts)
+src/webgpuInternals.ts Pipeline init, buffer creation (candidates matrix, params, compact count/results/validCount ×2, read buffers), bind groups, dispatch, destroy (port of webgpuInternals.ts)
 
-src/webgpuOptimizer.ts	Naive dispatch loop: double-buffered batches, overflow revisit, threshold climbing, results decode → BuildResult[] (port of webgpuOptimizer.ts naive path, dropped runTupleDispatch)
+src/webgpuOptimizer.ts Naive dispatch loop: double-buffered batches, overflow revisit, threshold climbing, results decode → BuildResult[] (port of webgpuOptimizer.ts naive path, dropped runTupleDispatch)
 
-src/index.ts	Exports
+src/index.ts Exports
 
 2. Pando → WGSL codegen (compileWgsl.ts)
 
 Mirror executionStr node-for-node. traverse(nodes, …) assigning temp names x0, x1, …; emit let x{i} = &lt;expr&gt;; per node; return the objective value name + constraint names.
 
-Node op	JS kernel (executionStr)	WGSL
+Node op JS kernel (executionStr) WGSL
 
-const	literal	f32(&lt;n&gt;) / f32(&lt;n&gt;.0)
+const literal f32(&lt;n&gt;) / f32(&lt;n&gt;.0)
 
-sum/prod	a+b+… / a*b*…	same (parenthesized)
+sum/prod a+b+… / a*b*… same (parenthesized)
 
-min/max	Math.min(a,b,c)	nested min(min(a,b),c) / max
+min/max Math.min(a,b,c) nested min(min(a,b),c) / max
 
-sumfrac	x/(x+c)	(x0/(x0+x1))
+sumfrac x/(x+c) (x0/(x0+x1))
 
-match	b0===b1?a:b	select(b, a, b0 == b1) (or if since WGSL select evaluates both sides — fine, both are f32)
+match b0===b1?a:b select(b, a, b0 == b1) (or if since WGSL select evaluates both sides — fine, both are f32)
 
-thres	b0&gt;=b1?a:b	select(b, a, b0 &gt;= b1)
+thres b0&gt;=b1?a:b select(b, a, b0 &gt;= b1)
 
-read	+(Σ_slots (cnds[slot]['q']??0)+0)	(coords[(s0+c0)*Q+k] + coords[(s1+c1)*Q+k] + …) where k = coord index for tag's q name, c{i} = slot candidate index, s{i} = slot offset (see §3)
+read +(Σ_slots (cnds[slot]['q']??0)+0) (coords[(s0+c0)*Q+k] + coords[(s1+c1)*Q+k] + …) where k = coord index for tag's q name, c{i} = slot candidate index, s{i} = slot offset (see §3)
 
-subscript	JSON.stringify(n.ex)[br0]	constant-array literal: (array&lt;f32,N&gt;(…)[br0]); WGSL requires let + const-array so emit const _arr{i}: array&lt;f32,N&gt; = array&lt;f32,N&gt;(…); then index
+subscript JSON.stringify(n.ex)[br0] constant-array literal: (array&lt;f32,N&gt;(…)[br0]); WGSL requires let + const-array so emit const _arr{i}: array&lt;f32,N&gt; = array&lt;f32,N&gt;(…); then index
 
-lookup	([x])[(obj)[br0]??0]	index x array by constant map lookup: emit const *lk{i}: array&lt;f32,M&gt; = …;* lk{i}[br0] (default 0 → clamp index)
+lookup ([x])[(obj)[br0]??0] index x array by constant map lookup: emit const _lk{i}: array&lt;f32,M&gt; = …;_ lk{i}[br0] (default 0 → clamp index)
 
-custom	JS fn	not supported initially — assert/throw; verify ZZZ formula uses none (check customOps usage in formula layer)
+custom JS fn not supported initially — assert/throw; verify ZZZ formula uses none (check customOps usage in formula layer)
 
 WGSL restrictions to handle: no f64 (all f32), no implicit conversions, no %-with-negatives issues (indices are u32), runtime array indexing is allowed for storage/var&lt;function&gt; arrays.
 
@@ -100,7 +100,7 @@ Also generate: constraint checks if (min{i} &gt; x{i}) { continue; } (skip const
 
 - tsconfig.base.json: nothing new (path alias @zenless-optimizer/game-opt/solver-webgpu auto-generated by Nx convention — verify it matches existing alias pattern).
 
-- WGSL imported via Vite ?raw (supported out of the box; verify no vite-env declaration needed for *.wgsl?raw — add declare module '*.wgsl?raw' to a .d.ts if missing).
+- WGSL imported via Vite ?raw (supported out of the box; verify no vite-env declaration needed for _.wgsl?raw — add declare module '_.wgsl?raw' to a .d.ts if missing).
 
 - app/src module-boundary lint: new package tags like game-opt sibling.
 
@@ -108,17 +108,17 @@ Also generate: constraint checks if (min{i} &gt; x{i}) { continue; } (skip const
 
 1. Scaffold: solver-webgpu package (project.json, tsconfigs, index) + @webgpu/types + *.wgsl?raw declaration.
 
-2. Codegen: compileWgsl.ts + parity tests against JS kernel (pure TS, no GPU needed) — highest-risk piece, done first.
+1. Codegen: compileWgsl.ts + parity tests against JS kernel (pure TS, no GPU needed) — highest-risk piece, done first.
 
-3. Pipeline: wgsl/ skeletons, dataTransform.ts, topK.ts, webgpuDevice.ts, webgpuInternals.ts, webgpuOptimizer.ts.
+1. Pipeline: wgsl/ skeletons, dataTransform.ts, topK.ts, webgpuDevice.ts, webgpuInternals.ts, webgpuOptimizer.ts.
 
-4. WebGpuSolver + synthetic-end-to-end test (Playwright).
+1. WebGpuSolver + synthetic-end-to-end test (Playwright).
 
-5. App integration: engine toggle, DB persistence, Optimize page branch.
+1. App integration: engine toggle, DB persistence, Optimize page branch.
 
-6. Polish: progress reporting, cancel, overflow safety, precision notes; optional page-webgpu diagnostics.
+1. Polish: progress reporting, cancel, overflow safety, precision notes; optional page-webgpu diagnostics.
 
-7. CI: wire test targets; run bun run mini-ci.
+1. CI: wire test targets; run bun run mini-ci.
 
 Risks / notes
 

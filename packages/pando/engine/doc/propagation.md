@@ -20,13 +20,13 @@ Every node is a serializable object `{ op, x, br, ex?, tag? }` (`Base` in
 
 Operations divide into four groups:
 
-| Group | Ops | Meaning |
-| --- | --- | --- |
-| Constant | `const` | `ex` is the value |
-| Arithmetic | `sum` `prod` `min` `max` `sumfrac` | over `x`; `sumfrac` is `x0 / (x0 + x1)` |
-| Branching | `thres` `match` `lookup` `subscript` | choose among `x` using `br` |
-| Tag / read | `tag` `dtag` `vtag` `read` (`reread`) | move through the tag space and pull values |
-| Escape hatch | `custom` | `ex` names a function registered via `addCustomOperation` |
+| Group        | Ops                                   | Meaning                                                   |
+| ------------ | ------------------------------------- | --------------------------------------------------------- |
+| Constant     | `const`                               | `ex` is the value                                         |
+| Arithmetic   | `sum` `prod` `min` `max` `sumfrac`    | over `x`; `sumfrac` is `x0 / (x0 + x1)`                   |
+| Branching    | `thres` `match` `lookup` `subscript`  | choose among `x` using `br`                               |
+| Tag / read   | `tag` `dtag` `vtag` `read` (`reread`) | move through the tag space and pull values                |
+| Escape hatch | `custom`                              | `ex` names a function registered via `addCustomOperation` |
 
 `NumNode`, `StrNode`, and `AnyNode` (`type.ts:108-149`) are the typed unions;
 the `PermitOP` type parameter lets later stages prove that a subset of ops has
@@ -57,7 +57,7 @@ assigning each category a byte offset and each value a nonzero bit pattern.
 `compileTagMapKeys` / `compileTagMapValues`
 ([`tag/compilation.ts`](../src/tag/compilation.ts)) turn authored
 `TagMapEntries` into a layered structure that `TagMapSubsetValues`
-([`tag/subset.ts`](../src/tag/subset.ts)) can query by *subset*: an entry
+([`tag/subset.ts`](../src/tag/subset.ts)) can query by _subset_: an entry
 matches a query when its tag is a subset of the query's, so extra categories on
 the query are ignored. This is why a read for `{ q:dmg_ ele:hydro }` also
 gathers the element-agnostic `{ q:dmg_ }` entry.

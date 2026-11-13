@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.6.7/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -16,7 +16,7 @@
       "!.yarn",
       "!.fribbels-hsr-optimizer",
       "!hsr-optimizer",
-      "!app/src/dm/NanokaData",
+      "!packages/zzz/dm/src/NanokaData",
       "!**/*_gen.json",
       "!.nx/cache",
       "!.nx/workspace-data",
