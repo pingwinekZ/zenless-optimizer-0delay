@@ -1,4 +1,4 @@
-import { Button, CardSection, Group, Stack, Title } from '@mantine/core'
+import { Box, Button, Group, Stack, Title } from '@mantine/core'
 import { IconGitFork, IconLink } from '@tabler/icons-react'
 import { ZCard } from '@zenless-optimizer/zzz/ui'
 import { useTranslation } from 'react-i18next'
@@ -14,14 +14,14 @@ const links = [
 export default function QuickLinksCard() {
   const { t } = useTranslation(['page_home', 'ui'])
   return (
-    <ZCard>
-      <CardSection>
+    <ZCard p="xl">
+      <Box>
         <Group>
           <IconLink />
           <Title order={5}>{t('quickLinksCard.title')}</Title>
         </Group>
-      </CardSection>
-      <CardSection>
+      </Box>
+      <Box>
         <Stack gap={1}>
           {links.map(({ title, icon, url }) => (
             <Button
@@ -38,7 +38,7 @@ export default function QuickLinksCard() {
             </Button>
           ))}
         </Stack>
-      </CardSection>
+      </Box>
     </ZCard>
   )
 }

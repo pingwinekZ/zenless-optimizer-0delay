@@ -1,11 +1,11 @@
-import { Anchor, CardSection, Text, Title } from '@mantine/core'
+import { Anchor, Box, Text, Title } from '@mantine/core'
 import { ZCard } from '@zenless-optimizer/zzz/ui'
 import { Trans, useTranslation } from 'react-i18next'
 export function IntroCard() {
   const { t } = useTranslation('page_home')
   return (
-    <ZCard p="lg">
-      <CardSection style={{ textAlign: 'center' }}>
+    <ZCard p="xl">
+      <Box style={{ textAlign: 'center' }}>
         <Title order={2}>Zenless Optimizer</Title>
         <Text size="md" c="dimmed">
           {/* TODO: translation, will likely change as project evolve more */}
@@ -21,7 +21,7 @@ export function IntroCard() {
             calculator! ZO will craft the best build, with what you have.
           </Trans>
         </Text>
-      </CardSection>
+      </Box>
     </ZCard>
   )
 }

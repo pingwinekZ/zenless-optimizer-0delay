@@ -21,6 +21,34 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value)
 }
 
+/**
+ * X answers region-withheld posts with a placeholder instead of the content:
+ *
+ *     This Post from @handle has been withheld in European Union based on
+ *     local law(s). Learn more
+ *
+ * There is nothing to show for such a post (and no media), so callers treat it
+ * exactly like a deleted one: retire the id and serve the next bookmark.
+ */
+export function isWithheldNotice(text: unknown): boolean {
+  return (
+    typeof text === 'string' &&
+    /has been withheld in\b/i.test(text) &&
+    /based on local law/i.test(text)
+  )
+}
+
+/** The post's text, either the display text or the raw fallback. */
+function statusText(payload: unknown): unknown {
+  if (!isRecord(payload)) return undefined
+  const status = payload['status']
+  if (!isRecord(status)) return undefined
+  const text = status['text']
+  if (typeof text === 'string') return text
+  const rawText = status['raw_text']
+  return isRecord(rawText) ? rawText['text'] : undefined
+}
+
 function isMediaType(value: unknown): value is GoonMediaItem['type'] {
   return value === 'photo' || value === 'video' || value === 'gif'
 }
@@ -98,9 +126,10 @@ export function parseStatusMedia(payload: unknown): GoonMediaItem[] {
 export type FetchImpl = (input: string, init?: RequestInit) => Promise<Response>
 
 /**
- * Confirm whether a tweet is actually gone (deleted, private or suspended).
- * Resolves `true` only on definitive FxEmbed gone signals (HTTP or API 404 /
- * 401); every other outcome — tweet exists, rate-limited, network or timeout
+ * Confirm whether a tweet is actually gone (deleted, private, suspended or
+ * withheld in our region). Resolves `true` only on definitive FxEmbed gone
+ * signals (HTTP or API 404 / 401 / 451, or a withheld placeholder as the post
+ * text); every other outcome — tweet exists, rate-limited, network or timeout
  * failure — resolves `false` so callers never retire a live bookmark over a
  * transient error. Never rejects.
  */
@@ -115,14 +144,20 @@ export async function isGoonTweetGone(
     const response = await fetchImpl(`${MEDIA_API}/${encodeURIComponent(id)}`, {
       signal: controller.signal,
     })
-    if (response.status === 404 || response.status === 401) return true
+    // 451 is X refusing on legal grounds (region withholding).
+    if (
+      response.status === 404 ||
+      response.status === 401 ||
+      response.status === 451
+    )
+      return true
     if (!response.ok) return false
     const payload: unknown = await response.json()
     if (isRecord(payload) && typeof payload['code'] === 'number') {
       const code = payload['code'] as number
-      return code === 404 || code === 401
+      if (code === 404 || code === 401 || code === 451) return true
     }
-    return false
+    return isWithheldNotice(statusText(payload))
   } catch {
     return false
   } finally {
@@ -257,6 +292,11 @@ export async function fetchGoonStatus(
     if (isRecord(payload) && typeof payload['code'] === 'number') {
       const code = payload['code'] as number
       if (code !== 200) throw new Error(`status fetch failed: ${code}`)
+    }
+    // A withheld post resolves fine but carries only the legal notice, so
+    // reject it here and let the caller's gone check skip to the next tweet.
+    if (isWithheldNotice(statusText(payload))) {
+      throw new Error('status withheld')
     }
     const card = parseStatusCard(payload)
     if (!card) throw new Error('status unrecognized')

@@ -162,6 +162,30 @@ describe('isGoonTweetGone', () => {
     )
   })
 
+  it('reports gone for region-withheld posts', async () => {
+    // 451 = unavailable for legal reasons.
+    await expect(isGoonTweetGone('9', async () => goneHttp(451))).resolves.toBe(
+      true
+    )
+    await expect(isGoonTweetGone('9', async () => apiCode(451))).resolves.toBe(
+      true
+    )
+    // Withheld posts can also resolve with the placeholder as their text.
+    const withheld = async () =>
+      ({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          code: 200,
+          status: {
+            id: '9',
+            text: 'This Post from @GigaMan76 has been withheld in European Union based on local law(s). Learn more',
+          },
+        }),
+      }) as Response
+    await expect(isGoonTweetGone('9', withheld)).resolves.toBe(true)
+  })
+
   it('never retires on unknown outcomes', async () => {
     const exists = async () =>
       ({
@@ -234,6 +258,22 @@ describe('fetchGoonStatus', () => {
     const card = await fetchGoonStatus('9', stub)
     expect(card.id).toBe('9')
     expect(card.media).toHaveLength(1)
+  })
+
+  it('rejects a withheld placeholder so the caller can skip it', async () => {
+    const stub = async () =>
+      ({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          code: 200,
+          status: {
+            id: '9',
+            text: 'This Post from @manzaiSUGAR has been withheld in European Union based on local law(s). Learn more',
+          },
+        }),
+      }) as Response
+    await expect(fetchGoonStatus('9', stub)).rejects.toThrow('withheld')
   })
 
   it('rejects on http, api and unrecognized payloads', async () => {

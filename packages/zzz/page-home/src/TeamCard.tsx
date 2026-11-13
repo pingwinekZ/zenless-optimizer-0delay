@@ -1,4 +1,4 @@
-import { Anchor, CardSection, Group, Text, Title } from '@mantine/core'
+import { Anchor, Box, Group, Text, Title } from '@mantine/core'
 import { IconUsers } from '@tabler/icons-react'
 import { CardThemed } from '@zenless-optimizer/common/ui'
 import { ZCard } from '@zenless-optimizer/zzz/ui'
@@ -7,16 +7,16 @@ import { useTranslation } from 'react-i18next'
 export default function TeamCard() {
   const { t } = useTranslation(['page_home', 'ui'])
   return (
-    <ZCard>
-      <CardSection>
+    <ZCard p="xl">
+      <Box>
         <Group>
           <IconUsers />
           <Title order={5}>{t('teamCard.title')}</Title>
         </Group>
-      </CardSection>
-      <CardSection style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-        <CardThemed bgt="light">
-          <CardSection>
+      </Box>
+      <Box style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <CardThemed bgt="light" p="xl">
+          <Box>
             <Text>
               Thanks to the{' '}
               <Anchor
@@ -55,9 +55,9 @@ export default function TeamCard() {
               </Anchor>{' '}
               for the asset hosting and datamine data.
             </Text>
-          </CardSection>
+          </Box>
         </CardThemed>
-      </CardSection>
+      </Box>
     </ZCard>
   )
 }

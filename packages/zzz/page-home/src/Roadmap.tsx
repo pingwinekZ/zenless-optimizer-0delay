@@ -1,4 +1,4 @@
-import { CardSection, Checkbox, Stack, Title } from '@mantine/core'
+import { Box, Checkbox, Stack, Title } from '@mantine/core'
 import { ZCard } from '@zenless-optimizer/zzz/ui'
 
 type RoadmapItem = {
@@ -8,18 +8,12 @@ type RoadmapItem = {
 
 // Edit this list to update the roadmap.
 // Flip `done` to true to mark an item as complete.
-const items: RoadmapItem[] = [
-  { label: 'Refactor all characters', done: true },
-  { label: 'Minor UI adjustments to 1.6+ characters', done: false },
-  { label: 'Combo DMG optimization target / Advanced rotation', done: true },
-  { label: 'Recommended Presets for all characters', done: false },
-  { label: 'Clean up any slop left', done: false },
-]
+const items: RoadmapItem[] = [{ label: 'Clean up any slop left', done: false }]
 
 export function Roadmap() {
   return (
-    <ZCard>
-      <CardSection>
+    <ZCard p="xl">
+      <Box>
         <Title order={5}>
           <span role="img" aria-label="rocket">
             🚀
@@ -41,7 +35,7 @@ export function Roadmap() {
             />
           ))}
         </Stack>
-      </CardSection>
+      </Box>
     </ZCard>
   )
 }

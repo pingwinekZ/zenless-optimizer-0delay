@@ -89,17 +89,9 @@
   z-index: 1;
 }
 
-/* Group dividers (solid) */
+/* Group spacing (no divider line — the labels already separate the groups) */
 .group + .group {
   padding-top: 8px;
-}
-
-.group + .group::before {
-  content: "";
-  display: block;
-  height: 1px;
-  margin: 0 14px 8px;
-  background: rgba(255, 255, 255, 0.1);
 }
 
 .groupLabel {

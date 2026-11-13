@@ -333,6 +333,167 @@ describe('parseBuffDescription', () => {
     )
   })
 
+  it('keeps Anomaly Proficiency next to a DMG clause (Blazing Radiance)', () => {
+    const desc =
+      "· <color=#FFFFFF>Anomaly</color> specialty Agents' ATK <color=#2BAD00>increases by 10%</color>, and <color=#FF5521>Fire Anomaly Buildup Rate</color> <color=#2BAD00>increases by 10%</color>.\n· When an Agent deals <color=#FFFFFF>Attribute Anomaly</color> DMG and triggers a critical hit, the whole squad's Anomaly Proficiency <color=#2BAD00>increases by 30</color> and Attribute Anomaly DMG <color=#2BAD00>increases by 10%</color> for 15s; repeated triggers reset the duration."
+    const { bonusStats } = parseBuffDescription(desc)
+    expect(bonusStats).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          tag: { q: 'atk_', qt: 'combat' },
+          value: 10,
+          specialty: 'anomaly',
+        }),
+        expect.objectContaining({
+          tag: { q: 'anomProf', qt: 'combat' },
+          value: 30,
+          conditional: true,
+        }),
+        expect.objectContaining({
+          tag: { q: 'dmg_', qt: 'combat', damageType1: 'anomaly' },
+          value: 10,
+          conditional: true,
+        }),
+      ])
+    )
+    // The DMG pre-pass used to swallow the Proficiency clause and keep only
+    // the DMG half of the sentence.
+    expect(bonusStats.filter((s) => s.tag.q === 'anomProf')).toHaveLength(1)
+    // Anomaly Buildup Rate buffs are intentionally not parsed.
+    expect(bonusStats.filter((s) => s.tag.q === 'anomMas_')).toEqual([])
+  })
+
+  it('does not parse Anomaly Buildup Rate / Anomaly Buildup buffs', () => {
+    const desc =
+      '· Agent Ether Anomaly Buildup Rate and Physical Anomaly Buildup Rate increase by 25%.\n· While Corruptive Barrier is active, Anomaly DMG dealt by Agents is increased by 50%, and Anomaly Buildup is increased by 30%.'
+    const { bonusStats, enemyStats } = parseBuffDescription(desc)
+    expect(bonusStats).toEqual([
+      expect.objectContaining({
+        tag: { q: 'dmg_', qt: 'combat', damageType1: 'anomaly' },
+        value: 50,
+      }),
+    ])
+    expect(enemyStats).toEqual([])
+  })
+
+  it('scopes a multi-attribute stat list to each Attribute (Wind and Ice CRIT DMG)', () => {
+    const desc =
+      "· While the Boss is Stunned, <color=#FFAF2C>Sharp DMG</color> dealt by the whole squad's Agents increases by 60%, <color=#A6C5FD>Wind</color> and <color=#98EFF0>Ice</color> CRIT DMG dealt increases by 80% and ignores 40% of the Boss's DEF."
+    const { bonusStats } = parseBuffDescription(desc)
+    expect(bonusStats.filter((s) => s.tag.q === 'crit_dmg_')).toEqual([
+      expect.objectContaining({
+        tag: { q: 'crit_dmg_', qt: 'combat', attribute: 'wind' },
+        value: 80,
+        conditional: true,
+      }),
+      expect.objectContaining({
+        tag: { q: 'crit_dmg_', qt: 'combat', attribute: 'ice' },
+        value: 80,
+        conditional: true,
+      }),
+    ])
+  })
+
+  it('scopes a single-attribute stat to its Attribute (Storm Tribulation)', () => {
+    const desc =
+      "· Agents' <color=#A6C5FD>Wind DMG</color> increases by 40%, and <color=#A6C5FD>Wind CRIT DMG</color> increases by 40%.\n· <color=#FFFFFF>Attack</color> specialty Agents' ATK increases by 25%, and Basic Attack DMG increases by 40%."
+    const { bonusStats } = parseBuffDescription(desc)
+    expect(bonusStats).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          tag: { q: 'dmg_', qt: 'combat', attribute: 'wind' },
+          value: 40,
+        }),
+        expect.objectContaining({
+          tag: { q: 'crit_dmg_', qt: 'combat', attribute: 'wind' },
+          value: 40,
+        }),
+      ])
+    )
+  })
+
+  it('applies "X or Y specialty" stats to both specialties (Corroding Edge)', () => {
+    const desc =
+      "· Agents' <color=#2EB6FF>Electric DMG</color> <color=#2BAD00>increases by 30%</color>, Sharp DMG <color=#2BAD00>increases by 10%</color>.\n· <color=#FFFFFF>Attack</color> or <color=#FFFFFF>Armorer</color> specialty Agents' PEN Ratio <color=#2BAD00>increases by 20%</color>, and DMG dealt by <color=#FFFFFF>Special Attack</color> and <color=#FFFFFF>EX Special Attack</color> <color=#2BAD00>increases by 30%</color>."
+    const { bonusStats } = parseBuffDescription(desc)
+    expect(bonusStats.filter((s) => s.tag.q === 'pen_')).toEqual([
+      expect.objectContaining({
+        tag: { q: 'pen_', qt: 'combat' },
+        value: 20,
+        specialty: 'attack',
+      }),
+      expect.objectContaining({
+        tag: { q: 'pen_', qt: 'combat' },
+        value: 20,
+        specialty: 'armorer',
+      }),
+    ])
+    const specialDmg = bonusStats.filter((s) => s.tag.q === 'dmg_')
+    expect(specialDmg.map((s) => s.specialty).sort()).toEqual([
+      'armorer',
+      'armorer',
+      'attack',
+      'attack',
+    ])
+  })
+
+  it('parses "ignores N% of the Boss\'s DEF" as DEF ignore, not a DEF buff', () => {
+    const desc =
+      "· After Shutdown against a Boss enemy's Control Skill, <color=#FFAF2C>Daze</color> dealt by the whole squad's Agents increases by 15%, <color=#FFAF2C>DEF</color> increases by 30%.\n· While the Boss is Stunned, <color=#FFAF2C>Sharp DMG</color> dealt by the whole squad's Agents increases by 60%, <color=#A6C5FD>Wind</color> and <color=#98EFF0>Ice</color> CRIT DMG dealt increases by 80% and ignores 40% of the Boss's DEF."
+    const { bonusStats } = parseBuffDescription(desc)
+    expect(bonusStats).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          tag: { q: 'defIgn_', qt: 'combat' },
+          value: 40,
+          conditional: true,
+        }),
+      ])
+    )
+    expect(bonusStats.filter((s) => s.tag.q === 'def_')).toEqual([
+      expect.objectContaining({ value: 30 }),
+    ])
+  })
+
+  it('parses "the enemy\'s <Attribute> RES reduces by N%" (Tempest Flames)', () => {
+    const desc =
+      "· <color=#FFFFFF>Attack</color> specialty Agents' ATK increases by 35%, and <color=#A6C5FD>Wind DMG</color> increases by 20%.\n· When an Agent's <color=#FFFFFF>Ultimate</color> hits an enemy, the enemy's <color=#A6C5FD>Wind RES</color> reduces by 15% for 30s; repeated triggers reset the duration."
+    const { bonusStats, enemyStats } = parseBuffDescription(desc)
+    expect(bonusStats).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          tag: { q: 'atk_', qt: 'combat' },
+          value: 35,
+          specialty: 'attack',
+        }),
+      ])
+    )
+    expect(enemyStats).toEqual([
+      expect.objectContaining({
+        tag: { q: 'resRed_', attribute: 'wind' },
+        value: 15,
+        conditional: true,
+      }),
+    ])
+  })
+
+  it('does not scope a whole-squad buff to the specialty that triggers it (Blazing Nightfire)', () => {
+    const desc =
+      "· Agents with the <color=#FFFFFF>Anomaly</color> specialty that deal <color=#FFFFFF>Attribute Anomaly</color> DMG and trigger a CRIT increase the whole squad's ATK by 10% and Attribute Anomaly DMG by 20% for 15s; repeated triggers reset the duration."
+    const { bonusStats } = parseBuffDescription(desc)
+    expect(bonusStats).toEqual([
+      expect.objectContaining({
+        tag: { q: 'atk_', qt: 'combat' },
+        value: 10,
+      }),
+      expect.objectContaining({
+        tag: { q: 'dmg_', qt: 'combat', damageType1: 'anomaly' },
+        value: 20,
+      }),
+    ])
+    for (const s of bonusStats) expect(s.specialty).toBeUndefined()
+  })
+
   it('uses the higher split value without squad-count gating (Turbulent Resonance)', () => {
     const desc =
       '· If there are 2/3 Agents with the Anomaly specialty in the squad, Attribute Anomaly DMG dealt by Agents increases by 10%/60%, and the whole squad initially gains 500/1,500 Decibels upon entering combat.'

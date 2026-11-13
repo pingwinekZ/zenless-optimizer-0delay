@@ -104,6 +104,25 @@ export const bonusStatKeys: Array<keyof typeof own.final> = [
 ] as const
 export type BonusStatKey = (typeof bonusStatKeys)[number]
 
+/**
+ * Bonus stats whose effect is evaluated per damage instance, so they can be
+ * scoped to a single Attribute (e.g. "Wind and Ice CRIT DMG +80%"). Formulas
+ * compute these inside an attribute-tagged damage instance, where the Attribute
+ * carried by the stat entry narrows it to matching hits.
+ */
+export const bonusStatAttributeStats = [
+  'crit_',
+  'crit_dmg_',
+  'dmg_',
+  'laceration_dmg_',
+  'pen',
+  'pen_',
+  'defIgn_',
+  'resIgn_',
+  'sharp_dmg_',
+  'sheer_dmg_',
+] as const
+
 export const bonusStatDmgTypeIncStats = [
   'atk_',
   'defIgn_',
@@ -539,7 +558,11 @@ export class TeamDataManager extends DataManager<
 
         let { attribute, damageType1, damageType2 } = tag
 
-        if (q !== 'dmg_' && q !== 'sheer_dmg_' && q !== 'resIgn_')
+        if (
+          !bonusStatAttributeStats.includes(
+            q as (typeof bonusStatAttributeStats)[number]
+          )
+        )
           attribute = undefined
         if (attribute)
           attribute = validateValue(attribute, allAttributeKeys) as

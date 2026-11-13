@@ -1,6 +1,7 @@
 import type { AttributeKey, SpecialityKey } from '@zenless-optimizer/zzz/consts'
 import {
   type BonusStatTag,
+  bonusStatAttributeStats,
   bonusStatDmgTypeIncStats,
   type EnemyStatsTag,
 } from '@zenless-optimizer/zzz/db'
@@ -618,6 +619,129 @@ function extractHitScopedStat(
 }
 
 /**
+ * Sentence-level pre-pass: lift flat "Anomaly Proficiency increases by N"
+ * clauses out of the sentence.
+ *
+ * Must run before the DMG pre-passes: their `<...> DMG ... increases by N%`
+ * scan spans the whole sentence, so it swallows an earlier "... Anomaly
+ * Proficiency increases by 30 and Attribute Anomaly DMG increases by 10%"
+ * clause and only the DMG half survives (Blazing Radiance).
+ *
+ * Returns the sentence with the matched clauses removed.
+ */
+function extractAnomalyProficiency(
+  sentence: string,
+  bonusStats: BuffBonusStat[],
+  conditional: boolean,
+  specialty: SpecialityKey | undefined
+): string {
+  const apRe =
+    /(?:(?:the\s+)?(?:whole\s+)?(?:squad|team)'s\s+|their\s+|its\s+|Agent's\s+)?Anomaly\s+Proficiency\s+(?:<[^>]+>)?(?:increases?|is\s+increased)\s+by\s+(\d+)(?:\s*(?:%\/|\/)\s*(\d+))?|(?:increases?|increased)\s+(?:(?:the\s+)?(?:whole\s+)?(?:squad|team)'s\s+|Agent's\s+)?Anomaly\s+Proficiency\s+by\s+(\d+)(?:\s*(?:%\/|\/)\s*(\d+))?/gi
+
+  let out = sentence
+  let match: RegExpExecArray | null
+  while ((match = apRe.exec(out)) !== null) {
+    bonusStats.push({
+      tag: { q: 'anomProf', qt: 'combat' },
+      // Split values ("20/60") use the higher, per-condition value.
+      value: Number(match[2] ?? match[4] ?? match[1] ?? match[3]),
+      ...(conditional && { conditional: true }),
+      ...(specialty && { specialty }),
+    })
+    out = (
+      out.slice(0, match.index) + out.slice(match.index + match[0].length)
+    ).trim()
+    apRe.lastIndex = 0
+  }
+
+  return out
+}
+
+/**
+ * Sentence-level pre-pass: lift "<Attribute> [and <Attribute>] <stat> ...
+ * increases by N%" clauses (e.g. "Wind CRIT DMG increases by 40%", "Wind and
+ * Ice CRIT DMG dealt increases by 80%") into one entry per named Attribute. It
+ * has to run before the sentence is split on "and", which would otherwise
+ * separate the Attribute list from the stat it qualifies. Attribute scoping
+ * only makes sense for stats that are evaluated per damage instance.
+ *
+ * Returns the sentence with the matched clauses removed.
+ */
+function extractAttributeScopedStat(
+  sentence: string,
+  bonusStats: BuffBonusStat[],
+  conditional: boolean,
+  specialty: SpecialityKey | undefined
+): string {
+  // Blank out markup (keeping string length) so matches can be cut from the
+  // original sentence by index.
+  const plain = sentence.replace(/<[^>]+>/g, (markup) =>
+    ' '.repeat(markup.length)
+  )
+  // Only Attribute names may make up the list, so an unrelated word (e.g.
+  // "their") cannot be swallowed along with the stat it qualifies.
+  const attributeWords = Object.keys(attributeKeywords).join('|')
+  const re = new RegExp(
+    `((?:(?:${attributeWords})\\s*(?:,\\s*|and\\s+|or\\s+))*(?:${attributeWords}))\\s+(CRIT DMG|CRIT Rate|PEN Ratio|Sharp DMG|Sheer DMG|Laceration DMG)\\b[^%]*?(\\d+)(?:%\\/(\\d+))?%`,
+    'gi'
+  )
+  const matches = [...plain.matchAll(re)].reverse()
+
+  let out = sentence
+  for (const match of matches) {
+    const statKey = Object.entries(statKeywords).find(
+      ([kw]) => kw.toUpperCase() === match[2].trim().toUpperCase()
+    )?.[1]
+    const attrs = match[1]
+      .split(/,\s*|\s+(?:and|or)\s+/i)
+      .map((word) => matchAttribute(word.trim()))
+      .filter((attr): attr is AttributeKey => !!attr)
+    if (
+      !statKey ||
+      attrs.length < 1 ||
+      !bonusStatAttributeStats.includes(
+        statKey as (typeof bonusStatAttributeStats)[number]
+      )
+    )
+      continue
+
+    const value = Number(match[4] ?? match[3])
+    for (const attr of attrs)
+      bonusStats.push({
+        tag: {
+          q: statKey as BonusStatTag['q'],
+          qt: 'combat',
+          attribute: attr,
+        },
+        value,
+        ...(conditional && { conditional: true }),
+        ...(specialty && { specialty }),
+      })
+    out = (
+      out.slice(0, match.index) + out.slice(match.index! + match[0].length)
+    ).trim()
+  }
+
+  return out
+}
+
+/**
+ * "Attack or Armorer specialty" names two qualifying specialties, so the stats
+ * of that sentence apply to either one. Split such a sentence into one variant
+ * per specialty so the single-specialty logic below handles each of them.
+ */
+function expandSpecialtyVariants(sentence: string): string[] {
+  const match = sentence.match(/(\w+)\s+(?:or|and)\s+(\w+)\s+specialty\b/i)
+  if (!match) return [sentence]
+  const first = matchSpecialty(match[1])
+  const second = matchSpecialty(match[2])
+  if (!first || !second || first === second) return [sentence]
+  const head = sentence.slice(0, match.index)
+  const tail = sentence.slice(match.index! + match[0].length)
+  return [match[1], match[2]].map((word) => `${head}${word} specialty${tail}`)
+}
+
+/**
  * Parse buff description text into structured stat effects.
  *
  * Handles the rich-text format used in DA/Shiyu season JSON:
@@ -672,7 +796,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
     // subsequent sentences that refer back (e.g. "Their Basic Attack DMG...") inherit it.
     let bulletSpecialty: SpecialityKey | undefined
 
-    for (const sentence of sentences) {
+    for (const sentence of sentences.flatMap(expandSpecialtyVariants)) {
       // Detect specialty condition at sentence level. Squad-composition
       // conditions ("... 2/3 Agents with the Anomaly specialty in the
       // squad") describe the team, not the optimized Agent, so they must not
@@ -680,7 +804,7 @@ export function parseBuffDescription(desc: string): BuffConfig {
       const sentSpecialtyMatch = sentence.match(
         /(?:for (?:Agents? )?(?:with|of) )(\w+) specialty|(?:with|of) (?:the )?(\w+) specialty|(\w+) specialty Agents?/i
       )
-      const sentSpecialty =
+      let sentSpecialty =
         sentSpecialtyMatch && !/\bthere\s+(?:are|is)\b/i.test(sentence)
           ? matchSpecialty(
               sentSpecialtyMatch[1] ??
@@ -688,6 +812,12 @@ export function parseBuffDescription(desc: string): BuffConfig {
                 sentSpecialtyMatch[3]
             )
           : undefined
+      // A sentence that states "the whole squad's ..." buffs the team, so a
+      // specialty named in it describes the trigger rather than who benefits
+      // ("Agents with the Anomaly specialty that ... increase the whole
+      // squad's ATK by 10%") and must not scope the stats that follow.
+      if (sentSpecialty && /whole\s+(?:squad|team)/i.test(sentence))
+        sentSpecialty = undefined
       // Update bullet-level specialty if this sentence has an explicit one
       if (sentSpecialty) bulletSpecialty = sentSpecialty
       // A specialty only carries into a later sentence when that sentence
@@ -718,11 +848,29 @@ export function parseBuffDescription(desc: string): BuffConfig {
 
       const sentenceConditional = isConditional(sentence)
 
+      // Pre-pass: lift flat "Anomaly Proficiency increases by N" clauses out
+      // before the DMG pre-passes below can swallow them.
+      let processedSentence = extractAnomalyProficiency(
+        sentence,
+        bonusStats,
+        sentenceConditional,
+        effectiveSpecialty
+      )
+
+      // Pre-pass: expand "<Attribute> and <Attribute> <stat>" clauses into one
+      // attribute-scoped stat each.
+      processedSentence = extractAttributeScopedStat(
+        processedSentence,
+        bonusStats,
+        sentenceConditional,
+        effectiveSpecialty
+      )
+
       // Pre-pass: scope a stat increase to a hit-type trigger list
       // (e.g. "...Basic Attack, Special Attack, and Ultimate hit enemies,
       // PEN Ratio increases by 10%")
-      let processedSentence = extractHitScopedStat(
-        sentence,
+      processedSentence = extractHitScopedStat(
+        processedSentence,
         bonusStats,
         sentenceConditional,
         effectiveSpecialty
@@ -774,8 +922,9 @@ export function parseBuffDescription(desc: string): BuffConfig {
         if (/^(When |After |While |Upon |If )/.test(seg) && !/[+]?\d/.test(seg))
           continue
 
-        // Skip Anomaly Buildup Rate — not mappable as a standalone stat
-        if (/Anomaly Buildup Rate/i.test(seg)) continue
+        // Skip Anomaly Buildup (Rate) — not mappable as a standalone stat.
+        // Enemy "Anomaly Buildup RES" clauses are handled further down.
+        if (/Anomaly Buildup(?!\s*RES)/i.test(seg)) continue
 
         const conditional = isConditional(seg) || sentenceConditional
 
@@ -792,11 +941,17 @@ export function parseBuffDescription(desc: string): BuffConfig {
         // (e.g. "Their Basic Attack DMG..." continuing from "Agents with
         // Attack specialty"). Clauses that precede a qualifier stated in this
         // sentence stay unqualified.
-        const specialty =
-          segmentSpecialty ??
-          (sentSpecialty && !specialtyScopePassed
-            ? undefined
-            : effectiveSpecialty)
+        // "the whole squad's ..." names the buff's target, so a specialty
+        // stated earlier in the sentence is its trigger, not who benefits
+        // ("Agents with the Anomaly specialty that ... increase the whole
+        // squad's ATK by 10%").
+        const squadWide = /whole\s+(?:squad|team)/i.test(seg)
+        const specialty = squadWide
+          ? undefined
+          : (segmentSpecialty ??
+            (sentSpecialty && !specialtyScopePassed
+              ? undefined
+              : effectiveSpecialty))
 
         // Handle split percentage values like "5%/15%" in ignore clauses
         // (conditional buffs with different values based on e.g. number of Anomaly agents)
@@ -858,6 +1013,31 @@ export function parseBuffDescription(desc: string): BuffConfig {
           bonusStats.push({
             tag: { q: 'resIgn_', qt: 'combat' },
             value: Number(resIgnMatch2[1]),
+            ...(conditional && { conditional: true }),
+            ...(specialty && { specialty }),
+          })
+          continue
+        }
+
+        // --- "ignore[s] N% of the Boss's DEF/RES" (a possessive subject
+        // other than enemy/target/their, e.g. a named boss). Without this the
+        // clause falls through to the generic keyword match, which reads the
+        // ignored DEF as a DEF buff. ---
+        const possessiveIgnMatch = seg.match(
+          /ignor(?:e[sd]?|ing)\s+(\d+)%\s+of\s+(?:\w+\s+){0,3}?\w+'s\s+(?:(?:All[- ]?(?:DMG|attribute))\s+)?(?:(\w+)\s+)?(RES|DEF)\b/i
+        )
+        if (possessiveIgnMatch) {
+          const isRes = possessiveIgnMatch[3].toUpperCase() === 'RES'
+          const attr = possessiveIgnMatch[2]
+            ? matchAttribute(possessiveIgnMatch[2])
+            : undefined
+          bonusStats.push({
+            tag: {
+              q: isRes ? 'resIgn_' : 'defIgn_',
+              qt: 'combat',
+              ...(isRes && attr && { attribute: attr }),
+            },
+            value: Number(possessiveIgnMatch[1]),
             ...(conditional && { conditional: true }),
             ...(specialty && { specialty }),
           })
@@ -980,6 +1160,24 @@ export function parseBuffDescription(desc: string): BuffConfig {
             ...(specialty && { specialty }),
           })
           continue
+        }
+
+        // --- "<possessor>'s <Attribute> RES reduces by N%"
+        // (e.g. "the enemy's Wind RES reduces by 15%") ---
+        const resReducesMatch = seg.match(
+          /(?:the\s+)?(?:enem(?:y|ies)|target|boss)(?:'s)?\s+(\w+)\s+RES\s+(?:is\s+)?reduc(?:e[sd]?|ing)\s+by\s+(\d+)%/i
+        )
+        if (resReducesMatch) {
+          const attr = matchAttribute(resReducesMatch[1])
+          if (attr) {
+            enemyStats.push({
+              tag: { q: 'resRed_', attribute: attr },
+              value: Number(resReducesMatch[2]),
+              ...(conditional && { conditional: true }),
+              ...(specialty && { specialty }),
+            })
+            continue
+          }
         }
 
         // --- "is reduced by N%" (enemy stat reduction) ---

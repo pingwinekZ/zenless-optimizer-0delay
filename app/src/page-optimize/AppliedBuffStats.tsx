@@ -18,6 +18,7 @@ import { allAttributeKeys, type StatKey } from '@zenless-optimizer/zzz/consts'
 import {
   type BonusStatKey,
   type BonusStatTag,
+  bonusStatAttributeStats,
   bonusStatDamageTypes,
   bonusStatDmgTypeIncStats,
   bonusStatKeys,
@@ -238,8 +239,8 @@ function BonusStatRow({
           </Flex>
           <Flex gap={4} align="center" wrap="wrap">
             <QtDropdown qt={tag.qt} setQt={(qt) => setTag({ ...tag, qt })} />
-            {['dmg_', 'sheer_dmg_', 'sharp_dmg_', 'resIgn_'].includes(
-              tag.q
+            {bonusStatAttributeStats.includes(
+              tag.q as (typeof bonusStatAttributeStats)[number]
             ) && (
               <AttributeDropdown
                 tag={tag}
