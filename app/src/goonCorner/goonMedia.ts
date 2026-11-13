@@ -126,6 +126,51 @@ export function parseStatusMedia(payload: unknown): GoonMediaItem[] {
 export type FetchImpl = (input: string, init?: RequestInit) => Promise<Response>
 
 /**
+ * X answers media it no longer serves (DMCA takedown, removed image) with a
+ * redirect to one of its static placeholder assets — the "Media not displayed"
+ * card — instead of an error. The placeholder is not the post's picture, so it
+ * must never be shown as one.
+ */
+export function isRemovedMediaUrl(url: string): boolean {
+  return /pbs\.twimg\.com\/static\/(?:dmca|media-not-displayed|tweet-unavailable)\//i.test(
+    url
+  )
+}
+
+/**
+ * Drop media X no longer serves. A `HEAD` request follows the redirect and
+ * exposes the placeholder as the final URL, so this costs no image bytes.
+ * Unknown outcomes (network failure, timeout) keep the item: a transient error
+ * must not blank out a live post.
+ */
+export async function pruneRemovedMedia(
+  items: readonly GoonMediaItem[],
+  fetchImpl: FetchImpl = fetch,
+  timeoutMs = 8_000
+): Promise<GoonMediaItem[]> {
+  const kept = await Promise.all(
+    items.map(async (item) => {
+      const probe = item.thumbnailUrl ?? item.url
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), timeoutMs)
+      try {
+        const response = await fetchImpl(probe, {
+          method: 'HEAD',
+          redirect: 'follow',
+          signal: controller.signal,
+        })
+        return isRemovedMediaUrl(response.url) ? undefined : item
+      } catch {
+        return item
+      } finally {
+        clearTimeout(timer)
+      }
+    })
+  )
+  return kept.filter((item): item is GoonMediaItem => !!item)
+}
+
+/**
  * Confirm whether a tweet is actually gone (deleted, private, suspended or
  * withheld in our region). Resolves `true` only on definitive FxEmbed gone
  * signals (HTTP or API 404 / 401 / 451, or a withheld placeholder as the post

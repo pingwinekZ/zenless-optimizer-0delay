@@ -2,8 +2,10 @@ import {
   fetchGoonMedia,
   fetchGoonStatus,
   isGoonTweetGone,
+  isRemovedMediaUrl,
   parseStatusCard,
   parseStatusMedia,
+  pruneRemovedMedia,
 } from './goonMedia'
 
 function photoEntry(overrides: object = {}) {
@@ -202,6 +204,65 @@ describe('isGoonTweetGone', () => {
       throw new TypeError('offline')
     }
     await expect(isGoonTweetGone('9', networkDown)).resolves.toBe(false)
+  })
+})
+
+describe('pruneRemovedMedia', () => {
+  it('drops media that X replaced with its takedown placeholder', async () => {
+    const stub = async (url: string) =>
+      ({
+        ok: true,
+        status: 200,
+        url: url.includes('gone')
+          ? 'https://pbs.twimg.com/static/dmca/dmca-med.jpg'
+          : url,
+        redirected: url.includes('gone'),
+      }) as Response
+    const kept = {
+      type: 'photo' as const,
+      url: 'https://pbs.twimg.com/media/ok.jpg?name=orig',
+    }
+    const gone = {
+      type: 'photo' as const,
+      url: 'https://pbs.twimg.com/media/gone.jpg?name=orig',
+    }
+    await expect(pruneRemovedMedia([kept, gone], stub)).resolves.toEqual([kept])
+  })
+
+  it('keeps media when the probe fails, so a live post never blanks out', async () => {
+    const items = [
+      { type: 'photo' as const, url: 'https://pbs.twimg.com/media/x.jpg' },
+    ]
+    const offline = async () => {
+      throw new TypeError('offline')
+    }
+    await expect(pruneRemovedMedia(items, offline)).resolves.toEqual(items)
+  })
+
+  it('probes a video thumbnail rather than its stream', async () => {
+    const seen: string[] = []
+    const stub = async (url: string) => {
+      seen.push(url)
+      return { ok: true, status: 200, url } as Response
+    }
+    const items = [
+      {
+        type: 'video' as const,
+        url: 'https://video.twimg.com/amplify_video/1/vid/x.mp4',
+        thumbnailUrl: 'https://pbs.twimg.com/thumb.jpg',
+      },
+    ]
+    await pruneRemovedMedia(items, stub)
+    expect(seen).toEqual(['https://pbs.twimg.com/thumb.jpg'])
+  })
+})
+
+describe('isRemovedMediaUrl', () => {
+  it('recognizes X takedown placeholders', () => {
+    expect(
+      isRemovedMediaUrl('https://pbs.twimg.com/static/dmca/dmca-med.jpg')
+    ).toBe(true)
+    expect(isRemovedMediaUrl('https://pbs.twimg.com/media/abc.jpg')).toBe(false)
   })
 })
 

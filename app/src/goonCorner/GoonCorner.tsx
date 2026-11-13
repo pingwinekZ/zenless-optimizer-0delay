@@ -34,7 +34,12 @@ import {
   writeState,
 } from './dailyPick'
 import type { GoonMediaItem, GoonStatusCard } from './goonMedia'
-import { fetchGoonMedia, fetchGoonStatus, isGoonTweetGone } from './goonMedia'
+import {
+  fetchGoonMedia,
+  fetchGoonStatus,
+  isGoonTweetGone,
+  pruneRemovedMedia,
+} from './goonMedia'
 
 const Z_INDEX = 1000
 /** The gallery modal must sit above the always-on-top widget. */
@@ -390,37 +395,61 @@ export function GoonCorner() {
     setCard(null)
     cardRef.current = null
 
-    void (async () => {
-      try {
-        const fetched = await fetchGoonStatus(wanted, fetch, STATUS_TIMEOUT_MS)
-        if (cancelled) return
-        skipRef.current.count = 0
-        setCard(fetched)
-        cardRef.current = fetched
-        setStatus('ready')
+    // Retire the pick (deleted, private, withheld, or media taken down) and
+    // serve the next queued tweet for the same day.
+    const skipCurrent = () => {
+      const latest = pickRef.current
+      if (!latest) {
+        setStatus('empty')
         return
+      }
+      const next = markCurrentInvalid({ state: latest, allIds, today: date })
+      const storage = safeStorage()
+      if (storage) writeState(storage, next)
+      pickRef.current = next
+      setPick(next)
+    }
+
+    void (async () => {
+      let fetched: GoonStatusCard | undefined
+      try {
+        fetched = await fetchGoonStatus(wanted, fetch, STATUS_TIMEOUT_MS)
       } catch {
         // Gone or transient — distinguished below.
       }
       if (cancelled) return
+
+      if (fetched) {
+        // A takedown leaves X serving a "Media not displayed" placeholder at
+        // the post's media URL; drop those, and skip the post entirely when
+        // nothing else is left to show.
+        const media = await pruneRemovedMedia(fetched.media)
+        if (cancelled) return
+        if (
+          fetched.media.length > 0 &&
+          media.length === 0 &&
+          skipRef.current.count < MAX_SKIPS
+        ) {
+          skipRef.current.count += 1
+          skipCurrent()
+          return
+        }
+        const card =
+          media.length === fetched.media.length
+            ? fetched
+            : { ...fetched, media }
+        skipRef.current.count = 0
+        setCard(card)
+        cardRef.current = card
+        setStatus('ready')
+        return
+      }
+
       const gone = await isGoonTweetGone(wanted, fetch, GONE_CHECK_TIMEOUT_MS)
       if (cancelled) return
       if (gone && skipRef.current.count < MAX_SKIPS) {
         skipRef.current.count += 1
-        const latest = pickRef.current
-        if (!latest) {
-          setStatus('empty')
-          return
-        }
-        const next = markCurrentInvalid({
-          state: latest,
-          allIds,
-          today: date,
-        })
-        const storage = safeStorage()
-        if (storage) writeState(storage, next)
-        pickRef.current = next
-        setPick(next)
+        skipCurrent()
         return
       }
       setStatus(gone ? 'empty' : 'error')
