@@ -80,9 +80,11 @@
   transition: opacity 0.3s;
 }
 
+/* The vertical dock must stay `position: absolute` (AG Grid anchors it to
+   `right: 0` of the grid body). Overriding it to `relative` puts it back in the
+   column flex flow of `.ag-root`, where it takes half the height away from the
+   row viewport and the lower half of the grid reads as empty. */
 .ag-body-vertical-scroll {
-  margin-left: -10px;
-  position: relative;
   z-index: 3;
   opacity: 0;
   transition: opacity 0.3s;
