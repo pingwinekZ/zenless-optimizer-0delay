@@ -23,6 +23,7 @@ export function DiscEditorSubstatInput({
   statKey,
   upgradeCount,
   upgradeValues,
+  selectedKeys,
   onStatChange,
   onUpgradeChange,
 }: {
@@ -32,6 +33,8 @@ export function DiscEditorSubstatInput({
   statKey: DiscSubStatKey | ''
   upgradeCount: number
   upgradeValues: SubstatUpgradeValues
+  /** Substats currently picked in any substat slot, used to highlight them. */
+  selectedKeys: readonly (DiscSubStatKey | '')[]
   onStatChange: (stat: DiscSubStatKey | '') => void
   onUpgradeChange: (upgrades: number) => void
 }) {
@@ -52,7 +55,7 @@ export function DiscEditorSubstatInput({
             t('editor.substat.substatFormat', { value: index + 1 })
           )
         }
-        color={statKey ? 'success' : 'primary'}
+        color="primary"
         style={{ whiteSpace: 'nowrap', width: '100%' }}
         size="xs"
       >
@@ -63,23 +66,28 @@ export function DiscEditorSubstatInput({
         )}
         {allDiscSubStatKeys
           .filter((k) => mainStatKey !== k)
-          .map((k) => (
-            <Menu.Item
-              key={k}
-              onClick={() => {
-                onStatChange(k)
-                if (upgradeCount === 0) onUpgradeChange(1)
-              }}
-            >
-              <Group gap={6}>
-                <StatIcon
-                  statKey={k}
-                  iconProps={{ style: { fill: 'white' } }}
-                />
-                <StatDisplay statKey={k} showPercent disableIcon />
-              </Group>
-            </Menu.Item>
-          ))}
+          .map((k) => {
+            const isSelected = selectedKeys.includes(k)
+            return (
+              <Menu.Item
+                key={k}
+                onClick={() => {
+                  onStatChange(k)
+                }}
+                className={
+                  isSelected ? modalClasses['substatOptionSelected'] : undefined
+                }
+              >
+                <Group gap={6}>
+                  <StatIcon
+                    statKey={k}
+                    iconProps={{ style: { fill: 'white' } }}
+                  />
+                  <StatDisplay statKey={k} showPercent disableIcon />
+                </Group>
+              </Menu.Item>
+            )
+          })}
       </DropdownButton>
 
       <div className={modalClasses['valueCell']}>

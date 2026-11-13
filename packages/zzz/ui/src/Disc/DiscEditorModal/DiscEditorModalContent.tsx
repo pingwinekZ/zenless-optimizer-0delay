@@ -28,6 +28,7 @@ import { LocationAutocomplete } from '../../Character/LocationAutocomplete'
 import modalClasses from './DiscEditorModal.module.css'
 import { DiscEditorSubstatInput } from './DiscEditorSubstatInput'
 import {
+  applySubstatSelection,
   calculateUpgradeValues,
   computeInitialFormValues,
   computeMainStatOptions,
@@ -67,6 +68,16 @@ export function DiscEditorModalContent() {
 
   const upgradeValues = useMemo(() => calculateUpgradeValues(form), [form])
 
+  const selectedSubstatKeys = useMemo(
+    () => [
+      form.substatKey0,
+      form.substatKey1,
+      form.substatKey2,
+      form.substatKey3,
+    ],
+    [form.substatKey0, form.substatKey1, form.substatKey2, form.substatKey3]
+  )
+
   const validation = useMemo(() => validateDiscEditor(form), [form])
 
   const errors = useMemo(() => {
@@ -92,11 +103,15 @@ export function DiscEditorModalContent() {
   const handleCancel = useCallback(() => closeOverlay(), [closeOverlay])
 
   const setSubstatKey = useCallback(
-    (index: number, key: string) => {
-      const field = `substatKey${index}` as keyof DiscEditorForm
-      updateForm({ [field]: key })
+    (index: number, key: DiscSubStatKey | '') => {
+      // Selecting a substat already used by another slot swaps the two entries
+      // rather than creating a duplicate.
+      setForm((prev) => ({
+        ...prev,
+        ...applySubstatSelection(prev, index, key),
+      }))
     },
-    [updateForm]
+    []
   )
 
   const setSubstatUpgrade = useCallback(
@@ -239,6 +254,7 @@ export function DiscEditorModalContent() {
                 statKey={form[keyField] as DiscSubStatKey | ''}
                 upgradeCount={form[upgradeField] as number}
                 upgradeValues={upgradeValues[index]}
+                selectedKeys={selectedSubstatKeys}
                 onStatChange={(key) => setSubstatKey(index, key)}
                 onUpgradeChange={(upgrades) =>
                   setSubstatUpgrade(index, upgrades)

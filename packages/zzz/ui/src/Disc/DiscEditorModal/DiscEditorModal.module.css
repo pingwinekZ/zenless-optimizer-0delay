@@ -5,6 +5,15 @@
   align-items: start;
 }
 
+/* Substats that are already picked in another slot. */
+.substatOptionSelected {
+  --menu-item-color: var(--mantine-color-white);
+  --menu-item-hover: rgba(255, 255, 255, 0.14);
+
+  color: var(--mantine-color-white);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
 .valueCell {
   display: flex;
   align-items: center;

@@ -90,6 +90,62 @@ export function computeMainStatValue(
   return getDiscMainStatVal(rarity, mainStatKey, level)
 }
 
+/**
+ * Selects the substat for the given slot. If that substat is already used by
+ * another slot, the two entries are swapped (keeping their roll counts) instead
+ * of creating a duplicate.
+ */
+export function applySubstatSelection(
+  form: DiscEditorForm,
+  index: number,
+  key: DiscSubStatKey | ''
+): Partial<DiscEditorForm> {
+  const keys: (DiscSubStatKey | '')[] = [
+    form.substatKey0,
+    form.substatKey1,
+    form.substatKey2,
+    form.substatKey3,
+  ]
+  const upgrades = [
+    form.substatUpgrade0,
+    form.substatUpgrade1,
+    form.substatUpgrade2,
+    form.substatUpgrade3,
+  ]
+
+  const previousKey = keys[index]
+  if (key === previousKey) return {}
+
+  const previousUpgrades = previousKey ? upgrades[index] : 0
+  keys[index] = key
+
+  if (key === '') {
+    upgrades[index] = 0
+  } else {
+    const duplicateIndex = keys.findIndex((k, i) => k === key && i !== index)
+    if (duplicateIndex !== -1) {
+      // Swap the whole substat entry so the other slot gets the substat (and
+      // rolls) that was previously in this slot.
+      const duplicateUpgrades = upgrades[duplicateIndex]
+      keys[duplicateIndex] = previousKey
+      upgrades[duplicateIndex] = previousUpgrades
+      upgrades[index] = duplicateUpgrades
+    }
+    if (upgrades[index] < 1) upgrades[index] = 1
+  }
+
+  return {
+    substatKey0: keys[0],
+    substatKey1: keys[1],
+    substatKey2: keys[2],
+    substatKey3: keys[3],
+    substatUpgrade0: upgrades[0],
+    substatUpgrade1: upgrades[1],
+    substatUpgrade2: upgrades[2],
+    substatUpgrade3: upgrades[3],
+  }
+}
+
 export function calculateUpgradeValues(
   form: DiscEditorForm
 ): SubstatUpgradeValues[] {
