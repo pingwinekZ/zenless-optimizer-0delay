@@ -54,7 +54,10 @@ export function ExpandedDataPanel({
                   gap={10}
                   style={{ flex: 1, minWidth: 0 }}
                 >
-                  <DamageUpgrades analysisData={analysisData} />
+                  <DamageUpgrades
+                    analysisData={analysisData}
+                    isPending={isComputingAnalysis}
+                  />
                 </Flex>
               </Flex>
               <ReferenceComparison analysisData={analysisData} />

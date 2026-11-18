@@ -291,10 +291,12 @@ export function useSolverRun(inputs: SolverRunInputs) {
         // with only the recipes that end up in the final build results
         activeDiscMap = {}
 
-        // Update sidebar with recipe counts. These report the full generated
-        // space, not just what survived pruning — that is what the search space
-        // is measured in, and the pruned pool size is logged above.
-        setPermutations(pipeline.totalRecipes * filteredWengineKeys.length)
+        // Update sidebar with recipe counts. 'Perms' reports the space the
+        // solver is about to sweep — the pool that survived prune (identical
+        // to the generated pool on the GPU path, which skips prune). Reporting
+        // the pruned pool keeps 'Searched' from appearing to under- or
+        // overshoot it.
+        setPermutations(pipeline.afterCount)
         setPermutationDetails(
           buildTheoryPermutationDetails(pipeline.totalRecipes)
         )
@@ -352,11 +354,7 @@ export function useSolverRun(inputs: SolverRunInputs) {
         setOptimizing(false)
         setOptimizationInProgress(false)
         setOptimizerEndTime(Date.now())
-        if (progress) {
-          setOptimizerProgress(1)
-          setPermutationsSearched(progress.computed)
-          setPermutationsResults(progress.computed)
-        }
+        setOptimizerProgress(1)
       }
       console.debug(
         '[TheoreticalMax] Solver returned',
@@ -456,7 +454,6 @@ export function useSolverRun(inputs: SolverRunInputs) {
       setPermutationDetails,
       setPermutations,
       setSortTrigger,
-      progress,
     ]
   )
 

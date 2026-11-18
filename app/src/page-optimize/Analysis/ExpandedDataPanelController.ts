@@ -179,6 +179,13 @@ export interface BuildAnalysisOptions {
    * the run (newer inputs arrived, or the panel unmounted).
    */
   shouldCancel?: () => boolean
+  /**
+   * Called as soon as the cheap half of the analysis is ready (action values,
+   * buffed stats, stats diff, combo breakdown) and again when the substat
+   * upgrades land. The upgrade sweep and the per-source attribution take
+   * seconds on a full team, so the panel must not wait for them to paint.
+   */
+  onPartial?: (data: AnalysisData) => void
 }
 
 export async function buildAnalysisData(
@@ -230,18 +237,22 @@ export async function buildAnalysisData(
     reference ?? null
   )
 
-  const targetAnalysis = await buildTargetInfo(
+  const { shouldCancel, onPartial } = options
+
+  // Phase 1 — the cheap half: a single calculator build for the action values,
+  // buffed stats and stats diff. Emitted immediately so swapping rows in the
+  // grid repaints the analysis panel without waiting for the sweeps below.
+  const core = buildTargetCore(
     selectedBuild,
     getDisc,
     character,
     team,
-    getTeammateChar,
-    options.shouldCancel
+    getTeammateChar
   )
-  if (options.shouldCancel?.()) return null
-  const targetInfo = targetAnalysis?.targetInfo ?? null
+  if (shouldCancel?.()) return null
+  const targetInfo = core?.targetInfo ?? null
 
-  return {
+  const partial: AnalysisData = {
     selectedStats:
       targetInfo?.buffedStats ?? selectedEnriched?.combatStats ?? null,
     equippedStats: equippedEnriched?.combatStats ?? null,
@@ -253,11 +264,41 @@ export async function buildAnalysisData(
     selectedWengineKey: selectedBuild.wengineKey,
     targetInfo,
     referenceComparison,
-    statUpgrades: targetAnalysis?.statUpgrades ?? [],
+    statUpgrades: [],
     enemyConfig: {
       level: team.enemyLvl,
       defense: team.enemyDef,
       stunMultiplier: team.enemyStunMultiplier,
+    },
+  }
+  onPartial?.(partial)
+  if (!core) return partial
+
+  // Phase 2 — the substat-upgrade sweep (one calculator build per substat).
+  const statUpgrades = await computeTargetStatUpgrades(core, shouldCancel)
+  if (!statUpgrades) return null
+  const withUpgrades: AnalysisData = { ...partial, statUpgrades }
+  onPartial?.(withUpgrades)
+
+  // Phase 3 — per-source attribution: one calculator rebuild per source group,
+  // the slowest stage. Nothing above depends on it.
+  const sourcesByAction = await explainContributionsAsync(
+    core.entries,
+    undefined,
+    core.actionRows.map((r) => [r.target]),
+    (e) => zzzCalculatorWithEntries(e),
+    { shouldCancel }
+  )
+  if (!sourcesByAction) return null
+
+  return {
+    ...withUpgrades,
+    targetInfo: targetInfo && {
+      ...targetInfo,
+      perActionDamage: targetInfo.perActionDamage.map((row, i) => ({
+        ...row,
+        sources: sourcesByAction[i] ?? [],
+      })),
     },
   }
 }
@@ -328,22 +369,43 @@ function buildReferenceComparison(
   }
 }
 
-/** `buildTargetInfo` internals the panel reads beyond `TargetFormulaInfo`. */
-type TargetAnalysis = {
-  targetInfo: TargetFormulaInfo
-  /** Summed optimization-target value of the selected build. */
-  targetValue: number
-  statUpgrades: StatUpgradeGroup[]
+/** One action of the optimization target, before source attribution. */
+type ActionRow = {
+  name: string
+  tag: Tag
+  damageTypes: string[]
+  value: number
+  calcResult: CalcResult<number, CalcMeta<Tag, string>>
+  buffedStats: BuildCombatStats | null
+  target: ContributionTarget
 }
 
-async function buildTargetInfo(
+/**
+ * Everything the fast half of the analysis needs, plus the inputs the slow
+ * halves (upgrade sweep, per-source attribution) reuse.
+ */
+type TargetCore = {
+  formulaTag: Tag
+  targetInfo: TargetFormulaInfo
+  actionRows: ActionRow[]
+  entries: ReturnType<typeof buildCalculatorEntries>
+  effectiveCharacter: ICachedCharacter
+  discs: Record<DiscSlotKey, ICachedDisc | undefined>
+  team: Team
+  getTeammateChar:
+    | ((key: CharacterKey) => ICachedCharacter | undefined)
+    | undefined
+  getDisc: (id: string) => ICachedDisc | undefined
+  targetInput: BuildTargetInput
+}
+
+function buildTargetCore(
   selectedBuild: { wengineKey?: string; discIds: DiscIds },
   getDisc: (id: string) => ICachedDisc | undefined,
   character: ICachedCharacter,
   team: Team,
-  getTeammateChar?: (key: CharacterKey) => ICachedCharacter | undefined,
-  shouldCancel?: () => boolean
-): Promise<TargetAnalysis | null> {
+  getTeammateChar?: (key: CharacterKey) => ICachedCharacter | undefined
+): TargetCore | null {
   const frame = getTeamFrame0(team)
   if (!frame.tag) return null
 
@@ -400,15 +462,7 @@ async function buildTargetInfo(
     defIgn: calc.compute(combatReader.final.defIgn_).val,
   }
 
-  const actionRows: Array<{
-    name: string
-    tag: Tag
-    damageTypes: string[]
-    value: number
-    calcResult: CalcResult<number, CalcMeta<Tag, string>>
-    buffedStats: BuildCombatStats | null
-    target: ContributionTarget
-  }> = []
+  const actionRows: ActionRow[] = []
 
   const readBuffedStats = (
     nameContext?: string,
@@ -498,62 +552,69 @@ async function buildTargetInfo(
   // and excluding it made every one of them unattributable. Removing that
   // group only drops her conditionals — the target formula and base stats are
   // written against `sheet: agg`/`iso`, so the target still computes.
-  const sourcesByAction = await explainContributionsAsync(
+  return {
+    formulaTag,
+    targetInfo: {
+      frame,
+      formulaTag,
+      // Source attribution is filled in later (see `buildAnalysisData`): the
+      // action values above are everything the panel needs to paint.
+      perActionDamage: actionRows.map((row) => ({
+        name: row.name,
+        tag: row.tag,
+        damageTypes: row.damageTypes,
+        value: row.value,
+        calcResult: row.calcResult,
+        buffedStats: row.buffedStats,
+        sources: [],
+      })),
+      buffedStats,
+    },
+    actionRows,
     entries,
-    undefined,
-    actionRows.map((r) => [r.target]),
-    (e) => zzzCalculatorWithEntries(e),
-    { shouldCancel }
-  )
-  if (!sourcesByAction) return null
-
-  const perActionDamage: PerActionDamage[] = actionRows.map((row, i) => ({
-    name: row.name,
-    tag: row.tag,
-    damageTypes: row.damageTypes,
-    value: row.value,
-    calcResult: row.calcResult,
-    buffedStats: row.buffedStats,
-    sources: sourcesByAction[i] ?? [],
-  }))
-
-  // Recompute through the same per-preset + multiplier summation that
-  // `computeBuildStats` uses, so the upgrade deltas line up with the row
-  // values above instead of drifting on a different read path.
-  const targetValue = computeBuildStats(
     effectiveCharacter,
     discs,
-    team,
-    targetInput,
-    getTeammateChar,
-    getDisc
-  ).targetValue
-  const baseValue =
-    targetValue ?? perActionDamage.reduce((sum, row) => sum + row.value, 0)
-
-  const statUpgrades = await computeStatUpgrades({
-    discs,
-    character: effectiveCharacter,
     team,
     getTeammateChar,
     getDisc,
     targetInput,
-    metric: metricFromTag(formulaTag),
+  }
+}
+
+/**
+ * Substat-upgrade sweep for the selected build: one full calculator build per
+ * substat, so it runs after the panel has painted the action values.
+ */
+async function computeTargetStatUpgrades(
+  core: TargetCore,
+  shouldCancel?: () => boolean
+): Promise<StatUpgradeGroup[] | null> {
+  // Recompute through the same per-preset + multiplier summation that
+  // `computeBuildStats` uses, so the upgrade deltas line up with the row
+  // values above instead of drifting on a different read path.
+  const targetValue = computeBuildStats(
+    core.effectiveCharacter,
+    core.discs,
+    core.team,
+    core.targetInput,
+    core.getTeammateChar,
+    core.getDisc
+  ).targetValue
+  const baseValue =
+    targetValue ??
+    core.targetInfo.perActionDamage.reduce((sum, row) => sum + row.value, 0)
+
+  return computeStatUpgrades({
+    discs: core.discs,
+    character: core.effectiveCharacter,
+    team: core.team,
+    getTeammateChar: core.getTeammateChar,
+    getDisc: core.getDisc,
+    targetInput: core.targetInput,
+    metric: metricFromTag(core.formulaTag),
     baseValue,
     shouldCancel,
   })
-  if (!statUpgrades) return null
-
-  return {
-    targetInfo: {
-      frame,
-      formulaTag,
-      perActionDamage,
-      buffedStats,
-    },
-    targetValue: baseValue,
-    statUpgrades,
-  }
 }
 
 /**

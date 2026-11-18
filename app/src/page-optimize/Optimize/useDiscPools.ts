@@ -149,9 +149,10 @@ export function useDiscPools(inputs: DiscPoolInputs) {
     [boostedDiscsBySlot, optConfig.setFilter2, optConfig.setFilter4]
   )
 
-  // Total permutations (unfiltered, used for progress calculation only).
-  // The solver searches the full disc space; progress tracks actual builds
-  // searched against this total, NOT against the filtered count.
+  // Total permutations: the disc × wengine space the solver enumerates.
+  // 'Perms' must report this and not the set-filtered count below — set
+  // filters are solver constraints, not pool filters, so the solver still
+  // sweeps every combination and 'Searched' could otherwise exceed 'Perms'.
   const totalPermutations = useMemo(
     () =>
       buildCount(Object.values(boostedDiscsBySlot)) *
@@ -159,27 +160,19 @@ export function useDiscPools(inputs: DiscPoolInputs) {
     [filteredWengineKeys.length, boostedDiscsBySlot]
   )
 
-  // Filtered permutation count (displayed in sidebar — reflects set filters).
-  // This gives a lower-bound estimate of how many builds satisfy the filters.
-  const filteredPermutations = useMemo(
-    () =>
-      buildCount(Object.values(filteredDiscsBySlot)) *
-      filteredWengineKeys.length,
-    [filteredWengineKeys.length, filteredDiscsBySlot]
-  )
-
   // Update sidebar permutation details:
-  // - count: number of discs per slot AFTER all active filters (filteredDiscsBySlot)
+  // - count: number of discs per slot AFTER the active set filters
   // - total: number of discs per slot BEFORE any filters (raw from all discs)
   // This way the PermutationDisplay shows the filter reduction ratio
-  // (e.g. slot 5 with Pen Ratio filter might show 1/13 - 8%).
+  // (e.g. slot 5 with Pen Ratio filter might show 1/13 - 8%), which is a
+  // lower-bound estimate of how many builds can satisfy the filters.
   useEffect(() => {
     setPermutationDetails(buildPermutationDetails(discs, filteredDiscsBySlot))
-    setPermutations(filteredPermutations)
+    setPermutations(totalPermutations)
   }, [
     discs,
     filteredDiscsBySlot,
-    filteredPermutations,
+    totalPermutations,
     setPermutationDetails,
     setPermutations,
   ])

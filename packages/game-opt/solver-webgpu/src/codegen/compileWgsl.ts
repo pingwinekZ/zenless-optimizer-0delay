@@ -553,9 +553,13 @@ export function generateConstraintFilter(
     const m = minimum[c]
     const val = nodeVal(nodes[c], names, folded)
     if (!Number.isFinite(m)) {
-      // `m === +Infinity` fails every finite value (matches JS `Infinity > x`),
-      // and passes when `x === Infinity` (`Infinity > Infinity` is false).
-      if (m === Infinity) conditions.push(`(${val} <= ${MAX_F32})`)
+      // `m === +Infinity` rejects every finite value (JS `Infinity > x`), but
+      // passes when the node is itself Infinite (`Infinity > Infinity` is
+      // false). The node's Infinity is encoded as MAX_F32, so the reject
+      // condition must be `MAX_F32 > val`: `val <= MAX_F32` would reject the
+      // encoded-Infinity node too, dropping every build whenever the
+      // constraint is disabled (e.g. no 2pc/4pc set filters active).
+      if (m === Infinity) conditions.push(`(${MAX_F32} > ${val})`)
       continue
     }
     conditions.push(`(${f32Literal(m)} > ${val})`)

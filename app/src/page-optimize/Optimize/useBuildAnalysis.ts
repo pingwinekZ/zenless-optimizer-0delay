@@ -199,7 +199,15 @@ export function useBuildAnalysis(inputs: BuildAnalysisInputs) {
           getTeammateChar: (key) => database.chars.get(key) ?? undefined,
           reference,
         },
-        { shouldCancel: () => cancelled }
+        {
+          shouldCancel: () => cancelled,
+          // Paint the cheap half (action values, stats diff, combo breakdown)
+          // as soon as it is ready — the upgrade sweep and per-source
+          // attribution take seconds and must not hold the panel back.
+          onPartial: (partial) => {
+            if (!cancelled) setAnalysisData(partial)
+          },
+        }
       )
         .then((data) => {
           if (cancelled) return

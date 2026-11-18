@@ -663,6 +663,11 @@ describe('shader section generation', () => {
     )
     expect(generated.folded.get(nodes[1])).toBe(Infinity)
     expect(constraint).toContain('3.4028234663852886e+38')
+    // A disabled constraint (node Infinity) must not reject: the reject test
+    // is `MAX_F32 > val`, which is false when val is the Infinity encoding.
+    expect(constraint).toContain(
+      '(3.4028234663852886e+38 > 3.4028234663852886e+38)'
+    )
   })
 
   test('bakes tunable workgroup size and cycles per invocation', () => {

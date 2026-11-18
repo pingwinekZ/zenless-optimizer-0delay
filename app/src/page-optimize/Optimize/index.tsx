@@ -224,11 +224,12 @@ function OptimizeWrapper() {
   const [selectedBuild, setSelectedBuild] =
     useState<GeneratedBuild>(equippedBuild)
 
-  // Update progress in sidebar
+  // Update progress in sidebar. Only 'Searched' tracks solver progress;
+  // 'Results' is the number of builds the run returned and must never be
+  // derived from the computed-permutation counter.
   useEffect(() => {
     if (progress) {
       setPermutationsSearched(progress.computed)
-      setPermutationsResults(progress.computed)
       if (totalPermutations > 0) {
         setOptimizerProgress(
           progress.computed / (progress.computed + progress.remaining || 1)
@@ -239,7 +240,6 @@ function OptimizeWrapper() {
     progress,
     totalPermutations,
     setPermutationsSearched,
-    setPermutationsResults,
     setOptimizerProgress,
   ])
 

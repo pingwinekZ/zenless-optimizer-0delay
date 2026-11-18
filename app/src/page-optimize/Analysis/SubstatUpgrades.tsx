@@ -1,4 +1,4 @@
-import { Box, Flex, Table, Text } from '@mantine/core'
+import { Box, Flex, Loader, Table, Text } from '@mantine/core'
 import { CardThemed } from '@zenless-optimizer/common/ui'
 import { StatIcon } from '@zenless-optimizer/zzz/svgicons'
 import { useTranslation } from 'react-i18next'
@@ -14,13 +14,35 @@ import classes from './UpgradeTable.module.css'
  */
 export function DamageUpgrades({
   analysisData,
+  isPending,
 }: {
   analysisData: AnalysisData
+  /** True while this selection's upgrade sweep is still running. */
+  isPending?: boolean
 }) {
   const { t } = useTranslation('page_optimize', { keyPrefix: 'analysis' })
   const { statUpgrades } = analysisData
 
-  if (statUpgrades.length === 0) return null
+  if (statUpgrades.length === 0) {
+    // Keep the card in place while the sweep runs, instead of popping it out
+    // and back in a second later.
+    if (!isPending) return null
+    return (
+      <CardThemed>
+        <Box p="md">
+          <Text fw={700} size="sm">
+            {t('substatUpgrades.title', 'Substat Upgrades')}
+          </Text>
+          <Flex align="center" gap={8} mt="xs">
+            <Loader size={14} />
+            <Text size="xs" c="dimmed">
+              {t('computing', 'Computing analysis...')}
+            </Text>
+          </Flex>
+        </Box>
+      </CardThemed>
+    )
+  }
 
   return (
     <CardThemed>
